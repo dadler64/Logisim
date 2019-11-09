@@ -1,0 +1,12 @@
+# Folders
+/out
+/.idea
+/target
+/src/test
+
+# Build Files
+dependency-reduced-pom.xml
+
+# Project Files
+*.iml
+*.circ
