@@ -35,13 +35,13 @@
 </p>
 
 <!-- SCREENSHOT -->
-<!-- <h4 align="center">
+<h4 align="center">
   <br>
     <a href=""><img src="src/main/resources/github/screenshot_v273.png" alt="Logisim Screenshot"></a>
   <br>
     Screenshot of Logisim v2.7.3 running on Windows
   <br>
-</h4> -->
+</h4>
 
 ## About
 
