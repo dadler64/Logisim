@@ -23,7 +23,10 @@
             alt="Logisim License">
     </a>
     <!-- Codacy Grade -->
-    
+    <a href="https://www.codacy.com/manual/dadler64/Logisim?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dadler64/Logisim&amp;utm_campaign=Badge_Grade">
+        <img src="https://api.codacy.com/project/badge/Grade/31511636df994d55add69e8a75804d14"
+            alt="Codacy Badge>
+    </a>
 </p>
 
 <!-- LINKS -->
