@@ -29,7 +29,7 @@ public class AttrTableToolModel extends AttributeSetTableModel {
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attr, Object value) {
-        proj.doAction(ToolAttributeAction.create(tool, attr, value));
+    public void setValueRequested(Attribute<Object> attribute, Object value) {
+        proj.doAction(ToolAttributeAction.create(tool, attribute, value));
     }
 }

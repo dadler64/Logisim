@@ -35,23 +35,23 @@ public class Loader implements LibraryLoader {
     private Builtin builtin = new Builtin();
     // to be cleared with each new file
     private File mainFile = null;
-    private Stack<File> filesOpening = new Stack<File>();
-    private Map<File, File> substitutions = new HashMap<File, File>();
+    private Stack<File> filesOpening = new Stack<>();
+    private Map<File, File> substitutions = new HashMap<>();
 
     public Loader(Component parent) {
         this.parent = parent;
         clear();
     }
 
-    private static File determineBackupName(File base) {
-        File dir = base.getParentFile();
-        String name = base.getName();
-        if (name.endsWith(LOGISIM_EXTENSION)) {
-            name = name.substring(0, name.length() - LOGISIM_EXTENSION.length());
+    private static File determineBackupName(File baseFile) {
+        File directory = baseFile.getParentFile();
+        String fileName = baseFile.getName();
+        if (fileName.endsWith(LOGISIM_EXTENSION)) {
+            fileName = fileName.substring(0, fileName.length() - LOGISIM_EXTENSION.length());
         }
         for (int i = 1; i <= 20; i++) {
-            String ext = i == 1 ? ".bak" : (".bak" + i);
-            File candidate = new File(dir, name + ext);
+            String extension = i == 1 ? ".bak" : (".bak" + i);
+            File candidate = new File(directory, fileName + extension);
             if (!candidate.exists()) {
                 return candidate;
             }
@@ -59,12 +59,12 @@ public class Loader implements LibraryLoader {
         return null;
     }
 
-    private static void recoverBackup(File backup, File dest) {
+    private static void recoverBackup(File backup, File destination) {
         if (backup != null && backup.exists()) {
-            if (dest.exists()) {
-                dest.delete();
+            if (destination.exists()) {
+                destination.delete();
             }
-            backup.renameTo(dest);
+            backup.renameTo(destination);
         }
     }
 
@@ -77,8 +77,8 @@ public class Loader implements LibraryLoader {
     }
 
     private File getSubstitution(File source) {
-        File ret = substitutions.get(source);
-        return ret == null ? source : ret;
+        File returnFile = substitutions.get(source);
+        return returnFile == null ? source : returnFile;
     }
 
     //
@@ -88,8 +88,8 @@ public class Loader implements LibraryLoader {
         return mainFile;
     }
 
-    private void setMainFile(File value) {
-        mainFile = value;
+    private void setMainFile(File file) {
+        mainFile = file;
     }
 
     public JFileChooser createChooser() {
@@ -98,13 +98,13 @@ public class Loader implements LibraryLoader {
 
     // used here and in LibraryManager only
     File getCurrentDirectory() {
-        File ref;
+        File file;
         if (!filesOpening.empty()) {
-            ref = filesOpening.peek();
+            file = filesOpening.peek();
         } else {
-            ref = mainFile;
+            file = mainFile;
         }
-        return ref == null ? null : ref.getParentFile();
+        return file == null ? null : file.getParentFile();
     }
 
     //
@@ -127,113 +127,111 @@ public class Loader implements LibraryLoader {
 
     public LogisimFile openLogisimFile(File file) throws LoadFailedException {
         try {
-            LogisimFile ret = loadLogisimFile(file);
-            if (ret != null) {
+            LogisimFile logisimFile = loadLogisimFile(file);
+            if (logisimFile != null) {
                 setMainFile(file);
             }
-            showMessages(ret);
-            return ret;
-        } catch (LoaderException e) {
-            throw new LoadFailedException(e.getMessage(), e.isShown());
+            showMessages(logisimFile);
+            return logisimFile;
+        } catch (LoaderException loaderException) {
+            throw new LoadFailedException(loaderException.getMessage(), loaderException.isShown());
         }
     }
 
-    public LogisimFile openLogisimFile(InputStream reader)
-            throws LoadFailedException, IOException {
-        LogisimFile ret = null;
+    public LogisimFile openLogisimFile(InputStream reader) throws LoadFailedException, IOException {
+        LogisimFile logisimFile;
         try {
-            ret = LogisimFile.load(reader, this);
-        } catch (LoaderException e) {
+            logisimFile = LogisimFile.load(reader, this);
+        } catch (LoaderException loaderException) {
             return null;
         }
-        showMessages(ret);
-        return ret;
+        showMessages(logisimFile);
+        return logisimFile;
     }
 
     public Library loadLogisimLibrary(File file) {
-        File actual = getSubstitution(file);
-        LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, actual);
-        if (ret != null) {
-            LogisimFile retBase = (LogisimFile) ret.getBase();
-            showMessages(retBase);
+        File actualFile = getSubstitution(file);
+        LoadedLibrary loadedLibrary = LibraryManager.instance.loadLogisimLibrary(this, actualFile);
+        if (loadedLibrary != null) {
+            LogisimFile returnFile = (LogisimFile) loadedLibrary.getLibrary();
+            showMessages(returnFile);
         }
-        return ret;
+        return loadedLibrary;
     }
 
     public Library loadJarLibrary(File file, String className) {
-        File actual = getSubstitution(file);
-        return LibraryManager.instance.loadJarLibrary(this, actual, className);
+        File actualFile = getSubstitution(file);
+        return LibraryManager.instance.loadJarLibrary(this, actualFile, className);
     }
 
-    public void reload(LoadedLibrary lib) {
-        LibraryManager.instance.reload(this, lib);
+    public void reload(LoadedLibrary library) {
+        LibraryManager.instance.reload(this, library);
     }
 
-    public boolean save(LogisimFile file, File dest) {
-        Library reference = LibraryManager.instance.findReference(file, dest);
-        if (reference != null) {
+    public boolean save(LogisimFile file, File destination) {
+        Library referenceLibrary = LibraryManager.instance.findReference(file, destination);
+        if (referenceLibrary != null) {
             JOptionPane.showMessageDialog(parent,
-                    StringUtil.format(Strings.get("fileCircularError"), reference.getDisplayName()),
+                    StringUtil.format(Strings.get("fileCircularError"), referenceLibrary.getDisplayName()),
                     Strings.get("fileSaveErrorTitle"),
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        File backup = determineBackupName(dest);
-        boolean backupCreated = backup != null && dest.renameTo(backup);
+        File backupFile = determineBackupName(destination);
+        boolean backupCreated = backupFile != null && destination.renameTo(backupFile);
 
-        FileOutputStream fwrite = null;
+        FileOutputStream outputStream = null;
         try {
             try {
-                MacCompatibility.setFileCreatorAndType(dest, "LGSM", "circ");
-            } catch (IOException e) {
-            }
-            fwrite = new FileOutputStream(dest);
-            file.write(fwrite, this);
-            file.setName(toProjectName(dest));
+                MacCompatibility.setFileCreatorAndType(destination, "LGSM", "circ");
+            } catch (IOException ignored) { }
+
+            outputStream = new FileOutputStream(destination);
+            file.write(outputStream, this);
+            file.setName(toProjectName(destination));
 
             File oldFile = getMainFile();
-            setMainFile(dest);
-            LibraryManager.instance.fileSaved(this, dest, oldFile, file);
-        } catch (IOException e) {
+            setMainFile(destination);
+            LibraryManager.instance.fileSaved(this, destination, oldFile, file);
+        } catch (IOException ioException) {
             if (backupCreated) {
-                recoverBackup(backup, dest);
+                recoverBackup(backupFile, destination);
             }
-            if (dest.exists() && dest.length() == 0) {
-                dest.delete();
+            if (destination.exists() && destination.length() == 0) {
+                destination.delete();
             }
             JOptionPane.showMessageDialog(parent,
                     StringUtil.format(Strings.get("fileSaveError"),
-                            e.toString()),
+                    ioException.toString()),
                     Strings.get("fileSaveErrorTitle"),
                     JOptionPane.ERROR_MESSAGE);
             return false;
         } finally {
-            if (fwrite != null) {
+            if (outputStream != null) {
                 try {
-                    fwrite.close();
-                } catch (IOException e) {
+                    outputStream.close();
+                } catch (IOException ioException) {
                     if (backupCreated) {
-                        recoverBackup(backup, dest);
+                        recoverBackup(backupFile, destination);
                     }
-                    if (dest.exists() && dest.length() == 0) {
-                        dest.delete();
+                    if (destination.exists() && destination.length() == 0) {
+                        destination.delete();
                     }
                     JOptionPane.showMessageDialog(parent,
                             StringUtil.format(Strings.get("fileSaveCloseError"),
-                                    e.toString()),
+                            ioException.toString()),
                             Strings.get("fileSaveErrorTitle"),
                             JOptionPane.ERROR_MESSAGE);
-                    return false;
                 }
             }
         }
 
-        if (!dest.exists() || dest.length() == 0) {
-            if (backupCreated && backup != null && backup.exists()) {
-                recoverBackup(backup, dest);
+        if (!destination.exists() || destination.length() == 0) {
+            if (backupCreated && backupFile != null && backupFile.exists()) {
+                recoverBackup(backupFile, destination);
             } else {
-                dest.delete();
+                destination.delete();
             }
             JOptionPane.showMessageDialog(parent,
                     Strings.get("fileSaveZeroError"),
@@ -242,8 +240,8 @@ public class Loader implements LibraryLoader {
             return false;
         }
 
-        if (backupCreated && backup.exists()) {
-            backup.delete();
+        if (backupCreated && backupFile.exists()) {
+            backupFile.delete();
         }
         return true;
     }
@@ -251,31 +249,31 @@ public class Loader implements LibraryLoader {
     //
     // methods for LibraryManager
     //
-    LogisimFile loadLogisimFile(File request) throws LoadFailedException {
-        File actual = getSubstitution(request);
+    LogisimFile loadLogisimFile(File requestedFile) throws LoadFailedException {
+        File actualFile = getSubstitution(requestedFile);
         for (File fileOpening : filesOpening) {
-            if (fileOpening.equals(actual)) {
+            if (fileOpening.equals(actualFile)) {
                 throw new LoadFailedException(StringUtil.format(Strings.get("logisimCircularError"),
-                        toProjectName(actual)));
+                        toProjectName(actualFile)));
             }
         }
 
-        LogisimFile ret = null;
-        filesOpening.push(actual);
+        LogisimFile logisimFile;
+        filesOpening.push(actualFile);
         try {
-            ret = LogisimFile.load(actual, this);
+            logisimFile = LogisimFile.load(actualFile, this);
         } catch (IOException e) {
             throw new LoadFailedException(StringUtil.format(Strings.get("logisimLoadError"),
-                    toProjectName(actual), e.toString()));
+                    toProjectName(actualFile), e.toString()));
         } finally {
             filesOpening.pop();
         }
-        ret.setName(toProjectName(actual));
-        return ret;
+        logisimFile.setName(toProjectName(actualFile));
+        return logisimFile;
     }
 
-    Library loadJarFile(File request, String className) throws LoadFailedException {
-        File actual = getSubstitution(request);
+    Library loadJarFile(File requestedFile, String className) throws LoadFailedException {
+        File actual = getSubstitution(requestedFile);
         // Up until 2.1.8, this was written to use a URLClassLoader, which
         // worked pretty well, except that the class never releases its file
         // handles. For this reason, with 2.2.0, it's been switched to use
@@ -302,24 +300,24 @@ public class Loader implements LibraryLoader {
 		*/
 
         // load library class from loader
-        Class<?> retClass;
+        Class<?> returnClass;
         try {
-            retClass = loader.loadClass(className);
+            returnClass = loader.loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new LoadFailedException(StringUtil.format(Strings.get("jarClassNotFoundError"), className));
         }
-        if (!(Library.class.isAssignableFrom(retClass))) {
+        if (!(Library.class.isAssignableFrom(returnClass))) {
             throw new LoadFailedException(StringUtil.format(Strings.get("jarClassNotLibraryError"), className));
         }
 
         // instantiate library
-        Library ret;
+        Library returnLibrary;
         try {
-            ret = (Library) retClass.newInstance();
+            returnLibrary = (Library) returnClass.newInstance();
         } catch (Exception e) {
             throw new LoadFailedException(StringUtil.format(Strings.get("jarLibraryNotCreatedError"), className));
         }
-        return ret;
+        return returnLibrary;
     }
 
     //
@@ -329,14 +327,14 @@ public class Loader implements LibraryLoader {
         return LibraryManager.instance.loadLibrary(this, desc);
     }
 
-    public String getDescriptor(Library lib) {
-        return LibraryManager.instance.getDescriptor(this, lib);
+    public String getDescriptor(Library library) {
+        return LibraryManager.instance.getDescriptor(this, library);
     }
 
     public void showError(String description) {
         if (!filesOpening.empty()) {
-            File top = filesOpening.peek();
-            String init = toProjectName(top) + ":";
+            File topFile = filesOpening.peek();
+            String init = toProjectName(topFile) + ":";
             if (description.contains("\n")) {
                 description = init + "\n" + description;
             } else {
@@ -346,8 +344,8 @@ public class Loader implements LibraryLoader {
 
         if (description.contains("\n") || description.length() > 60) {
             int lines = 1;
-            for (int pos = description.indexOf('\n'); pos >= 0;
-                    pos = description.indexOf('\n', pos + 1)) {
+            for (int position = description.indexOf('\n'); position >= 0;
+                    position = description.indexOf('\n', position + 1)) {
                 lines++;
             }
             lines = Math.max(4, Math.min(lines, 7));
@@ -367,16 +365,18 @@ public class Loader implements LibraryLoader {
         }
     }
 
-    private void showMessages(LogisimFile source) {
-        if (source == null) {
+    private void showMessages(LogisimFile sourceLogisimFile) {
+        if (sourceLogisimFile == null) {
             return;
         }
-        String message = source.getMessage();
+        String message = sourceLogisimFile.getMessage();
         while (message != null) {
-            JOptionPane.showMessageDialog(parent,
-                    message, Strings.get("fileMessageTitle"),
+            JOptionPane.showMessageDialog(
+                    parent,
+                    message,
+                    Strings.get("fileMessageTitle"),
                     JOptionPane.INFORMATION_MESSAGE);
-            message = source.getMessage();
+            message = sourceLogisimFile.getMessage();
         }
     }
 
@@ -394,36 +394,33 @@ public class Loader implements LibraryLoader {
         }
         while (!file.canRead()) {
             // It doesn't exist. Figure it out from the user.
-            JOptionPane.showMessageDialog(parent,
-                    StringUtil.format(Strings.get("fileLibraryMissingError"),
-                            file.getName()));
-            JFileChooser chooser = createChooser();
-            chooser.setFileFilter(filter);
-            chooser.setDialogTitle(StringUtil.format(Strings.get("fileLibraryMissingTitle"), file.getName()));
-            int action = chooser.showDialog(parent, Strings.get("fileLibraryMissingButton"));
+            JOptionPane.showMessageDialog(parent, StringUtil.format(Strings.get("fileLibraryMissingError"), file.getName()));
+            JFileChooser fileChooser = createChooser();
+            fileChooser.setFileFilter(filter);
+            fileChooser.setDialogTitle(StringUtil.format(Strings.get("fileLibraryMissingTitle"), file.getName()));
+            int action = fileChooser.showDialog(parent, Strings.get("fileLibraryMissingButton"));
             if (action != JFileChooser.APPROVE_OPTION) {
                 throw new LoaderException(Strings.get("fileLoadCanceledError"));
             }
-            file = chooser.getSelectedFile();
+            file = fileChooser.getSelectedFile();
         }
         return file;
     }
 
     private String toProjectName(File file) {
-        String ret = file.getName();
-        if (ret.endsWith(LOGISIM_EXTENSION)) {
-            return ret.substring(0, ret.length() - LOGISIM_EXTENSION.length());
+        String returnFile = file.getName();
+        if (returnFile.endsWith(LOGISIM_EXTENSION)) {
+            return returnFile.substring(0, returnFile.length() - LOGISIM_EXTENSION.length());
         } else {
-            return ret;
+            return returnFile;
         }
     }
 
     private static class LogisimFileFilter extends FileFilter {
 
         @Override
-        public boolean accept(File f) {
-            return f.isDirectory()
-                    || f.getName().endsWith(LOGISIM_EXTENSION);
+        public boolean accept(File file) {
+            return file.isDirectory() || file.getName().endsWith(LOGISIM_EXTENSION);
         }
 
         @Override
@@ -435,9 +432,8 @@ public class Loader implements LibraryLoader {
     private static class JarFileFilter extends FileFilter {
 
         @Override
-        public boolean accept(File f) {
-            return f.isDirectory()
-                    || f.getName().endsWith(".jar");
+        public boolean accept(File file) {
+            return file.isDirectory() || file.getName().endsWith(".jar");
         }
 
         @Override
@@ -445,5 +441,4 @@ public class Loader implements LibraryLoader {
             return Strings.get("jarFileFilter");
         }
     }
-
 }

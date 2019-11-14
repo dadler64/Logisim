@@ -9,7 +9,7 @@ class WireThread {
 
     private WireThread parent;
     private SmallSet<CircuitWires.ThreadBundle> bundles
-            = new SmallSet<CircuitWires.ThreadBundle>();
+            = new SmallSet<>();
 
     WireThread() {
         parent = this;

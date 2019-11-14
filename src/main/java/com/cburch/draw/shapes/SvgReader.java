@@ -159,34 +159,33 @@ public class SvgReader {
     }
 
     private static List<Location> parsePoints(String points) {
-        Pattern patt = Pattern.compile("[ ,\n\r\t]+");
-        String[] toks = patt.split(points);
-        Location[] ret = new Location[toks.length / 2];
-        for (int i = 0; i < ret.length; i++) {
-            int x = Integer.parseInt(toks[2 * i]);
-            int y = Integer.parseInt(toks[2 * i + 1]);
-            ret[i] = Location.create(x, y);
+        Pattern pattern = Pattern.compile("[ ,\n\r\t]+");
+        String[] tokens = pattern.split(points);
+        Location[] locations = new Location[tokens.length / 2];
+        for (int i = 0; i < locations.length; i++) {
+            int x = Integer.parseInt(tokens[2 * i]);
+            int y = Integer.parseInt(tokens[2 * i + 1]);
+            locations[i] = Location.create(x, y);
         }
-        return UnmodifiableList.create(ret);
+        return UnmodifiableList.create(locations);
     }
 
-    private static AbstractCanvasObject createPath(Element elt) {
-        Matcher patt = PATH_REGEX.matcher(elt.getAttribute("d"));
-        List<String> tokens = new ArrayList<String>();
+    private static AbstractCanvasObject createPath(Element element) {
+        Matcher matcher = PATH_REGEX.matcher(element.getAttribute("d"));
+        List<String> tokens = new ArrayList<>();
         int type = -1; // -1 error, 0 start, 1 curve, 2 polyline
-        while (patt.find()) {
-            String token = patt.group();
+        while (matcher.find()) {
+            String token = matcher.group();
             tokens.add(token);
             if (Character.isLetter(token.charAt(0))) {
-                switch (token.charAt(0)) {
-                    case 'M':
+                switch (Character.toLowerCase(token.charAt(0))) {
+                    case 'm':
                         if (type == -1) {
                             type = 0;
                         } else {
                             type = -1;
                         }
                         break;
-                    case 'Q':
                     case 'q':
                         if (type == 0) {
                             type = 1;
@@ -194,10 +193,10 @@ public class SvgReader {
                             type = -1;
                         }
                         break;
-				/* not supported
-				case 'L': case 'l':
-				case 'H': case 'h':
-				case 'V': case 'v':
+                        /* not supported
+				        case 'l':
+                        case 'h':
+				        case 'v':
 					if (type == 0 || type == 2) type = 2;
 					else type = -1;
 					break;

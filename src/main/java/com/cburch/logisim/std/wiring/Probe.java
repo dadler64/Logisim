@@ -384,8 +384,8 @@ public class Probe extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrsBase) {
-        ProbeAttributes attrs = (ProbeAttributes) attrsBase;
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        ProbeAttributes attrs = (ProbeAttributes) attributes;
         return getOffsetBounds(attrs.facing, attrs.width, attrs.radix);
     }
 

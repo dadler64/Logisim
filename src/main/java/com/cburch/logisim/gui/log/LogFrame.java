@@ -36,7 +36,7 @@ public class LogFrame extends LFrame {
     private Project project;
     private Simulator curSimulator = null;
     private Model curModel;
-    private Map<CircuitState, Model> modelMap = new HashMap<CircuitState, Model>();
+    private Map<CircuitState, Model> modelMap = new HashMap<>();
     private MyListener myListener = new MyListener();
     private WindowMenuManager windowManager;
     private LogPanel[] panels;

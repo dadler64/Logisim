@@ -5,11 +5,12 @@ package com.cburch.logisim.gui.main;
 
 import com.cburch.draw.toolbar.Toolbar;
 import com.cburch.draw.toolbar.ToolbarModel;
+import com.cburch.logisim.Main;
+import com.cburch.logisim.Main.Release;
 import com.cburch.logisim.circuit.Circuit;
 import com.cburch.logisim.circuit.CircuitEvent;
 import com.cburch.logisim.circuit.CircuitListener;
 import com.cburch.logisim.comp.Component;
-import com.cburch.logisim.data.AttributeEvent;
 import com.cburch.logisim.data.AttributeSet;
 import com.cburch.logisim.data.Direction;
 import com.cburch.logisim.file.LibraryEvent;
@@ -67,72 +68,68 @@ public class Frame extends LFrame implements LocaleListener {
     public static final String VIEW_TOOLBOX = "toolbox";
     public static final String VIEW_SIMULATION = "simulation";
 
-    private static final double[] ZOOM_OPTIONS = {20, 50, 75, 100, 133, 150, 200, 250, 300, 400};
-    private Project proj;
+    private static final double[] ZOOM_OPTIONS = {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
+    private Project project;
     private MyProjectListener myProjectListener = new MyProjectListener();
-    // GUI elements shared between views
-    private LogisimMenuBar menubar;
     private MenuListener menuListener;
     private Toolbar toolbar;
     private HorizontalSplitPane leftRegion;
     private VerticalSplitPane mainRegion;
     private JPanel mainPanelSuper;
     private CardPanel mainPanel;
-    // left-side elements
-    private Toolbar projectToolbar;
     private CardPanel explorerPane;
     private Toolbox toolbox;
-    private SimulationExplorer simExplorer;
-    private AttrTable attrTable;
+    private AttrTable attributeTable;
     private ZoomControl zoom;
     // for the Layout view
     private LayoutToolbarModel layoutToolbarModel;
     private Canvas layoutCanvas;
     private ZoomModel layoutZoomModel;
     private LayoutEditHandler layoutEditHandler;
-    private AttrTableSelectionModel attrTableSelectionModel;
+    private AttrTableSelectionModel attributeTableSelectionModel;
     // for the Appearance view
     private AppearanceView appearance;
 
-    public Frame(Project proj) {
-        this.proj = proj;
+    public Frame(Project project) {
+        this.project = project;
 
         setBackground(Color.white);
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new MyWindowListener());
 
-        proj.addProjectListener(myProjectListener);
-        proj.addLibraryListener(myProjectListener);
-        proj.addCircuitListener(myProjectListener);
+        project.addProjectListener(myProjectListener);
+        project.addLibraryListener(myProjectListener);
+        project.addCircuitListener(myProjectListener);
         computeTitle();
 
         // set up elements for the Layout view
-        layoutToolbarModel = new LayoutToolbarModel(this, proj);
-        layoutCanvas = new Canvas(proj);
-        layoutZoomModel = new BasicZoomModel(AppPreferences.LAYOUT_SHOW_GRID,
-                AppPreferences.LAYOUT_ZOOM, ZOOM_OPTIONS);
+        layoutToolbarModel = new LayoutToolbarModel(this, project);
+        layoutCanvas = new Canvas(project);
+        layoutZoomModel = new BasicZoomModel(AppPreferences.LAYOUT_SHOW_GRID, AppPreferences.LAYOUT_ZOOM, ZOOM_OPTIONS);
 
         layoutCanvas.getGridPainter().setZoomModel(layoutZoomModel);
         layoutEditHandler = new LayoutEditHandler(this);
-        attrTableSelectionModel = new AttrTableSelectionModel(proj, this);
+        attributeTableSelectionModel = new AttrTableSelectionModel(project, this);
 
         // set up menu bar and toolbar
-        menubar = new LogisimMenuBar(this, proj);
+        // GUI elements shared between views
+        LogisimMenuBar menubar = new LogisimMenuBar(this, project);
         menuListener = new MenuListener(this, menubar);
         menuListener.setEditHandler(layoutEditHandler);
         setJMenuBar(menubar);
         toolbar = new Toolbar(layoutToolbarModel);
 
         // set up the left-side components
-        ToolbarModel projectToolbarModel = new ExplorerToolbarModel(this, menuListener);
-        projectToolbar = new Toolbar(projectToolbarModel);
-        toolbox = new Toolbox(proj, menuListener);
-        simExplorer = new SimulationExplorer(proj, menuListener);
+        ToolbarModel toolbarModel = new ExplorerToolbarModel(this, menuListener);
+        // left-side elements
+        Toolbar projectToolbar = new Toolbar(toolbarModel);
+        toolbox = new Toolbox(project, menuListener);
+        SimulationExplorer simExplorer = new SimulationExplorer(project, menuListener);
         explorerPane = new CardPanel();
         explorerPane.addView(VIEW_TOOLBOX, toolbox);
         explorerPane.addView(VIEW_SIMULATION, simExplorer);
         explorerPane.setView(VIEW_TOOLBOX);
-        attrTable = new AttrTable(this);
+        attributeTable = new AttrTable(this);
         zoom = new ZoomControl(layoutZoomModel);
 
         // set up the central area
@@ -151,54 +148,51 @@ public class Frame extends LFrame implements LocaleListener {
         explPanel.add(projectToolbar, BorderLayout.NORTH);
         explPanel.add(explorerPane, BorderLayout.CENTER);
         JPanel attrPanel = new JPanel(new BorderLayout());
-        attrPanel.add(attrTable, BorderLayout.CENTER);
+        attrPanel.add(attributeTable, BorderLayout.CENTER);
         attrPanel.add(zoom, BorderLayout.SOUTH);
 
-        leftRegion = new HorizontalSplitPane(explPanel, attrPanel,
-                AppPreferences.WINDOW_LEFT_SPLIT.get().doubleValue());
-        mainRegion = new VerticalSplitPane(leftRegion, mainPanelSuper,
-                AppPreferences.WINDOW_MAIN_SPLIT.get().doubleValue());
+        leftRegion = new HorizontalSplitPane(explPanel, attrPanel, AppPreferences.WINDOW_LEFT_SPLIT.get());
+        mainRegion = new VerticalSplitPane(leftRegion, mainPanelSuper, AppPreferences.WINDOW_MAIN_SPLIT.get());
 
         getContentPane().add(mainRegion, BorderLayout.CENTER);
 
         computeTitle();
 
-        this.setSize(AppPreferences.WINDOW_WIDTH.get().intValue(),
-                AppPreferences.WINDOW_HEIGHT.get().intValue());
+        this.setSize(AppPreferences.WINDOW_WIDTH.get(), AppPreferences.WINDOW_HEIGHT.get());
         Point prefPoint = getInitialLocation();
         if (prefPoint != null) {
             this.setLocation(prefPoint);
         }
-        this.setExtendedState(AppPreferences.WINDOW_STATE.get().intValue());
+        this.setExtendedState(AppPreferences.WINDOW_STATE.get());
 
         menuListener.register(mainPanel);
         KeyboardToolSelection.register(toolbar);
 
-        proj.setFrame(this);
-        if (proj.getTool() == null) {
-            proj.setTool(proj.getOptions().getToolbarData().getFirstTool());
+        project.setFrame(this);
+        if (project.getTool() == null) {
+            project.setTool(project.getOptions().getToolbarData().getFirstTool());
         }
         mainPanel.addChangeListener(myProjectListener);
         explorerPane.addChangeListener(myProjectListener);
         AppPreferences.TOOLBAR_PLACEMENT.addPropertyChangeListener(myProjectListener);
         placeToolbar();
-        ((MenuListener.EnabledListener) projectToolbarModel).menuEnableChanged(menuListener);
+        ((MenuListener.EnabledListener) toolbarModel).menuEnableChanged(menuListener);
 
         LocaleManager.addLocaleListener(this);
     }
 
     private static Point getInitialLocation() {
-        String s = AppPreferences.WINDOW_LOCATION.get();
-        if (s == null) {
+        String location = AppPreferences.WINDOW_LOCATION.get();
+        if (location == null) {
             return null;
         }
-        int comma = s.indexOf(',');
+        int comma = location.indexOf(',');
         if (comma < 0) {
             return null;
         }
         try {
-            int x = Integer.parseInt(s.substring(0, comma));
-            int y = Integer.parseInt(s.substring(comma + 1));
+            int x = Integer.parseInt(location.substring(0, comma));
+            int y = Integer.parseInt(location.substring(comma + 1));
             while (isProjectFrameAt(x, y)) {
                 x += 20;
                 y += 20;
@@ -207,11 +201,11 @@ public class Frame extends LFrame implements LocaleListener {
 
             int gcBestSize = 0;
             Point gcBestPoint = null;
-            GraphicsEnvironment ge;
-            ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            for (GraphicsDevice gd : ge.getScreenDevices()) {
-                for (GraphicsConfiguration gc : gd.getConfigurations()) {
-                    Rectangle gcBounds = gc.getBounds();
+            GraphicsEnvironment environment;
+            environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            for (GraphicsDevice device : environment.getScreenDevices()) {
+                for (GraphicsConfiguration configuration : device.getConfigurations()) {
+                    Rectangle gcBounds = configuration.getBounds();
                     if (gcBounds.intersects(desired)) {
                         Rectangle inter = gcBounds.intersection(desired);
                         int size = inter.width * inter.height;
@@ -241,8 +235,8 @@ public class Frame extends LFrame implements LocaleListener {
         for (Project current : Projects.getOpenProjects()) {
             Frame frame = current.getFrame();
             if (frame != null) {
-                Point loc = frame.getLocationOnScreen();
-                int d = Math.abs(loc.x - x) + Math.abs(loc.y - y);
+                Point location = frame.getLocationOnScreen();
+                int d = Math.abs(location.x - x) + Math.abs(location.y - y);
                 if (d <= 3) {
                     return true;
                 }
@@ -252,52 +246,54 @@ public class Frame extends LFrame implements LocaleListener {
     }
 
     private void placeToolbar() {
-        String loc = AppPreferences.TOOLBAR_PLACEMENT.get();
+        String location = AppPreferences.TOOLBAR_PLACEMENT.get();
         Container contents = getContentPane();
         contents.remove(toolbar);
         mainPanelSuper.remove(toolbar);
-        if (AppPreferences.TOOLBAR_HIDDEN.equals(loc)) {
-            // don't place value anywhere
-        } else if (AppPreferences.TOOLBAR_DOWN_MIDDLE.equals(loc)) {
-            toolbar.setOrientation(Toolbar.VERTICAL);
-            mainPanelSuper.add(toolbar, BorderLayout.WEST);
-        } else { // it is a BorderLayout constant
-            Object value = BorderLayout.NORTH;
-            for (Direction dir : Direction.cardinals) {
-                if (dir.toString().equals(loc)) {
-                    if (dir == Direction.EAST) {
-                        value = BorderLayout.EAST;
-                    } else if (dir == Direction.SOUTH) {
-                        value = BorderLayout.SOUTH;
-                    } else if (dir == Direction.WEST) {
-                        value = BorderLayout.WEST;
-                    } else {
-                        value = BorderLayout.NORTH;
+        if (!AppPreferences.TOOLBAR_HIDDEN.equals(location)) {
+            if (AppPreferences.TOOLBAR_DOWN_MIDDLE.equals(location)) {
+                toolbar.setOrientation(Toolbar.VERTICAL);
+                mainPanelSuper.add(toolbar, BorderLayout.WEST);
+            } else { // it is a BorderLayout constant
+                Object value = BorderLayout.NORTH;
+                for (Direction direction : Direction.cardinals) {
+                    if (direction.toString().equals(location)) {
+                        if (direction == Direction.EAST) {
+                            value = BorderLayout.EAST;
+                        } else if (direction == Direction.SOUTH) {
+                            value = BorderLayout.SOUTH;
+                        } else if (direction == Direction.WEST) {
+                            value = BorderLayout.WEST;
+                        } else {
+                            value = BorderLayout.NORTH;
+                        }
                     }
                 }
-            }
 
-            contents.add(toolbar, value);
-            boolean vertical = value == BorderLayout.WEST || value == BorderLayout.EAST;
-            toolbar.setOrientation(vertical ? Toolbar.VERTICAL : Toolbar.HORIZONTAL);
+                contents.add(toolbar, value);
+                boolean vertical = value == BorderLayout.WEST || value == BorderLayout.EAST;
+                toolbar.setOrientation(vertical ? Toolbar.VERTICAL : Toolbar.HORIZONTAL);
+            }
         }
+        // Otherwise don't place value anywhere
+
         contents.validate();
     }
 
     public Project getProject() {
-        return proj;
+        return project;
     }
 
-    public void viewComponentAttributes(Circuit circ, Component comp) {
-        if (comp == null) {
+    public void viewComponentAttributes(Circuit circuit, Component component) {
+        if (component == null) {
             setAttrTableModel(null);
         } else {
-            setAttrTableModel(new AttrTableComponentModel(proj, circ, comp));
+            setAttrTableModel(new AttrTableComponentModel(project, circuit, component));
         }
     }
 
     void setAttrTableModel(AttrTableModel value) {
-        attrTable.setAttrTableModel(value);
+        attributeTable.setAttrTableModel(value);
         if (value instanceof AttrTableToolModel) {
             Tool tool = ((AttrTableToolModel) value).getTool();
             toolbox.setHaloedTool(tool);
@@ -307,9 +303,9 @@ public class Frame extends LFrame implements LocaleListener {
             layoutToolbarModel.setHaloedTool(null);
         }
         if (value instanceof AttrTableComponentModel) {
-            Circuit circ = ((AttrTableComponentModel) value).getCircuit();
-            Component comp = ((AttrTableComponentModel) value).getComponent();
-            layoutCanvas.setHaloedComponent(circ, comp);
+            Circuit circuit = ((AttrTableComponentModel) value).getCircuit();
+            Component component = ((AttrTableComponentModel) value).getComponent();
+            layoutCanvas.setHaloedComponent(circuit, component);
         } else {
             layoutCanvas.setHaloedComponent(null, null);
         }
@@ -328,30 +324,30 @@ public class Frame extends LFrame implements LocaleListener {
     }
 
     public void setEditorView(String view) {
-        String curView = mainPanel.getView();
-        if (curView.equals(view)) {
+        String currentView = mainPanel.getView();
+        if (currentView.equals(view)) {
             return;
         }
 
         if (view.equals(EDIT_APPEARANCE)) { // appearance view
-            AppearanceView app = appearance;
-            if (app == null) {
-                app = new AppearanceView();
-                app.setCircuit(proj, proj.getCircuitState());
-                mainPanel.addView(EDIT_APPEARANCE, app.getCanvasPane());
-                appearance = app;
+            AppearanceView appearance = this.appearance;
+            if (appearance == null) {
+                appearance = new AppearanceView();
+                appearance.setCircuit(project, project.getCircuitState());
+                mainPanel.addView(EDIT_APPEARANCE, appearance.getCanvasPane());
+                this.appearance = appearance;
             }
-            toolbar.setToolbarModel(app.getToolbarModel());
-            app.getAttrTableDrawManager(attrTable).attributesSelected();
-            zoom.setZoomModel(app.getZoomModel());
-            menuListener.setEditHandler(app.getEditHandler());
+            toolbar.setToolbarModel(appearance.getToolbarModel());
+            appearance.getAttrTableDrawManager(attributeTable).attributesSelected();
+            zoom.setZoomModel(appearance.getZoomModel());
+            menuListener.setEditHandler(appearance.getEditHandler());
             mainPanel.setView(view);
-            app.getCanvas().requestFocus();
+            appearance.getCanvas().requestFocus();
         } else { // layout view
             toolbar.setToolbarModel(layoutToolbarModel);
             zoom.setZoomModel(layoutZoomModel);
             menuListener.setEditHandler(layoutEditHandler);
-            viewAttributes(proj.getTool(), true);
+            viewAttributes(project.getTool(), true);
             mainPanel.setView(view);
             layoutCanvas.requestFocus();
         }
@@ -362,16 +358,27 @@ public class Frame extends LFrame implements LocaleListener {
     }
 
     private void computeTitle() {
-        String s;
-        Circuit circuit = proj.getCurrentCircuit();
-        String name = proj.getLogisimFile().getName();
+        String str;
+        Circuit circuit = project.getCurrentCircuit();
+        String name = project.getLogisimFile().getName();
         if (circuit != null) {
-            s = StringUtil.format(Strings.get("titleCircFileKnown"),
+            str = StringUtil.format(Strings.get("titleCircFileKnown"),
                     circuit.getName(), name);
         } else {
-            s = StringUtil.format(Strings.get("titleFileKnown"), name);
+            str = StringUtil.format(Strings.get("titleFileKnown"), name);
         }
-        this.setTitle(s);
+
+        // Adjust the title according to the release type
+        if (Main.RELEASE_TYPE == Release.ALPHA) {
+            this.setTitle("ALPHA " + Main.VERSION_NAME + " -- " + str);
+        } else if (Main.RELEASE_TYPE == Release.BETA) {
+            this.setTitle("BETA " + Main.VERSION_NAME + " -- " + str);
+        } else if (Main.RELEASE_TYPE == Release.RELEASE) {
+            this.setTitle(Main.VERSION_NAME + str);
+        } else {
+            this.setTitle(Main.VERSION_NAME + str);
+        }
+
         myProjectListener.enableSave();
     }
 
@@ -379,39 +386,40 @@ public class Frame extends LFrame implements LocaleListener {
         viewAttributes(null, newTool, false);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void viewAttributes(Tool newTool, boolean force) {
         viewAttributes(null, newTool, force);
     }
 
     private void viewAttributes(Tool oldTool, Tool newTool, boolean force) {
-        AttributeSet newAttrs;
+        AttributeSet newAttributes;
         if (newTool == null) {
-            newAttrs = null;
+            newAttributes = null;
             if (!force) {
                 return;
             }
         } else {
-            newAttrs = newTool.getAttributeSet(layoutCanvas);
+            newAttributes = newTool.getAttributeSet(layoutCanvas);
         }
-        if (newAttrs == null) {
-            AttrTableModel oldModel = attrTable.getAttrTableModel();
+        if (newAttributes == null) {
+            AttrTableModel oldModel = attributeTable.getAttrTableModel();
             boolean same = oldModel instanceof AttrTableToolModel
                     && ((AttrTableToolModel) oldModel).getTool() == oldTool;
             if (!force && !same && !(oldModel instanceof AttrTableCircuitModel)) {
                 return;
             }
         }
-        if (newAttrs == null) {
-            Circuit circ = proj.getCurrentCircuit();
-            if (circ != null) {
-                setAttrTableModel(new AttrTableCircuitModel(proj, circ));
+        if (newAttributes == null) {
+            Circuit circuit = project.getCurrentCircuit();
+            if (circuit != null) {
+                setAttrTableModel(new AttrTableCircuitModel(project, circuit));
             } else if (force) {
                 setAttrTableModel(null);
             }
-        } else if (newAttrs instanceof SelectionAttributes) {
-            setAttrTableModel(attrTableSelectionModel);
+        } else if (newAttributes instanceof SelectionAttributes) {
+            setAttrTableModel(attributeTableSelectionModel);
         } else {
-            setAttrTableModel(new AttrTableToolModel(proj, newTool));
+            setAttrTableModel(new AttrTableToolModel(project, newTool));
         }
     }
 
@@ -420,30 +428,30 @@ public class Frame extends LFrame implements LocaleListener {
     }
 
     public void savePreferences() {
-        AppPreferences.TICK_FREQUENCY.set(Double.valueOf(proj.getSimulator().getTickFrequency()));
+        AppPreferences.TICK_FREQUENCY.set(project.getSimulator().getTickFrequency());
         AppPreferences.LAYOUT_SHOW_GRID.setBoolean(layoutZoomModel.getShowGrid());
-        AppPreferences.LAYOUT_ZOOM.set(Double.valueOf(layoutZoomModel.getZoomFactor()));
+        AppPreferences.LAYOUT_ZOOM.set(layoutZoomModel.getZoomFactor());
         if (appearance != null) {
             ZoomModel aZoom = appearance.getZoomModel();
             AppPreferences.APPEARANCE_SHOW_GRID.setBoolean(aZoom.getShowGrid());
-            AppPreferences.APPEARANCE_ZOOM.set(Double.valueOf(aZoom.getZoomFactor()));
+            AppPreferences.APPEARANCE_ZOOM.set(aZoom.getZoomFactor());
         }
         int state = getExtendedState() & ~JFrame.ICONIFIED;
-        AppPreferences.WINDOW_STATE.set(Integer.valueOf(state));
-        Dimension dim = getSize();
-        AppPreferences.WINDOW_WIDTH.set(Integer.valueOf(dim.width));
-        AppPreferences.WINDOW_HEIGHT.set(Integer.valueOf(dim.height));
-        Point loc;
+        AppPreferences.WINDOW_STATE.set(state);
+        Dimension dimension = getSize();
+        AppPreferences.WINDOW_WIDTH.set(dimension.width);
+        AppPreferences.WINDOW_HEIGHT.set(dimension.height);
+        Point location;
         try {
-            loc = getLocationOnScreen();
+            location = getLocationOnScreen();
         } catch (IllegalComponentStateException e) {
-            loc = Projects.getLocation(this);
+            location = Projects.getLocation(this);
         }
-        if (loc != null) {
-            AppPreferences.WINDOW_LOCATION.set(loc.x + "," + loc.y);
+        if (location != null) {
+            AppPreferences.WINDOW_LOCATION.set(location.x + "," + location.y);
         }
-        AppPreferences.WINDOW_LEFT_SPLIT.set(Double.valueOf(leftRegion.getFraction()));
-        AppPreferences.WINDOW_MAIN_SPLIT.set(Double.valueOf(mainRegion.getFraction()));
+        AppPreferences.WINDOW_LEFT_SPLIT.set(leftRegion.getFraction());
+        AppPreferences.WINDOW_MAIN_SPLIT.set(mainRegion.getFraction());
         AppPreferences.DIALOG_DIRECTORY.set(JFileChoosers.getCurrentDirectory());
     }
 
@@ -454,19 +462,19 @@ public class Frame extends LFrame implements LocaleListener {
     // returns true if user is OK with proceeding
     public boolean confirmClose(String title) {
         String message = StringUtil.format(Strings.get("confirmDiscardMessage"),
-                proj.getLogisimFile().getName());
+                project.getLogisimFile().getName());
 
-        if (!proj.isFileDirty()) {
+        if (!project.isFileDirty()) {
             return true;
         }
         toFront();
         String[] options = {Strings.get("saveOption"), Strings.get("discardOption"), Strings.get("cancelOption")};
         int result = JOptionPane.showOptionDialog(this,
-                message, title, 0, JOptionPane.QUESTION_MESSAGE, null,
+                message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                 options, options[0]);
         boolean ret;
         if (result == 0) {
-            ret = ProjectActions.doSave(proj);
+            ret = ProjectActions.doSave(project);
         } else {
             ret = result == 1;
         }
@@ -485,17 +493,17 @@ public class Frame extends LFrame implements LocaleListener {
 
             if (action == ProjectEvent.ACTION_SET_FILE) {
                 computeTitle();
-                proj.setTool(proj.getOptions().getToolbarData().getFirstTool());
+                project.setTool(project.getOptions().getToolbarData().getFirstTool());
                 placeToolbar();
             } else if (action == ProjectEvent.ACTION_SET_CURRENT) {
                 setEditorView(EDIT_LAYOUT);
                 if (appearance != null) {
-                    appearance.setCircuit(proj, proj.getCircuitState());
+                    appearance.setCircuit(project, project.getCircuitState());
                 }
-                viewAttributes(proj.getTool());
+                viewAttributes(project.getTool());
                 computeTitle();
             } else if (action == ProjectEvent.ACTION_SET_TOOL) {
-                if (attrTable == null) {
+                if (attributeTable == null) {
                     return; // for startup
                 }
                 Tool oldTool = (Tool) event.getOldData();
@@ -521,13 +529,12 @@ public class Frame extends LFrame implements LocaleListener {
         }
 
         private void enableSave() {
-            Project proj = getProject();
-            boolean ok = proj.isFileDirty();
-            getRootPane().putClientProperty("windowModified", Boolean.valueOf(ok));
+            Project project = getProject();
+            boolean isDirty = project.isFileDirty();
+            getRootPane().putClientProperty("windowModified", isDirty);
         }
 
-        public void attributeListChanged(AttributeEvent e) {
-        }
+        public void attributeListChanged() { }
 
         public void propertyChange(PropertyChangeEvent event) {
             if (AppPreferences.TOOLBAR_PLACEMENT.isSource(event)) {

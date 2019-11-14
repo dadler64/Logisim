@@ -44,8 +44,8 @@ public class BitSelector extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         Bounds base = Bounds.create(-30, -15, 30, 30);
         return base.rotate(Direction.EAST, facing, 0, 0);
     }

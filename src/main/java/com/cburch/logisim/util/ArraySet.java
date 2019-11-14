@@ -18,7 +18,7 @@ public class ArraySet<E> extends AbstractSet<E> {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        ArraySet<String> set = new ArraySet<String>();
+        ArraySet<String> set = new ArraySet<>();
         java.io.BufferedReader in = new java.io.BufferedReader(
                 new java.io.InputStreamReader(System.in));
         while (true) {
@@ -54,7 +54,7 @@ public class ArraySet<E> extends AbstractSet<E> {
 
     @Override
     public Object clone() {
-        ArraySet<E> ret = new ArraySet<E>();
+        ArraySet<E> ret = new ArraySet<>();
         if (this.values == EMPTY_ARRAY) {
             ret.values = EMPTY_ARRAY;
         } else {

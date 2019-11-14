@@ -19,13 +19,13 @@ class CircuitMutatorImpl implements CircuitMutator {
     private HashSet<Circuit> modified;
 
     public CircuitMutatorImpl() {
-        log = new ArrayList<CircuitChange>();
-        replacements = new HashMap<Circuit, ReplacementMap>();
-        modified = new HashSet<Circuit>();
+        log = new ArrayList<>();
+        replacements = new HashMap<>();
+        modified = new HashSet<>();
     }
 
     public void clear(Circuit circuit) {
-        HashSet<Component> comps = new HashSet<Component>(circuit.getNonWires());
+        HashSet<Component> comps = new HashSet<>(circuit.getNonWires());
         comps.addAll(circuit.getWires());
         if (!comps.isEmpty()) {
             modified.add(circuit);

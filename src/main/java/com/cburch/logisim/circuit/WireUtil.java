@@ -28,10 +28,10 @@ public class WireUtil {
             return toMerge;
         }
 
-        HashSet<Component> ret = new HashSet<Component>(toMerge);
+        HashSet<Component> ret = new HashSet<>(toMerge);
         CircuitPoints points = computeCircuitPoints(toMerge);
 
-        HashSet<Wire> wires = new HashSet<Wire>();
+        HashSet<Wire> wires = new HashSet<>();
         for (Location loc : points.getSplitLocations()) {
             Collection<? extends Component> at = points.getComponents(loc);
             if (at.size() == 2) {
@@ -41,7 +41,7 @@ public class WireUtil {
                 if (o0 instanceof Wire && o1 instanceof Wire) {
                     Wire w0 = (Wire) o0;
                     Wire w1 = (Wire) o1;
-                    if (w0.is_x_equal == w1.is_x_equal) {
+                    if (w0.isXEqual == w1.isXEqual) {
                         wires.add(w0);
                         wires.add(w1);
                     }
@@ -54,20 +54,20 @@ public class WireUtil {
         while (!wires.isEmpty()) {
             Iterator<Wire> it = wires.iterator();
             Wire w = it.next();
-            Location e0 = w.e0;
-            Location e1 = w.e1;
+            Location e0 = w.start;
+            Location e1 = w.end;
             it.remove();
             boolean found;
             do {
                 found = false;
                 for (it = wires.iterator(); it.hasNext(); ) {
                     Wire cand = it.next();
-                    if (cand.e0.equals(e1)) {
-                        e1 = cand.e1;
+                    if (cand.start.equals(e1)) {
+                        e1 = cand.end;
                         found = true;
                         it.remove();
-                    } else if (cand.e1.equals(e0)) {
-                        e0 = cand.e0;
+                    } else if (cand.end.equals(e0)) {
+                        e0 = cand.start;
                         found = true;
                         it.remove();
                     }

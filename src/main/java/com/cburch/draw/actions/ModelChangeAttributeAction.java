@@ -10,12 +10,13 @@ import com.cburch.logisim.data.Attribute;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 public class ModelChangeAttributeAction extends ModelAction {
 
     private Map<AttributeMapKey, Object> oldValues;
     private Map<AttributeMapKey, Object> newValues;
-    private Attribute<?> attr;
+    private Attribute<?> attribute;
 
     public ModelChangeAttributeAction(CanvasModel model,
             Map<AttributeMapKey, Object> oldValues,
@@ -27,7 +28,7 @@ public class ModelChangeAttributeAction extends ModelAction {
 
     @Override
     public Collection<CanvasObject> getObjects() {
-        HashSet<CanvasObject> ret = new HashSet<CanvasObject>();
+        HashSet<CanvasObject> ret = new HashSet<>();
         for (AttributeMapKey key : newValues.keySet()) {
             ret.add(key.getObject());
         }
@@ -36,27 +37,27 @@ public class ModelChangeAttributeAction extends ModelAction {
 
     @Override
     public String getName() {
-        Attribute<?> a = attr;
-        if (a == null) {
+        Attribute<?> attribute = this.attribute;
+        if (attribute == null) {
             boolean found = false;
             for (AttributeMapKey key : newValues.keySet()) {
-                Attribute<?> at = key.getAttribute();
+                Attribute<?> keyAttribute = key.getAttribute();
                 if (found) {
-                    if (a == null ? at != null : !a.equals(at)) {
-                        a = null;
+                    if (!Objects.equals(attribute, keyAttribute)) {
+                        attribute = null;
                         break;
                     }
                 } else {
                     found = true;
-                    a = at;
+                    attribute = keyAttribute;
                 }
             }
-            attr = a;
+            this.attribute = attribute;
         }
-        if (a == null) {
+        if (attribute == null) {
             return Strings.get("actionChangeAttributes");
         } else {
-            return Strings.get("actionChangeAttribute", a.getDisplayName());
+            return Strings.get("actionChangeAttribute", attribute.getDisplayName());
         }
     }
 

@@ -66,10 +66,10 @@ public class DotMatrix extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Object input = attrs.getValue(ATTR_INPUT_TYPE);
-        int cols = attrs.getValue(ATTR_MATRIX_COLS).intValue();
-        int rows = attrs.getValue(ATTR_MATRIX_ROWS).intValue();
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Object input = attributes.getValue(ATTR_INPUT_TYPE);
+        int cols = attributes.getValue(ATTR_MATRIX_COLS).intValue();
+        int rows = attributes.getValue(ATTR_MATRIX_ROWS).intValue();
         if (input == INPUT_COLUMN) {
             return Bounds.create(-5, -10 * rows, 10 * cols, 10 * rows);
         } else if (input == INPUT_ROW) {

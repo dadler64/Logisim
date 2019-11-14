@@ -67,12 +67,12 @@ public class AppPreferences {
             = create(new PrefMonitorStringOpts("afterAdd",
             new String[]{ADD_AFTER_EDIT, ADD_AFTER_UNCHANGED}, ADD_AFTER_EDIT));
     // Experimental preferences
-    public static final String ACCEL_DEFAULT = "default";
-    public static final String ACCEL_NONE = "none";
-    public static final String ACCEL_OPENGL = "opengl";
-    public static final String ACCEL_D3D = "d3d";
+    public static final String ACCELERATION_DEFAULT = "default";
+    public static final String ACCELERATION_NONE = "none";
+    public static final String ACCELERATION_OPENGL = "opengl";
+    public static final String ACCELERATION_D3D = "d3d";
     public static final PrefMonitor<String> GRAPHICS_ACCELERATION = create(new PrefMonitorStringOpts("graphicsAcceleration",
-            new String[]{ACCEL_DEFAULT, ACCEL_NONE, ACCEL_OPENGL, ACCEL_D3D}, ACCEL_DEFAULT));
+            new String[]{ACCELERATION_DEFAULT, ACCELERATION_NONE, ACCELERATION_OPENGL, ACCELERATION_D3D}, ACCELERATION_DEFAULT));
     // hidden window preferences - not part of the preferences dialog, changes
     // to preference does not affect current windows, and the values are not
     // saved until the application is closed
@@ -255,15 +255,15 @@ public class AppPreferences {
         String accelerator = GRAPHICS_ACCELERATION.get();
         try {
             switch (accelerator) {
-                case ACCEL_NONE:
+                case ACCELERATION_NONE:
                     System.setProperty("sun.java2d.opengl", "False");
                     System.setProperty("sun.java2d.d3d", "False");
                     break;
-                case ACCEL_OPENGL:
+                case ACCELERATION_OPENGL:
                     System.setProperty("sun.java2d.opengl", "True");
                     System.setProperty("sun.java2d.d3d", "False");
                     break;
-                case ACCEL_D3D:
+                case ACCELERATION_D3D:
                     System.setProperty("sun.java2d.opengl", "False");
                     System.setProperty("sun.java2d.d3d", "True");
                     break;
@@ -298,16 +298,16 @@ public class AppPreferences {
 
     private static Template getPlainTemplate() {
         if (plainTemplate == null) {
-            ClassLoader ld = Startup.class.getClassLoader();
-            InputStream in = ld.getResourceAsStream("logisim/default.templ");
-            if (in == null) {
+            ClassLoader loader = Startup.class.getClassLoader();
+            InputStream stream = loader.getResourceAsStream("logisim/default.templ");
+            if (stream == null) {
                 plainTemplate = getEmptyTemplate();
             } else {
                 try {
                     try {
-                        plainTemplate = Template.create(in);
+                        plainTemplate = Template.create(stream);
                     } finally {
-                        in.close();
+                        stream.close();
                     }
                 } catch (Throwable e) {
                     plainTemplate = getEmptyTemplate();
@@ -396,7 +396,7 @@ public class AppPreferences {
     //
     private static class LocalePreference extends PrefMonitorString {
 
-        public LocalePreference() {
+        private LocalePreference() {
             super("locale", "");
 
             String localeStr = this.get();

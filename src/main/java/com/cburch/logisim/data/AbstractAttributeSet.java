@@ -21,14 +21,14 @@ public abstract class AbstractAttributeSet implements Cloneable, AttributeSet {
         } catch (CloneNotSupportedException ex) {
             throw new UnsupportedOperationException();
         }
-        ret.listeners = new ArrayList<AttributeListener>();
+        ret.listeners = new ArrayList<>();
         this.copyInto(ret);
         return ret;
     }
 
     public void addAttributeListener(AttributeListener l) {
         if (listeners == null) {
-            listeners = new ArrayList<AttributeListener>();
+            listeners = new ArrayList<>();
         }
         listeners.add(l);
     }
@@ -43,7 +43,7 @@ public abstract class AbstractAttributeSet implements Cloneable, AttributeSet {
     protected <V> void fireAttributeValueChanged(Attribute<? super V> attr, V value) {
         if (listeners != null) {
             AttributeEvent event = new AttributeEvent(this, attr, value);
-            List<AttributeListener> ls = new ArrayList<AttributeListener>(listeners);
+            List<AttributeListener> ls = new ArrayList<>(listeners);
             for (AttributeListener l : ls) {
                 l.attributeValueChanged(event);
             }
@@ -53,7 +53,7 @@ public abstract class AbstractAttributeSet implements Cloneable, AttributeSet {
     protected void fireAttributeListChanged() {
         if (listeners != null) {
             AttributeEvent event = new AttributeEvent(this);
-            List<AttributeListener> ls = new ArrayList<AttributeListener>(listeners);
+            List<AttributeListener> ls = new ArrayList<>(listeners);
             for (AttributeListener l : ls) {
                 l.attributeListChanged(event);
             }

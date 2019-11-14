@@ -43,34 +43,34 @@ public abstract class AbstractComponentFactory implements ComponentFactory {
         return StringUtil.constantGetter(getName());
     }
 
-    public abstract Component createComponent(Location loc, AttributeSet attrs);
+    public abstract Component createComponent(Location location, AttributeSet attributes);
 
-    public abstract Bounds getOffsetBounds(AttributeSet attrs);
+    public abstract Bounds getOffsetBounds(AttributeSet attributes);
 
     public AttributeSet createAttributeSet() {
         return AttributeSets.EMPTY;
     }
 
-    public boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver) {
+    public boolean isAllDefaultValues(AttributeSet attributes, LogisimVersion version) {
         return false;
     }
 
-    public Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver) {
+    public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
         AttributeSet dfltSet = defaultSet;
         if (dfltSet == null) {
             dfltSet = (AttributeSet) createAttributeSet().clone();
             defaultSet = dfltSet;
         }
-        return dfltSet.getValue(attr);
+        return dfltSet.getValue(attribute);
     }
 
     //
     // user interface methods
     //
     public void drawGhost(ComponentDrawContext context, Color color,
-            int x, int y, AttributeSet attrs) {
+            int x, int y, AttributeSet attributes) {
         Graphics g = context.getGraphics();
-        Bounds bds = getOffsetBounds(attrs);
+        Bounds bds = getOffsetBounds(attributes);
         g.setColor(color);
         GraphicsUtil.switchToWidth(g, 2);
         g.drawRect(x + bds.getX(), y + bds.getY(),
@@ -78,7 +78,7 @@ public abstract class AbstractComponentFactory implements ComponentFactory {
     }
 
     public void paintIcon(ComponentDrawContext context,
-            int x, int y, AttributeSet attrs) {
+            int x, int y, AttributeSet attributes) {
         Graphics g = context.getGraphics();
         if (toolIcon != null) {
             toolIcon.paintIcon(context.getDestination(), g, x + 2, y + 2);

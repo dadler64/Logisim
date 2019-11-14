@@ -17,7 +17,7 @@ public class CardPanel extends JPanel {
 
     public CardPanel() {
         super(new CardLayout());
-        listeners = new ArrayList<ChangeListener>();
+        listeners = new ArrayList<>();
         current = "";
     }
 

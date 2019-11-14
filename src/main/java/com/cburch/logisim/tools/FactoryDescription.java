@@ -31,24 +31,21 @@ public class FactoryDescription {
     private ComponentFactory factory;
     private StringGetter toolTip;
 
-    public FactoryDescription(String name, StringGetter displayName,
-            String iconName, String factoryClassName) {
+    public FactoryDescription(String name, StringGetter displayName, String iconName, String factoryClassName) {
         this(name, displayName, factoryClassName);
         this.iconName = iconName;
         this.iconLoadAttempted = false;
         this.icon = null;
     }
 
-    public FactoryDescription(String name, StringGetter displayName,
-            Icon icon, String factoryClassName) {
+    public FactoryDescription(String name, StringGetter displayName, Icon icon, String factoryClassName) {
         this(name, displayName, factoryClassName);
         this.iconName = "???";
         this.iconLoadAttempted = true;
         this.icon = icon;
     }
 
-    public FactoryDescription(String name, StringGetter displayName,
-            String factoryClassName) {
+    private FactoryDescription(String name, StringGetter displayName, String factoryClassName) {
         this.name = name;
         this.displayName = displayName;
         this.iconName = "???";
@@ -60,8 +57,7 @@ public class FactoryDescription {
         this.toolTip = null;
     }
 
-    public static List<Tool> getTools(Class<? extends Library> base,
-            FactoryDescription[] descriptions) {
+    public static List<Tool> getTools(Class<? extends Library> base, FactoryDescription[] descriptions) {
         Tool[] tools = new Tool[descriptions.length];
         for (int i = 0; i < tools.length; i++) {
             tools[i] = new AddTool(base, descriptions[i]);
@@ -82,27 +78,27 @@ public class FactoryDescription {
     }
 
     public Icon getIcon() {
-        Icon ret = icon;
-        if (ret != null || iconLoadAttempted) {
-            return ret;
+        Icon icon = this.icon;
+        if (icon != null || iconLoadAttempted) {
+            return icon;
         } else {
-            ret = Icons.getIcon(iconName);
-            icon = ret;
+            icon = Icons.getIcon(iconName);
+            this.icon = icon;
             iconLoadAttempted = true;
-            return ret;
+            return icon;
         }
     }
 
     public ComponentFactory getFactory(Class<? extends Library> libraryClass) {
-        ComponentFactory ret = factory;
-        if (factory != null || factoryLoadAttempted) {
-            return ret;
+        ComponentFactory factory = this.factory;
+        if (this.factory != null || factoryLoadAttempted) {
+            return factory;
         } else {
-            String msg = "";
+            String message = "";
             try {
-                msg = "getting class loader";
+                message = "getting class loader";
                 ClassLoader loader = libraryClass.getClassLoader();
-                msg = "getting package name";
+                message = "getting package name";
                 String name;
                 Package pack = libraryClass.getPackage();
                 if (pack == null) {
@@ -110,28 +106,28 @@ public class FactoryDescription {
                 } else {
                     name = pack.getName() + "." + factoryClassName;
                 }
-                msg = "loading class";
+                message = "loading class";
                 Class<?> factoryClass = loader.loadClass(name);
-                msg = "creating instance";
-                Object factoryValue = factoryClass.newInstance();
-                msg = "converting to factory";
+                message = "creating instance";
+                Object factoryValue = factoryClass.getConstructor().newInstance();
+                message = "converting to factory";
                 if (factoryValue instanceof ComponentFactory) {
-                    ret = (ComponentFactory) factoryValue;
-                    factory = ret;
+                    factory = (ComponentFactory) factoryValue;
+                    this.factory = factory;
                     factoryLoadAttempted = true;
-                    return ret;
+                    return factory;
                 }
             } catch (Throwable t) {
                 String name = t.getClass().getName();
-                String m = t.getMessage();
-                if (m != null) {
-                    msg = msg + ": " + name + ": " + m;
+                String errorMessage = t.getMessage();
+                if (errorMessage != null) {
+                    message = message + ": " + name + ": " + errorMessage;
                 } else {
-                    msg = msg + ": " + name;
+                    message = message + ": " + name;
                 }
             }
-            System.err.println("error while " + msg); //OK
-            factory = null;
+            System.err.println("error while " + message); //OK
+            this.factory = null;
             factoryLoadAttempted = true;
             return null;
         }

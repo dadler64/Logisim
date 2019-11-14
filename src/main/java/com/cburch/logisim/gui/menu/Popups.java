@@ -23,158 +23,155 @@ import javax.swing.SwingUtilities;
 
 public class Popups {
 
-    public static JPopupMenu forCircuit(Project proj, AddTool tool, Circuit circ) {
-        return new CircuitPopup(proj, tool, circ);
+    public static JPopupMenu forCircuit(Project project, AddTool tool, Circuit circuit) {
+        return new CircuitPopup(project, tool, circuit);
     }
 
-    public static JPopupMenu forTool(Project proj, Tool tool) {
+    public static JPopupMenu forTool(Project project, Tool tool) {
         return null;
     }
 
-    public static JPopupMenu forProject(Project proj) {
-        return new ProjectPopup(proj);
+    public static JPopupMenu forProject(Project project) {
+        return new ProjectPopup(project);
     }
 
-    public static JPopupMenu forLibrary(Project proj, Library lib, boolean isTop) {
-        return new LibraryPopup(proj, lib, isTop);
+    public static JPopupMenu forLibrary(Project project, Library library, boolean isTop) {
+        return new LibraryPopup(project, library, isTop);
     }
 
-    private static class ProjectPopup extends JPopupMenu
-            implements ActionListener {
+    private static class ProjectPopup extends JPopupMenu implements ActionListener {
 
-        Project proj;
-        JMenuItem add = new JMenuItem(Strings.get("projectAddCircuitItem"));
-        JMenu load = new JMenu(Strings.get("projectLoadLibraryItem"));
-        JMenuItem loadBuiltin = new JMenuItem(Strings.get("projectLoadBuiltinItem"));
-        JMenuItem loadLogisim = new JMenuItem(Strings.get("projectLoadLogisimItem"));
-        JMenuItem loadJar = new JMenuItem(Strings.get("projectLoadJarItem"));
+        private Project project;
+        private JMenuItem addItem = new JMenuItem(Strings.get("projectAddCircuitItem"));
+        private JMenu loadItem = new JMenu(Strings.get("projectLoadLibraryItem"));
+        private JMenuItem loadBuiltinItem = new JMenuItem(Strings.get("projectLoadBuiltinItem"));
+        private JMenuItem loadLogisimItem = new JMenuItem(Strings.get("projectLoadLogisimItem"));
+        private JMenuItem loadJarItem = new JMenuItem(Strings.get("projectLoadJarItem"));
 
-        ProjectPopup(Project proj) {
+        private ProjectPopup(Project project) {
             super(Strings.get("projMenu"));
-            this.proj = proj;
+            this.project = project;
 
-            load.add(loadBuiltin);
-            loadBuiltin.addActionListener(this);
-            load.add(loadLogisim);
-            loadLogisim.addActionListener(this);
-            load.add(loadJar);
-            loadJar.addActionListener(this);
+            loadItem.add(loadBuiltinItem);
+            loadBuiltinItem.addActionListener(this);
+            loadItem.add(loadLogisimItem);
+            loadLogisimItem.addActionListener(this);
+            loadItem.add(loadJarItem);
+            loadJarItem.addActionListener(this);
 
-            add(add);
-            add.addActionListener(this);
-            add(load);
+            add(addItem);
+            addItem.addActionListener(this);
+            add(loadItem);
         }
 
-        public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            if (src == add) {
-                ProjectCircuitActions.doAddCircuit(proj);
-            } else if (src == loadBuiltin) {
-                ProjectLibraryActions.doLoadBuiltinLibrary(proj);
-            } else if (src == loadLogisim) {
-                ProjectLibraryActions.doLoadLogisimLibrary(proj);
-            } else if (src == loadJar) {
-                ProjectLibraryActions.doLoadJarLibrary(proj);
+        public void actionPerformed(ActionEvent event) {
+            Object source = event.getSource();
+            if (source == addItem) {
+                ProjectCircuitActions.doAddCircuit(project);
+            } else if (source == loadBuiltinItem) {
+                ProjectLibraryActions.doLoadBuiltinLibrary(project);
+            } else if (source == loadLogisimItem) {
+                ProjectLibraryActions.doLoadLogisimLibrary(project);
+            } else if (source == loadJarItem) {
+                ProjectLibraryActions.doLoadJarLibrary(project);
             }
         }
     }
 
-    private static class LibraryPopup extends JPopupMenu
-            implements ActionListener {
+    private static class LibraryPopup extends JPopupMenu implements ActionListener {
 
-        Project proj;
-        Library lib;
-        JMenuItem unload = new JMenuItem(Strings.get("projectUnloadLibraryItem"));
-        JMenuItem reload = new JMenuItem(Strings.get("projectReloadLibraryItem"));
+        private Project project;
+        private Library library;
+        private JMenuItem unloadItem = new JMenuItem(Strings.get("projectUnloadLibraryItem"));
+        private JMenuItem reloadItem = new JMenuItem(Strings.get("projectReloadLibraryItem"));
 
-        LibraryPopup(Project proj, Library lib, boolean is_top) {
+        private LibraryPopup(Project project, Library library, boolean isTop) {
             super(Strings.get("libMenu"));
-            this.proj = proj;
-            this.lib = lib;
+            this.project = project;
+            this.library = library;
 
-            add(unload);
-            unload.addActionListener(this);
-            add(reload);
-            reload.addActionListener(this);
-            unload.setEnabled(is_top);
-            reload.setEnabled(is_top && lib instanceof LoadedLibrary);
+            add(unloadItem);
+            unloadItem.addActionListener(this);
+            add(reloadItem);
+            reloadItem.addActionListener(this);
+            unloadItem.setEnabled(isTop);
+            reloadItem.setEnabled(isTop && library instanceof LoadedLibrary);
         }
 
-        public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            if (src == unload) {
-                ProjectLibraryActions.doUnloadLibrary(proj, lib);
-            } else if (src == reload) {
-                Loader loader = proj.getLogisimFile().getLoader();
-                loader.reload((LoadedLibrary) lib);
+        public void actionPerformed(ActionEvent event) {
+            Object source = event.getSource();
+            if (source == unloadItem) {
+                ProjectLibraryActions.doUnloadLibrary(project, library);
+            } else if (source == reloadItem) {
+                Loader loader = project.getLogisimFile().getLoader();
+                loader.reload((LoadedLibrary) library);
             }
         }
     }
 
-    private static class CircuitPopup extends JPopupMenu
-            implements ActionListener {
+    private static class CircuitPopup extends JPopupMenu implements ActionListener {
 
-        Project proj;
-        Tool tool;
-        Circuit circuit;
-        JMenuItem analyze = new JMenuItem(Strings.get("projectAnalyzeCircuitItem"));
-        JMenuItem stats = new JMenuItem(Strings.get("projectGetCircuitStatisticsItem"));
-        JMenuItem main = new JMenuItem(Strings.get("projectSetAsMainItem"));
-        JMenuItem remove = new JMenuItem(Strings.get("projectRemoveCircuitItem"));
-        JMenuItem editLayout = new JMenuItem(Strings.get("projectEditCircuitLayoutItem"));
-        JMenuItem editAppearance = new JMenuItem(Strings.get("projectEditCircuitAppearanceItem"));
+        private Project project;
+        private Tool tool;
+        private Circuit circuit;
+        private JMenuItem analyzeItem = new JMenuItem(Strings.get("projectAnalyzeCircuitItem"));
+        private JMenuItem statsItem = new JMenuItem(Strings.get("projectGetCircuitStatisticsItem"));
+        private JMenuItem mainItem = new JMenuItem(Strings.get("projectSetAsMainItem"));
+        private JMenuItem removeItem = new JMenuItem(Strings.get("projectRemoveCircuitItem"));
+        private JMenuItem editLayoutItem = new JMenuItem(Strings.get("projectEditCircuitLayoutItem"));
+        private JMenuItem editAppearanceItem = new JMenuItem(Strings.get("projectEditCircuitAppearanceItem"));
 
-        CircuitPopup(Project proj, Tool tool, Circuit circuit) {
+        private CircuitPopup(Project project, Tool tool, Circuit circuit) {
             super(Strings.get("circuitMenu"));
-            this.proj = proj;
+            this.project = project;
             this.tool = tool;
             this.circuit = circuit;
 
-            add(editLayout);
-            editLayout.addActionListener(this);
-            add(editAppearance);
-            editAppearance.addActionListener(this);
-            add(analyze);
-            analyze.addActionListener(this);
-            add(stats);
-            stats.addActionListener(this);
+            add(editLayoutItem);
+            editLayoutItem.addActionListener(this);
+            add(editAppearanceItem);
+            editAppearanceItem.addActionListener(this);
+            add(analyzeItem);
+            analyzeItem.addActionListener(this);
+            add(statsItem);
+            statsItem.addActionListener(this);
             addSeparator();
-            add(main);
-            main.addActionListener(this);
-            add(remove);
-            remove.addActionListener(this);
+            add(mainItem);
+            mainItem.addActionListener(this);
+            add(removeItem);
+            removeItem.addActionListener(this);
 
-            boolean canChange = proj.getLogisimFile().contains(circuit);
-            LogisimFile file = proj.getLogisimFile();
-            if (circuit == proj.getCurrentCircuit()) {
-                if (proj.getFrame().getEditorView().equals(Frame.EDIT_APPEARANCE)) {
-                    editAppearance.setEnabled(false);
+            boolean canChange = project.getLogisimFile().contains(circuit);
+            LogisimFile file = project.getLogisimFile();
+            if (circuit == project.getCurrentCircuit()) {
+                if (project.getFrame().getEditorView().equals(Frame.EDIT_APPEARANCE)) {
+                    editAppearanceItem.setEnabled(false);
                 } else {
-                    editLayout.setEnabled(false);
+                    editLayoutItem.setEnabled(false);
                 }
             }
-            main.setEnabled(canChange && file.getMainCircuit() != circuit);
-            remove.setEnabled(canChange && file.getCircuitCount() > 1
-                    && proj.getDependencies().canRemove(circuit));
+            mainItem.setEnabled(canChange && file.getMainCircuit() != circuit);
+            removeItem.setEnabled(canChange && file.getCircuitCount() > 1
+                    && project.getDependencies().canRemove(circuit));
         }
 
-        public void actionPerformed(ActionEvent e) {
-            Object source = e.getSource();
-            if (source == editLayout) {
-                proj.setCurrentCircuit(circuit);
-                proj.getFrame().setEditorView(Frame.EDIT_LAYOUT);
-            } else if (source == editAppearance) {
-                proj.setCurrentCircuit(circuit);
-                proj.getFrame().setEditorView(Frame.EDIT_APPEARANCE);
-            } else if (source == analyze) {
-                ProjectCircuitActions.doAnalyze(proj, circuit);
-            } else if (source == stats) {
+        public void actionPerformed(ActionEvent event) {
+            Object source = event.getSource();
+            if (source.equals(editLayoutItem)) {
+                project.setCurrentCircuit(circuit);
+                project.getFrame().setEditorView(Frame.EDIT_LAYOUT);
+            } else if (source.equals(editAppearanceItem)) {
+                project.setCurrentCircuit(circuit);
+                project.getFrame().setEditorView(Frame.EDIT_APPEARANCE);
+            } else if (source.equals(analyzeItem)) {
+                ProjectCircuitActions.doAnalyze(project, circuit);
+            } else if (source.equals(statsItem)) {
                 JFrame frame = (JFrame) SwingUtilities.getRoot(this);
-                StatisticsDialog.show(frame, proj.getLogisimFile(), circuit);
-            } else if (source == main) {
-                ProjectCircuitActions.doSetAsMainCircuit(proj, circuit);
-            } else if (source == remove) {
-                ProjectCircuitActions.doRemoveCircuit(proj, circuit);
+                StatisticsDialog.show(frame, project.getLogisimFile(), circuit);
+            } else if (source.equals(mainItem)) {
+                ProjectCircuitActions.doSetAsMainCircuit(project, circuit);
+            } else if (source.equals(removeItem)) {
+                ProjectCircuitActions.doRemoveCircuit(project, circuit);
             }
         }
     }

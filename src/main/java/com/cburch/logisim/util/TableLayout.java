@@ -22,7 +22,7 @@ public class TableLayout implements LayoutManager2 {
 
     public TableLayout(int colCount) {
         this.colCount = colCount;
-        this.contents = new ArrayList<Component[]>();
+        this.contents = new ArrayList<>();
         this.curRow = 0;
         this.curCol = 0;
     }

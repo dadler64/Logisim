@@ -104,8 +104,8 @@ public class TransmissionGate extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         return Bounds.create(0, -20, 40, 40).rotate(Direction.WEST, facing, 0,
                 0);
     }

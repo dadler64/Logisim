@@ -23,9 +23,9 @@ class Model {
     private LogThread logger = null;
 
     public Model(CircuitState circuitState) {
-        listeners = new EventSourceWeakSupport<ModelListener>();
+        listeners = new EventSourceWeakSupport<>();
         selection = new Selection(circuitState, this);
-        log = new HashMap<SelectionItem, ValueLog>();
+        log = new HashMap<>();
     }
 
     public boolean isSelected() {

@@ -23,7 +23,7 @@ public class Test {
     private static class Model implements HexModel {
 
         private ArrayList<HexModelListener> listeners
-                = new ArrayList<HexModelListener>();
+                = new ArrayList<>();
         private int[] data = new int[924];
 
         public void addHexModelListener(HexModelListener l) {

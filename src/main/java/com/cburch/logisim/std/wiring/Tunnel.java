@@ -44,8 +44,8 @@ public class Tunnel extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrsBase) {
-        TunnelAttributes attrs = (TunnelAttributes) attrsBase;
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        TunnelAttributes attrs = (TunnelAttributes) attributes;
         Bounds bds = attrs.getOffsetBounds();
         if (bds != null) {
             return bds;

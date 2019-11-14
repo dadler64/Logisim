@@ -108,29 +108,29 @@ class MenuFile extends Menu implements ActionListener {
         menubar.fireEnableChanged();
     }
 
-    public void actionPerformed(ActionEvent e) {
-        Object src = e.getSource();
-        Project proj = menubar.getProject();
-        if (src == newi) {
-            ProjectActions.doNew(proj);
-        } else if (src == open) {
-            ProjectActions.doOpen(proj == null ? null : proj.getFrame().getCanvas(), proj);
-        } else if (src == close) {
-            Frame frame = proj.getFrame();
+    public void actionPerformed(ActionEvent event) {
+        Object eventSource = event.getSource();
+        Project project = menubar.getProject();
+        if (eventSource == newi) {
+            ProjectActions.doNew(project);
+        } else if (eventSource == open) {
+            ProjectActions.doOpen(project == null ? null : project.getFrame().getCanvas(), project);
+        } else if (eventSource == close) {
+            Frame frame = project.getFrame();
             if (frame.confirmClose()) {
                 frame.dispose();
-                OptionsFrame f = proj.getOptionsFrame(false);
-                if (f != null) {
-                    f.dispose();
+                OptionsFrame optionsFrame = project.getOptionsFrame(false);
+                if (optionsFrame != null) {
+                    optionsFrame.dispose();
                 }
             }
-        } else if (src == save) {
-            ProjectActions.doSave(proj);
-        } else if (src == saveAs) {
-            ProjectActions.doSaveAs(proj);
-        } else if (src == prefs) {
+        } else if (eventSource == save) {
+            ProjectActions.doSave(project);
+        } else if (eventSource == saveAs) {
+            ProjectActions.doSaveAs(project);
+        } else if (eventSource == prefs) {
             PreferencesFrame.showPreferences();
-        } else if (src == quit) {
+        } else if (eventSource == quit) {
             ProjectActions.doQuit();
         }
     }

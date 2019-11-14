@@ -63,8 +63,8 @@ public class SubcircuitFactory extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         Direction defaultFacing = source.getAppearance().getFacing();
         Bounds bds = source.getAppearance().getOffsetBounds();
         return bds.rotate(defaultFacing, facing, 0, 0);

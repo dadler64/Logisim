@@ -30,21 +30,19 @@ public interface ComponentFactory extends AttributeDefaultProvider {
 
     StringGetter getDisplayGetter();
 
-    Component createComponent(Location loc, AttributeSet attrs);
+    Component createComponent(Location location, AttributeSet attributes);
 
-    Bounds getOffsetBounds(AttributeSet attrs);
+    Bounds getOffsetBounds(AttributeSet attributes);
 
     AttributeSet createAttributeSet();
 
-    boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver);
+    boolean isAllDefaultValues(AttributeSet attributes, LogisimVersion version);
 
-    Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver);
+    Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version);
 
-    void drawGhost(ComponentDrawContext context, Color color,
-            int x, int y, AttributeSet attrs);
+    void drawGhost(ComponentDrawContext context, Color color, int x, int y, AttributeSet attributes);
 
-    void paintIcon(ComponentDrawContext context,
-            int x, int y, AttributeSet attrs);
+    void paintIcon(ComponentDrawContext context, int x, int y, AttributeSet attributes);
 
     /**
      * Retrieves special-purpose features for this factory. This technique

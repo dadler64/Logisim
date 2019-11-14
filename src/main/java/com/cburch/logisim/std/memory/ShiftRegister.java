@@ -55,10 +55,10 @@ public class ShiftRegister extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Object parallel = attrs.getValue(ATTR_LOAD);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Object parallel = attributes.getValue(ATTR_LOAD);
         if (parallel == null || ((Boolean) parallel).booleanValue()) {
-            int len = attrs.getValue(ATTR_LENGTH).intValue();
+            int len = attributes.getValue(ATTR_LENGTH).intValue();
             return Bounds.create(0, -20, 20 + 10 * len, 40);
         } else {
             return Bounds.create(0, -20, 30, 40);

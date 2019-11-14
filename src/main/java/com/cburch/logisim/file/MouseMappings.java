@@ -22,8 +22,8 @@ public class MouseMappings {
     private Tool cache_tool;
 
     public MouseMappings() {
-        listeners = new ArrayList<MouseMappingsListener>();
-        map = new HashMap<Integer, Tool>();
+        listeners = new ArrayList<>();
+        map = new HashMap<>();
     }
 
     //

@@ -9,7 +9,7 @@ interface LibraryLoader {
 
     Library loadLibrary(String desc);
 
-    String getDescriptor(Library lib);
+    String getDescriptor(Library library);
 
     void showError(String description);
 }

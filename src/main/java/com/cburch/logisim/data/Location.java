@@ -28,14 +28,14 @@ public class Location implements Comparable<Location> {
         int hashCode = 31 * x + y;
         Object ret = cache.get(hashCode);
         if (ret != null) {
-            Location loc = (Location) ret;
-            if (loc.x == x && loc.y == y) {
-                return loc;
+            Location location = (Location) ret;
+            if (location.x == x && location.y == y) {
+                return location;
             }
         }
-        Location loc = new Location(hashCode, x, y);
-        cache.put(hashCode, loc);
-        return loc;
+        Location location = new Location(hashCode, x, y);
+        cache.put(hashCode, location);
+        return location;
     }
 
     public static Location parse(String value) {

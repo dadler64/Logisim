@@ -77,7 +77,7 @@ public class XmlCircuitReader extends CircuitTransaction {
 
     @Override
     protected Map<Circuit, Integer> getAccessedCircuits() {
-        HashMap<Circuit, Integer> access = new HashMap<Circuit, Integer>();
+        HashMap<Circuit, Integer> access = new HashMap<>();
         for (XmlReader.CircuitData data : circuitsData) {
             access.put(data.circuit, READ_WRITE);
         }

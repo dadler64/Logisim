@@ -69,13 +69,13 @@ class ControlledBuffer extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
+    public Bounds getOffsetBounds(AttributeSet attributes) {
         int w = 20;
         if (isInverter &&
-                !NotGate.SIZE_NARROW.equals(attrs.getValue(NotGate.ATTR_SIZE))) {
+                !NotGate.SIZE_NARROW.equals(attributes.getValue(NotGate.ATTR_SIZE))) {
             w = 30;
         }
-        Direction facing = attrs.getValue(StdAttr.FACING);
+        Direction facing = attributes.getValue(StdAttr.FACING);
         if (facing == Direction.NORTH) {
             return Bounds.create(-10, 0, 20, w);
         }

@@ -21,7 +21,7 @@ class ClipboardContents {
 
     public ClipboardContents(Collection<CanvasObject> onClipboard,
             Location anchorLocation, Direction anchorFacing) {
-        this.onClipboard = Collections.unmodifiableList(new ArrayList<CanvasObject>(onClipboard));
+        this.onClipboard = Collections.unmodifiableList(new ArrayList<>(onClipboard));
         this.anchorLocation = anchorLocation;
         this.anchorFacing = anchorFacing;
     }

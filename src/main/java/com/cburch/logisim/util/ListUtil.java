@@ -14,7 +14,7 @@ public class ListUtil {
 
     public static <E> List<E> joinImmutableLists(List<? extends E> a,
             List<? extends E> b) {
-        return new JoinedList<E>(a, b);
+        return new JoinedList<>(a, b);
     }
 
     private static class JoinedList<E> extends AbstractList<E> {

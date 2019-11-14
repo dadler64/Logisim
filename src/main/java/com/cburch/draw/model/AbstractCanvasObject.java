@@ -28,7 +28,7 @@ public abstract class AbstractCanvasObject
     private EventSourceWeakSupport<AttributeListener> listeners;
 
     public AbstractCanvasObject() {
-        listeners = new EventSourceWeakSupport<AttributeListener>();
+        listeners = new EventSourceWeakSupport<>();
     }
 
     public AttributeSet getAttributeSet() {
@@ -148,7 +148,7 @@ public abstract class AbstractCanvasObject
     public CanvasObject clone() {
         try {
             AbstractCanvasObject ret = (AbstractCanvasObject) super.clone();
-            ret.listeners = new EventSourceWeakSupport<AttributeListener>();
+            ret.listeners = new EventSourceWeakSupport<>();
             return ret;
         } catch (CloneNotSupportedException e) {
             return null;

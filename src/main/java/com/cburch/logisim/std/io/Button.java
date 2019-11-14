@@ -32,7 +32,7 @@ public class Button extends InstanceFactory {
         super("Button", Strings.getter("buttonComponent"));
         setAttributes(new Attribute[]{
                 StdAttr.FACING, Io.ATTR_COLOR,
-                StdAttr.LABEL, Io.ATTR_LABEL_LOC,
+                StdAttr.LABEL, Io.ATTR_LABEL_LOCATION,
                 StdAttr.LABEL_FONT, Io.ATTR_LABEL_COLOR
         }, new Object[]{
                 Direction.EAST, Color.WHITE,
@@ -47,8 +47,8 @@ public class Button extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         return Bounds.create(-20, -10, 20, 20).rotate(Direction.EAST, facing, 0, 0);
     }
 
@@ -63,14 +63,14 @@ public class Button extends InstanceFactory {
         if (attr == StdAttr.FACING) {
             instance.recomputeBounds();
             computeTextField(instance);
-        } else if (attr == Io.ATTR_LABEL_LOC) {
+        } else if (attr == Io.ATTR_LABEL_LOCATION) {
             computeTextField(instance);
         }
     }
 
     private void computeTextField(Instance instance) {
         Direction facing = instance.getAttributeValue(StdAttr.FACING);
-        Object labelLoc = instance.getAttributeValue(Io.ATTR_LABEL_LOC);
+        Object labelLoc = instance.getAttributeValue(Io.ATTR_LABEL_LOCATION);
 
         Bounds bds = instance.getBounds();
         int x = bds.getX() + bds.getWidth() / 2;
@@ -141,7 +141,7 @@ public class Button extends InstanceFactory {
         if (val == Value.TRUE) {
             x += DEPTH;
             y += DEPTH;
-            Object labelLoc = painter.getAttributeValue(Io.ATTR_LABEL_LOC);
+            Object labelLoc = painter.getAttributeValue(Io.ATTR_LABEL_LOCATION);
             if (labelLoc == Io.LABEL_CENTER || labelLoc == Direction.NORTH
                     || labelLoc == Direction.WEST) {
                 depress = DEPTH;

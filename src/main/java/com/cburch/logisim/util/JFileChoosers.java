@@ -91,19 +91,19 @@ public class JFileChoosers {
      * opens up under. (23 Feb 2010) */
     private static class LogisimFileChooser extends JFileChooser {
 
-        LogisimFileChooser() {
+        private LogisimFileChooser() {
             super();
         }
 
-        LogisimFileChooser(File initSelected) {
+        private LogisimFileChooser(File initSelected) {
             super(initSelected);
         }
 
         @Override
         public File getSelectedFile() {
-            File dir = getCurrentDirectory();
-            if (dir != null) {
-                JFileChoosers.currentDirectory = dir.toString();
+            File currentDirectory = getCurrentDirectory();
+            if (currentDirectory != null) {
+                JFileChoosers.currentDirectory = currentDirectory.toString();
             }
             return super.getSelectedFile();
         }

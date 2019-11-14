@@ -34,20 +34,16 @@ public class Project {
     private Simulator simulator = new Simulator();
     private LogisimFile file;
     private CircuitState circuitState;
-    private HashMap<Circuit, CircuitState> stateMap
-            = new HashMap<Circuit, CircuitState>();
+    private HashMap<Circuit, CircuitState> stateMap = new HashMap<>();
     private Frame frame = null;
     private OptionsFrame optionsFrame = null;
     private LogFrame logFrame = null;
     private Tool tool = null;
-    private LinkedList<ActionData> undoLog = new LinkedList<ActionData>();
+    private LinkedList<ActionData> undoLog = new LinkedList<>();
     private int undoMods = 0;
-    private EventSourceWeakSupport<ProjectListener> projectListeners
-            = new EventSourceWeakSupport<ProjectListener>();
-    private EventSourceWeakSupport<LibraryListener> fileListeners
-            = new EventSourceWeakSupport<LibraryListener>();
-    private EventSourceWeakSupport<CircuitListener> circuitListeners
-            = new EventSourceWeakSupport<CircuitListener>();
+    private EventSourceWeakSupport<ProjectListener> projectListeners = new EventSourceWeakSupport<>();
+    private EventSourceWeakSupport<LibraryListener> fileListeners = new EventSourceWeakSupport<>();
+    private EventSourceWeakSupport<CircuitListener> circuitListeners = new EventSourceWeakSupport<>();
     private Dependencies depends;
     private MyListener myListener = new MyListener();
     private boolean startupScreen = false;
@@ -64,25 +60,26 @@ public class Project {
         return file;
     }
 
-    public void setLogisimFile(LogisimFile value) {
-        LogisimFile old = this.file;
-        if (old != null) {
+    public void setLogisimFile(LogisimFile logisimFile) {
+        LogisimFile oldLogisimFile = this.file;
+        if (oldLogisimFile != null) {
             for (LibraryListener l : fileListeners) {
-                old.removeLibraryListener(l);
+                oldLogisimFile.removeLibraryListener(l);
             }
         }
-        file = value;
+        file = logisimFile;
         stateMap.clear();
         depends = new Dependencies(file);
         undoLog.clear();
         undoMods = 0;
-        fireEvent(ProjectEvent.ACTION_SET_FILE, old, file);
+        fireEvent(ProjectEvent.ACTION_SET_FILE, oldLogisimFile, file);
         setCurrentCircuit(file.getMainCircuit());
         if (file != null) {
             for (LibraryListener l : fileListeners) {
                 file.addLibraryListener(l);
             }
         }
+        assert file != null;
         file.setDirty(true); // toggle it so that everybody hears the file is fresh
         file.setDirty(false);
     }
@@ -220,18 +217,18 @@ public class Project {
         return tool;
     }
 
-    public void setTool(Tool value) {
-        if (tool == value) {
+    public void setTool(Tool tool) {
+        if (this.tool == tool) {
             return;
         }
-        Tool old = tool;
+        Tool oldTool = this.tool;
         Canvas canvas = frame.getCanvas();
-        if (old != null) {
-            old.deselect(canvas);
+        if (oldTool != null) {
+            oldTool.deselect(canvas);
         }
         Selection selection = canvas.getSelection();
         if (selection != null && !selection.isEmpty()) {
-            if (value == null || !getOptions().getMouseMappings().containsSelectTool()) {
+            if (tool == null || !getOptions().getMouseMappings().containsSelectTool()) {
                 Action act = SelectionActions.anchorAll(selection);
                 if (act != null) {
                     doAction(act);
@@ -239,11 +236,11 @@ public class Project {
             }
         }
         startupScreen = false;
-        tool = value;
-        if (tool != null) {
-            tool.select(frame.getCanvas());
+        this.tool = tool;
+        if (this.tool != null) {
+            this.tool.select(frame.getCanvas());
         }
-        fireEvent(ProjectEvent.ACTION_SET_TOOL, old, tool);
+        fireEvent(ProjectEvent.ACTION_SET_TOOL, oldTool, this.tool);
     }
 
     public Selection getSelection() {

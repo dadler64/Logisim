@@ -75,7 +75,7 @@ public class SelectTool extends Tool {
     public SelectTool() {
         start = null;
         state = IDLE;
-        selectionsAdded = new HashSet<Selection>();
+        selectionsAdded = new HashSet<>();
         selListener = new Listener();
         keyHandlers = null;
     }
@@ -426,7 +426,7 @@ public class SelectTool extends Tool {
     private void processKeyEvent(Canvas canvas, KeyEvent e, int type) {
         HashMap<Component, KeyConfigurator> handlers = keyHandlers;
         if (handlers == null) {
-            handlers = new HashMap<Component, KeyConfigurator>();
+            handlers = new HashMap<>();
             Selection sel = canvas.getSelection();
             for (Component comp : sel.getComponents()) {
                 ComponentFactory factory = comp.getFactory();
@@ -443,7 +443,7 @@ public class SelectTool extends Tool {
         if (!handlers.isEmpty()) {
             boolean consume = false;
             ArrayList<KeyConfigurationResult> results;
-            results = new ArrayList<KeyConfigurationResult>();
+            results = new ArrayList<>();
             for (Map.Entry<Component, KeyConfigurator> entry : handlers.entrySet()) {
                 Component comp = entry.getKey();
                 KeyConfigurator handler = entry.getValue();
@@ -529,7 +529,7 @@ public class SelectTool extends Tool {
             if (gesture != null && drawConnections) {
                 MoveResult result = gesture.findResult(dx, dy);
                 if (result != null) {
-                    HashSet<Component> ret = new HashSet<Component>(sel);
+                    HashSet<Component> ret = new HashSet<>(sel);
                     ret.addAll(result.getReplacementMap().getRemovals());
                     return ret;
                 }

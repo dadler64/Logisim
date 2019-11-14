@@ -21,9 +21,9 @@ public class ToolbarData {
     private ArrayList<Tool> contents;
 
     public ToolbarData() {
-        listeners = new EventSourceWeakSupport<ToolbarListener>();
-        toolListeners = new EventSourceWeakSupport<AttributeListener>();
-        contents = new ArrayList<Tool>();
+        listeners = new EventSourceWeakSupport<>();
+        toolListeners = new EventSourceWeakSupport<>();
+        contents = new ArrayList<>();
     }
 
     //

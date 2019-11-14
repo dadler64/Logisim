@@ -29,14 +29,14 @@ public class CircuitPins {
     CircuitPins(PortManager appearanceManager) {
         this.appearanceManager = appearanceManager;
         myComponentListener = new MyComponentListener();
-        pins = new HashSet<Instance>();
+        pins = new HashSet<>();
     }
 
     public void transactionCompleted(ReplacementMap repl) {
         // determine the changes
-        Set<Instance> adds = new HashSet<Instance>();
-        Set<Instance> removes = new HashSet<Instance>();
-        Map<Instance, Instance> replaces = new HashMap<Instance, Instance>();
+        Set<Instance> adds = new HashSet<>();
+        Set<Instance> removes = new HashSet<>();
+        Map<Instance, Instance> replaces = new HashMap<>();
         for (Component comp : repl.getAdditions()) {
             if (comp.getFactory() instanceof Pin) {
                 Instance in = Instance.getInstanceFor(comp);
@@ -72,7 +72,7 @@ public class CircuitPins {
     }
 
     public Collection<Instance> getPins() {
-        return new ArrayList<Instance>(pins);
+        return new ArrayList<>(pins);
     }
 
     private class MyComponentListener

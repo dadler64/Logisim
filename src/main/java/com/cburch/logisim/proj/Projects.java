@@ -24,11 +24,11 @@ public class Projects {
     public static final String projectListProperty = "projectList";
 
     private static final WeakHashMap<Window, Point> frameLocations
-            = new WeakHashMap<Window, Point>();
+            = new WeakHashMap<>();
     private static final MyListener myListener = new MyListener();
     private static final PropertyChangeWeakSupport propertySupport
             = new PropertyChangeWeakSupport(Projects.class);
-    private static ArrayList<Project> openProjects = new ArrayList<Project>();
+    private static ArrayList<Project> openProjects = new ArrayList<>();
     private static Frame mostRecentFrame = null;
 
     private Projects() {

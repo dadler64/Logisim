@@ -303,7 +303,7 @@ class MouseOptions extends OptionsPanel {
         // AbstractTableModel methods
         @Override
         public void fireTableStructureChanged() {
-            cur_keys = new ArrayList<Integer>(getOptions().getMouseMappings().getMappedModifiers());
+            cur_keys = new ArrayList<>(getOptions().getMouseMappings().getMappedModifiers());
             Collections.sort(cur_keys);
             super.fireTableStructureChanged();
         }

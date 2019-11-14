@@ -40,8 +40,7 @@ public class About {
         panel.add(imgPanel);
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
-        JOptionPane.showMessageDialog(owner, panel,
-                "Logisim " + Main.VERSION_NAME, JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(owner, panel, "Logisim " + Main.VERSION_NAME, JOptionPane.PLAIN_MESSAGE);
     }
 
     private static class PanelThread extends Thread {

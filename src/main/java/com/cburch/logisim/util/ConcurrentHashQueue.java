@@ -16,8 +16,8 @@ public class ConcurrentHashQueue<E> {
     private AtomicInteger removeCount;
 
     public ConcurrentHashQueue() {
-        members = new ConcurrentHashMap<E, Boolean>();
-        queue = new ConcurrentLinkedQueue<E>();
+        members = new ConcurrentHashMap<>();
+        queue = new ConcurrentLinkedQueue<>();
         removeCount = new AtomicInteger(0);
     }
 

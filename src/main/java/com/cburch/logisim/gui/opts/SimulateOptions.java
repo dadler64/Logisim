@@ -60,9 +60,9 @@ class SimulateOptions extends OptionsPanel {
 
         window.getOptions().getAttributeSet().addAttributeListener(myListener);
         AttributeSet attrs = getOptions().getAttributeSet();
-        myListener.loadSimLimit(attrs.getValue(Options.sim_limit_attr));
+        myListener.loadSimLimit(attrs.getValue(Options.SIMULATOR_LIMIT_ATTRIBUTE));
         myListener.loadGateUndefined(attrs.getValue(Options.ATTR_GATE_UNDEFINED));
-        myListener.loadSimRandomness(attrs.getValue(Options.sim_rand_attr));
+        myListener.loadSimRandomness(attrs.getValue(Options.SIMULATOR_RANDOM_ATTRIBUTE));
     }
 
     @Override
@@ -91,14 +91,14 @@ class SimulateOptions extends OptionsPanel {
                 if (opt != null) {
                     AttributeSet attrs = getOptions().getAttributeSet();
                     getProject().doAction(OptionsActions.setAttribute(attrs,
-                            Options.sim_limit_attr, opt));
+                            Options.SIMULATOR_LIMIT_ATTRIBUTE, opt));
                 }
             } else if (source == simRandomness) {
                 AttributeSet attrs = getOptions().getAttributeSet();
-                Object val = simRandomness.isSelected() ? Options.sim_rand_dflt
+                Object val = simRandomness.isSelected() ? Options.SIMULATOR_RANDOM_DEFAULT
                         : Integer.valueOf(0);
                 getProject().doAction(OptionsActions.setAttribute(attrs,
-                        Options.sim_rand_attr, val));
+                        Options.SIMULATOR_RANDOM_ATTRIBUTE, val));
             } else if (source == gateUndefined) {
                 ComboOption opt = (ComboOption) gateUndefined.getSelectedItem();
                 if (opt != null) {
@@ -115,9 +115,9 @@ class SimulateOptions extends OptionsPanel {
         public void attributeValueChanged(AttributeEvent e) {
             Attribute<?> attr = e.getAttribute();
             Object val = e.getValue();
-            if (attr == Options.sim_limit_attr) {
+            if (attr == Options.SIMULATOR_LIMIT_ATTRIBUTE) {
                 loadSimLimit((Integer) val);
-            } else if (attr == Options.sim_rand_attr) {
+            } else if (attr == Options.SIMULATOR_RANDOM_ATTRIBUTE) {
                 loadSimRandomness((Integer) val);
             }
         }

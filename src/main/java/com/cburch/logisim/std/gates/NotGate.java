@@ -55,7 +55,7 @@ class NotGate extends InstanceFactory {
         super("NOT Gate", Strings.getter("notGateComponent"));
         setAttributes(new Attribute[]{
                 StdAttr.FACING, StdAttr.WIDTH, ATTR_SIZE,
-                GateAttributes.ATTR_OUTPUT,
+                GateAttributes.ATTRIBUTE_OUTPUT,
                 StdAttr.LABEL, StdAttr.LABEL_FONT,
         }, new Object[]{
                 Direction.EAST, BitWidth.ONE, SIZE_WIDE,
@@ -93,10 +93,10 @@ class NotGate extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Object value = attrs.getValue(ATTR_SIZE);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Object value = attributes.getValue(ATTR_SIZE);
         if (value == SIZE_NARROW) {
-            Direction facing = attrs.getValue(StdAttr.FACING);
+            Direction facing = attributes.getValue(StdAttr.FACING);
             if (facing == Direction.SOUTH) {
                 return Bounds.create(-9, -20, 18, 20);
             }
@@ -108,7 +108,7 @@ class NotGate extends InstanceFactory {
             }
             return Bounds.create(-20, -9, 20, 18);
         } else {
-            Direction facing = attrs.getValue(StdAttr.FACING);
+            Direction facing = attributes.getValue(StdAttr.FACING);
             if (facing == Direction.SOUTH) {
                 return Bounds.create(-9, -30, 18, 30);
             }

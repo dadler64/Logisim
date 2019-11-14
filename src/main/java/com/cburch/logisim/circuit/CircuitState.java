@@ -30,19 +30,19 @@ import java.util.Set;
 public class CircuitState implements InstanceData {
 
     private static int lastId = 0;
-    HashMap<Location, SetData> causes = new HashMap<Location, SetData>();
+    HashMap<Location, SetData> causes = new HashMap<>();
     private MyCircuitListener myCircuitListener = new MyCircuitListener();
     private Propagator base = null; // base of tree of CircuitStates
     private Project proj; // project where circuit lies
     private Circuit circuit; // circuit being simulated
     private CircuitState parentState = null; // parent in tree of CircuitStates
     private Component parentComp = null; // subcircuit component containing this state
-    private ArraySet<CircuitState> substates = new ArraySet<CircuitState>();
+    private ArraySet<CircuitState> substates = new ArraySet<>();
     private CircuitWires.State wireData = null;
-    private HashMap<Component, Object> componentData = new HashMap<Component, Object>();
-    private Map<Location, Value> values = new HashMap<Location, Value>();
-    private SmallSet<Component> dirtyComponents = new SmallSet<Component>();
-    private SmallSet<Location> dirtyPoints = new SmallSet<Location>();
+    private HashMap<Component, Object> componentData = new HashMap<>();
+    private Map<Location, Value> values = new HashMap<>();
+    private SmallSet<Component> dirtyComponents = new SmallSet<>();
+    private SmallSet<Location> dirtyPoints = new SmallSet<>();
     private int id = lastId++;
 
     public CircuitState(Project proj, Circuit circuit) {
@@ -76,8 +76,8 @@ public class CircuitState implements InstanceData {
         this.base = base;
         this.parentComp = src.parentComp;
         this.parentState = src.parentState;
-        HashMap<CircuitState, CircuitState> substateData = new HashMap<CircuitState, CircuitState>();
-        this.substates = new ArraySet<CircuitState>();
+        HashMap<CircuitState, CircuitState> substateData = new HashMap<>();
+        this.substates = new ArraySet<>();
         for (CircuitState oldSub : src.substates) {
             CircuitState newSub = new CircuitState(src.proj, oldSub.circuit);
             newSub.copyFrom(oldSub, base);
@@ -202,7 +202,7 @@ public class CircuitState implements InstanceData {
         try {
             dirtyComponents.add(comp);
         } catch (RuntimeException e) {
-            SmallSet<Component> set = new SmallSet<Component>();
+            SmallSet<Component> set = new SmallSet<>();
             set.add(comp);
             dirtyComponents = set;
         }
@@ -257,7 +257,7 @@ public class CircuitState implements InstanceData {
                     }
                     if (tries == 0) {
                         toProcess = new Object[0];
-                        dirtyComponents = new SmallSet<Component>();
+                        dirtyComponents = new SmallSet<>();
                         throw firstException;
                     }
                 }
@@ -282,7 +282,7 @@ public class CircuitState implements InstanceData {
     }
 
     void processDirtyPoints() {
-        HashSet<Location> dirty = new HashSet<Location>(dirtyPoints);
+        HashSet<Location> dirty = new HashSet<>(dirtyPoints);
         dirtyPoints.clear();
         if (circuit.wires.isMapVoided()) {
             for (int i = 3; i >= 0; i--) {

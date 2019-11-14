@@ -82,9 +82,9 @@ public class Tty extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        int rows = getRowCount(attrs.getValue(ATTR_ROWS));
-        int cols = getColumnCount(attrs.getValue(ATTR_COLUMNS));
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        int rows = getRowCount(attributes.getValue(ATTR_ROWS));
+        int cols = getColumnCount(attributes.getValue(ATTR_COLUMNS));
         int width = 2 * BORDER + cols * COL_WIDTH;
         int height = 2 * BORDER + rows * ROW_HEIGHT;
         if (width < 30) {

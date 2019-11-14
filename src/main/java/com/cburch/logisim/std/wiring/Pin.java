@@ -119,9 +119,9 @@ public class Pin extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
-        BitWidth width = attrs.getValue(StdAttr.WIDTH);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
+        BitWidth width = attributes.getValue(StdAttr.WIDTH);
         return Probe.getOffsetBounds(facing, width, RadixOption.RADIX_2);
     }
 

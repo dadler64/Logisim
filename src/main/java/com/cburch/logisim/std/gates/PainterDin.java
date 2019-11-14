@@ -17,7 +17,7 @@ class PainterDin {
     static final int OR = 1;
     static final int XOR = 2;
     static final int XNOR = 3;
-    private static HashMap<Integer, int[]> orLenArrays = new HashMap<Integer, int[]>();
+    private static HashMap<Integer, int[]> orLenArrays = new HashMap<>();
 
     private PainterDin() {
     }

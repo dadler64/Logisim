@@ -40,9 +40,9 @@ public class PriorityEncoder extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction dir = attrs.getValue(StdAttr.FACING);
-        BitWidth select = attrs.getValue(Plexers.ATTR_SELECT);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction dir = attributes.getValue(StdAttr.FACING);
+        BitWidth select = attributes.getValue(Plexers.ATTR_SELECT);
         int inputs = 1 << select.getWidth();
         int offs = -5 * inputs;
         int len = 10 * inputs + 10;

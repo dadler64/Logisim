@@ -258,7 +258,7 @@ public class LogisimFileActions {
 
         RevertDefaults() {
             libraries = null;
-            attrValues = new ArrayList<RevertAttributeValue>();
+            attrValues = new ArrayList<>();
         }
 
         @Override
@@ -279,7 +279,7 @@ public class LogisimFileActions {
                     dstLib = dst.getLoader().loadLibrary(desc);
                     proj.getLogisimFile().addLibrary(dstLib);
                     if (libraries == null) {
-                        libraries = new ArrayList<Library>();
+                        libraries = new ArrayList<>();
                     }
                     libraries.add(dstLib);
                 }

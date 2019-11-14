@@ -10,14 +10,14 @@ import java.util.NoSuchElementException;
 
 public class VariableList {
 
-    private ArrayList<VariableListListener> listeners = new ArrayList<VariableListListener>();
+    private ArrayList<VariableListListener> listeners = new ArrayList<>();
     private int maxSize;
     private ArrayList<String> data;
     private List<String> dataView;
 
     public VariableList(int maxSize) {
         this.maxSize = maxSize;
-        data = maxSize > 16 ? new ArrayList<String>() : new ArrayList<String>(maxSize);
+        data = maxSize > 16 ? new ArrayList<>() : new ArrayList<>(maxSize);
         dataView = Collections.unmodifiableList(data);
     }
 

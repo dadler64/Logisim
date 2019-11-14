@@ -21,7 +21,7 @@ public final class CircuitMutation extends CircuitTransaction {
 
     public CircuitMutation(Circuit circuit) {
         this.primary = circuit;
-        this.changes = new ArrayList<CircuitChange>();
+        this.changes = new ArrayList<>();
     }
 
     CircuitMutation() {
@@ -85,8 +85,8 @@ public final class CircuitMutation extends CircuitTransaction {
 
     @Override
     protected Map<Circuit, Integer> getAccessedCircuits() {
-        HashMap<Circuit, Integer> accessMap = new HashMap<Circuit, Integer>();
-        HashSet<Circuit> supercircsDone = new HashSet<Circuit>();
+        HashMap<Circuit, Integer> accessMap = new HashMap<>();
+        HashSet<Circuit> supercircsDone = new HashSet<>();
         for (CircuitChange change : changes) {
             Circuit circ = change.getCircuit();
             accessMap.put(circ, READ_WRITE);

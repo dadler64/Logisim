@@ -43,7 +43,7 @@ public class ReaderInputStream extends InputStream {
      *
      * @param reader <CODE>Reader</CODE>.  Must not be <code>null</code>.
      */
-    public ReaderInputStream(Reader reader) {
+    private ReaderInputStream(Reader reader) {
         in = reader;
     }
 
@@ -83,11 +83,11 @@ public class ReaderInputStream extends InputStream {
                 slack = null;
             }
         } else {
-            byte[] buf = new byte[1];
-            if (read(buf, 0, 1) <= 0) {
+            byte[] buffer = new byte[1];
+            if (read(buffer, 0, 1) <= 0) {
                 result = -1;
             }
-            result = buf[0];
+            result = buffer[0];
         }
 
         if (result < -1) {
@@ -100,43 +100,43 @@ public class ReaderInputStream extends InputStream {
     /**
      * Reads from the <code>Reader</code> into a byte array
      *
-     * @param b the byte array to read into
-     * @param off the offset in the byte array
-     * @param len the length in the byte array to fill
+     * @param bytes the byte array to read into
+     * @param offset the offset in the byte array
+     * @param length the length in the byte array to fill
      * @return the actual number read into the byte array, -1 at
      * the end of the stream
      * @throws IOException if an error occurs
      */
     @Override
-    public synchronized int read(byte[] b, int off, int len)
+    public synchronized int read(byte[] bytes, int offset, int length)
             throws IOException {
         if (in == null) {
             throw new IOException("Stream Closed");
         }
 
         while (slack == null) {
-            char[] buf = new char[len]; // might read too much
-            int n = in.read(buf);
+            char[] buffer = new char[length]; // might read too much
+            int n = in.read(buffer);
             if (n == -1) {
                 return -1;
             }
             if (n > 0) {
-                slack = new String(buf, 0, n).getBytes(encoding);
+                slack = new String(buffer, 0, n).getBytes(encoding);
                 begin = 0;
             }
         }
 
-        if (len > slack.length - begin) {
-            len = slack.length - begin;
+        if (length > slack.length - begin) {
+            length = slack.length - begin;
         }
 
-        System.arraycopy(slack, begin, b, off, len);
+        System.arraycopy(slack, begin, bytes, offset, length);
 
-        if ((begin += len) >= slack.length) {
+        if ((begin += length) >= slack.length) {
             slack = null;
         }
 
-        return len;
+        return length;
     }
 
     /**
@@ -149,8 +149,9 @@ public class ReaderInputStream extends InputStream {
     public synchronized void mark(final int limit) {
         try {
             in.mark(limit);
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe.getMessage());
+        } catch (IOException ioException) {
+//            throw new RuntimeException(ioException.getMessage());
+            ioException.printStackTrace();
         }
     }
 
@@ -197,7 +198,7 @@ public class ReaderInputStream extends InputStream {
     }
 
     /**
-     * Closes the Stringreader.
+     * Closes the StringReader.
      *
      * @throws IOException if the original StringReader fails to be closed
      */

@@ -8,18 +8,18 @@ import java.util.NoSuchElementException;
 
 public class IteratorUtil {
 
-    public static Iterator<?> EMPTY_ITERATOR = new EmptyIterator<Object>();
+    public static Iterator<?> EMPTY_ITERATOR = new EmptyIterator<>();
 
     public static <E> Iterator<E> emptyIterator() {
-        return new EmptyIterator<E>();
+        return new EmptyIterator<>();
     }
 
     public static <E> Iterator<E> createUnitIterator(E data) {
-        return new UnitIterator<E>(data);
+        return new UnitIterator<>(data);
     }
 
     public static <E> Iterator<E> createArrayIterator(E[] data) {
-        return new ArrayIterator<E>(data);
+        return new ArrayIterator<>(data);
     }
 
     public static <E> Iterator<E> createJoinedIterator(Iterator<? extends E> i0,
@@ -33,7 +33,7 @@ public class IteratorUtil {
             Iterator<E> ret = (Iterator<E>) i0;
             return ret;
         } else {
-            return new IteratorUnion<E>(i0, i1);
+            return new IteratorUnion<>(i0, i1);
         }
     }
 

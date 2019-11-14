@@ -31,7 +31,7 @@ class CircuitLocker {
     static Map<Circuit, Lock> acquireLocks(CircuitTransaction xn,
             CircuitMutatorImpl mutator) {
         Map<Circuit, Integer> requests = xn.getAccessedCircuits();
-        Map<Circuit, Lock> circuitLocks = new HashMap<Circuit, Lock>();
+        Map<Circuit, Lock> circuitLocks = new HashMap<>();
         // Acquire locks in serial-number order to avoid deadlock
         Circuit[] lockOrder = requests.keySet().toArray(new Circuit[0]);
         Arrays.sort(lockOrder, new CircuitComparator());

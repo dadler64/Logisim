@@ -74,19 +74,19 @@ class AttrTableSelectionModel extends AttributeSetTableModel
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attr, Object value)
+    public void setValueRequested(Attribute<Object> attribute, Object value)
             throws AttrTableSetException {
         Selection selection = frame.getCanvas().getSelection();
         Circuit circuit = frame.getCanvas().getCircuit();
         if (selection.isEmpty() && circuit != null) {
             AttrTableCircuitModel circuitModel = new AttrTableCircuitModel(project, circuit);
-            circuitModel.setValueRequested(attr, value);
+            circuitModel.setValueRequested(attribute, value);
         } else {
             SetAttributeAction act = new SetAttributeAction(circuit,
                     Strings.getter("selectionAttributeAction"));
             for (Component comp : selection.getComponents()) {
                 if (!(comp instanceof Wire)) {
-                    act.set(comp, attr, value);
+                    act.set(comp, attribute, value);
                 }
             }
             project.doAction(act);

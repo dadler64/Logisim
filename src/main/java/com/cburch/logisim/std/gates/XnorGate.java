@@ -33,12 +33,12 @@ class XnorGate extends AbstractGate {
 
     @Override
     public void paintIconShaped(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
-        GraphicsUtil.drawCenteredArc(g, 0, -5, 22, -90, 53);
-        GraphicsUtil.drawCenteredArc(g, 0, 23, 22, 90, -53);
-        GraphicsUtil.drawCenteredArc(g, -8, 9, 16, -30, 60);
-        GraphicsUtil.drawCenteredArc(g, -10, 9, 16, -30, 60);
-        g.drawOval(16, 8, 4, 4);
+        Graphics graphics = painter.getGraphics();
+        GraphicsUtil.drawCenteredArc(graphics, 0, -5, 22, -90, 53);
+        GraphicsUtil.drawCenteredArc(graphics, 0, 23, 22, 90, -53);
+        GraphicsUtil.drawCenteredArc(graphics, -8, 9, 16, -30, 60);
+        GraphicsUtil.drawCenteredArc(graphics, -10, 9, 16, -30, 60);
+        graphics.drawOval(16, 8, 4, 4);
     }
 
     @Override
@@ -54,7 +54,7 @@ class XnorGate extends AbstractGate {
 
     @Override
     protected Value computeOutput(Value[] inputs, int numInputs, InstanceState state) {
-        Object behavior = state.getAttributeValue(GateAttributes.ATTR_XOR);
+        Object behavior = state.getAttributeValue(GateAttributes.ATTRIBUTE_XOR);
         if (behavior == GateAttributes.XOR_ODD) {
             return GateFunctions.computeOddParity(inputs, numInputs).not();
         } else {

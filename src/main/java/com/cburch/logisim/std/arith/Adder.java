@@ -40,43 +40,45 @@ public class Adder extends InstanceFactory {
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
         setIconName("adder.gif");
 
-        Port[] ps = new Port[5];
-        ps[IN0] = new Port(-40, -10, Port.INPUT, StdAttr.WIDTH);
-        ps[IN1] = new Port(-40, 10, Port.INPUT, StdAttr.WIDTH);
-        ps[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
-        ps[C_IN] = new Port(-20, -20, Port.INPUT, 1);
-        ps[C_OUT] = new Port(-20, 20, Port.INPUT, 1);
-        ps[IN0].setToolTip(Strings.getter("adderInputTip"));
-        ps[IN1].setToolTip(Strings.getter("adderInputTip"));
-        ps[OUT].setToolTip(Strings.getter("adderOutputTip"));
-        ps[C_IN].setToolTip(Strings.getter("adderCarryInTip"));
-        ps[C_OUT].setToolTip(Strings.getter("adderCarryOutTip"));
-        setPorts(ps);
+        Port[] ports = new Port[5];
+        ports[IN0] = new Port(-40, -10, Port.INPUT, StdAttr.WIDTH);
+        ports[IN1] = new Port(-40, 10, Port.INPUT, StdAttr.WIDTH);
+        ports[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
+        ports[C_IN] = new Port(-20, -20, Port.INPUT, 1);
+        ports[C_OUT] = new Port(-20, 20, Port.INPUT, 1);
+        ports[IN0].setToolTip(Strings.getter("adderInputTip"));
+        ports[IN1].setToolTip(Strings.getter("adderInputTip"));
+        ports[OUT].setToolTip(Strings.getter("adderOutputTip"));
+        ports[C_IN].setToolTip(Strings.getter("adderCarryInTip"));
+        ports[C_OUT].setToolTip(Strings.getter("adderCarryOutTip"));
+        setPorts(ports);
     }
 
-    static Value[] computeSum(BitWidth width, Value a, Value b, Value c_in) {
-        int w = width.getWidth();
-        if (c_in == Value.UNKNOWN || c_in == Value.NIL) {
-            c_in = Value.FALSE;
+    static Value[] computeSum(BitWidth bitWidth, Value a, Value b, Value cIn) {
+        int width = bitWidth.getWidth();
+        if (cIn == Value.UNKNOWN || cIn == Value.NIL) {
+            cIn = Value.FALSE;
         }
-        if (a.isFullyDefined() && b.isFullyDefined() && c_in.isFullyDefined()) {
-            if (w >= 32) {
-                long mask = (1L << w) - 1;
+        if (a.isFullyDefined() && b.isFullyDefined() && cIn.isFullyDefined()) {
+            if (width >= 32) {
+                long mask = (1L << width) - 1;
                 long ax = (long) a.toIntValue() & mask;
                 long bx = (long) b.toIntValue() & mask;
-                long cx = (long) c_in.toIntValue() & mask;
+                long cx = (long) cIn.toIntValue() & mask;
                 long sum = ax + bx + cx;
-                return new Value[]{Value.createKnown(width, (int) sum),
-                        ((sum >> w) & 1) == 0 ? Value.FALSE : Value.TRUE};
+                return new Value[]{Value.createKnown(bitWidth, (int) sum),
+                        ((sum >> width) & 1) == 0 ? Value.FALSE : Value.TRUE};
             } else {
-                int sum = a.toIntValue() + b.toIntValue() + c_in.toIntValue();
-                return new Value[]{Value.createKnown(width, sum),
-                        ((sum >> w) & 1) == 0 ? Value.FALSE : Value.TRUE};
+                int sum = a.toIntValue() + b.toIntValue() + cIn.toIntValue();
+                return new Value[]{
+                        Value.createKnown(bitWidth, sum),
+                        ((sum >> width) & 1) == 0 ? Value.FALSE : Value.TRUE
+                };
             }
         } else {
-            Value[] bits = new Value[w];
-            Value carry = c_in;
-            for (int i = 0; i < w; i++) {
+            Value[] bits = new Value[width];
+            Value carry = cIn;
+            for (int i = 0; i < width; i++) {
                 if (carry == Value.ERROR) {
                     bits[i] = Value.ERROR;
                 } else if (carry == Value.UNKNOWN) {
@@ -122,23 +124,23 @@ public class Adder extends InstanceFactory {
 
     @Override
     public void paintInstance(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
+        Graphics graphics = painter.getGraphics();
         painter.drawBounds();
 
-        g.setColor(Color.GRAY);
+        graphics.setColor(Color.GRAY);
         painter.drawPort(IN0);
         painter.drawPort(IN1);
         painter.drawPort(OUT);
         painter.drawPort(C_IN, "c in", Direction.NORTH);
         painter.drawPort(C_OUT, "c out", Direction.SOUTH);
 
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
-        GraphicsUtil.switchToWidth(g, 2);
-        g.setColor(Color.BLACK);
-        g.drawLine(x - 15, y, x - 5, y);
-        g.drawLine(x - 10, y - 5, x - 10, y + 5);
-        GraphicsUtil.switchToWidth(g, 1);
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
+        GraphicsUtil.switchToWidth(graphics, 2);
+        graphics.setColor(Color.BLACK);
+        graphics.drawLine(x - 15, y, x - 5, y);
+        graphics.drawLine(x - 10, y - 5, x - 10, y + 5);
+        GraphicsUtil.switchToWidth(graphics, 1);
     }
 }

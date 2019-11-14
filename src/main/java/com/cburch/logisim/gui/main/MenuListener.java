@@ -40,7 +40,7 @@ class MenuListener {
     public MenuListener(Frame frame, LogisimMenuBar menubar) {
         this.frame = frame;
         this.menubar = menubar;
-        this.listeners = new ArrayList<EnabledListener>();
+        this.listeners = new ArrayList<>();
     }
 
     LogisimMenuBar getMenuBar() {

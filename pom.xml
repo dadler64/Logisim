@@ -2,9 +2,80 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.cburch.logisim</groupId>
   <artifactId>Logisim</artifactId>
+  <!--
+    The '-BETA' at the end of the file needs to be added manually
+    for now.
+
+    Launch4j does not play nicely with the '-BETA' due to its
+    versioning scheme.
+  -->
+  <version>2.8.0</version>
+
+  <name>Logisim</name>
+  <url>https://github.com/dadler64/Logisim</url>
+  <description>Continuation on the Logisim circuit simulator.</description>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License, Version 3.0</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <icon.windows>src/main/resources/logisim/img/logisim-icon.ico</icon.windows>
+    <main.class>com.cburch.logisim.Main</main.class>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <!--
+      You will need to add the local project libraries
+      to your maven repo in order for builds to work.
+
+      In the future I hope to (possibly) minimize them
+      and upload them to a real maven repo for easier
+      dependency management.
+
+      See the below link for instructions:
+      https://stackoverflow.com/questions/4955635/how-to-add-local-jar-files-to-a-maven-project
+
+      Also yes I know the groupId, and versions are
+      not the same as in the jars. I did it this way
+      because I was azy and wanted to make it easier.
+    -->
+    <dependency>
+      <groupId>com.logisim</groupId>
+      <artifactId>ColorPicker</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.logisim</groupId>
+      <artifactId>FontChooser</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.logisim</groupId>
+      <artifactId>JavaHelp</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.logisim</groupId>
+      <artifactId>MRJAdapter</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  </dependencies>
 
   <build>
+
+    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+
     <plugins>
 
       <!--  Maven Compiler Plugin -->
@@ -113,31 +184,7 @@
         <version>1.7.25</version>
       </plugin>
     </plugins>
-    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-
-    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
 
   </build>
-  <description>Continuation on the Logisim circuit simulator.</description>
-  <groupId>com.cburch.logisim</groupId>
-
-  <licenses>
-    <license>
-      <name>GNU General Public License, Version 3.0</name>
-      <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
-    </license>
-  </licenses>
-  <modelVersion>4.0.0</modelVersion>
-  <name>Logisim</name>
-
-  <properties>
-    <icon.windows>src/main/resources/logisim/img/logisim-icon.ico</icon.windows>
-    <main.class>com.cburch.logisim.Main</main.class>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
-  <url>https://github.com/dadler64/Logisim</url>
-
-  <version>2.7.3</version>
 
 </project>

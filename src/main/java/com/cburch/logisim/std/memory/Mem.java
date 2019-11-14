@@ -59,7 +59,7 @@ abstract class Mem extends InstanceFactory {
 
     Mem(String name, StringGetter desc, int extraPorts) {
         super(name, desc);
-        currentInstanceFiles = new WeakHashMap<Instance, File>();
+        currentInstanceFiles = new WeakHashMap<>();
         setInstancePoker(MemPoker.class);
         setKeyConfigurator(JoinedConfigurator.create(
                 new BitWidthConfigurator(ADDR_ATTR, 2, 24, 0),

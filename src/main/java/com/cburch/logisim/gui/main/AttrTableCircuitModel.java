@@ -27,14 +27,14 @@ public class AttrTableCircuitModel extends AttributeSetTableModel {
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attr, Object value)
+    public void setValueRequested(Attribute<Object> attribute, Object value)
             throws AttrTableSetException {
         if (!proj.getLogisimFile().contains(circ)) {
             String msg = Strings.get("cannotModifyCircuitError");
             throw new AttrTableSetException(msg);
         } else {
             CircuitMutation xn = new CircuitMutation(circ);
-            xn.setForCircuit(attr, value);
+            xn.setForCircuit(attribute, value);
             proj.doAction(xn.toAction(Strings.getter("changeCircuitAttrAction")));
         }
     }

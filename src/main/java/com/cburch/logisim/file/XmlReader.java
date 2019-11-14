@@ -40,49 +40,51 @@ class XmlReader {
         this.loader = loader;
     }
 
-    private static void findLibraryUses(ArrayList<Element> dest, String label,
+    private static void findLibraryUses(ArrayList<Element> destinations, String label,
             Iterable<Element> candidates) {
-        for (Element elt : candidates) {
-            String lib = elt.getAttribute("lib");
+        for (Element elements : candidates) {
+            String lib = elements.getAttribute("lib");
             if (lib.equals(label)) {
-                dest.add(elt);
+                destinations.add(elements);
             }
         }
     }
 
-    LogisimFile readLibrary(InputStream is) throws IOException, SAXException {
-        Document doc = loadXmlFrom(is);
-        Element elt = doc.getDocumentElement();
-        considerRepairs(doc, elt);
+    LogisimFile readLibrary(InputStream stream) throws IOException, SAXException {
+        Document document = loadXmlFrom(stream);
+        Element element = document.getDocumentElement();
+        considerRepairs(document, element);
         LogisimFile file = new LogisimFile((Loader) loader);
         ReadContext context = new ReadContext(file);
-        context.toLogisimFile(elt);
+        context.toLogisimFile(element);
         if (file.getCircuitCount() == 0) {
             file.addCircuit(new Circuit("main"));
         }
         if (context.messages.size() > 0) {
-            StringBuilder all = new StringBuilder();
-            for (String msg : context.messages) {
-                all.append(msg);
-                all.append("\n");
+            StringBuilder builder = new StringBuilder();
+            for (String message : context.messages) {
+                builder.append(message);
+                builder.append("\n");
             }
-            loader.showError(all.substring(0, all.length() - 1));
+            loader.showError(builder.substring(0, builder.length() - 1));
         }
         return file;
     }
 
-    private Document loadXmlFrom(InputStream is) throws SAXException, IOException {
+    private Document loadXmlFrom(InputStream stream) throws SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = null;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException ex) {
+            ex.printStackTrace();
         }
-        return builder.parse(is);
+        assert builder != null;
+        return builder.parse(stream);
     }
 
-    private void considerRepairs(Document doc, Element root) {
+    private void considerRepairs(Document document, Element root) {
         LogisimVersion version = LogisimVersion.parse(root.getAttribute("source"));
         if (version.compareTo(LogisimVersion.get(2, 3, 0)) < 0) {
             // This file was saved before an Edit tool existed. Most likely
@@ -92,17 +94,17 @@ class XmlReader {
                 Element wiring = null;
                 Element select = null;
                 Element edit = null;
-                for (Element elt : XmlIterator.forChildElements(toolbar, "tool")) {
-                    String eltName = elt.getAttribute("name");
+                for (Element element : XmlIterator.forChildElements(toolbar, "tool")) {
+                    String eltName = element.getAttribute("name");
                     if (eltName != null && !eltName.equals("")) {
                         if (eltName.equals("Select Tool")) {
-                            select = elt;
+                            select = element;
                         }
                         if (eltName.equals("Wiring Tool")) {
-                            wiring = elt;
+                            wiring = element;
                         }
                         if (eltName.equals("Edit Tool")) {
-                            edit = elt;
+                            edit = element;
                         }
                     }
                 }
@@ -113,49 +115,52 @@ class XmlReader {
             }
         }
         if (version.compareTo(LogisimVersion.get(2, 6, 3)) < 0) {
-            for (Element circElt : XmlIterator.forChildElements(root, "circuit")) {
-                for (Element attrElt : XmlIterator.forChildElements(circElt, "a")) {
-                    String name = attrElt.getAttribute("name");
+            for (Element circleElement : XmlIterator.forChildElements(root, "circuit")) {
+                for (Element attributeElement : XmlIterator.forChildElements(circleElement, "a")) {
+                    String name = attributeElement.getAttribute("name");
                     if (name != null && name.startsWith("label")) {
-                        attrElt.setAttribute("name", "c" + name);
+                        attributeElement.setAttribute("name", "c" + name);
                     }
                 }
             }
 
-            repairForWiringLibrary(doc, root);
-            repairForLegacyLibrary(doc, root);
+            repairForWiringLibrary(document, root);
+            repairForLegacyLibrary(document, root);
         }
     }
 
-    private void repairForWiringLibrary(Document doc, Element root) {
-        Element oldBaseElt = null;
+    private void repairForWiringLibrary(Document document, Element root) {
+        Element oldBaseElement = null;
         String oldBaseLabel = null;
-        Element gatesElt = null;
+        Element gatesElement = null;
         String gatesLabel = null;
         int maxLabel = -1;
-        Element firstLibElt = null;
-        Element lastLibElt = null;
-        for (Element libElt : XmlIterator.forChildElements(root, "lib")) {
-            String desc = libElt.getAttribute("desc");
-            String label = libElt.getAttribute("name");
-            if (desc == null) {
-                // skip these tests
-            } else if (desc.equals("#Base")) {
-                oldBaseElt = libElt;
-                oldBaseLabel = label;
-            } else if (desc.equals("#Wiring")) {
-                // Wiring library already in file. This shouldn't happen, but if
-                // somehow it does, we don't want to add it again.
-                return;
-            } else if (desc.equals("#Gates")) {
-                gatesElt = libElt;
-                gatesLabel = label;
+        Element firstLibraryElement = null;
+        Element lastLibraryElement = null;
+        for (Element libraryElement : XmlIterator.forChildElements(root, "lib")) {
+            String desc = libraryElement.getAttribute("desc");
+            String label = libraryElement.getAttribute("name");
+            if (desc != null) { // skip these tests
+                switch (desc) {
+                    case "#Base":
+                        oldBaseElement = libraryElement;
+                        oldBaseLabel = label;
+                        break;
+                    case "#Wiring":
+                        // Wiring library already in file. This shouldn't happen, but if
+                        // somehow it does, we don't want to add it again.
+                        return;
+                    case "#Gates":
+                        gatesElement = libraryElement;
+                        gatesLabel = label;
+                        break;
+                }
             }
 
-            if (firstLibElt == null) {
-                firstLibElt = libElt;
+            if (firstLibraryElement == null) {
+                firstLibraryElement = libraryElement;
             }
-            lastLibElt = libElt;
+            lastLibraryElement = libraryElement;
             try {
                 if (label != null) {
                     int thisLabel = Integer.parseInt(label);
@@ -164,125 +169,125 @@ class XmlReader {
                     }
                 }
             } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
         }
 
-        Element wiringElt;
+        Element wiringElement;
         String wiringLabel;
-        Element newBaseElt;
+        Element newBaseElement;
         String newBaseLabel;
-        if (oldBaseElt != null) {
+        if (oldBaseElement != null) {
             wiringLabel = oldBaseLabel;
-            wiringElt = oldBaseElt;
-            wiringElt.setAttribute("desc", "#Wiring");
+            wiringElement = oldBaseElement;
+            wiringElement.setAttribute("desc", "#Wiring");
 
             newBaseLabel = "" + (maxLabel + 1);
-            newBaseElt = doc.createElement("lib");
-            newBaseElt.setAttribute("desc", "#Base");
-            newBaseElt.setAttribute("name", newBaseLabel);
-            root.insertBefore(newBaseElt, lastLibElt.getNextSibling());
+            newBaseElement = document.createElement("lib");
+            newBaseElement.setAttribute("desc", "#Base");
+            newBaseElement.setAttribute("name", newBaseLabel);
+            root.insertBefore(newBaseElement, lastLibraryElement.getNextSibling());
         } else {
             wiringLabel = "" + (maxLabel + 1);
-            wiringElt = doc.createElement("lib");
-            wiringElt.setAttribute("desc", "#Wiring");
-            wiringElt.setAttribute("name", wiringLabel);
-            root.insertBefore(wiringElt, lastLibElt.getNextSibling());
+            wiringElement = document.createElement("lib");
+            wiringElement.setAttribute("desc", "#Wiring");
+            wiringElement.setAttribute("name", wiringLabel);
+            assert lastLibraryElement != null;
+            root.insertBefore(wiringElement, lastLibraryElement.getNextSibling());
 
             newBaseLabel = null;
-            newBaseElt = null;
+            newBaseElement = null;
         }
 
-        HashMap<String, String> labelMap = new HashMap<String, String>();
+        HashMap<String, String> labelMap = new HashMap<>();
         addToLabelMap(labelMap, oldBaseLabel, newBaseLabel, "Poke Tool;"
                 + "Edit Tool;Select Tool;Wiring Tool;Text Tool;Menu Tool;Text");
         addToLabelMap(labelMap, oldBaseLabel, wiringLabel, "Splitter;Pin;"
                 + "Probe;Tunnel;Clock;Pull Resistor;Bit Extender");
         addToLabelMap(labelMap, gatesLabel, wiringLabel, "Constant");
-        relocateTools(oldBaseElt, newBaseElt, labelMap);
-        relocateTools(oldBaseElt, wiringElt, labelMap);
-        relocateTools(gatesElt, wiringElt, labelMap);
+        relocateTools(oldBaseElement, newBaseElement, labelMap);
+        relocateTools(oldBaseElement, wiringElement, labelMap);
+        relocateTools(gatesElement, wiringElement, labelMap);
         updateFromLabelMap(XmlIterator.forDescendantElements(root, "comp"), labelMap);
         updateFromLabelMap(XmlIterator.forDescendantElements(root, "tool"), labelMap);
     }
 
-    private void addToLabelMap(HashMap<String, String> labelMap, String srcLabel,
-            String dstLabel, String toolNames) {
-        if (srcLabel != null && dstLabel != null) {
+    private void addToLabelMap(HashMap<String, String> labelMap, String sourceLabel,
+            String destinationLabel, String toolNames) {
+        if (sourceLabel != null && destinationLabel != null) {
             for (String tool : toolNames.split(";")) {
-                labelMap.put(srcLabel + ":" + tool, dstLabel);
+                labelMap.put(sourceLabel + ":" + tool, destinationLabel);
             }
         }
     }
 
-    private void relocateTools(Element src, Element dest,
-            HashMap<String, String> labelMap) {
-        if (src == null || src == dest) {
+    private void relocateTools(Element source, Element destination, HashMap<String, String> labelMap) {
+        if (source == null || source == destination) {
             return;
         }
-        String srcLabel = src.getAttribute("name");
+        String srcLabel = source.getAttribute("name");
         if (srcLabel == null) {
             return;
         }
 
-        ArrayList<Element> toRemove = new ArrayList<Element>();
-        for (Element elt : XmlIterator.forChildElements(src, "tool")) {
-            String name = elt.getAttribute("name");
+        ArrayList<Element> elementsToRemove = new ArrayList<>();
+        for (Element element : XmlIterator.forChildElements(source, "tool")) {
+            String name = element.getAttribute("name");
             if (name != null && labelMap.containsKey(srcLabel + ":" + name)) {
-                toRemove.add(elt);
+                elementsToRemove.add(element);
             }
         }
-        for (Element elt : toRemove) {
-            src.removeChild(elt);
-            if (dest != null) {
-                dest.appendChild(elt);
+        for (Element element : elementsToRemove) {
+            source.removeChild(element);
+            if (destination != null) {
+                destination.appendChild(element);
             }
         }
     }
 
-    private void updateFromLabelMap(Iterable<Element> elts,
-            HashMap<String, String> labelMap) {
-        for (Element elt : elts) {
-            String oldLib = elt.getAttribute("lib");
-            String name = elt.getAttribute("name");
+    private void updateFromLabelMap(Iterable<Element> elements, HashMap<String, String> labelMap) {
+        for (Element element : elements) {
+            String oldLib = element.getAttribute("lib");
+            String name = element.getAttribute("name");
             if (oldLib != null && name != null) {
                 String newLib = labelMap.get(oldLib + ":" + name);
                 if (newLib != null) {
-                    elt.setAttribute("lib", newLib);
+                    element.setAttribute("lib", newLib);
                 }
             }
         }
     }
 
-    private void repairForLegacyLibrary(Document doc, Element root) {
-        Element legacyElt = null;
+    private void repairForLegacyLibrary(Document document, Element root) {
+        Element legacyElement = null;
         String legacyLabel = null;
-        for (Element libElt : XmlIterator.forChildElements(root, "lib")) {
-            String desc = libElt.getAttribute("desc");
-            String label = libElt.getAttribute("name");
+        for (Element libElement : XmlIterator.forChildElements(root, "lib")) {
+            String desc = libElement.getAttribute("desc");
+            String label = libElement.getAttribute("name");
             if (desc != null && desc.equals("#Legacy")) {
-                legacyElt = libElt;
+                legacyElement = libElement;
                 legacyLabel = label;
             }
         }
 
-        if (legacyElt != null) {
-            root.removeChild(legacyElt);
+        if (legacyElement != null) {
+            root.removeChild(legacyElement);
 
-            ArrayList<Element> toRemove = new ArrayList<Element>();
-            findLibraryUses(toRemove, legacyLabel,
+            ArrayList<Element> elementsToRemove = new ArrayList<>();
+            findLibraryUses(elementsToRemove, legacyLabel,
                     XmlIterator.forDescendantElements(root, "comp"));
-            boolean componentsRemoved = !toRemove.isEmpty();
-            findLibraryUses(toRemove, legacyLabel,
+            boolean componentsRemoved = !elementsToRemove.isEmpty();
+            findLibraryUses(elementsToRemove, legacyLabel,
                     XmlIterator.forDescendantElements(root, "tool"));
-            for (Element elt : toRemove) {
+            for (Element elt : elementsToRemove) {
                 elt.getParentNode().removeChild(elt);
             }
             if (componentsRemoved) {
                 String error = "Some components have been deleted;"
                         + " the Legacy library is no longer supported.";
-                Element elt = doc.createElement("message");
-                elt.setAttribute("value", error);
-                root.appendChild(elt);
+                Element element = document.createElement("message");
+                element.setAttribute("value", error);
+                root.appendChild(element);
             }
         }
     }
@@ -302,82 +307,91 @@ class XmlReader {
 
     class ReadContext {
 
-        LogisimFile file;
-        LogisimVersion sourceVersion;
-        HashMap<String, Library> libs = new HashMap<String, Library>();
+        private LogisimFile file;
+        private LogisimVersion sourceVersion;
+        private HashMap<String, Library> libraries = new HashMap<>();
         private ArrayList<String> messages;
 
-        ReadContext(LogisimFile file) {
+        private ReadContext(LogisimFile file) {
             this.file = file;
-            this.messages = new ArrayList<String>();
+            this.messages = new ArrayList<>();
         }
 
-        void addError(String message, String context) {
+        private void addError(String message, String context) {
             messages.add(message + " [" + context + "]");
         }
 
         void addErrors(XmlReaderException exception, String context) {
-            for (String msg : exception.getMessages()) {
-                messages.add(msg + " [" + context + "]");
+            for (String message : exception.getMessages()) {
+                messages.add(message + " [" + context + "]");
             }
         }
 
-        private void toLogisimFile(Element elt) {
+        private void toLogisimFile(Element element) {
             // determine the version producing this file
-            String versionString = elt.getAttribute("source");
+            String versionString = element.getAttribute("source");
             if (versionString.equals("")) {
                 sourceVersion = Main.VERSION;
             } else {
                 sourceVersion = LogisimVersion.parse(versionString);
             }
 
-            // first, load the sublibraries
-            for (Element o : XmlIterator.forChildElements(elt, "lib")) {
-                Library lib = toLibrary(o);
-                if (lib != null) {
-                    file.addLibrary(lib);
+            // first, load the sub-libraries
+            for (Element childElement : XmlIterator.forChildElements(element, "lib")) {
+                Library library = toLibrary(childElement);
+                if (library != null) {
+                    file.addLibrary(library);
                 }
             }
 
             // second, create the circuits - empty for now
-            List<CircuitData> circuitsData = new ArrayList<CircuitData>();
-            for (Element circElt : XmlIterator.forChildElements(elt, "circuit")) {
-                String name = circElt.getAttribute("name");
+            List<CircuitData> circuitsData = new ArrayList<>();
+            for (Element circuitElement : XmlIterator.forChildElements(element, "circuit")) {
+                String name = circuitElement.getAttribute("name");
                 if (name == null || name.equals("")) {
                     addError(Strings.get("circNameMissingError"), "C??");
                 }
-                CircuitData circData = new CircuitData(circElt, new Circuit(name));
-                file.addCircuit(circData.circuit);
-                circData.knownComponents = loadKnownComponents(circElt);
-                for (Element appearElt : XmlIterator.forChildElements(circElt, "appear")) {
-                    loadAppearance(appearElt, circData, name + ".appear");
+                CircuitData circuitData = new CircuitData(circuitElement, new Circuit(name));
+                file.addCircuit(circuitData.circuit);
+                circuitData.knownComponents = loadKnownComponents(circuitElement);
+                for (Element appearElement : XmlIterator.forChildElements(circuitElement, "appear")) {
+                    loadAppearance(appearElement, circuitData, name + ".appear");
                 }
-                circuitsData.add(circData);
+                circuitsData.add(circuitData);
             }
 
             // third, process the other child elements
-            for (Element sub_elt : XmlIterator.forChildElements(elt)) {
-                String name = sub_elt.getTagName();
-                if (name.equals("circuit") || name.equals("lib")) {
-                    // Nothing to do: Done earlier.
-                } else if (name.equals("options")) {
-                    try {
-                        initAttributeSet(sub_elt, file.getOptions().getAttributeSet(), null);
-                    } catch (XmlReaderException e) {
-                        addErrors(e, "options");
-                    }
-                } else if (name.equals("mappings")) {
-                    initMouseMappings(sub_elt);
-                } else if (name.equals("toolbar")) {
-                    initToolbarData(sub_elt);
-                } else if (name.equals("main")) {
-                    String main = sub_elt.getAttribute("name");
-                    Circuit circ = file.getCircuit(main);
-                    if (circ != null) {
-                        file.setMainCircuit(circ);
-                    }
-                } else if (name.equals("message")) {
-                    file.addMessage(sub_elt.getAttribute("value"));
+            for (Element childElement : XmlIterator.forChildElements(element)) {
+                String name = childElement.getTagName();
+                switch (name) {
+                    case "circuit":
+                        break;
+                    case "lib":
+                        // Nothing to do: Done earlier.
+                        break;
+                    case "options":
+                        try {
+                            initAttributeSet(childElement, file.getOptions().getAttributeSet(), null);
+                        } catch (XmlReaderException e) {
+                            addErrors(e, "options");
+                        }
+                        break;
+                    case "mappings":
+                        initMouseMappings(childElement);
+                        break;
+                    case "toolbar":
+                        initToolbarData(childElement);
+                        break;
+                    case "main":
+                        String main = childElement.getAttribute("name");
+                        Circuit circuit = file.getCircuit(main);
+                        if (circuit != null) {
+                            file.setMainCircuit(circuit);
+                        }
+                        break;
+                    case "message":
+                        file.addMessage(childElement.getAttribute("value"));
+                        break;
                 }
             }
 
@@ -402,7 +416,7 @@ class XmlReader {
             if (ret == null) {
                 return null;
             }
-            libs.put(name, ret);
+            libraries.put(name, ret);
             for (Element sub_elt : XmlIterator.forChildElements(elt, "tool")) {
                 if (!sub_elt.hasAttribute("name")) {
                     loader.showError(Strings.get("toolNameMissingError"));
@@ -422,7 +436,7 @@ class XmlReader {
         }
 
         private Map<Element, Component> loadKnownComponents(Element elt) {
-            Map<Element, Component> known = new HashMap<Element, Component>();
+            Map<Element, Component> known = new HashMap<>();
             for (Element sub : XmlIterator.forChildElements(elt, "comp")) {
                 try {
                     Component comp = XmlCircuitReader.getComponent(sub, this);
@@ -435,7 +449,7 @@ class XmlReader {
 
         private void loadAppearance(Element appearElt, CircuitData circData,
                 String context) {
-            Map<Location, Instance> pins = new HashMap<Location, Instance>();
+            Map<Location, Instance> pins = new HashMap<>();
             for (Component comp : circData.knownComponents.values()) {
                 if (comp.getFactory() == Pin.FACTORY) {
                     Instance instance = Instance.getInstanceFor(comp);
@@ -443,7 +457,7 @@ class XmlReader {
                 }
             }
 
-            List<AbstractCanvasObject> shapes = new ArrayList<AbstractCanvasObject>();
+            List<AbstractCanvasObject> shapes = new ArrayList<>();
             for (Element sub : XmlIterator.forChildElements(appearElt)) {
                 try {
                     AbstractCanvasObject m = AppearanceSvgReader.createShape(sub, pins);
@@ -546,11 +560,11 @@ class XmlReader {
                 AttributeDefaultProvider defaults) throws XmlReaderException {
             ArrayList<String> messages = null;
 
-            HashMap<String, String> attrsDefined = new HashMap<String, String>();
+            HashMap<String, String> attrsDefined = new HashMap<>();
             for (Element attrElt : XmlIterator.forChildElements(parentElt, "a")) {
                 if (!attrElt.hasAttribute("name")) {
                     if (messages == null) {
-                        messages = new ArrayList<String>();
+                        messages = new ArrayList<>();
                     }
                     messages.add(Strings.get("attrNameMissingError"));
                 } else {
@@ -597,7 +611,7 @@ class XmlReader {
                         attrs.setValue(attr, val);
                     } catch (NumberFormatException e) {
                         if (messages == null) {
-                            messages = new ArrayList<String>();
+                            messages = new ArrayList<>();
                         }
                         messages.add(StringUtil.format(
                                 Strings.get("attrValueInvalidError"),
@@ -615,7 +629,7 @@ class XmlReader {
                 return file;
             }
 
-            Library ret = libs.get(lib_name);
+            Library ret = libraries.get(lib_name);
             if (ret == null) {
                 throw new XmlReaderException(StringUtil.format(
                         Strings.get("libMissingError"), lib_name));

@@ -57,7 +57,7 @@ public class LogisimMenuBar extends JMenuBar {
     private Project proj;
     private SimulateListener simulateListener = null;
     private HashMap<LogisimMenuItem, MenuItem> menuItems
-            = new HashMap<LogisimMenuItem, MenuItem>();
+            = new HashMap<>();
     private ArrayList<ChangeListener> enableListeners;
     private MenuFile file;
     private MenuEdit edit;
@@ -69,7 +69,7 @@ public class LogisimMenuBar extends JMenuBar {
         this.parent = parent;
         this.listener = new MyListener();
         this.proj = proj;
-        this.enableListeners = new ArrayList<ChangeListener>();
+        this.enableListeners = new ArrayList<>();
 
         add(file = new MenuFile(this));
         add(edit = new MenuEdit(this));

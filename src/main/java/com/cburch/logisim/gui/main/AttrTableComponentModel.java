@@ -38,7 +38,7 @@ class AttrTableComponentModel extends AttributeSetTableModel {
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attr, Object value)
+    public void setValueRequested(Attribute<Object> attribute, Object value)
             throws AttrTableSetException {
         if (!proj.getLogisimFile().contains(circ)) {
             String msg = Strings.get("cannotModifyCircuitError");
@@ -46,7 +46,7 @@ class AttrTableComponentModel extends AttributeSetTableModel {
         } else {
             SetAttributeAction act = new SetAttributeAction(circ,
                     Strings.getter("changeAttributeAction"));
-            act.set(comp, attr, value);
+            act.set(comp, attribute, value);
             proj.doAction(act);
         }
     }

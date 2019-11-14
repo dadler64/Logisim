@@ -17,9 +17,9 @@ import java.util.Set;
 class CircuitPoints {
 
     private HashMap<Location, LocationData> map
-            = new HashMap<Location, LocationData>();
+            = new HashMap<>();
     private HashMap<Location, WidthIncompatibilityData> incompatibilityData
-            = new HashMap<Location, WidthIncompatibilityData>();
+            = new HashMap<>();
 
     public CircuitPoints() {
     }
@@ -242,8 +242,8 @@ class CircuitPoints {
     private static class LocationData {
 
         BitWidth width = BitWidth.UNKNOWN;
-        ArrayList<Component> components = new ArrayList<Component>(4);
-        ArrayList<EndData> ends = new ArrayList<EndData>(4);
+        ArrayList<Component> components = new ArrayList<>(4);
+        ArrayList<EndData> ends = new ArrayList<>(4);
         // these lists are parallel - ends corresponding to wires are null
     }
 

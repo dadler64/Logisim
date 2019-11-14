@@ -21,7 +21,7 @@ public abstract class EditPopup extends JPopupMenu {
 
     public EditPopup(boolean waitForInitialize) {
         listener = new Listener();
-        items = new HashMap<LogisimMenuItem, JMenuItem>();
+        items = new HashMap<>();
         if (!waitForInitialize) {
             initialize();
         }

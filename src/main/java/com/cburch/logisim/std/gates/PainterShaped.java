@@ -24,7 +24,7 @@ public class PainterShaped {
     private static final GeneralPath SHIELD_NARROW;
     private static final GeneralPath SHIELD_MEDIUM;
     private static final GeneralPath SHIELD_WIDE;
-    private static HashMap<Integer, int[]> INPUT_LENGTHS = new HashMap<Integer, int[]>();
+    private static HashMap<Integer, int[]> INPUT_LENGTHS = new HashMap<>();
 
     static {
         PATH_NARROW = new GeneralPath();

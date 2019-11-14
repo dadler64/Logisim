@@ -32,11 +32,11 @@ import java.util.Map;
 
 public class Constant extends InstanceFactory {
 
-    public static final Attribute<Integer> ATTR_VALUE
+    public static final Attribute<Integer> ATTRIBUTE_VALUE
             = Attributes.forHexInteger("value", Strings.getter("constantValueAttr"));
     private static final Color BACKGROUND_COLOR = new Color(230, 230, 230);
     private static final List<Attribute<?>> ATTRIBUTES
-            = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, ATTR_VALUE);
+            = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, ATTRIBUTE_VALUE);
     public static InstanceFactory FACTORY = new Constant();
 
     public Constant() {
@@ -59,18 +59,18 @@ public class Constant extends InstanceFactory {
     }
 
     private void updatePorts(Instance instance) {
-        Port[] ps = {new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH)};
-        instance.setPorts(ps);
+        Port[] ports = {new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH)};
+        instance.setPorts(ports);
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.WIDTH) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.WIDTH) {
             instance.recomputeBounds();
             updatePorts(instance);
-        } else if (attr == StdAttr.FACING) {
+        } else if (attribute == StdAttr.FACING) {
             instance.recomputeBounds();
-        } else if (attr == ATTR_VALUE) {
+        } else if (attribute == ATTRIBUTE_VALUE) {
             instance.fireInvalidated();
         }
     }
@@ -86,14 +86,14 @@ public class Constant extends InstanceFactory {
     @Override
     public void propagate(InstanceState state) {
         BitWidth width = state.getAttributeValue(StdAttr.WIDTH);
-        int value = state.getAttributeValue(ATTR_VALUE).intValue();
+        int value = state.getAttributeValue(ATTRIBUTE_VALUE);
         state.setPort(0, Value.createKnown(width, value), 1);
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
-        BitWidth width = attrs.getValue(StdAttr.WIDTH);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
+        BitWidth width = attributes.getValue(StdAttr.WIDTH);
         int chars = (width.getWidth() + 3) / 4;
 
         Bounds ret = null;
@@ -217,75 +217,75 @@ public class Constant extends InstanceFactory {
     //
     @Override
     public void paintIcon(InstancePainter painter) {
-        int w = painter.getAttributeValue(StdAttr.WIDTH).getWidth();
-        int pinx = 16;
-        int piny = 9;
-        Direction dir = painter.getAttributeValue(StdAttr.FACING);
-        if (dir == Direction.EAST) {
-        } // keep defaults
-        else if (dir == Direction.WEST) {
-            pinx = 4;
-        } else if (dir == Direction.NORTH) {
-            pinx = 9;
-            piny = 4;
-        } else if (dir == Direction.SOUTH) {
-            pinx = 9;
-            piny = 16;
+        int width = painter.getAttributeValue(StdAttr.WIDTH).getWidth();
+        int pinX = 16;
+        int pinY = 9;
+        Direction direction = painter.getAttributeValue(StdAttr.FACING);
+
+        //if (direction.equals(Direction.EAST)) { }  // keep defaults
+        if (direction == Direction.WEST) {
+            pinX = 4;
+        } else if (direction == Direction.NORTH) {
+            pinX = 9;
+            pinY = 4;
+        } else if (direction == Direction.SOUTH) {
+            pinX = 9;
+            pinY = 16;
         }
 
-        Graphics g = painter.getGraphics();
-        if (w == 1) {
-            int v = painter.getAttributeValue(ATTR_VALUE).intValue();
-            Value val = v == 1 ? Value.TRUE : Value.FALSE;
-            g.setColor(val.getColor());
-            GraphicsUtil.drawCenteredText(g, "" + v, 10, 9);
+        Graphics graphics = painter.getGraphics();
+        if (width == 1) {
+            int attributeValue = painter.getAttributeValue(ATTRIBUTE_VALUE);
+            Value value = attributeValue == 1 ? Value.TRUE : Value.FALSE;
+            graphics.setColor(value.getColor());
+            GraphicsUtil.drawCenteredText(graphics, "" + attributeValue, 10, 9);
         } else {
-            g.setFont(g.getFont().deriveFont(9.0f));
-            GraphicsUtil.drawCenteredText(g, "x" + w, 10, 9);
+            graphics.setFont(graphics.getFont().deriveFont(9.0f));
+            GraphicsUtil.drawCenteredText(graphics, "x" + width, 10, 9);
         }
-        g.fillOval(pinx, piny, 3, 3);
+        graphics.fillOval(pinX, pinY, 3, 3);
     }
 
     @Override
     public void paintGhost(InstancePainter painter) {
-        int v = painter.getAttributeValue(ATTR_VALUE).intValue();
-        String vStr = Integer.toHexString(v);
-        Bounds bds = getOffsetBounds(painter.getAttributeSet());
+        int attributeValue = painter.getAttributeValue(ATTRIBUTE_VALUE);
+        String valueStr = Integer.toHexString(attributeValue);
+        Bounds bounds = getOffsetBounds(painter.getAttributeSet());
 
-        Graphics g = painter.getGraphics();
-        GraphicsUtil.switchToWidth(g, 2);
-        g.fillOval(-2, -2, 5, 5);
-        GraphicsUtil.drawCenteredText(g, vStr, bds.getX() + bds.getWidth() / 2,
-                bds.getY() + bds.getHeight() / 2);
+        Graphics graphics = painter.getGraphics();
+        GraphicsUtil.switchToWidth(graphics, 2);
+        graphics.fillOval(-2, -2, 5, 5);
+        GraphicsUtil.drawCenteredText(graphics, valueStr, bounds.getX() + bounds.getWidth() / 2,
+                bounds.getY() + bounds.getHeight() / 2);
     }
 
     @Override
     public void paintInstance(InstancePainter painter) {
-        Bounds bds = painter.getOffsetBounds();
+        Bounds bounds = painter.getOffsetBounds();
         BitWidth width = painter.getAttributeValue(StdAttr.WIDTH);
-        int intValue = painter.getAttributeValue(ATTR_VALUE).intValue();
-        Value v = Value.createKnown(width, intValue);
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
+        int intValue = painter.getAttributeValue(ATTRIBUTE_VALUE);
+        Value value = Value.createKnown(width, intValue);
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
 
-        Graphics g = painter.getGraphics();
+        Graphics graphics = painter.getGraphics();
         if (painter.shouldDrawColor()) {
-            g.setColor(BACKGROUND_COLOR);
-            g.fillRect(x + bds.getX(), y + bds.getY(), bds.getWidth(), bds.getHeight());
+            graphics.setColor(BACKGROUND_COLOR);
+            graphics.fillRect(x + bounds.getX(), y + bounds.getY(), bounds.getWidth(), bounds.getHeight());
         }
-        if (v.getWidth() == 1) {
+        if (value.getWidth() == 1) {
             if (painter.shouldDrawColor()) {
-                g.setColor(v.getColor());
+                graphics.setColor(value.getColor());
             }
-            GraphicsUtil.drawCenteredText(g, v.toString(),
-                    x + bds.getX() + bds.getWidth() / 2,
-                    y + bds.getY() + bds.getHeight() / 2 - 2);
+            GraphicsUtil.drawCenteredText(graphics, value.toString(),
+                    x + bounds.getX() + bounds.getWidth() / 2,
+                    y + bounds.getY() + bounds.getHeight() / 2 - 2);
         } else {
-            g.setColor(Color.BLACK);
-            GraphicsUtil.drawCenteredText(g, v.toHexString(),
-                    x + bds.getX() + bds.getWidth() / 2,
-                    y + bds.getY() + bds.getHeight() / 2 - 2);
+            graphics.setColor(Color.BLACK);
+            GraphicsUtil.drawCenteredText(graphics, value.toHexString(),
+                    x + bounds.getX() + bounds.getWidth() / 2,
+                    y + bounds.getY() + bounds.getHeight() / 2 - 2);
         }
         painter.drawPorts();
     }
@@ -318,27 +318,27 @@ public class Constant extends InstanceFactory {
             if (attr == StdAttr.WIDTH) {
                 return (V) width;
             }
-            if (attr == ATTR_VALUE) {
+            if (attr == ATTRIBUTE_VALUE) {
                 return (V) Integer.valueOf(value.toIntValue());
             }
             return null;
         }
 
         @Override
-        public <V> void setValue(Attribute<V> attr, V value) {
-            if (attr == StdAttr.FACING) {
+        public <V> void setValue(Attribute<V> attribute, V value) {
+            if (attribute == StdAttr.FACING) {
                 facing = (Direction) value;
-            } else if (attr == StdAttr.WIDTH) {
+            } else if (attribute == StdAttr.WIDTH) {
                 width = (BitWidth) value;
                 this.value = this.value.extendWidth(width.getWidth(),
                         this.value.get(this.value.getWidth() - 1));
-            } else if (attr == ATTR_VALUE) {
-                int val = ((Integer) value).intValue();
+            } else if (attribute == ATTRIBUTE_VALUE) {
+                int val = (Integer) value;
                 this.value = Value.createKnown(width, val);
             } else {
-                throw new IllegalArgumentException("unknown attribute " + attr);
+                throw new IllegalArgumentException("unknown attribute " + attribute);
             }
-            fireAttributeValueChanged(attr, value);
+            fireAttributeValueChanged(attribute, value);
         }
     }
 
@@ -346,13 +346,13 @@ public class Constant extends InstanceFactory {
 
         private Instance instance;
 
-        public ConstantExpression(Instance instance) {
+        private ConstantExpression(Instance instance) {
             this.instance = instance;
         }
 
         public void computeExpression(Map<Location, Expression> expressionMap) {
             AttributeSet attrs = instance.getAttributeSet();
-            int intValue = attrs.getValue(ATTR_VALUE).intValue();
+            int intValue = attrs.getValue(ATTRIBUTE_VALUE);
 
             expressionMap.put(instance.getLocation(),
                     Expressions.constant(intValue));

@@ -40,7 +40,7 @@ public class DrawingAttributeSet implements AttributeSet, Cloneable {
     private List<Object> values;
 
     public DrawingAttributeSet() {
-        listeners = new EventSourceWeakSupport<AttributeListener>();
+        listeners = new EventSourceWeakSupport<>();
         attrs = ATTRS_ALL;
         values = DEFAULTS_ALL;
     }
@@ -61,8 +61,8 @@ public class DrawingAttributeSet implements AttributeSet, Cloneable {
     public Object clone() {
         try {
             DrawingAttributeSet ret = (DrawingAttributeSet) super.clone();
-            ret.listeners = new EventSourceWeakSupport<AttributeListener>();
-            ret.values = new ArrayList<Object>(this.values);
+            ret.listeners = new EventSourceWeakSupport<>();
+            ret.values = new ArrayList<>(this.values);
             return ret;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -175,7 +175,7 @@ public class DrawingAttributeSet implements AttributeSet, Cloneable {
                 toolAttrs = tool.getAttributes();
             }
             if (!toolAttrs.equals(selectedAttrs)) {
-                selectedAttrs = new ArrayList<Attribute<?>>(toolAttrs);
+                selectedAttrs = new ArrayList<>(toolAttrs);
                 selectedView = Collections.unmodifiableList(selectedAttrs);
                 DrawingAttributeSet.this.addAttributeListener(this);
                 fireAttributeListChanged();

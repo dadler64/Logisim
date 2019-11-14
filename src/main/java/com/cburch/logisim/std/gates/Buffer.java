@@ -34,7 +34,7 @@ class Buffer extends InstanceFactory {
     private Buffer() {
         super("Buffer", Strings.getter("bufferComponent"));
         setAttributes(new Attribute[]{StdAttr.FACING, StdAttr.WIDTH,
-                        GateAttributes.ATTR_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT},
+                        GateAttributes.ATTRIBUTE_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT},
                 new Object[]{Direction.EAST, BitWidth.ONE,
                         GateAttributes.OUTPUT_01, "", StdAttr.DEFAULT_LABEL_FONT});
         setIcon(Icons.getIcon("bufferGate.gif"));
@@ -71,13 +71,13 @@ class Buffer extends InstanceFactory {
             repaired = v;
         }
 
-        Object outType = state.getAttributeValue(GateAttributes.ATTR_OUTPUT);
+        Object outType = state.getAttributeValue(GateAttributes.ATTRIBUTE_OUTPUT);
         return AbstractGate.pullOutput(repaired, outType);
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         if (facing == Direction.SOUTH) {
             return Bounds.create(-9, -20, 18, 20);
         }

@@ -89,8 +89,8 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
                     es[i] = newEnd;
                 }
                 if (endsChangedOld == null) {
-                    endsChangedOld = new ArrayList<EndData>();
-                    endsChangedNew = new ArrayList<EndData>();
+                    endsChangedOld = new ArrayList<>();
+                    endsChangedNew = new ArrayList<>();
                 }
                 endsChangedOld.add(oldEnd);
                 endsChangedNew.add(newEnd);
@@ -100,7 +100,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
                 Attribute<BitWidth> attr = p.getWidthAttribute();
                 if (attr != null) {
                     if (wattrs == null) {
-                        wattrs = new HashSet<Attribute<BitWidth>>();
+                        wattrs = new HashSet<>();
                     }
                     wattrs.add(attr);
                 }
@@ -120,7 +120,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
         }
         if (es != esOld) {
             endArray = es;
-            endList = new UnmodifiableList<EndData>(es);
+            endList = new UnmodifiableList<>(es);
         }
         widthAttrs = wattrs;
         hasToolTips = toolTipFound;
@@ -135,7 +135,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
     public void addComponentListener(ComponentListener l) {
         EventSourceWeakSupport<ComponentListener> ls = listeners;
         if (ls == null) {
-            ls = new EventSourceWeakSupport<ComponentListener>();
+            ls = new EventSourceWeakSupport<>();
             ls.add(l);
             listeners = ls;
         } else {
@@ -317,7 +317,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
     void drawLabel(ComponentDrawContext context) {
         InstanceTextField field = textField;
         if (field != null) {
-            field.draw(this, context);
+            field.draw(context);
         }
     }
 
@@ -334,7 +334,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
 
     void setPorts(Port[] ports) {
         Port[] portsCopy = ports.clone();
-        portList = new UnmodifiableList<Port>(portsCopy);
+        portList = new UnmodifiableList<>(portsCopy);
         computeEnds();
     }
 

@@ -50,13 +50,13 @@ class ExplorerToolbarModel extends AbstractToolbarModel
 
     @Override
     public boolean isSelected(ToolbarItem item) {
-        if (item == itemLayout) {
+        if (item.equals(itemLayout)) {
             return frame.getEditorView().equals(Frame.EDIT_LAYOUT);
-        } else if (item == itemAppearance) {
+        } else if (item.equals(itemAppearance)) {
             return frame.getEditorView().equals(Frame.EDIT_APPEARANCE);
-        } else if (item == itemToolbox) {
+        } else if (item.equals(itemToolbox)) {
             return frame.getExplorerView().equals(Frame.VIEW_TOOLBOX);
-        } else if (item == itemSimulation) {
+        } else if (item.equals(itemSimulation)) {
             return frame.getExplorerView().equals(Frame.VIEW_SIMULATION);
         } else {
             return false;

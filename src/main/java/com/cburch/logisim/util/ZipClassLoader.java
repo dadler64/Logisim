@@ -29,7 +29,7 @@ public class ZipClassLoader extends ClassLoader {
     private static final int REQUEST_FIND = 0;
     private static final int REQUEST_LOAD = 1;
     private File zipPath;
-    private HashMap<String, Object> classes = new HashMap<String, Object>();
+    private HashMap<String, Object> classes = new HashMap<>();
     private Object bgLock = new Object();
     private WorkThread bgThread = null;
 
@@ -178,7 +178,7 @@ public class ZipClassLoader extends ClassLoader {
 
     private class WorkThread extends Thread {
 
-        private LinkedList<Request> requests = new LinkedList<Request>();
+        private LinkedList<Request> requests = new LinkedList<>();
         private ZipFile zipFile = null;
 
         @Override

@@ -45,7 +45,7 @@ class SplitterAttributes extends AbstractAttributeSet {
     byte[] bit_end = new byte[2];    // how each bit maps to an end (0 if nowhere);
     //   other values will be between 1 and fanout
     BitOutOption[] options = null;
-    private ArrayList<Attribute<?>> attrs = new ArrayList<Attribute<?>>(INIT_ATTRIBUTES);
+    private ArrayList<Attribute<?>> attrs = new ArrayList<>(INIT_ATTRIBUTES);
     private SplitterParameters parameters;
 
     SplitterAttributes() {
@@ -114,7 +114,7 @@ class SplitterAttributes extends AbstractAttributeSet {
     protected void copyInto(AbstractAttributeSet destObj) {
         SplitterAttributes dest = (SplitterAttributes) destObj;
         dest.parameters = this.parameters;
-        dest.attrs = new ArrayList<Attribute<?>>(this.attrs.size());
+        dest.attrs = new ArrayList<>(this.attrs.size());
         dest.attrs.addAll(INIT_ATTRIBUTES);
         for (int i = INIT_ATTRIBUTES.size(), n = this.attrs.size(); i < n; i++) {
             BitOutAttribute attr = (BitOutAttribute) this.attrs.get(i);

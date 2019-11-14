@@ -63,7 +63,7 @@ public class Analyze {
                 return a.hashCode() - b.hashCode();
             }
         };
-        SortedMap<Instance, String> ret = new TreeMap<Instance, String>(locOrder);
+        SortedMap<Instance, String> ret = new TreeMap<>(locOrder);
 
         // Put the pins into the TreeMap, with null labels
         for (Instance pin : circuit.getAppearance().getPortOffsets(Direction.EAST).values()) {
@@ -71,8 +71,8 @@ public class Analyze {
         }
 
         // Process first the pins that the user has given labels.
-        ArrayList<Instance> pinList = new ArrayList<Instance>(ret.keySet());
-        HashSet<String> labelsTaken = new HashSet<String>();
+        ArrayList<Instance> pinList = new ArrayList<>(ret.keySet());
+        HashSet<String> labelsTaken = new HashSet<>();
         for (Instance pin : pinList) {
             String label = pin.getAttributeSet().getValue(StdAttr.LABEL);
             label = toValidLabel(label);
@@ -189,9 +189,9 @@ public class Analyze {
             Map<Instance, String> pinNames) throws AnalyzeException {
         ExpressionMap expressionMap = new ExpressionMap(circuit);
 
-        ArrayList<String> inputNames = new ArrayList<String>();
-        ArrayList<String> outputNames = new ArrayList<String>();
-        ArrayList<Instance> outputPins = new ArrayList<Instance>();
+        ArrayList<String> inputNames = new ArrayList<>();
+        ArrayList<String> outputNames = new ArrayList<>();
+        ArrayList<Instance> outputPins = new ArrayList<>();
         for (Map.Entry<Instance, String> entry : pinNames.entrySet()) {
             Instance pin = entry.getKey();
             String label = entry.getValue();
@@ -213,7 +213,7 @@ public class Analyze {
                 throw new AnalyzeException.Circular();
             }
 
-            propagateWires(expressionMap, new HashSet<Location>(expressionMap.dirtyPoints));
+            propagateWires(expressionMap, new HashSet<>(expressionMap.dirtyPoints));
 
             HashSet<Component> dirtyComponents = getDirtyComponents(circuit, expressionMap.dirtyPoints);
             expressionMap.dirtyPoints.clear();
@@ -263,7 +263,7 @@ public class Analyze {
     // computes outputs of affected components
     private static HashSet<Component> getDirtyComponents(Circuit circuit,
             Set<Location> pointsToProcess) throws AnalyzeException {
-        HashSet<Component> dirtyComponents = new HashSet<Component>();
+        HashSet<Component> dirtyComponents = new HashSet<>();
         for (Location point : pointsToProcess) {
             for (Component comp : circuit.getNonWires(point)) {
                 dirtyComponents.add(comp);
@@ -313,10 +313,10 @@ public class Analyze {
      */
     public static void computeTable(AnalyzerModel model, Project proj,
             Circuit circuit, Map<Instance, String> pinLabels) {
-        ArrayList<Instance> inputPins = new ArrayList<Instance>();
-        ArrayList<String> inputNames = new ArrayList<String>();
-        ArrayList<Instance> outputPins = new ArrayList<Instance>();
-        ArrayList<String> outputNames = new ArrayList<String>();
+        ArrayList<Instance> inputPins = new ArrayList<>();
+        ArrayList<String> inputNames = new ArrayList<>();
+        ArrayList<Instance> outputPins = new ArrayList<>();
+        ArrayList<String> outputNames = new ArrayList<>();
         for (Map.Entry<Instance, String> entry : pinLabels.entrySet()) {
             Instance pin = entry.getKey();
             if (Pin.FACTORY.isInputPin(pin)) {
@@ -386,8 +386,8 @@ public class Analyze {
     private static class ExpressionMap extends HashMap<Location, Expression> {
 
         private Circuit circuit;
-        private Set<Location> dirtyPoints = new HashSet<Location>();
-        private Map<Location, Component> causes = new HashMap<Location, Component>();
+        private Set<Location> dirtyPoints = new HashSet<>();
+        private Map<Location, Component> causes = new HashMap<>();
         private Component currentCause = null;
 
         ExpressionMap(Circuit circuit) {

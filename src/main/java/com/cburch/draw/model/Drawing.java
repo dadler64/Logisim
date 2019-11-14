@@ -25,8 +25,8 @@ public class Drawing implements CanvasModel {
     private DrawingOverlaps overlaps;
 
     public Drawing() {
-        listeners = new EventSourceWeakSupport<CanvasModelListener>();
-        canvasObjects = new ArrayList<CanvasObject>();
+        listeners = new EventSourceWeakSupport<>();
+        canvasObjects = new ArrayList<>();
         overlaps = new DrawingOverlaps();
     }
 
@@ -62,7 +62,7 @@ public class Drawing implements CanvasModel {
     }
 
     public List<CanvasObject> getObjectsFromTop() {
-        ArrayList<CanvasObject> ret = new ArrayList<CanvasObject>(getObjectsFromBottom());
+        ArrayList<CanvasObject> ret = new ArrayList<>(getObjectsFromBottom());
         Collections.reverse(ret);
         return ret;
     }
@@ -76,7 +76,7 @@ public class Drawing implements CanvasModel {
         for (CanvasObject shape : getObjectsFromBottom()) {
             if (bds.contains(shape.getBounds())) {
                 if (ret == null) {
-                    ret = new ArrayList<CanvasObject>();
+                    ret = new ArrayList<>();
                 }
                 ret.add(shape);
             }
@@ -94,7 +94,7 @@ public class Drawing implements CanvasModel {
 
     public void addObjects(int index, Collection<? extends CanvasObject> shapes) {
         LinkedHashMap<CanvasObject, Integer> indexes;
-        indexes = new LinkedHashMap<CanvasObject, Integer>();
+        indexes = new LinkedHashMap<>();
         int i = index;
         for (CanvasObject shape : shapes) {
             indexes.put(shape, Integer.valueOf(i));
@@ -210,7 +210,7 @@ public class Drawing implements CanvasModel {
 
     public void setAttributeValues(Map<AttributeMapKey, Object> values) {
         HashMap<AttributeMapKey, Object> oldValues;
-        oldValues = new HashMap<AttributeMapKey, Object>();
+        oldValues = new HashMap<>();
         for (AttributeMapKey key : values.keySet()) {
             @SuppressWarnings("unchecked")
             Attribute<Object> attr = (Attribute<Object>) key.getAttribute();
@@ -246,7 +246,7 @@ public class Drawing implements CanvasModel {
     private ArrayList<CanvasObject> restrict(
             Collection<? extends CanvasObject> shapes) {
         ArrayList<CanvasObject> ret;
-        ret = new ArrayList<CanvasObject>(shapes.size());
+        ret = new ArrayList<>(shapes.size());
         for (CanvasObject shape : shapes) {
             if (canvasObjects.contains(shape)) {
                 ret.add(shape);

@@ -18,15 +18,15 @@ class DefaultRegistry {
         rootPane.setDefaultButton(null);
     }
 
-    public void registerDefaultButton(JComponent comp, JButton button) {
-        comp.addFocusListener(new MyListener(button));
+    public void registerDefaultButton(JComponent component, JButton button) {
+        component.addFocusListener(new MyListener(button));
     }
 
     private class MyListener implements FocusListener {
 
-        JButton defaultButton;
+        private JButton defaultButton;
 
-        MyListener(JButton defaultButton) {
+        private MyListener(JButton defaultButton) {
             this.defaultButton = defaultButton;
         }
 
@@ -36,7 +36,7 @@ class DefaultRegistry {
 
         public void focusLost(FocusEvent event) {
             JButton currentDefault = rootPane.getDefaultButton();
-            if (currentDefault == defaultButton) {
+            if (currentDefault.equals(defaultButton)) {
                 rootPane.setDefaultButton(null);
             }
         }

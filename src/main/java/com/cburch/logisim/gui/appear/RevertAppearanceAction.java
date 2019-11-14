@@ -29,7 +29,7 @@ public class RevertAppearanceAction extends Action {
     public void doIt(Project proj) {
         CircuitAppearance appear = circuit.getAppearance();
         wasDefault = appear.isDefaultAppearance();
-        old = new ArrayList<CanvasObject>(appear.getObjectsFromBottom());
+        old = new ArrayList<>(appear.getObjectsFromBottom());
         appear.setDefaultAppearance(true);
     }
 

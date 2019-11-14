@@ -4,7 +4,6 @@
 package com.cburch.logisim.instance;
 
 import com.cburch.logisim.circuit.Circuit;
-import com.cburch.logisim.comp.Component;
 import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.comp.ComponentUserEvent;
 import com.cburch.logisim.comp.TextField;
@@ -27,46 +26,45 @@ import java.awt.Graphics;
 public class InstanceTextField implements AttributeListener, TextFieldListener,
         TextEditable {
 
-    private Canvas canvas;
-    private InstanceComponent comp;
+    private InstanceComponent component;
     private TextField field;
-    private Attribute<String> labelAttr;
-    private Attribute<Font> fontAttr;
+    private Attribute<String> labelAttribute;
+    private Attribute<Font> fontAttribute;
     private int fieldX;
     private int fieldY;
-    private int halign;
-    private int valign;
+    private int hAlign;
+    private int vAlign;
 
-    InstanceTextField(InstanceComponent comp) {
-        this.comp = comp;
+    InstanceTextField(InstanceComponent component) {
+        this.component = component;
         this.field = null;
-        this.labelAttr = null;
-        this.fontAttr = null;
+        this.labelAttribute = null;
+        this.fontAttribute = null;
     }
 
-    void update(Attribute<String> labelAttr, Attribute<Font> fontAttr,
-            int x, int y, int halign, int valign) {
+    void update(Attribute<String> labelAttribute, Attribute<Font> fontAttribute,
+            int x, int y, int hAlign, int vAlign) {
         boolean wasReg = shouldRegister();
-        this.labelAttr = labelAttr;
-        this.fontAttr = fontAttr;
+        this.labelAttribute = labelAttribute;
+        this.fontAttribute = fontAttribute;
         this.fieldX = x;
         this.fieldY = y;
-        this.halign = halign;
-        this.valign = valign;
+        this.hAlign = hAlign;
+        this.vAlign = vAlign;
         boolean shouldReg = shouldRegister();
-        AttributeSet attrs = comp.getAttributeSet();
+        AttributeSet attributeSet = component.getAttributeSet();
         if (!wasReg && shouldReg) {
-            attrs.addAttributeListener(this);
+            attributeSet.addAttributeListener(this);
         }
         if (wasReg && !shouldReg) {
-            attrs.removeAttributeListener(this);
+            attributeSet.removeAttributeListener(this);
         }
 
-        updateField(attrs);
+        updateField(attributeSet);
     }
 
-    private void updateField(AttributeSet attrs) {
-        String text = attrs.getValue(labelAttr);
+    private void updateField(AttributeSet attributeSet) {
+        String text = attributeSet.getValue(labelAttribute);
         if (text == null || text.equals("")) {
             if (field != null) {
                 field.removeTextFieldListener(this);
@@ -74,95 +72,92 @@ public class InstanceTextField implements AttributeListener, TextFieldListener,
             }
         } else {
             if (field == null) {
-                createField(attrs, text);
+                createField(attributeSet, text);
             } else {
-                Font font = attrs.getValue(fontAttr);
+                Font font = attributeSet.getValue(fontAttribute);
                 if (font != null) {
                     field.setFont(font);
                 }
-                field.setLocation(fieldX, fieldY, halign, valign);
+                field.setLocation(fieldX, fieldY, hAlign, vAlign);
                 field.setText(text);
             }
         }
     }
 
-    private void createField(AttributeSet attrs, String text) {
-        Font font = attrs.getValue(fontAttr);
-        field = new TextField(fieldX, fieldY, halign, valign, font);
+    private void createField(AttributeSet attributeSet, String text) {
+        Font font = attributeSet.getValue(fontAttribute);
+        field = new TextField(fieldX, fieldY, hAlign, vAlign, font);
         field.setText(text);
         field.addTextFieldListener(this);
     }
 
     private boolean shouldRegister() {
-        return labelAttr != null || fontAttr != null;
+        return labelAttribute != null || fontAttribute != null;
     }
 
-    Bounds getBounds(Graphics g) {
-        return field == null ? Bounds.EMPTY_BOUNDS : field.getBounds(g);
+    Bounds getBounds(Graphics graphics) {
+        return field == null ? Bounds.EMPTY_BOUNDS : field.getBounds(graphics);
     }
 
-    void draw(Component comp, ComponentDrawContext context) {
+    void draw(ComponentDrawContext context) {
         if (field != null) {
-            Graphics g = context.getGraphics().create();
-            field.draw(g);
-            g.dispose();
+            Graphics graphics = context.getGraphics().create();
+            field.draw(graphics);
+            graphics.dispose();
         }
     }
 
-    public void attributeListChanged(AttributeEvent e) {
+    public void attributeListChanged(AttributeEvent event) {
     }
 
-    public void attributeValueChanged(AttributeEvent e) {
-        Attribute<?> attr = e.getAttribute();
-        if (attr == labelAttr) {
-            updateField(comp.getAttributeSet());
-        } else if (attr == fontAttr) {
+    public void attributeValueChanged(AttributeEvent event) {
+        Attribute<?> attribute = event.getAttribute();
+        if (attribute == labelAttribute) {
+            updateField(component.getAttributeSet());
+        } else if (attribute == fontAttribute) {
             if (field != null) {
-                field.setFont((Font) e.getValue());
+                field.setFont((Font) event.getValue());
             }
         }
     }
 
-    public void textChanged(TextFieldEvent e) {
-        String prev = e.getOldText();
-        String next = e.getText();
-        if (!next.equals(prev)) {
-            comp.getAttributeSet().setValue(labelAttr, next);
+    public void textChanged(TextFieldEvent event) {
+        String previous = event.getOldText();
+        String next = event.getText();
+        if (!next.equals(previous)) {
+            component.getAttributeSet().setValue(labelAttribute, next);
         }
     }
 
-    public Action getCommitAction(Circuit circuit, String oldText,
-            String newText) {
-        SetAttributeAction act = new SetAttributeAction(circuit,
-                Strings.getter("changeLabelAction"));
-        act.set(comp, labelAttr, newText);
-        return act;
+    public Action getCommitAction(Circuit circuit, String oldText, String newText) {
+        SetAttributeAction action = new SetAttributeAction(circuit, Strings.getter("changeLabelAction"));
+        action.set(component, labelAttribute, newText);
+        return action;
     }
 
     public Caret getTextCaret(ComponentUserEvent event) {
-        canvas = event.getCanvas();
-        Graphics g = canvas.getGraphics();
+        Canvas canvas = event.getCanvas();
+        Graphics graphics = canvas.getGraphics();
 
-        // if field is absent, create it empty
-        // and if it is empty, just return a caret at its beginning
+        // if field is absent, create it empty and if it is empty, just return a caret at its beginning
         if (field == null) {
-            createField(comp.getAttributeSet(), "");
+            createField(component.getAttributeSet(), "");
         }
         String text = field.getText();
         if (text == null || text.equals("")) {
-            return field.getCaret(g, 0);
+            return field.getCaret(graphics, 0);
         }
 
-        Bounds bds = field.getBounds(g);
-        if (bds.getWidth() < 4 || bds.getHeight() < 4) {
-            Location loc = comp.getLocation();
-            bds = bds.add(Bounds.create(loc).expand(2));
+        Bounds bounds = field.getBounds(graphics);
+        if (bounds.getWidth() < 4 || bounds.getHeight() < 4) {
+            Location loc = component.getLocation();
+            bounds = bounds.add(Bounds.create(loc).expand(2));
         }
 
         int x = event.getX();
         int y = event.getY();
-        if (bds.contains(x, y)) {
-            return field.getCaret(g, x, y);
+        if (bounds.contains(x, y)) {
+            return field.getCaret(graphics, x, y);
         } else {
             return null;
         }

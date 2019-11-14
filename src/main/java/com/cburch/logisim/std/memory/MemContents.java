@@ -33,7 +33,7 @@ class MemContents implements Cloneable, HexModel {
     //
     public void addHexModelListener(HexModelListener l) {
         if (listeners == null) {
-            listeners = new EventSourceWeakSupport<HexModelListener>();
+            listeners = new EventSourceWeakSupport<>();
         }
         listeners.add(l);
     }

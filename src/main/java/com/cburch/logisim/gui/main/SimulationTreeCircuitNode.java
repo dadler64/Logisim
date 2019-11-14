@@ -35,7 +35,7 @@ class SimulationTreeCircuitNode extends SimulationTreeNode
         this.parent = parent;
         this.circuitState = circuitState;
         this.subcircComp = subcircComp;
-        this.children = new ArrayList<TreeNode>();
+        this.children = new ArrayList<>();
         circuitState.getCircuit().addCircuitListener(this);
         if (subcircComp != null) {
             subcircComp.getAttributeSet().addAttributeListener(this);
@@ -122,8 +122,8 @@ class SimulationTreeCircuitNode extends SimulationTreeNode
 
     // returns true if changed
     private boolean computeChildren() {
-        ArrayList<TreeNode> newChildren = new ArrayList<TreeNode>();
-        ArrayList<Component> subcircs = new ArrayList<Component>();
+        ArrayList<TreeNode> newChildren = new ArrayList<>();
+        ArrayList<Component> subcircs = new ArrayList<>();
         for (Component comp : circuitState.getCircuit().getNonWires()) {
             if (comp.getFactory() instanceof SubcircuitFactory) {
                 subcircs.add(comp);

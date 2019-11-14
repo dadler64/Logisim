@@ -44,7 +44,7 @@ class AppearanceToolbarModel extends AbstractToolbarModel
                 new PolyTool(true, attrs),
         };
 
-        ArrayList<ToolbarItem> rawItems = new ArrayList<ToolbarItem>();
+        ArrayList<ToolbarItem> rawItems = new ArrayList<>();
         for (AbstractTool tool : tools) {
             rawItems.add(new ToolbarToolItem(tool));
         }

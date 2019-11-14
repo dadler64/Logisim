@@ -120,9 +120,9 @@ public class Transistor extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
-        Object gateLoc = attrs.getValue(Wiring.ATTR_GATE);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
+        Object gateLoc = attributes.getValue(Wiring.ATTR_GATE);
         int delta = gateLoc == Wiring.GATE_TOP_LEFT ? -20 : 0;
         if (facing == Direction.NORTH) {
             return Bounds.create(delta, 0, 20, 40);

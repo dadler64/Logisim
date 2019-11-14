@@ -60,7 +60,7 @@ abstract class CircuitDetermination {
 
         private ComponentFactory factory;
         private ArrayList<CircuitDetermination> inputs
-                = new ArrayList<CircuitDetermination>();
+                = new ArrayList<>();
 
         private Gate(ComponentFactory factory) {
             this.factory = factory;
@@ -143,7 +143,7 @@ abstract class CircuitDetermination {
         private void notOutput() {
             Gate sub = new Gate(NandGate.FACTORY);
             sub.inputs = this.inputs;
-            this.inputs = new ArrayList<CircuitDetermination>();
+            this.inputs = new ArrayList<>();
             inputs.add(sub);
             inputs.add(sub);
         }
@@ -175,7 +175,7 @@ abstract class CircuitDetermination {
             if (num > GateAttributes.MAX_INPUTS) {
                 int newNum = (num + GateAttributes.MAX_INPUTS - 1) / GateAttributes.MAX_INPUTS;
                 ArrayList<CircuitDetermination> oldInputs = inputs;
-                inputs = new ArrayList<CircuitDetermination>();
+                inputs = new ArrayList<>();
 
                 ComponentFactory subFactory = factory;
                 if (subFactory == NandGate.FACTORY) {

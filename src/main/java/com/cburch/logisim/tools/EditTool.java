@@ -58,7 +58,7 @@ public class EditTool extends Tool {
         this.select = select;
         this.wiring = wiring;
         this.current = select;
-        this.cache = new LinkedHashMap<Location, Boolean>();
+        this.cache = new LinkedHashMap<>();
         this.lastX = -1;
         this.wireLoc = NULL_LOCATION;
         this.pressX = -1;
@@ -170,7 +170,7 @@ public class EditTool extends Tool {
                 if (selected.contains(w)) {
                     if (w.contains(oldWireLoc)) {
                         if (suppress == null) {
-                            suppress = new ArrayList<Component>();
+                            suppress = new ArrayList<>();
                         }
                         suppress.add(w);
                     }
@@ -401,14 +401,12 @@ public class EditTool extends Tool {
     }
 
     @Override
-    public void keyReleased(Canvas canvas, KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ALT:
-                updateLocation(canvas, e);
-                e.consume();
-                break;
-            default:
-                select.keyReleased(canvas, e);
+    public void keyReleased(Canvas canvas, KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.VK_ALT) {
+            updateLocation(canvas, event);
+            event.consume();
+        } else {
+            select.keyReleased(canvas, event);
         }
     }
 

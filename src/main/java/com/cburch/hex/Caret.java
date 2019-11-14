@@ -38,7 +38,7 @@ public class Caret {
 
     Caret(HexEditor hex) {
         this.hex = hex;
-        this.listeners = new ArrayList<ChangeListener>();
+        this.listeners = new ArrayList<>();
         this.cursor = -1;
 
         Listener l = new Listener();

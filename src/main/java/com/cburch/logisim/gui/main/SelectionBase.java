@@ -27,12 +27,12 @@ import java.util.Set;
 class SelectionBase {
 
     static final Set<Component> NO_COMPONENTS = Collections.emptySet();
-    final HashSet<Component> selected = new HashSet<Component>(); // of selected Components in circuit
-    final HashSet<Component> lifted = new HashSet<Component>(); // of selected Components removed
-    final HashSet<Component> suppressHandles = new HashSet<Component>(); // of Components
+    final HashSet<Component> selected = new HashSet<>(); // of selected Components in circuit
+    final HashSet<Component> lifted = new HashSet<>(); // of selected Components removed
+    final HashSet<Component> suppressHandles = new HashSet<>(); // of Components
     final Set<Component> unionSet = CollectionUtil.createUnmodifiableSetUnion(selected, lifted);
     Project proj;
-    private ArrayList<Selection.Listener> listeners = new ArrayList<Selection.Listener>();
+    private ArrayList<Selection.Listener> listeners = new ArrayList<>();
     private Bounds bounds = Bounds.EMPTY_BOUNDS;
     private boolean shouldSnap = false;
 
@@ -187,7 +187,7 @@ class SelectionBase {
     }
 
     void duplicateHelper(CircuitMutation xn) {
-        HashSet<Component> oldSelected = new HashSet<Component>(selected);
+        HashSet<Component> oldSelected = new HashSet<>(selected);
         oldSelected.addAll(lifted);
         pasteHelper(xn, oldSelected);
     }
@@ -317,7 +317,7 @@ class SelectionBase {
 
     private HashMap<Component, Component> copyComponents(Collection<Component> components,
             int dx, int dy) {
-        HashMap<Component, Component> ret = new HashMap<Component, Component>();
+        HashMap<Component, Component> ret = new HashMap<>();
         for (Component comp : components) {
             Location oldLoc = comp.getLocation();
             AttributeSet attrs = (AttributeSet) comp.getAttributeSet().clone();

@@ -28,7 +28,7 @@ public class LFrame extends JFrame implements WindowClosable {
 
     public static void attachIcon(Window frame) {
         if (ICONS == null) {
-            List<Image> loadedIcons = new ArrayList<Image>();
+            List<Image> loadedIcons = new ArrayList<>();
             ClassLoader loader = LFrame.class.getClassLoader();
             for (int size : SIZES) {
                 URL url = loader.getResource(PATH + size + ".png");

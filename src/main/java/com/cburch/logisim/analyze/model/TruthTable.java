@@ -13,9 +13,9 @@ public class TruthTable {
 
     private static final Entry DEFAULT_ENTRY = Entry.DONT_CARE;
     private MyListener myListener = new MyListener();
-    private List<TruthTableListener> listeners = new ArrayList<TruthTableListener>();
+    private List<TruthTableListener> listeners = new ArrayList<>();
     private AnalyzerModel model;
-    private HashMap<String, Entry[]> outputColumns = new HashMap<String, Entry[]>();
+    private HashMap<String, Entry[]> outputColumns = new HashMap<>();
 
     public TruthTable(AnalyzerModel model) {
         this.model = model;

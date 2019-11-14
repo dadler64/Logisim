@@ -58,8 +58,8 @@ public class PullResistor extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         if (facing == Direction.EAST) {
             return Bounds.create(-42, -6, 42, 12);
         } else if (facing == Direction.WEST) {

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AbstractCaret implements Caret {
 
-    private ArrayList<CaretListener> listeners = new ArrayList<CaretListener>();
+    private ArrayList<CaretListener> listeners = new ArrayList<>();
     private List<CaretListener> listenersView;
     private Bounds bds = Bounds.EMPTY_BOUNDS;
 

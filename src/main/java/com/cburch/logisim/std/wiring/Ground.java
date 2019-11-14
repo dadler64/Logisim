@@ -50,9 +50,9 @@ public class Ground extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
+    public Bounds getOffsetBounds(AttributeSet attributes) {
         return Bounds.create(0, -8, 14, 16)
-                .rotate(Direction.EAST, attrs.getValue(StdAttr.FACING), 0, 0);
+                .rotate(Direction.EAST, attributes.getValue(StdAttr.FACING), 0, 0);
     }
 
     @Override

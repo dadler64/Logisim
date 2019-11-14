@@ -18,8 +18,8 @@ class DrawingOverlaps {
     private Set<CanvasObject> untested;
 
     public DrawingOverlaps() {
-        map = new HashMap<CanvasObject, List<CanvasObject>>();
-        untested = new HashSet<CanvasObject>();
+        map = new HashMap<>();
+        untested = new HashSet<>();
     }
 
     public Collection<CanvasObject> getObjectsOverlapping(CanvasObject o) {
@@ -35,7 +35,7 @@ class DrawingOverlaps {
 
     private void ensureUpdated() {
         for (CanvasObject o : untested) {
-            ArrayList<CanvasObject> over = new ArrayList<CanvasObject>();
+            ArrayList<CanvasObject> over = new ArrayList<>();
             for (CanvasObject o2 : map.keySet()) {
                 if (o != o2 && o.overlaps(o2)) {
                     over.add(o2);
@@ -50,7 +50,7 @@ class DrawingOverlaps {
     private void addOverlap(CanvasObject a, CanvasObject b) {
         List<CanvasObject> alist = map.get(a);
         if (alist == null) {
-            alist = new ArrayList<CanvasObject>();
+            alist = new ArrayList<>();
             map.put(a, alist);
         }
         if (!alist.contains(b)) {

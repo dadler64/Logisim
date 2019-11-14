@@ -16,9 +16,9 @@ public class UndoLog {
     private int modCount;
 
     public UndoLog() {
-        this.listeners = new EventSourceWeakSupport<UndoLogListener>();
-        this.undoLog = new LinkedList<Action>();
-        this.redoLog = new LinkedList<Action>();
+        this.listeners = new EventSourceWeakSupport<>();
+        this.undoLog = new LinkedList<>();
+        this.redoLog = new LinkedList<>();
         this.modCount = 0;
     }
 

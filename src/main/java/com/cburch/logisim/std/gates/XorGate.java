@@ -16,7 +16,7 @@ import java.awt.Graphics;
 
 class XorGate extends AbstractGate {
 
-    public static XorGate FACTORY = new XorGate();
+    public static final XorGate FACTORY = new XorGate();
 
     private XorGate() {
         super("XOR Gate", Strings.getter("xorGateComponent"), true);
@@ -42,10 +42,10 @@ class XorGate extends AbstractGate {
             return "";
         }
         boolean isOdd = false;
-        Object behavior = attrs.getValue(GateAttributes.ATTR_XOR);
+        Object behavior = attrs.getValue(GateAttributes.ATTRIBUTE_XOR);
         if (behavior == GateAttributes.XOR_ODD) {
-            Object inputs = attrs.getValue(GateAttributes.ATTR_INPUTS);
-            if (inputs == null || ((Integer) inputs).intValue() != 2) {
+            Integer inputs = attrs.getValue(GateAttributes.ATTR_INPUTS);
+            if (inputs == null || inputs != 2) {
                 isOdd = true;
             }
         }
@@ -54,11 +54,11 @@ class XorGate extends AbstractGate {
 
     @Override
     public void paintIconShaped(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
-        GraphicsUtil.drawCenteredArc(g, 2, -5, 22, -90, 53);
-        GraphicsUtil.drawCenteredArc(g, 2, 23, 22, 90, -53);
-        GraphicsUtil.drawCenteredArc(g, -10, 9, 16, -30, 60);
-        GraphicsUtil.drawCenteredArc(g, -12, 9, 16, -30, 60);
+        Graphics graphics = painter.getGraphics();
+        GraphicsUtil.drawCenteredArc(graphics, 2, -5, 22, -90, 53);
+        GraphicsUtil.drawCenteredArc(graphics, 2, 23, 22, 90, -53);
+        GraphicsUtil.drawCenteredArc(graphics, -10, 9, 16, -30, 60);
+        GraphicsUtil.drawCenteredArc(graphics, -12, 9, 16, -30, 60);
     }
 
     @Override
@@ -67,15 +67,13 @@ class XorGate extends AbstractGate {
     }
 
     @Override
-    protected void paintDinShape(InstancePainter painter, int width, int height,
-            int inputs) {
+    protected void paintDinShape(InstancePainter painter, int width, int height, int inputs) {
         PainterDin.paintXor(painter, width, height, false);
     }
 
     @Override
-    protected Value computeOutput(Value[] inputs, int numInputs,
-            InstanceState state) {
-        Object behavior = state.getAttributeValue(GateAttributes.ATTR_XOR);
+    protected Value computeOutput(Value[] inputs, int numInputs, InstanceState state) {
+        Object behavior = state.getAttributeValue(GateAttributes.ATTRIBUTE_XOR);
         if (behavior == GateAttributes.XOR_ODD) {
             return GateFunctions.computeOddParity(inputs, numInputs);
         } else {

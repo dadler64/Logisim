@@ -34,11 +34,11 @@ class CircuitWires {
 
     final CircuitPoints points = new CircuitPoints();
     // user-given data
-    private HashSet<Wire> wires = new HashSet<Wire>();
-    private HashSet<Splitter> splitters = new HashSet<Splitter>();
-    private HashSet<Component> tunnels = new HashSet<Component>(); // of Components with Tunnel factory
+    private HashSet<Wire> wires = new HashSet<>();
+    private HashSet<Splitter> splitters = new HashSet<>();
+    private HashSet<Component> tunnels = new HashSet<>(); // of Components with Tunnel factory
     private TunnelListener tunnelListener = new TunnelListener();
-    private HashSet<Component> pulls = new HashSet<Component>(); // of Components with PullResistor factory
+    private HashSet<Component> pulls = new HashSet<>(); // of Components with PullResistor factory
     // derived data
     private Bounds bounds = Bounds.EMPTY_BOUNDS;
     private BundleMap bundleMap = null;
@@ -136,11 +136,11 @@ class CircuitWires {
     }
 
     WireSet getWireSet(Wire start) {
-        WireBundle bundle = getWireBundle(start.e0);
+        WireBundle bundle = getWireBundle(start.start);
         if (bundle == null) {
             return WireSet.EMPTY;
         }
-        HashSet<Wire> wires = new HashSet<Wire>();
+        HashSet<Wire> wires = new HashSet<>();
         for (Location loc : bundle.points) {
             wires.addAll(points.getWires(loc));
         }
@@ -217,7 +217,7 @@ class CircuitWires {
         }
 
         if (bounds != Bounds.EMPTY_BOUNDS) { // update bounds
-            bounds = bounds.add(w.e0).add(w.e1);
+            bounds = bounds.add(w.start).add(w.end);
         }
         return true;
     }
@@ -231,7 +231,7 @@ class CircuitWires {
         if (bounds != Bounds.EMPTY_BOUNDS) {
             // bounds is valid - invalidate if endpoint on border
             Bounds smaller = bounds.expand(-2);
-            if (!smaller.contains(w.e0) || !smaller.contains(w.e1)) {
+            if (!smaller.contains(w.start) || !smaller.contains(w.end)) {
                 bounds = Bounds.EMPTY_BOUNDS;
             }
         }
@@ -242,7 +242,7 @@ class CircuitWires {
     //
     void propagate(CircuitState circState, Set<Location> points) {
         BundleMap map = getBundleMap();
-        SmallSet<WireThread> dirtyThreads = new SmallSet<WireThread>(); // affected threads
+        SmallSet<WireThread> dirtyThreads = new SmallSet<>(); // affected threads
 
         // get state, or create a new one if current state is outdated
         State s = circState.getWireData();
@@ -290,7 +290,7 @@ class CircuitWires {
         }
 
         // determine values of affected threads
-        HashSet<ThreadBundle> bundles = new HashSet<ThreadBundle>();
+        HashSet<ThreadBundle> bundles = new HashSet<>();
         for (WireThread t : dirtyThreads) {
             Value v = getThreadValue(circState, t);
             s.thr_values.put(t, v);
@@ -342,8 +342,8 @@ class CircuitWires {
         boolean isValid = bmap.isValid();
         if (hidden == null || hidden.size() == 0) {
             for (Wire w : wires) {
-                Location s = w.e0;
-                Location t = w.e1;
+                Location s = w.start;
+                Location t = w.end;
                 WireBundle wb = bmap.getBundleAt(s);
                 if (!wb.isValid()) {
                     g.setColor(Value.WIDTH_ERROR_COLOR);
@@ -391,8 +391,8 @@ class CircuitWires {
         } else {
             for (Wire w : wires) {
                 if (!hidden.contains(w)) {
-                    Location s = w.e0;
-                    Location t = w.e1;
+                    Location s = w.start;
+                    Location t = w.end;
                     WireBundle wb = bmap.getBundleAt(s);
                     if (!wb.isValid()) {
                         g.setColor(Value.WIDTH_ERROR_COLOR);
@@ -516,7 +516,7 @@ class CircuitWires {
 
         // make a WireBundle object for each end of a splitter
         for (Splitter spl : splitters) {
-            List<EndData> ends = new ArrayList<EndData>(spl.getEnds());
+            List<EndData> ends = new ArrayList<>(spl.getEnds());
             for (EndData end : ends) {
                 Location p = end.getLocation();
                 WireBundle pb = ret.createBundleAt(p);
@@ -536,7 +536,7 @@ class CircuitWires {
 
         // determine the bundles at the end of each splitter
         for (Splitter spl : splitters) {
-            List<EndData> ends = new ArrayList<EndData>(spl.getEnds());
+            List<EndData> ends = new ArrayList<>(spl.getEnds());
             int index = -1;
             for (EndData end : ends) {
                 index++;
@@ -610,16 +610,16 @@ class CircuitWires {
     private void connectWires(BundleMap ret) {
         // make a WireBundle object for each tree of connected wires
         for (Wire w : wires) {
-            WireBundle b0 = ret.getBundleAt(w.e0);
+            WireBundle b0 = ret.getBundleAt(w.start);
             if (b0 == null) {
-                WireBundle b1 = ret.createBundleAt(w.e1);
-                b1.points.add(w.e0);
-                ret.setBundleAt(w.e0, b1);
+                WireBundle b1 = ret.createBundleAt(w.end);
+                b1.points.add(w.start);
+                ret.setBundleAt(w.start, b1);
             } else {
-                WireBundle b1 = ret.getBundleAt(w.e1);
+                WireBundle b1 = ret.getBundleAt(w.end);
                 if (b1 == null) { // t1 doesn't exist
-                    b0.points.add(w.e1);
-                    ret.setBundleAt(w.e1, b0);
+                    b0.points.add(w.end);
+                    ret.setBundleAt(w.end, b0);
                 } else {
                     b1.unite(b0); // unite b0 and b1
                 }
@@ -629,14 +629,14 @@ class CircuitWires {
 
     private void connectTunnels(BundleMap ret) {
         // determine the sets of tunnels
-        HashMap<String, ArrayList<Location>> tunnelSets = new HashMap<String, ArrayList<Location>>();
+        HashMap<String, ArrayList<Location>> tunnelSets = new HashMap<>();
         for (Component comp : tunnels) {
             String label = comp.getAttributeSet().getValue(StdAttr.LABEL);
             label = label.trim();
             if (!label.equals("")) {
                 ArrayList<Location> tunnelSet = tunnelSets.get(label);
                 if (tunnelSet == null) {
-                    tunnelSet = new ArrayList<Location>(3);
+                    tunnelSet = new ArrayList<>(3);
                     tunnelSets.put(label, tunnelSet);
                 }
                 tunnelSet.add(comp.getLocation());
@@ -716,25 +716,25 @@ class CircuitWires {
         }
 
         Wire w = it.next();
-        int xmin = w.e0.getX();
-        int ymin = w.e0.getY();
-        int xmax = w.e1.getX();
-        int ymax = w.e1.getY();
+        int xmin = w.start.getX();
+        int ymin = w.start.getY();
+        int xmax = w.end.getX();
+        int ymax = w.end.getY();
         while (it.hasNext()) {
             w = it.next();
-            int x0 = w.e0.getX();
+            int x0 = w.start.getX();
             if (x0 < xmin) {
                 xmin = x0;
             }
-            int x1 = w.e1.getX();
+            int x1 = w.end.getX();
             if (x1 > xmax) {
                 xmax = x1;
             }
-            int y0 = w.e0.getY();
+            int y0 = w.start.getY();
             if (y0 < ymin) {
                 ymin = y0;
             }
-            int y1 = w.e1.getY();
+            int y1 = w.end.getY();
             if (y1 > ymax) {
                 ymax = y1;
             }
@@ -768,7 +768,7 @@ class CircuitWires {
     static class State {
 
         BundleMap bundleMap;
-        HashMap<WireThread, Value> thr_values = new HashMap<WireThread, Value>();
+        HashMap<WireThread, Value> thr_values = new HashMap<>();
 
         State(BundleMap bundleMap) {
             this.bundleMap = bundleMap;
@@ -785,8 +785,8 @@ class CircuitWires {
     static class BundleMap {
 
         boolean computed = false;
-        HashMap<Location, WireBundle> pointBundles = new HashMap<Location, WireBundle>();
-        HashSet<WireBundle> bundles = new HashSet<WireBundle>();
+        HashMap<Location, WireBundle> pointBundles = new HashMap<>();
+        HashSet<WireBundle> bundles = new HashSet<>();
         boolean isValid = true;
         // NOTE: It would make things more efficient if we also had
         // a set of just the first bundle in each tree.
@@ -798,7 +798,7 @@ class CircuitWires {
 
         void addWidthIncompatibilityData(WidthIncompatibilityData e) {
             if (incompatibilityData == null) {
-                incompatibilityData = new HashSet<WidthIncompatibilityData>();
+                incompatibilityData = new HashSet<>();
             }
             incompatibilityData.add(e);
         }

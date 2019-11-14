@@ -42,19 +42,19 @@ public class Demultiplexer extends InstanceFactory {
     }
 
     @Override
-    public Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver) {
-        if (attr == Plexers.ATTR_ENABLE) {
-            int newer = ver.compareTo(LogisimVersion.get(2, 6, 3, 220));
+    public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
+        if (attribute == Plexers.ATTR_ENABLE) {
+            int newer = version.compareTo(LogisimVersion.get(2, 6, 3, 220));
             return Boolean.valueOf(newer >= 0);
         } else {
-            return super.getDefaultAttributeValue(attr, ver);
+            return super.getDefaultAttributeValue(attribute, version);
         }
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
-        BitWidth select = attrs.getValue(Plexers.ATTR_SELECT);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
+        BitWidth select = attributes.getValue(Plexers.ATTR_SELECT);
         int outputs = 1 << select.getWidth();
         Bounds bds;
         if (outputs == 2) {

@@ -11,7 +11,7 @@ import com.cburch.logisim.tools.key.IntegerConfigurator;
 class ConstantConfigurator extends IntegerConfigurator {
 
     public ConstantConfigurator() {
-        super(Constant.ATTR_VALUE, 0, 0, 0, 16);
+        super(Constant.ATTRIBUTE_VALUE, 0, 0, 0, 16);
     }
 
     @Override

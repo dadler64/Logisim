@@ -91,7 +91,7 @@ public class Attributes {
 
     public static <V> Attribute<V> forOption(String name, StringGetter disp,
             V[] vals) {
-        return new OptionAttribute<V>(name, disp, vals);
+        return new OptionAttribute<>(name, disp, vals);
     }
 
     public static Attribute<Integer> forInteger(String name, StringGetter disp) {
@@ -225,7 +225,7 @@ public class Attributes {
         @Override
         public java.awt.Component getCellEditor(Object value) {
             JComboBox combo = new JComboBox(vals);
-            combo.setRenderer(new OptionComboRenderer<V>(this));
+            combo.setRenderer(new OptionComboRenderer<>(this));
             if (value == null) {
                 combo.setSelectedIndex(-1);
             } else {

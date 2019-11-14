@@ -17,7 +17,7 @@ import java.util.Arrays;
 public class GridPainter {
 
     public static final String ZOOM_PROPERTY = "zoom";
-    public static final String SHOW_GRID_PROPERTY = "showgrid";
+    private static final String SHOW_GRID_PROPERTY = "showgrid";
 
     private static final int GRID_DOT_COLOR = 0xFF777777;
     private static final int GRID_DOT_ZOOMED_COLOR = 0xFFCCCCCC;
@@ -42,21 +42,19 @@ public class GridPainter {
         updateGridImage(gridSize, zoomFactor);
     }
 
-    public void addPropertyChangeListener(String prop,
-            PropertyChangeListener listener) {
-        support.addPropertyChangeListener(prop, listener);
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+        support.addPropertyChangeListener(property, listener);
     }
 
-    public void removePropertyChangeListener(String prop,
-            PropertyChangeListener listener) {
-        support.removePropertyChangeListener(prop, listener);
+    public void removePropertyChangeListener(String property, PropertyChangeListener listener) {
+        support.removePropertyChangeListener(property, listener);
     }
 
     public boolean getShowGrid() {
         return showGrid;
     }
 
-    public void setShowGrid(boolean value) {
+    private void setShowGrid(boolean value) {
         if (showGrid != value) {
             showGrid = value;
             support.firePropertyChange(SHOW_GRID_PROPERTY, !value, value);
@@ -67,13 +65,12 @@ public class GridPainter {
         return zoomFactor;
     }
 
-    public void setZoomFactor(double value) {
+    private void setZoomFactor(double value) {
         double oldValue = zoomFactor;
         if (oldValue != value) {
             zoomFactor = value;
             updateGridImage(gridSize, value);
-            support.firePropertyChange(ZOOM_PROPERTY, Double.valueOf(oldValue),
-                    Double.valueOf(value));
+            support.firePropertyChange(ZOOM_PROPERTY, oldValue, value);
         }
     }
 
@@ -82,59 +79,61 @@ public class GridPainter {
     }
 
     public void setZoomModel(ZoomModel model) {
-        ZoomModel old = zoomModel;
-        if (model != old) {
+        ZoomModel oldModel = this.zoomModel;
+        if (model != oldModel) {
             if (listener == null) {
                 listener = new Listener();
             }
-            if (old != null) {
-                old.removePropertyChangeListener(ZoomModel.ZOOM, listener);
-                old.removePropertyChangeListener(ZoomModel.SHOW_GRID, listener);
+            if (oldModel != null) {
+                oldModel.removePropertyChangeListener(ZoomModel.ZOOM, listener);
+                oldModel.removePropertyChangeListener(ZoomModel.SHOW_GRID, listener);
             }
-            zoomModel = model;
+            this.zoomModel = model;
             if (model != null) {
                 model.addPropertyChangeListener(ZoomModel.ZOOM, listener);
                 model.addPropertyChangeListener(ZoomModel.SHOW_GRID, listener);
             }
+            assert model != null;
             setShowGrid(model.getShowGrid());
             setZoomFactor(model.getZoomFactor());
             destination.repaint();
         }
     }
 
-    public void paintGrid(Graphics g) {
-        Rectangle clip = g.getClipBounds();
-        Component dest = destination;
-        double zoom = zoomFactor;
-        int size = gridSize;
+    @SuppressWarnings("SuspiciousNameCombination")
+    public void paintGrid(Graphics graphics) {
+        Rectangle clip = graphics.getClipBounds();
+        Component destination = this.destination;
+        double zoomFactor = this.zoomFactor;
+        int gridSize = this.gridSize;
 
         if (!showGrid) {
             return;
         }
 
-        Image img = gridImage;
-        int w = gridImageWidth;
-        if (img == null) {
-            paintGridOld(g, size, zoom, clip);
+        Image gridImage = this.gridImage;
+        int imageWidth = this.gridImageWidth;
+        if (gridImage == null) {
+            paintGridOld(graphics, gridSize, zoomFactor, clip);
             return;
         }
-        int x0 = (clip.x / w) * w; // round down to multiple of w
-        int y0 = (clip.y / w) * w;
-        for (int x = 0; x < clip.width + w; x += w) {
-            for (int y = 0; y < clip.height + w; y += w) {
-                g.drawImage(img, x0 + x, y0 + y, dest);
+        int x0 = (clip.x / imageWidth) * imageWidth; // round down to multiple of imageWidth
+        int y0 = (clip.y / imageWidth) * imageWidth;
+        for (int x = 0; x < clip.width + imageWidth; x += imageWidth) {
+            for (int y = 0; y < clip.height + imageWidth; y += imageWidth) {
+                graphics.drawImage(gridImage, x0 + x, y0 + y, destination);
             }
         }
     }
 
-    private void paintGridOld(Graphics g, int size, double f, Rectangle clip) {
-        g.setColor(Color.GRAY);
+    private void paintGridOld(Graphics graphics, int size, double f, Rectangle clip) {
+        graphics.setColor(Color.GRAY);
         if (f == 1.0) {
             int start_x = ((clip.x + 9) / size) * size;
             int start_y = ((clip.y + 9) / size) * size;
             for (int x = 0; x < clip.width; x += size) {
                 for (int y = 0; y < clip.height; y += size) {
-                    g.fillRect(start_x + x, start_y + y, 1, 1);
+                    graphics.fillRect(start_x + x, start_y + y, 1, 1);
                 }
             }
         } else {
@@ -144,25 +143,25 @@ public class GridPainter {
             int y0 = size * (int) Math.ceil(clip.y / f / size);
             int y1 = y0 + (int) (clip.height / f);
             if (f <= 0.5) {
-                g.setColor(GRID_ZOOMED_OUT_COLOR);
+                graphics.setColor(GRID_ZOOMED_OUT_COLOR);
             }
             for (double x = x0; x < x1; x += size) {
                 for (double y = y0; y < y1; y += size) {
                     int sx = (int) Math.round(f * x);
                     int sy = (int) Math.round(f * y);
-                    g.fillRect(sx, sy, 1, 1);
+                    graphics.fillRect(sx, sy, 1, 1);
                 }
             }
             if (f <= 0.5) { // make every 5th pixel darker
-                int size5 = 5 * size;
-                g.setColor(Color.GRAY);
-                x0 = size5 * (int) Math.ceil(clip.x / f / size5);
-                y0 = size5 * (int) Math.ceil(clip.y / f / size5);
-                for (double x = x0; x < x1; x += size5) {
-                    for (double y = y0; y < y1; y += size5) {
+                int sizeSpacedOut = 5 * size;
+                graphics.setColor(Color.GRAY);
+                x0 = sizeSpacedOut * (int) Math.ceil(clip.x / f / sizeSpacedOut);
+                y0 = sizeSpacedOut * (int) Math.ceil(clip.y / f / sizeSpacedOut);
+                for (double x = x0; x < x1; x += sizeSpacedOut) {
+                    for (double y = y0; y < y1; y += sizeSpacedOut) {
                         int sx = (int) Math.round(f * x);
                         int sy = (int) Math.round(f * y);
-                        g.fillRect(sx, sy, 1, 1);
+                        graphics.fillRect(sx, sy, 1, 1);
                     }
                 }
             }
@@ -194,49 +193,50 @@ public class GridPainter {
     //
     // creating the grid image
     //
+    @SuppressWarnings("SuspiciousNameCombination")
     private void updateGridImage(int size, double f) {
         double ww = f * size * 5;
         while (2 * ww < 150) {
             ww *= 2;
         }
-        int w = (int) Math.round(ww);
-        int[] pix = new int[w * w];
-        Arrays.fill(pix, 0xFFFFFF);
+        int width = (int) Math.round(ww);
+        int[] pixels = new int[width * width];
+        Arrays.fill(pixels, 0xFFFFFF);
 
         if (f == 1.0) {
-            int lineStep = size * w;
-            for (int j = 0; j < pix.length; j += lineStep) {
-                for (int i = 0; i < w; i += size) {
-                    pix[i + j] = GRID_DOT_COLOR;
+            int lineStep = size * width;
+            for (int j = 0; j < pixels.length; j += lineStep) {
+                for (int i = 0; i < width; i += size) {
+                    pixels[i + j] = GRID_DOT_COLOR;
                 }
             }
         } else {
-            int off0 = 0;
-            int off1 = 1;
+            int offset0 = 0;
+            int offset1 = 1;
             if (f >= 2.0) { // we'll draw several pixels for each grid point
                 int num = (int) (f + 0.001);
-                off0 = -(num / 2);
-                off1 = off0 + num;
+                offset0 = -(num / 2);
+                offset1 = offset0 + num;
             }
 
             int dotColor = f <= 0.5 ? GRID_DOT_ZOOMED_COLOR : GRID_DOT_COLOR;
             for (int j = 0; true; j += size) {
                 int y = (int) Math.round(f * j);
-                if (y + off0 >= w) {
+                if (y + offset0 >= width) {
                     break;
                 }
 
-                for (int yo = y + off0; yo < y + off1; yo++) {
-                    if (yo >= 0 && yo < w) {
-                        int base = yo * w;
+                for (int yo = y + offset0; yo < y + offset1; yo++) {
+                    if (yo >= 0 && yo < width) {
+                        int base = yo * width;
                         for (int i = 0; true; i += size) {
                             int x = (int) Math.round(f * i);
-                            if (x + off0 >= w) {
+                            if (x + offset0 >= width) {
                                 break;
                             }
-                            for (int xo = x + off0; xo < x + off1; xo++) {
-                                if (xo >= 0 && xo < w) {
-                                    pix[base + xo] = dotColor;
+                            for (int xo = x + offset0; xo < x + offset1; xo++) {
+                                if (xo >= 0 && xo < width) {
+                                    pixels[base + xo] = dotColor;
                                 }
                             }
                         }
@@ -244,38 +244,38 @@ public class GridPainter {
                 }
             }
             if (f <= 0.5) { // repaint over every 5th pixel so it is darker
-                int size5 = size * 5;
-                for (int j = 0; true; j += size5) {
+                int sizeSpacedOut = size * 5;
+                for (int j = 0; true; j += sizeSpacedOut) {
                     int y = (int) Math.round(f * j);
-                    if (y >= w) {
+                    if (y >= width) {
                         break;
                     }
-                    y *= w;
+                    y *= width;
 
-                    for (int i = 0; true; i += size5) {
+                    for (int i = 0; true; i += sizeSpacedOut) {
                         int x = (int) Math.round(f * i);
-                        if (x >= w) {
+                        if (x >= width) {
                             break;
                         }
-                        pix[y + x] = GRID_DOT_COLOR;
+                        pixels[y + x] = GRID_DOT_COLOR;
                     }
                 }
             }
         }
-        gridImage = destination.createImage(new MemoryImageSource(w, w, pix, 0, w));
-        gridImageWidth = w;
+        gridImage = destination.createImage(new MemoryImageSource(width, width, pixels, 0, width));
+        gridImageWidth = width;
     }
 
     private class Listener implements PropertyChangeListener {
 
         public void propertyChange(PropertyChangeEvent event) {
-            String prop = event.getPropertyName();
-            Object val = event.getNewValue();
-            if (prop.equals(ZoomModel.ZOOM)) {
-                setZoomFactor(((Double) val).doubleValue());
+            String property = event.getPropertyName();
+            Object value = event.getNewValue();
+            if (property.equals(ZoomModel.ZOOM)) {
+                setZoomFactor((Double) value);
                 destination.repaint();
-            } else if (prop.equals(ZoomModel.SHOW_GRID)) {
-                setShowGrid(((Boolean) val).booleanValue());
+            } else if (property.equals(ZoomModel.SHOW_GRID)) {
+                setShowGrid((Boolean) value);
                 destination.repaint();
             }
         }

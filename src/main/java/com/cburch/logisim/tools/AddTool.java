@@ -39,24 +39,23 @@ import javax.swing.JOptionPane;
 
 public class AddTool extends Tool {
 
-    private static int INVALID_COORD = Integer.MIN_VALUE;
+    private static int INVALID_COORDINATE = Integer.MIN_VALUE;
 
     private static int SHOW_NONE = 0;
     private static int SHOW_GHOST = 1;
     private static int SHOW_ADD = 2;
     private static int SHOW_ADD_NO = 3;
 
-    private static Cursor cursor
-            = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    private static Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
     private Class<? extends Library> descriptionBase;
     private FactoryDescription description;
     private boolean sourceLoadAttempted;
     private ComponentFactory factory;
-    private AttributeSet attrs;
+    private AttributeSet attributes;
     private Bounds bounds;
     private boolean shouldSnap;
-    private int lastX = INVALID_COORD;
-    private int lastY = INVALID_COORD;
+    private int lastX = INVALID_COORDINATE;
+    private int lastY = INVALID_COORDINATE;
     private int state = SHOW_GHOST;
     private Action lastAddition;
     private boolean keyHandlerTried;
@@ -67,8 +66,8 @@ public class AddTool extends Tool {
         this.description = description;
         this.sourceLoadAttempted = false;
         this.shouldSnap = true;
-        this.attrs = new FactoryAttributes(base, description);
-        attrs.addAttributeListener(new MyAttributeListener());
+        this.attributes = new FactoryAttributes(base, description);
+        attributes.addAttributeListener(new MyAttributeListener());
         this.keyHandlerTried = false;
     }
 
@@ -77,10 +76,10 @@ public class AddTool extends Tool {
         this.sourceLoadAttempted = true;
         this.factory = source;
         this.bounds = null;
-        this.attrs = new FactoryAttributes(source);
-        attrs.addAttributeListener(new MyAttributeListener());
-        Boolean value = (Boolean) source.getFeature(ComponentFactory.SHOULD_SNAP, attrs);
-        this.shouldSnap = value == null || value.booleanValue();
+        this.attributes = new FactoryAttributes(source);
+        attributes.addAttributeListener(new MyAttributeListener());
+        Boolean value = (Boolean) source.getFeature(ComponentFactory.SHOULD_SNAP, attributes);
+        this.shouldSnap = value == null || value;
     }
 
     private AddTool(AddTool base) {
@@ -90,42 +89,42 @@ public class AddTool extends Tool {
         this.factory = base.factory;
         this.bounds = base.bounds;
         this.shouldSnap = base.shouldSnap;
-        this.attrs = (AttributeSet) base.attrs.clone();
-        attrs.addAttributeListener(new MyAttributeListener());
+        this.attributes = (AttributeSet) base.attributes.clone();
+        attributes.addAttributeListener(new MyAttributeListener());
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof AddTool)) {
+    public boolean equals(Object object) {
+        if (!(object instanceof AddTool)) {
             return false;
         }
-        AddTool o = (AddTool) other;
+        AddTool addTool = (AddTool) object;
         if (this.description != null) {
-            return this.descriptionBase == o.descriptionBase
-                    && this.description.equals(o.description);
+            return this.descriptionBase == addTool.descriptionBase
+                    && this.description.equals(addTool.description);
         } else {
-            return this.factory.equals(o.factory);
+            return this.factory.equals(addTool.factory);
         }
     }
 
     @Override
     public int hashCode() {
-        FactoryDescription desc = description;
-        return desc != null ? desc.hashCode() : factory.hashCode();
+        FactoryDescription description = this.description;
+        return description != null ? description.hashCode() : factory.hashCode();
     }
 
     @Override
-    public boolean sharesSource(Tool other) {
-        if (!(other instanceof AddTool)) {
+    public boolean sharesSource(Tool tool) {
+        if (!(tool instanceof AddTool)) {
             return false;
         }
-        AddTool o = (AddTool) other;
-        if (this.sourceLoadAttempted && o.sourceLoadAttempted) {
-            return this.factory.equals(o.factory);
+        AddTool addTool = (AddTool) tool;
+        if (this.sourceLoadAttempted && addTool.sourceLoadAttempted) {
+            return this.factory.equals(addTool.factory);
         } else if (this.description == null) {
-            return o.description == null;
+            return addTool.description == null;
         } else {
-            return this.description.equals(o.description);
+            return this.description.equals(addTool.description);
         }
     }
 
@@ -134,19 +133,19 @@ public class AddTool extends Tool {
     }
 
     public ComponentFactory getFactory() {
-        ComponentFactory ret = factory;
-        if (ret != null || sourceLoadAttempted) {
-            return ret;
+        ComponentFactory factory = this.factory;
+        if (factory != null || sourceLoadAttempted) {
+            return factory;
         } else {
-            ret = description.getFactory(descriptionBase);
-            if (ret != null) {
+            factory = description.getFactory(descriptionBase);
+            if (factory != null) {
                 AttributeSet base = getBaseAttributes();
-                Boolean value = (Boolean) ret.getFeature(ComponentFactory.SHOULD_SNAP, base);
+                Boolean value = (Boolean) factory.getFeature(ComponentFactory.SHOULD_SNAP, base);
                 shouldSnap = value == null || value.booleanValue();
             }
-            factory = ret;
+            this.factory = factory;
             sourceLoadAttempted = true;
-            return ret;
+            return factory;
         }
     }
 
@@ -190,12 +189,12 @@ public class AddTool extends Tool {
 
     @Override
     public AttributeSet getAttributeSet() {
-        return attrs;
+        return attributes;
     }
 
     @Override
     public boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver) {
-        return this.attrs == attrs && attrs instanceof FactoryAttributes
+        return this.attributes == attrs && attrs instanceof FactoryAttributes
                 && !((FactoryAttributes) attrs).isFactoryInstantiated();
     }
 
@@ -210,7 +209,7 @@ public class AddTool extends Tool {
         // repaint problems on OpenJDK under Ubuntu
         int x = lastX;
         int y = lastY;
-        if (x == INVALID_COORD || y == INVALID_COORD) {
+        if (x == INVALID_COORDINATE || y == INVALID_COORDINATE) {
             return;
         }
         ComponentFactory source = getFactory();
@@ -225,7 +224,7 @@ public class AddTool extends Tool {
     }
 
     private AttributeSet getBaseAttributes() {
-        AttributeSet ret = attrs;
+        AttributeSet ret = attributes;
         if (ret instanceof FactoryAttributes) {
             ret = ((FactoryAttributes) ret).getBase();
         }
@@ -244,7 +243,7 @@ public class AddTool extends Tool {
     @Override
     public void deselect(Canvas canvas) {
         setState(canvas, SHOW_GHOST);
-        moveTo(canvas, canvas.getGraphics(), INVALID_COORD, INVALID_COORD);
+        moveTo(canvas, canvas.getGraphics(), INVALID_COORDINATE, INVALID_COORDINATE);
         bounds = null;
         lastAddition = null;
     }
@@ -277,10 +276,10 @@ public class AddTool extends Tool {
     public void mouseExited(Canvas canvas, Graphics g,
             MouseEvent e) {
         if (state == SHOW_GHOST) {
-            moveTo(canvas, canvas.getGraphics(), INVALID_COORD, INVALID_COORD);
+            moveTo(canvas, canvas.getGraphics(), INVALID_COORDINATE, INVALID_COORDINATE);
             setState(canvas, SHOW_NONE);
         } else if (state == SHOW_ADD) {
-            moveTo(canvas, canvas.getGraphics(), INVALID_COORD, INVALID_COORD);
+            moveTo(canvas, canvas.getGraphics(), INVALID_COORDINATE, INVALID_COORDINATE);
             setState(canvas, SHOW_ADD_NO);
         }
     }
@@ -344,7 +343,7 @@ public class AddTool extends Tool {
             moveTo(canvas, g, e.getX(), e.getY());
 
             Location loc = Location.create(e.getX(), e.getY());
-            AttributeSet attrsCopy = (AttributeSet) attrs.clone();
+            AttributeSet attrsCopy = (AttributeSet) attributes.clone();
             ComponentFactory source = getFactory();
             if (source == null) {
                 return;

@@ -15,49 +15,44 @@ public class Options {
             = new AttributeOption("ignore", Strings.getter("gateUndefinedIgnore"));
     public static final AttributeOption GATE_UNDEFINED_ERROR
             = new AttributeOption("error", Strings.getter("gateUndefinedError"));
-
-    public static final Attribute<Integer> sim_limit_attr
+    public static final Attribute<Integer> SIMULATOR_LIMIT_ATTRIBUTE
             = Attributes.forInteger("simlimit", Strings.getter("simLimitOption"));
-    public static final Attribute<Integer> sim_rand_attr
+    public static final Attribute<Integer> SIMULATOR_RANDOM_ATTRIBUTE
             = Attributes.forInteger("simrand", Strings.getter("simRandomOption"));
     public static final Attribute<AttributeOption> ATTR_GATE_UNDEFINED
             = Attributes.forOption("gateUndefined", Strings.getter("gateUndefinedOption"),
             new AttributeOption[]{GATE_UNDEFINED_IGNORE, GATE_UNDEFINED_ERROR});
-
-    public static final Integer sim_rand_dflt = Integer.valueOf(32);
-
+    public static final Integer SIMULATOR_RANDOM_DEFAULT = 32;
     private static final Attribute<?>[] ATTRIBUTES = {
-            ATTR_GATE_UNDEFINED, sim_limit_attr, sim_rand_attr,
+            ATTR_GATE_UNDEFINED, SIMULATOR_LIMIT_ATTRIBUTE, SIMULATOR_RANDOM_ATTRIBUTE
     };
-    private static final Object[] DEFAULTS = {
-            GATE_UNDEFINED_IGNORE, Integer.valueOf(1000), Integer.valueOf(0),
-    };
+    private static final Object[] DEFAULTS = { GATE_UNDEFINED_IGNORE, 1000, 0};
 
-    private AttributeSet attrs;
-    private MouseMappings mmappings;
-    private ToolbarData toolbar;
+    private AttributeSet attributeSet;
+    private MouseMappings mouseMappings;
+    private ToolbarData toolbarData;
 
     public Options() {
-        attrs = AttributeSets.fixedSet(ATTRIBUTES, DEFAULTS);
-        mmappings = new MouseMappings();
-        toolbar = new ToolbarData();
+        attributeSet = AttributeSets.fixedSet(ATTRIBUTES, DEFAULTS);
+        mouseMappings = new MouseMappings();
+        toolbarData = new ToolbarData();
     }
 
     public AttributeSet getAttributeSet() {
-        return attrs;
+        return attributeSet;
     }
 
     public MouseMappings getMouseMappings() {
-        return mmappings;
+        return mouseMappings;
     }
 
     public ToolbarData getToolbarData() {
-        return toolbar;
+        return toolbarData;
     }
 
-    public void copyFrom(Options other, LogisimFile dest) {
-        AttributeSets.copy(other.attrs, this.attrs);
-        this.toolbar.copyFrom(other.toolbar, dest);
-        this.mmappings.copyFrom(other.mmappings, dest);
+    public void copyFrom(Options other, LogisimFile destination) {
+        AttributeSets.copy(other.attributeSet, this.attributeSet);
+        this.toolbarData.copyFrom(other.toolbarData, destination);
+        this.mouseMappings.copyFrom(other.mouseMappings, destination);
     }
 }

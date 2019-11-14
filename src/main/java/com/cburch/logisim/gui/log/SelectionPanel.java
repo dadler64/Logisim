@@ -25,63 +25,63 @@ class SelectionPanel extends LogPanel {
 
     private Listener listener = new Listener();
     private ComponentSelector selector;
-    private JButton addTool;
-    private JButton changeBase;
-    private JButton moveUp;
-    private JButton moveDown;
-    private JButton remove;
+    private JButton addToolButton;
+    private JButton changeBaseButton;
+    private JButton moveUpButton;
+    private JButton moveDownButton;
+    private JButton removeButton;
     private SelectionList list;
 
     public SelectionPanel(LogFrame window) {
         super(window);
         selector = new ComponentSelector(getModel());
-        addTool = new JButton();
-        changeBase = new JButton();
-        moveUp = new JButton();
-        moveDown = new JButton();
-        remove = new JButton();
+        addToolButton = new JButton();
+        changeBaseButton = new JButton();
+        moveUpButton = new JButton();
+        moveDownButton = new JButton();
+        removeButton = new JButton();
         list = new SelectionList();
         list.setSelection(getSelection());
 
-        JPanel buttons = new JPanel(new GridLayout(5, 1));
-        buttons.add(addTool);
-        buttons.add(changeBase);
-        buttons.add(moveUp);
-        buttons.add(moveDown);
-        buttons.add(remove);
+        JPanel panel = new JPanel(new GridLayout(5, 1));
+        panel.add(addToolButton);
+        panel.add(changeBaseButton);
+        panel.add(moveUpButton);
+        panel.add(moveDownButton);
+        panel.add(removeButton);
 
-        addTool.addActionListener(listener);
-        changeBase.addActionListener(listener);
-        moveUp.addActionListener(listener);
-        moveDown.addActionListener(listener);
-        remove.addActionListener(listener);
+        addToolButton.addActionListener(listener);
+        changeBaseButton.addActionListener(listener);
+        moveUpButton.addActionListener(listener);
+        moveDownButton.addActionListener(listener);
+        removeButton.addActionListener(listener);
         selector.addMouseListener(listener);
         selector.addTreeSelectionListener(listener);
         list.addListSelectionListener(listener);
         listener.computeEnabled();
 
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
-        setLayout(gridbag);
+        GridBagLayout layout = new GridBagLayout();
+        GridBagConstraints constraints = new GridBagConstraints();
+        setLayout(layout);
         JScrollPane explorerPane = new JScrollPane(selector,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         JScrollPane listPane = new JScrollPane(list,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gridbag.setConstraints(explorerPane, gbc);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        layout.setConstraints(explorerPane, constraints);
         add(explorerPane);
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.NORTH;
-        gbc.weightx = 0.0;
-        gridbag.setConstraints(buttons, gbc);
-        add(buttons);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gridbag.setConstraints(listPane, gbc);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.weightx = 0.0;
+        layout.setConstraints(panel, constraints);
+        add(panel);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        layout.setConstraints(listPane, constraints);
         add(listPane);
     }
 
@@ -97,11 +97,11 @@ class SelectionPanel extends LogPanel {
 
     @Override
     public void localeChanged() {
-        addTool.setText(Strings.get("selectionAdd"));
-        changeBase.setText(Strings.get("selectionChangeBase"));
-        moveUp.setText(Strings.get("selectionMoveUp"));
-        moveDown.setText(Strings.get("selectionMoveDown"));
-        remove.setText(Strings.get("selectionRemove"));
+        addToolButton.setText(Strings.get("selectionAdd"));
+        changeBaseButton.setText(Strings.get("selectionChangeBase"));
+        moveUpButton.setText(Strings.get("selectionMoveUp"));
+        moveDownButton.setText(Strings.get("selectionMoveDown"));
+        removeButton.setText(Strings.get("selectionRemove"));
         selector.localeChanged();
         list.localeChanged();
     }
@@ -123,9 +123,9 @@ class SelectionPanel extends LogPanel {
             ListSelectionListener {
 
         @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                TreePath path = selector.getPathForLocation(e.getX(), e.getY());
+        public void mouseClicked(MouseEvent mouseEvent) {
+            if (mouseEvent.getClickCount() == 2) {
+                TreePath path = selector.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
                 if (path != null && listener != null) {
                     doAdd(selector.getSelectedItems());
                 }
@@ -133,36 +133,37 @@ class SelectionPanel extends LogPanel {
         }
 
         public void actionPerformed(ActionEvent event) {
-            Object src = event.getSource();
-            if (src == addTool) {
+            Object source = event.getSource();
+            if (source.equals(addToolButton)) {
                 doAdd(selector.getSelectedItems());
-            } else if (src == changeBase) {
-                SelectionItem sel = (SelectionItem) list.getSelectedValue();
-                if (sel != null) {
-                    int radix = sel.getRadix();
+            } else if (source.equals(changeBaseButton)) {
+                SelectionItem value = (SelectionItem) list.getSelectedValue();
+                if (value != null) {
+                    int radix = value.getRadix();
                     switch (radix) {
                         case 2:
-                            sel.setRadix(10);
+                            value.setRadix(10);
                             break;
                         case 10:
-                            sel.setRadix(16);
+                            value.setRadix(16);
                             break;
                         default:
-                            sel.setRadix(2);
+                            value.setRadix(2);
                     }
                 }
-            } else if (src == moveUp) {
+            } else if (source.equals(moveUpButton)) {
                 doMove(-1);
-            } else if (src == moveDown) {
+            } else if (source.equals(moveDownButton)) {
                 doMove(1);
-            } else if (src == remove) {
-                Selection sel = getSelection();
-                Object[] toRemove = list.getSelectedValues();
+            } else if (source.equals(removeButton)) {
+                Selection selection = getSelection();
+                @SuppressWarnings("deprecation")
+                Object[] objectsToRemove = list.getSelectedValues();
                 boolean changed = false;
-                for (int i = 0; i < toRemove.length; i++) {
-                    int index = sel.indexOf((SelectionItem) toRemove[i]);
+                for (Object object : objectsToRemove) {
+                    int index = selection.indexOf((SelectionItem) object);
                     if (index >= 0) {
-                        sel.remove(index);
+                        selection.remove(index);
                         changed = true;
                     }
                 }
@@ -182,11 +183,11 @@ class SelectionPanel extends LogPanel {
 
         private void computeEnabled() {
             int index = list.getSelectedIndex();
-            addTool.setEnabled(selector.hasSelectedItems());
-            changeBase.setEnabled(index >= 0);
-            moveUp.setEnabled(index > 0);
-            moveDown.setEnabled(index >= 0 && index < list.getModel().getSize() - 1);
-            remove.setEnabled(index >= 0);
+            addToolButton.setEnabled(selector.hasSelectedItems());
+            changeBaseButton.setEnabled(index >= 0);
+            moveUpButton.setEnabled(index > 0);
+            moveDownButton.setEnabled(index >= 0 && index < list.getModel().getSize() - 1);
+            removeButton.setEnabled(index >= 0);
         }
 
         private void doAdd(List<SelectionItem> selectedItems) {
@@ -201,11 +202,11 @@ class SelectionPanel extends LogPanel {
         }
 
         private void doMove(int delta) {
-            Selection sel = getSelection();
+            Selection selection = getSelection();
             int oldIndex = list.getSelectedIndex();
             int newIndex = oldIndex + delta;
-            if (oldIndex >= 0 && newIndex >= 0 && newIndex < sel.size()) {
-                sel.move(oldIndex, newIndex);
+            if (oldIndex >= 0 && newIndex >= 0 && newIndex < selection.size()) {
+                selection.move(oldIndex, newIndex);
                 list.setSelectedIndex(newIndex);
             }
         }

@@ -12,24 +12,25 @@ import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
 public abstract class AttributeSetTableModel
         implements AttrTableModel, AttributeListener {
 
     private ArrayList<AttrTableModelListener> listeners;
-    private AttributeSet attrs;
+    private AttributeSet attributes;
     private HashMap<Attribute<?>, AttrRow> rowMap;
     private ArrayList<AttrRow> rows;
 
-    public AttributeSetTableModel(AttributeSet attrs) {
-        this.attrs = attrs;
-        this.listeners = new ArrayList<AttrTableModelListener>();
-        this.rowMap = new HashMap<Attribute<?>, AttrRow>();
-        this.rows = new ArrayList<AttrRow>();
-        if (attrs != null) {
-            for (Attribute<?> attr : attrs.getAttributes()) {
-                AttrRow row = new AttrRow(attr);
-                rowMap.put(attr, row);
+    public AttributeSetTableModel(AttributeSet attributes) {
+        this.attributes = attributes;
+        this.listeners = new ArrayList<>();
+        this.rowMap = new HashMap<>();
+        this.rows = new ArrayList<>();
+        if (attributes != null) {
+            for (Attribute<?> attribute : attributes.getAttributes()) {
+                AttrRow row = new AttrRow(attribute);
+                rowMap.put(attribute, row);
                 rows.add(row);
             }
         }
@@ -37,55 +38,55 @@ public abstract class AttributeSetTableModel
 
     public abstract String getTitle();
 
-    public AttributeSet getAttributeSet() {
-        return attrs;
+    public AttributeSet getAttributes() {
+        return attributes;
     }
 
-    public void setAttributeSet(AttributeSet value) {
-        if (attrs != value) {
+    public void setAttributes(AttributeSet attributes) {
+        if (!Objects.equals(this.attributes, attributes)) {
             if (!listeners.isEmpty()) {
-                attrs.removeAttributeListener(this);
+                this.attributes.removeAttributeListener(this);
             }
-            attrs = value;
+            this.attributes = attributes;
             if (!listeners.isEmpty()) {
-                attrs.addAttributeListener(this);
+                this.attributes.addAttributeListener(this);
             }
             attributeListChanged(null);
         }
     }
 
     public void addAttrTableModelListener(AttrTableModelListener listener) {
-        if (listeners.isEmpty() && attrs != null) {
-            attrs.addAttributeListener(this);
+        if (listeners.isEmpty() && attributes != null) {
+            attributes.addAttributeListener(this);
         }
         listeners.add(listener);
     }
 
     public void removeAttrTableModelListener(AttrTableModelListener listener) {
         listeners.remove(listener);
-        if (listeners.isEmpty() && attrs != null) {
-            attrs.removeAttributeListener(this);
+        if (listeners.isEmpty() && attributes != null) {
+            attributes.removeAttributeListener(this);
         }
     }
 
     protected void fireTitleChanged() {
         AttrTableModelEvent event = new AttrTableModelEvent(this);
-        for (AttrTableModelListener l : listeners) {
-            l.attrTitleChanged(event);
+        for (AttrTableModelListener listener : listeners) {
+            listener.attrTitleChanged(event);
         }
     }
 
-    protected void fireStructureChanged() {
+    private void fireStructureChanged() {
         AttrTableModelEvent event = new AttrTableModelEvent(this);
-        for (AttrTableModelListener l : listeners) {
-            l.attrStructureChanged(event);
+        for (AttrTableModelListener listener : listeners) {
+            listener.attrStructureChanged(event);
         }
     }
 
-    protected void fireValueChanged(int index) {
+    private void fireValueChanged(int index) {
         AttrTableModelEvent event = new AttrTableModelEvent(this, index);
-        for (AttrTableModelListener l : listeners) {
-            l.attrValueChanged(event);
+        for (AttrTableModelListener listener : listeners) {
+            listener.attrValueChanged(event);
         }
     }
 
@@ -97,19 +98,19 @@ public abstract class AttributeSetTableModel
         return rows.get(rowIndex);
     }
 
-    protected abstract void setValueRequested(Attribute<Object> attr, Object value)
+    protected abstract void setValueRequested(Attribute<Object> attribute, Object value)
             throws AttrTableSetException;
 
     //
     // AttributeListener methods
     //
-    public void attributeListChanged(AttributeEvent e) {
+    public void attributeListChanged(AttributeEvent event) {
         // if anything has changed, don't do anything
         int index = 0;
         boolean match = true;
         int rowsSize = rows.size();
-        for (Attribute<?> attr : attrs.getAttributes()) {
-            if (index >= rowsSize || rows.get(index).attr != attr) {
+        for (Attribute<?> attribute : attributes.getAttributes()) {
+            if (index >= rowsSize || rows.get(index).attribute != attribute) {
                 match = false;
                 break;
             }
@@ -120,29 +121,29 @@ public abstract class AttributeSetTableModel
         }
 
         // compute the new list of rows, possible adding into hash map
-        ArrayList<AttrRow> newRows = new ArrayList<AttrRow>();
-        HashSet<Attribute<?>> missing = new HashSet<Attribute<?>>(rowMap.keySet());
-        for (Attribute<?> attr : attrs.getAttributes()) {
-            AttrRow row = rowMap.get(attr);
+        ArrayList<AttrRow> newRows = new ArrayList<>();
+        HashSet<Attribute<?>> missing = new HashSet<>(rowMap.keySet());
+        for (Attribute<?> attribute : attributes.getAttributes()) {
+            AttrRow row = rowMap.get(attribute);
             if (row == null) {
-                row = new AttrRow(attr);
-                rowMap.put(attr, row);
+                row = new AttrRow(attribute);
+                rowMap.put(attribute, row);
             } else {
-                missing.remove(attr);
+                missing.remove(attribute);
             }
             newRows.add(row);
         }
         rows = newRows;
-        for (Attribute<?> attr : missing) {
-            rowMap.remove(attr);
+        for (Attribute<?> attribute : missing) {
+            rowMap.remove(attribute);
         }
 
         fireStructureChanged();
     }
 
-    public void attributeValueChanged(AttributeEvent e) {
-        Attribute<?> attr = e.getAttribute();
-        AttrTableModelRow row = rowMap.get(attr);
+    public void attributeValueChanged(AttributeEvent event) {
+        Attribute<?> attribute = event.getAttribute();
+        AttrTableModelRow row = rowMap.get(attribute);
         if (row != null) {
             int index = rows.indexOf(row);
             if (index >= 0) {
@@ -153,64 +154,63 @@ public abstract class AttributeSetTableModel
 
     private class AttrRow implements AttrTableModelRow {
 
-        private Attribute<Object> attr;
+        private Attribute<Object> attribute;
 
-        AttrRow(Attribute<?> attr) {
+        private AttrRow(Attribute<?> attribute) {
             @SuppressWarnings("unchecked")
-            Attribute<Object> objAttr = (Attribute<Object>) attr;
-            this.attr = objAttr;
+            Attribute<Object> objectAttribute = (Attribute<Object>) attribute;
+            this.attribute = objectAttribute;
         }
 
         public String getLabel() {
-            return attr.getDisplayName();
+            return attribute.getDisplayName();
         }
 
         public String getValue() {
-            Object value = attrs.getValue(attr);
+            Object value = attributes.getValue(attribute);
             if (value == null) {
                 return "";
             } else {
                 try {
-                    return attr.toDisplayString(value);
+                    return attribute.toDisplayString(value);
                 } catch (Exception e) {
-                    return "???";
+                    return "???\n\t" + e.getMessage();
                 }
             }
         }
 
         public void setValue(Object value) throws AttrTableSetException {
-            Attribute<Object> attr = this.attr;
-            if (attr == null || value == null) {
+            Attribute<Object> attribute = this.attribute;
+            if (attribute == null || value == null) {
                 return;
             }
 
             try {
                 if (value instanceof String) {
-                    value = attr.parse((String) value);
+                    value = attribute.parse((String) value);
                 }
-                setValueRequested(attr, value);
+                setValueRequested(attribute, value);
             } catch (ClassCastException e) {
-                String msg = Strings.get("attributeChangeInvalidError")
-                        + ": " + e;
-                throw new AttrTableSetException(msg);
+                String error = Strings.get("attributeChangeInvalidError") + ": " + e;
+                throw new AttrTableSetException(error);
             } catch (NumberFormatException e) {
-                String msg = Strings.get("attributeChangeInvalidError");
-                String emsg = e.getMessage();
-                if (emsg != null && emsg.length() > 0) {
-                    msg += ": " + emsg;
+                String error = Strings.get("attributeChangeInvalidError");
+                String errorMessage = e.getMessage();
+                if (errorMessage != null && errorMessage.length() > 0) {
+                    error += ": " + errorMessage;
                 }
-                msg += ".";
-                throw new AttrTableSetException(msg);
+                error += ".";
+                throw new AttrTableSetException(error);
             }
         }
 
         public boolean isValueEditable() {
-            return !attrs.isReadOnly(attr);
+            return !attributes.isReadOnly(attribute);
         }
 
         public Component getEditor(Window parent) {
-            Object value = attrs.getValue(attr);
-            return attr.getCellEditor(parent, value);
+            Object value = attributes.getValue(attribute);
+            return attribute.getCellEditor(parent, value);
         }
     }
 

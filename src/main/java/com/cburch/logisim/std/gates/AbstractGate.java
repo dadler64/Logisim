@@ -88,17 +88,17 @@ abstract class AbstractGate extends InstanceFactory {
     }
 
     @Override
-    public Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver) {
-        if (attr instanceof NegateAttribute) {
+    public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
+        if (attribute instanceof NegateAttribute) {
             return Boolean.FALSE;
         } else {
-            return super.getDefaultAttributeValue(attr, ver);
+            return super.getDefaultAttributeValue(attribute, version);
         }
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrsBase) {
-        GateAttributes attrs = (GateAttributes) attrsBase;
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        GateAttributes attrs = (GateAttributes) attributes;
         Direction facing = attrs.facing;
         int size = ((Integer) attrs.size.getValue()).intValue();
         int inputs = attrs.inputs;
@@ -398,7 +398,7 @@ abstract class AbstractGate extends InstanceFactory {
                 || attr instanceof NegateAttribute) {
             instance.recomputeBounds();
             computePorts(instance);
-        } else if (attr == GateAttributes.ATTR_XOR) {
+        } else if (attr == GateAttributes.ATTRIBUTE_XOR) {
             instance.fireInvalidated();
         }
     }

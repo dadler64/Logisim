@@ -13,7 +13,7 @@ public class UnionFind<E extends UnionFindElement<E>> implements Iterable<E> {
     private HashMap<E, Integer> sizes;
 
     public UnionFind(Collection<E> values) {
-        this.sizes = new HashMap<E, Integer>();
+        this.sizes = new HashMap<>();
         Integer one = Integer.valueOf(1);
         for (E elt : values) {
             elt.setUnionFindParent(elt);

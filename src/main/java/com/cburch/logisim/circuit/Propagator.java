@@ -19,14 +19,14 @@ import java.util.Random;
 
 public class Propagator {
 
-    static int lastId = 0;
-    int id = lastId++;
+    private static int lastId = 0;
+    private int id = lastId++;
     private CircuitState root; // root of state tree
     /**
      * The number of clock cycles to let pass before deciding that the
      * circuit is oscillating.
      */
-    private int simLimit = 1000;
+    private static final int SIM_LIMIT = 1000;
     /**
      * On average, one out of every 2**simRandomShift propagations
      * through a component is delayed one step more than the component
@@ -34,12 +34,12 @@ public class Propagator {
      * otherwise oscillate within Logisim (though they wouldn't oscillate in
      * practice).
      */
-    private volatile int simRandomShift;
-    private PriorityQueue<SetData> toProcess = new PriorityQueue<SetData>();
+    private volatile int simulateRandomShift;
+    private PriorityQueue<SetData> toProcess = new PriorityQueue<>();
     private int clock = 0;
     private boolean isOscillating = false;
-    private boolean oscAdding = false;
-    private PropagationPoints oscPoints = new PropagationPoints();
+    private boolean oscillatorAdding = false;
+    private PropagationPoints oscillatorPoints = new PropagationPoints();
     private int ticks = 0;
     private Random noiseSource = new Random();
     private int noiseCount = 0;
@@ -59,22 +59,21 @@ public class Propagator {
         if (causes == null) {
             return Value.NIL;
         }
-        Value ret = causes.val;
-        for (SetData n = causes.next; n != null; n = n.next) {
-            ret = ret.combine(n.val);
+        Value value = causes.value;
+        for (SetData data = causes.next; data != null; data = data.next) {
+            value = value.combine(data.value);
         }
-        return ret;
+        return value;
     }
 
     private void updateRandomness() {
-        Options opts = root.getProject().getOptions();
-        Object rand = opts.getAttributeSet().getValue(Options.sim_rand_attr);
-        int val = ((Integer) rand).intValue();
-        int logVal = 0;
-        while ((1 << logVal) < val) {
-            logVal++;
+        Options options = root.getProject().getOptions();
+        int value = options.getAttributeSet().getValue(Options.SIMULATOR_RANDOM_ATTRIBUTE);
+        int logValue = 0;
+        while ((1 << logValue) < value) {
+            logValue++;
         }
-        simRandomShift = logVal;
+        simulateRandomShift = logValue;
     }
 
     public boolean isOscillating() {
@@ -88,7 +87,7 @@ public class Propagator {
 
     public void drawOscillatingPoints(ComponentDrawContext context) {
         if (isOscillating) {
-            oscPoints.draw(context);
+            oscillatorPoints.draw(context);
         }
     }
 
@@ -106,43 +105,43 @@ public class Propagator {
     }
 
     public void propagate() {
-        oscPoints.clear();
+        oscillatorPoints.clear();
         clearDirtyPoints();
         clearDirtyComponents();
 
-        int oscThreshold = simLimit;
-        int logThreshold = 3 * oscThreshold / 4;
-        int iters = 0;
+        int oscillatorThreshold = SIM_LIMIT;
+        int logThreshold = 3 * oscillatorThreshold / 4;
+        int count = 0;
         while (!toProcess.isEmpty()) {
-            iters++;
+            count++;
 
-            if (iters < logThreshold) {
+            if (count < logThreshold) {
                 stepInternal(null);
-            } else if (iters < oscThreshold) {
-                oscAdding = true;
-                stepInternal(oscPoints);
+            } else if (count < oscillatorThreshold) {
+                oscillatorAdding = true;
+                stepInternal(oscillatorPoints);
             } else {
                 isOscillating = true;
-                oscAdding = false;
+                oscillatorAdding = false;
                 return;
             }
         }
         isOscillating = false;
-        oscAdding = false;
-        oscPoints.clear();
+        oscillatorAdding = false;
+        oscillatorPoints.clear();
     }
 
     void step(PropagationPoints changedPoints) {
-        oscPoints.clear();
+        oscillatorPoints.clear();
         clearDirtyPoints();
         clearDirtyComponents();
 
-        PropagationPoints oldOsc = oscPoints;
-        oscAdding = changedPoints != null;
-        oscPoints = changedPoints;
+        PropagationPoints oldOscillator = oscillatorPoints;
+        oscillatorAdding = changedPoints != null;
+        oscillatorPoints = changedPoints;
         stepInternal(changedPoints);
-        oscAdding = false;
-        oscPoints = oldOsc;
+        oscillatorAdding = false;
+        oscillatorPoints = oldOscillator;
     }
 
     private void stepInternal(PropagationPoints changedPoints) {
@@ -154,8 +153,7 @@ public class Propagator {
         clock = toProcess.peek().time;
 
         // propagate all values for this clock tick
-        HashMap<CircuitState, HashSet<ComponentPoint>> visited
-                = new HashMap<CircuitState, HashSet<ComponentPoint>>();
+        HashMap<CircuitState, HashSet<ComponentPoint>> visited = new HashMap<>();
         while (true) {
             SetData data = toProcess.peek();
             if (data == null || data.time != clock) {
@@ -167,33 +165,33 @@ public class Propagator {
             // if it's already handled for this clock tick, continue
             HashSet<ComponentPoint> handled = visited.get(state);
             if (handled != null) {
-                if (!handled.add(new ComponentPoint(data.cause, data.loc))) {
+                if (!handled.add(new ComponentPoint(data.cause, data.location))) {
                     continue;
                 }
             } else {
-                handled = new HashSet<ComponentPoint>();
+                handled = new HashSet<>();
                 visited.put(state, handled);
-                handled.add(new ComponentPoint(data.cause, data.loc));
+                handled.add(new ComponentPoint(data.cause, data.location));
             }
 
-			/*DEBUGGING - comment out
-			Simulator.log(data.time + ": proc " + data.loc + " in "
-					+ data.state + " to " + data.val
+			// TODO: DEBUGGING - comment out
+			Simulator.log(data.time + ": proc " + data.location + " in "
+					+ data.state + " to " + data.value
 					+ " by " + data.cause); // */
 
             if (changedPoints != null) {
-                changedPoints.add(state, data.loc);
+                changedPoints.add(state, data.location);
             }
 
             // change the information about value
-            SetData oldHead = state.causes.get(data.loc);
-            Value oldVal = computeValue(oldHead);
+            SetData oldHead = state.causes.get(data.location);
+            Value oldValue = computeValue(oldHead);
             SetData newHead = addCause(state, oldHead, data);
-            Value newVal = computeValue(newHead);
+            Value newValue = computeValue(newHead);
 
             // if the value at point has changed, propagate it
-            if (!newVal.equals(oldVal)) {
-                state.markPointAsDirty(data.loc);
+            if (!newValue.equals(oldValue)) {
+                state.markPointAsDirty(data.location);
             }
         }
 
@@ -205,16 +203,16 @@ public class Propagator {
         return !toProcess.isEmpty();
     }
 
-    void locationTouched(CircuitState state, Location loc) {
-        if (oscAdding) {
-            oscPoints.add(state, loc);
+    void locationTouched(CircuitState state, Location location) {
+        if (oscillatorAdding) {
+            oscillatorPoints.add(state, location);
         }
     }
 
     //
     // package-protected helper methods
     //
-    void setValue(CircuitState state, Location pt, Value val,
+    void setValue(CircuitState state, Location point, Value value,
             Component cause, int delay) {
         if (cause instanceof Wire || cause instanceof Splitter) {
             return;
@@ -222,8 +220,9 @@ public class Propagator {
         if (delay <= 0) {
             delay = 1;
         }
-        int randomShift = simRandomShift;
-        if (randomShift > 0) { // random noise is turned on
+        int randomShift = simulateRandomShift;
+        if (randomShift > 0) {
+            // random noise is turned on
             // multiply the delay by 32 so that the random noise
             // only changes the delay by 3%.
             delay <<= randomShift;
@@ -237,56 +236,58 @@ public class Propagator {
             }
         }
         toProcess.add(new SetData(clock + delay, setDataSerialNumber,
-                state, pt, cause, val));
-		/*DEBUGGING - comment out
-		Simulator.log(clock + ": set " + pt + " in "
-				+ state + " to " + val
-				+ " by " +
-				cause + " after " + delay); //*/
+                state, point, cause, value));
+		// TODO: DEBUGGING - comment out
+		Simulator.log(String.format("%d: set %s in %s to %s by %s after %d",
+                clock, point, state, value, cause, delay));
+		         //*/
 
         setDataSerialNumber++;
     }
 
-	/*TODO for the SimulatorPrototype class
+	// TODO: for the SimulatorPrototype class
 	void step() {
 		clock++;
 		
 		// propagate all values for this clock tick
-		HashMap visited = new HashMap(); // State -> set of ComponentPoints handled
+		HashMap<CircuitState, HashSet<ComponentPoint>> visited = new HashMap<>(); // State -> set of ComponentPoints handled
 		while (!toProcess.isEmpty()) {
 			SetData data;
-			data = (SetData) toProcess.peek();
+			data = toProcess.peek();
 			if (data.time != clock) break;
 			toProcess.remove();
 			CircuitState state = data.state;
 
 			// if it's already handled for this clock tick, continue
-			HashSet handled = (HashSet) visited.get(state);
+			HashSet<ComponentPoint> handled = visited.get(state);
 			if (handled != null) {
-				if (!handled.add(new ComponentPoint(data.cause, data.loc))) continue;
+				if (!handled.add(new ComponentPoint(data.cause, data.location))) {
+                    continue;
+                }
 			} else {
-				handled = new HashSet();
+				handled = new HashSet<>();
 				visited.put(state, handled);
-				handled.add(new ComponentPoint(data.cause, data.loc));
+				handled.add(new ComponentPoint(data.cause, data.location));
 			}
 			
-			if (oscAdding) oscPoints.add(state, data.loc);
+			if (oscillatorAdding) oscillatorPoints.add(state, data.location);
 
 			// change the information about value
-			SetData oldHead = (SetData) state.causes.get(data.loc);
+			SetData oldHead = state.causes.get(data.location);
 			Value   oldVal  = computeValue(oldHead);
 			SetData newHead = addCause(state, oldHead, data);
 			Value   newVal  = computeValue(newHead);
 
 			// if the value at point has changed, propagate it
 			if (!newVal.equals(oldVal)) {
-				state.markPointAsDirty(data.loc);
+				state.markPointAsDirty(data.location);
 			}
 		}
 
 		clearDirtyPoints();
 		clearDirtyComponents();
-	} */
+	}
+	// */
 
     public boolean tick() {
         ticks++;
@@ -302,18 +303,18 @@ public class Propagator {
     //
     void checkComponentEnds(CircuitState state, Component comp) {
         for (EndData end : comp.getEnds()) {
-            Location loc = end.getLocation();
-            SetData oldHead = state.causes.get(loc);
-            Value oldVal = computeValue(oldHead);
-            SetData newHead = removeCause(state, oldHead, loc, comp);
-            Value newVal = computeValue(newHead);
-            Value wireVal = state.getValueByWire(loc);
+            Location endLocation = end.getLocation();
+            SetData oldHead = state.causes.get(endLocation);
+            Value oldValue = computeValue(oldHead);
+            SetData newHead = removeCause(state, oldHead, endLocation, comp);
+            Value newValue = computeValue(newHead);
+            Value wireValue = state.getValueByWire(endLocation);
 
-            if (!newVal.equals(oldVal) || wireVal != null) {
-                state.markPointAsDirty(loc);
+            if (!newValue.equals(oldValue) || wireValue != null) {
+                state.markPointAsDirty(endLocation);
             }
-            if (wireVal != null) {
-                state.setValueByWire(loc, Value.NIL);
+            if (wireValue != null) {
+                state.setValueByWire(endLocation, Value.NIL);
             }
         }
     }
@@ -328,17 +329,17 @@ public class Propagator {
 
     private SetData addCause(CircuitState state, SetData head,
             SetData data) {
-        if (data.val == null) { // actually, it should be removed
-            return removeCause(state, head, data.loc, data.cause);
+        if (data.value == null) { // actually, it should be removed
+            return removeCause(state, head, data.location, data.cause);
         }
 
         HashMap<Location, SetData> causes = state.causes;
 
         // first check whether this is change of previous info.
         boolean replaced = false;
-        for (SetData n = head; n != null; n = n.next) {
-            if (n.cause == data.cause) {
-                n.val = data.val;
+        for (SetData setData = head; setData != null; setData = setData.next) {
+            if (setData.cause == data.cause) {
+                setData.value = data.value;
                 replaced = true;
                 break;
             }
@@ -347,7 +348,7 @@ public class Propagator {
         // otherwise, insert to list of causes
         if (!replaced) {
             if (head == null) {
-                causes.put(data.loc, data);
+                causes.put(data.location, data);
                 head = data;
             } else {
                 data.next = head.next;
@@ -359,121 +360,120 @@ public class Propagator {
     }
 
     private SetData removeCause(CircuitState state, SetData head,
-            Location loc, Component cause) {
+            Location location, Component cause) {
         HashMap<Location, SetData> causes = state.causes;
-        if (head == null) {
-        } else if (head.cause == cause) {
-            head = head.next;
-            if (head == null) {
-                causes.remove(loc);
-            } else {
-                causes.put(loc, head);
-            }
-        } else {
-            SetData prev = head;
-            SetData cur = head.next;
-            while (cur != null) {
-                if (cur.cause == cause) {
-                    prev.next = cur.next;
-                    break;
+        if (head != null) {
+            if (head.cause == cause) {
+                head = head.next;
+                if (head == null) {
+                    causes.remove(location);
+                } else {
+                    causes.put(location, head);
                 }
-                prev = cur;
-                cur = cur.next;
+            } else {
+                SetData previous = head;
+                SetData current = head.next;
+                while (current != null) {
+                    if (current.cause == cause) {
+                        previous.next = current.next;
+                        break;
+                    }
+                    previous = current;
+                    current = current.next;
+                }
             }
         }
         return head;
     }
 
     static class SetData implements Comparable<SetData> {
-
-        int time;
-        int serialNumber;
-        CircuitState state; // state of circuit containing component
-        Component cause;    // component emitting the value
-        Location loc;       // the location at which value is emitted
-        Value val;          // value being emitted
-        SetData next = null;
+        private int time;
+        private int serialNumber;
+        private CircuitState state; // state of circuit containing component
+        private Component cause;    // component emitting the value
+        private Location location;  // the location at which value is emitted
+        private Value value;        // value being emitted
+        private SetData next = null;
 
         private SetData(int time, int serialNumber, CircuitState state,
-                Location loc, Component cause, Value val) {
+                Location location, Component cause, Value value) {
             this.time = time;
             this.serialNumber = serialNumber;
             this.state = state;
             this.cause = cause;
-            this.loc = loc;
-            this.val = val;
+            this.location = location;
+            this.value = value;
         }
 
-        public int compareTo(SetData o) {
+        public int compareTo(SetData setData) {
             // Yes, these subtractions may overflow. This is intentional, as it
             // avoids potential wraparound problems as the counters increment.
-            int ret = this.time - o.time;
-            if (ret != 0) {
-                return ret;
+            int returnTime = this.time - setData.time;
+            if (returnTime != 0) {
+                return returnTime;
             }
-            return this.serialNumber - o.serialNumber;
+            return this.serialNumber - setData.serialNumber;
         }
 
         public SetData cloneFor(CircuitState newState) {
             Propagator newProp = newState.getPropagator();
-            int dtime = newProp.clock - state.getPropagator().clock;
-            SetData ret = new SetData(time + dtime,
-                    newProp.setDataSerialNumber, newState, loc, cause, val);
+            int clockTime = newProp.clock - state.getPropagator().clock;
+            SetData setData = new SetData(this.time + clockTime,
+                    newProp.setDataSerialNumber, newState, location, cause, value);
             newProp.setDataSerialNumber++;
             if (this.next != null) {
-                ret.next = this.next.cloneFor(newState);
+                setData.next = this.next.cloneFor(newState);
             }
-            return ret;
+            return setData;
         }
 
         @Override
         public String toString() {
-            return loc + ":" + val + "(" + cause + ")";
+            return location + ":" + value + "(" + cause + ")";
         }
     }
 
     private static class ComponentPoint {
 
-        Component cause;
-        Location loc;
+        private Component cause;
+        private Location location;
 
-        public ComponentPoint(Component cause, Location loc) {
+        private ComponentPoint(Component cause, Location location) {
             this.cause = cause;
-            this.loc = loc;
+            this.location = location;
         }
 
         @Override
         public int hashCode() {
-            return 31 * cause.hashCode() + loc.hashCode();
+            return 31 * cause.hashCode() + location.hashCode();
         }
 
         @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof ComponentPoint)) {
+        public boolean equals(Object object) {
+            if (!(object instanceof ComponentPoint)) {
                 return false;
             }
-            ComponentPoint o = (ComponentPoint) other;
-            return this.cause.equals(o.cause) && this.loc.equals(o.loc);
+            ComponentPoint componentPoint = (ComponentPoint) object;
+            return this.cause.equals(componentPoint.cause) && this.location.equals(componentPoint.location);
         }
     }
 
     private static class Listener implements AttributeListener {
 
-        WeakReference<Propagator> prop;
+        private WeakReference<Propagator> propagators;
 
-        public Listener(Propagator propagator) {
-            prop = new WeakReference<Propagator>(propagator);
+        private Listener(Propagator propagator) {
+            propagators = new WeakReference<>(propagator);
         }
 
-        public void attributeListChanged(AttributeEvent e) {
-        }
+        public void attributeListChanged(AttributeEvent event) { }
 
-        public void attributeValueChanged(AttributeEvent e) {
-            Propagator p = prop.get();
-            if (p == null) {
-                e.getSource().removeAttributeListener(this);
-            } else if (e.getAttribute().equals(Options.sim_rand_attr)) {
-                p.updateRandomness();
+        public void attributeValueChanged(AttributeEvent event) {
+            Propagator propagator = propagators.get();
+            if (propagator == null) {
+                event.getSource().removeAttributeListener(this);
+            } else if (event.getAttribute().equals(Options.SIMULATOR_RANDOM_ATTRIBUTE)) {
+                propagator.updateRandomness();
             }
         }
     }

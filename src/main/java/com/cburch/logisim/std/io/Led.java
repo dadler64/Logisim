@@ -27,7 +27,7 @@ public class Led extends InstanceFactory {
         setAttributes(new Attribute[]{
                 StdAttr.FACING, Io.ATTR_ON_COLOR, Io.ATTR_OFF_COLOR,
                 Io.ATTR_ACTIVE,
-                StdAttr.LABEL, Io.ATTR_LABEL_LOC,
+                StdAttr.LABEL, Io.ATTR_LABEL_LOCATION,
                 StdAttr.LABEL_FONT, Io.ATTR_LABEL_COLOR
         }, new Object[]{
                 Direction.WEST, new Color(240, 0, 0), Color.DARK_GRAY,
@@ -42,8 +42,8 @@ public class Led extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Direction facing = attributes.getValue(StdAttr.FACING);
         return Bounds.create(0, -10, 20, 20).rotate(Direction.WEST, facing, 0, 0);
     }
 
@@ -54,91 +54,91 @@ public class Led extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             computeTextField(instance);
-        } else if (attr == Io.ATTR_LABEL_LOC) {
+        } else if (attribute == Io.ATTR_LABEL_LOCATION) {
             computeTextField(instance);
         }
     }
 
     private void computeTextField(Instance instance) {
         Direction facing = instance.getAttributeValue(StdAttr.FACING);
-        Object labelLoc = instance.getAttributeValue(Io.ATTR_LABEL_LOC);
+        Object labelLocation = instance.getAttributeValue(Io.ATTR_LABEL_LOCATION);
 
-        Bounds bds = instance.getBounds();
-        int x = bds.getX() + bds.getWidth() / 2;
-        int y = bds.getY() + bds.getHeight() / 2;
-        int halign = GraphicsUtil.H_CENTER;
-        int valign = GraphicsUtil.V_CENTER;
-        if (labelLoc == Direction.NORTH) {
-            y = bds.getY() - 2;
-            valign = GraphicsUtil.V_BOTTOM;
-        } else if (labelLoc == Direction.SOUTH) {
-            y = bds.getY() + bds.getHeight() + 2;
-            valign = GraphicsUtil.V_TOP;
-        } else if (labelLoc == Direction.EAST) {
-            x = bds.getX() + bds.getWidth() + 2;
-            halign = GraphicsUtil.H_LEFT;
-        } else if (labelLoc == Direction.WEST) {
-            x = bds.getX() - 2;
-            halign = GraphicsUtil.H_RIGHT;
+        Bounds bounds = instance.getBounds();
+        int x = bounds.getX() + bounds.getWidth() / 2;
+        int y = bounds.getY() + bounds.getHeight() / 2;
+        int hAlign = GraphicsUtil.H_CENTER;
+        int vAlign = GraphicsUtil.V_CENTER;
+        if (labelLocation == Direction.NORTH) {
+            y = bounds.getY() - 2;
+            vAlign = GraphicsUtil.V_BOTTOM;
+        } else if (labelLocation == Direction.SOUTH) {
+            y = bounds.getY() + bounds.getHeight() + 2;
+            vAlign = GraphicsUtil.V_TOP;
+        } else if (labelLocation == Direction.EAST) {
+            x = bounds.getX() + bounds.getWidth() + 2;
+            hAlign = GraphicsUtil.H_LEFT;
+        } else if (labelLocation == Direction.WEST) {
+            x = bounds.getX() - 2;
+            hAlign = GraphicsUtil.H_RIGHT;
         }
-        if (labelLoc == facing) {
-            if (labelLoc == Direction.NORTH || labelLoc == Direction.SOUTH) {
+        if (labelLocation == facing) {
+            if (labelLocation == Direction.NORTH || labelLocation == Direction.SOUTH) {
                 x += 2;
-                halign = GraphicsUtil.H_LEFT;
+                hAlign = GraphicsUtil.H_LEFT;
             } else {
                 y -= 2;
-                valign = GraphicsUtil.V_BOTTOM;
+                vAlign = GraphicsUtil.V_BOTTOM;
             }
         }
 
         instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                x, y, halign, valign);
+                x, y, hAlign, vAlign);
     }
 
     @Override
     public void propagate(InstanceState state) {
-        Value val = state.getPort(0);
+        Value value = state.getPort(0);
         InstanceDataSingleton data = (InstanceDataSingleton) state.getData();
         if (data == null) {
-            state.setData(new InstanceDataSingleton(val));
+            state.setData(new InstanceDataSingleton(value));
         } else {
-            data.setValue(val);
+            data.setValue(value);
         }
     }
 
     @Override
     public void paintGhost(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds();
-        GraphicsUtil.switchToWidth(g, 2);
-        g.drawOval(bds.getX() + 1, bds.getY() + 1,
-                bds.getWidth() - 2, bds.getHeight() - 2);
+        Graphics graphics = painter.getGraphics();
+        Bounds bounds = painter.getBounds();
+        GraphicsUtil.switchToWidth(graphics, 2);
+        graphics.drawOval(bounds.getX() + 1, bounds.getY() + 1,
+                bounds.getWidth() - 2, bounds.getHeight() - 2);
     }
 
     @Override
     public void paintInstance(InstancePainter painter) {
         InstanceDataSingleton data = (InstanceDataSingleton) painter.getData();
-        Value val = data == null ? Value.FALSE : (Value) data.getValue();
-        Bounds bds = painter.getBounds().expand(-1);
+        Value value = data == null ? Value.FALSE : (Value) data.getValue();
+        Bounds bounds = painter.getBounds().expand(-1);
 
-        Graphics g = painter.getGraphics();
+        Graphics graphics = painter.getGraphics();
         if (painter.getShowState()) {
             Color onColor = painter.getAttributeValue(Io.ATTR_ON_COLOR);
             Color offColor = painter.getAttributeValue(Io.ATTR_OFF_COLOR);
-            Boolean activ = painter.getAttributeValue(Io.ATTR_ACTIVE);
-            Object desired = activ.booleanValue() ? Value.TRUE : Value.FALSE;
-            g.setColor(val == desired ? onColor : offColor);
-            g.fillOval(bds.getX(), bds.getY(), bds.getWidth(), bds.getHeight());
+            Boolean active = painter.getAttributeValue(Io.ATTR_ACTIVE);
+            Object desired = active ? Value.TRUE : Value.FALSE;
+            graphics.setColor(value.equals(desired) ? onColor : offColor);
+            graphics.fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
         }
-        g.setColor(Color.BLACK);
-        GraphicsUtil.switchToWidth(g, 2);
-        g.drawOval(bds.getX(), bds.getY(), bds.getWidth(), bds.getHeight());
-        GraphicsUtil.switchToWidth(g, 1);
-        g.setColor(painter.getAttributeValue(Io.ATTR_LABEL_COLOR));
+        graphics.setColor(Color.BLACK);
+        GraphicsUtil.switchToWidth(graphics, 2);
+        graphics.drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+        GraphicsUtil.switchToWidth(graphics, 1);
+        graphics.setColor(painter.getAttributeValue(Io.ATTR_LABEL_COLOR));
         painter.drawLabel();
         painter.drawPorts();
     }

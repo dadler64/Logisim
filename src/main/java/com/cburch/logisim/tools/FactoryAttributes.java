@@ -26,7 +26,7 @@ class FactoryAttributes implements AttributeSet, AttributeListener, Cloneable {
         this.desc = desc;
         this.factory = null;
         this.baseAttrs = null;
-        this.listeners = new ArrayList<AttributeListener>();
+        this.listeners = new ArrayList<>();
     }
 
     public FactoryAttributes(ComponentFactory factory) {
@@ -34,7 +34,7 @@ class FactoryAttributes implements AttributeSet, AttributeListener, Cloneable {
         this.desc = null;
         this.factory = factory;
         this.baseAttrs = null;
-        this.listeners = new ArrayList<AttributeListener>();
+        this.listeners = new ArrayList<>();
     }
 
     boolean isFactoryInstantiated() {

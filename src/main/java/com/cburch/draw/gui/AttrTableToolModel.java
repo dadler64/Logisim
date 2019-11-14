@@ -22,7 +22,7 @@ class AttrTableToolModel extends AttributeSetTableModel {
 
     public void setTool(AbstractTool value) {
         currentTool = value;
-        setAttributeSet(defaults.createSubset(value));
+        setAttributes(defaults.createSubset(value));
         fireTitleChanged();
     }
 
@@ -32,8 +32,8 @@ class AttrTableToolModel extends AttributeSetTableModel {
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attr, Object value)
+    public void setValueRequested(Attribute<Object> attribute, Object value)
             throws AttrTableSetException {
-        defaults.setValue(attr, value);
+        defaults.setValue(attribute, value);
     }
 }

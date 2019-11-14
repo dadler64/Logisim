@@ -25,9 +25,10 @@ import com.cburch.logisim.gui.start.Startup;
 
 public class Main {
 
-    public static final LogisimVersion VERSION = LogisimVersion.get(2, 7, 3);
+    public static final LogisimVersion VERSION = LogisimVersion.get(2, 8, 0);
     public static final String VERSION_NAME = VERSION.toString();
     public static final int COPYRIGHT_YEAR = 2019;
+    public static final Release RELEASE_TYPE = Release.ALPHA;
 
     public static void main(String[] args) {
         Startup startup = Startup.parseArgs(args);
@@ -36,5 +37,9 @@ public class Main {
         } else {
             startup.run();
         }
+    }
+
+    public enum Release {
+        RELEASE, BETA, ALPHA
     }
 }

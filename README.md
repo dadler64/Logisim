@@ -27,6 +27,11 @@
         <img src="https://api.codacy.com/project/badge/Grade/31511636df994d55add69e8a75804d14" 
              alt="Codacy Badge">
     </a>
+    <!-- Release Version -->
+      <a href="https://img.shields.io/github/release/dadler64/Logisim">
+        <img src="https://img.shields.io/github/release/dadler64/Logisim.svg"
+              alt="Release Version">
+      </a>
 </p>
 
 <!-- LINKS -->
@@ -70,6 +75,8 @@ This is a continuation of the original project since original development was ce
 
 ## How To Use
   This project is a WIP and is not currently building correctly (see the [issues](https://github.com/dadler64/Logisim/issues)) so I recommend going to the original [Logisim website](http://www.cburch.com/logisim/) and downloading it from there until the bulds here are up and running.
+  
+  The initial release on the releases page is the one from the original Logisim website. I will periodically post ALPHA and BETA releases so that you can see what is being changed as this project progresses.
   
   If you want to try your hand at running or building what is here, import the project into an IDE such as IntelliJ IDEA and build it in there using the build system provided. 
 

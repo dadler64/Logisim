@@ -49,30 +49,30 @@ public class SplitterFactory extends AbstractComponentFactory {
     }
 
     @Override
-    public Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver) {
-        if (attr == SplitterAttributes.ATTR_APPEARANCE) {
-            if (ver.compareTo(LogisimVersion.get(2, 6, 3, 202)) < 0) {
+    public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
+        if (attribute == SplitterAttributes.ATTR_APPEARANCE) {
+            if (version.compareTo(LogisimVersion.get(2, 6, 3, 202)) < 0) {
                 return SplitterAttributes.APPEAR_LEGACY;
             } else {
                 return SplitterAttributes.APPEAR_LEFT;
             }
-        } else if (attr instanceof SplitterAttributes.BitOutAttribute) {
+        } else if (attribute instanceof SplitterAttributes.BitOutAttribute) {
             SplitterAttributes.BitOutAttribute a;
-            a = (SplitterAttributes.BitOutAttribute) attr;
+            a = (SplitterAttributes.BitOutAttribute) attribute;
             return a.getDefault();
         } else {
-            return super.getDefaultAttributeValue(attr, ver);
+            return super.getDefaultAttributeValue(attribute, version);
         }
     }
 
     @Override
-    public Component createComponent(Location loc, AttributeSet attrs) {
-        return new Splitter(loc, attrs);
+    public Component createComponent(Location location, AttributeSet attributes) {
+        return new Splitter(location, attributes);
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrsBase) {
-        SplitterAttributes attrs = (SplitterAttributes) attrsBase;
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        SplitterAttributes attrs = (SplitterAttributes) attributes;
         int fanout = attrs.fanout;
         SplitterParameters parms = attrs.getParameters();
         int xEnd0 = parms.getEnd0X();
@@ -89,8 +89,8 @@ public class SplitterFactory extends AbstractComponentFactory {
     //
     @Override
     public void drawGhost(ComponentDrawContext context,
-            Color color, int x, int y, AttributeSet attrsBase) {
-        SplitterAttributes attrs = (SplitterAttributes) attrsBase;
+            Color color, int x, int y, AttributeSet attributes) {
+        SplitterAttributes attrs = (SplitterAttributes) attributes;
         context.getGraphics().setColor(color);
         Location loc = Location.create(x, y);
         if (attrs.appear == SplitterAttributes.APPEAR_LEGACY) {
@@ -102,7 +102,7 @@ public class SplitterFactory extends AbstractComponentFactory {
 
     @Override
     public void paintIcon(ComponentDrawContext c,
-            int x, int y, AttributeSet attrs) {
+            int x, int y, AttributeSet attributes) {
         Graphics g = c.getGraphics();
         if (toolIcon != null) {
             toolIcon.paintIcon(c.getDestination(), g, x + 2, y + 2);

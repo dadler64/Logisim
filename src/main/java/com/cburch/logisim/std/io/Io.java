@@ -25,7 +25,7 @@ public class Io extends Library {
             = Attributes.forColor("offcolor", Strings.getter("ioOffColor"));
     static final Attribute<Color> ATTR_BACKGROUND
             = Attributes.forColor("bg", Strings.getter("ioBackgroundColor"));
-    static final Attribute<Object> ATTR_LABEL_LOC = Attributes.forOption("labelloc",
+    static final Attribute<Object> ATTR_LABEL_LOCATION = Attributes.forOption("labelloc",
             Strings.getter("ioLabelLocAttr"),
             new Object[]{LABEL_CENTER, Direction.NORTH, Direction.SOUTH,
                     Direction.EAST, Direction.WEST});

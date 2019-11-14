@@ -13,7 +13,7 @@ class GateAttributeList extends AbstractList<Attribute<?>> {
     private static final Attribute<?>[] BASE_ATTRIBUTES = {
             StdAttr.FACING, StdAttr.WIDTH,
             GateAttributes.ATTR_SIZE, GateAttributes.ATTR_INPUTS,
-            GateAttributes.ATTR_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT,
+            GateAttributes.ATTRIBUTE_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT,
     };
 
     private GateAttributes attrs;
@@ -32,7 +32,7 @@ class GateAttributeList extends AbstractList<Attribute<?>> {
         if (attrs.xorBehave != null) {
             index--;
             if (index < 0) {
-                return GateAttributes.ATTR_XOR;
+                return GateAttributes.ATTRIBUTE_XOR;
             }
         }
         Direction facing = attrs.facing;

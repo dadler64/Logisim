@@ -96,9 +96,9 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
 
     @Override
     public final void paintIcon(ComponentDrawContext context,
-            int x, int y, AttributeSet attrs) {
+            int x, int y, AttributeSet attributes) {
         InstancePainter painter = context.getInstancePainter();
-        painter.setFactory(this, attrs);
+        painter.setFactory(this, attributes);
         Graphics g = painter.getGraphics();
         g.translate(x, y);
         paintIcon(painter);
@@ -118,14 +118,14 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
             if (i != null) {
                 i.paintIcon(context.getDestination(), g, x + 2, y + 2);
             } else {
-                super.paintIcon(context, x, y, attrs);
+                super.paintIcon(context, x, y, attributes);
             }
         }
     }
 
     @Override
-    public final Component createComponent(Location loc, AttributeSet attrs) {
-        InstanceComponent ret = new InstanceComponent(this, loc, attrs);
+    public final Component createComponent(Location location, AttributeSet attributes) {
+        InstanceComponent ret = new InstanceComponent(this, location, attributes);
         configureNewInstance(ret.getInstance());
         return ret;
     }
@@ -135,7 +135,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
+    public Bounds getOffsetBounds(AttributeSet attributes) {
         Bounds ret = bounds;
         if (ret == null) {
             throw new RuntimeException("offset bounds unknown: "
@@ -182,11 +182,11 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
     }
 
     @Override
-    public Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver) {
+    public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
         Attribute<?>[] as = attrs;
         if (as != null) {
             for (int i = 0; i < as.length; i++) {
-                if (as[i] == attr) {
+                if (as[i] == attribute) {
                     return defaults[i];
                 }
             }
@@ -197,7 +197,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
                 dfltSet = createAttributeSet();
                 defaultSet = dfltSet;
             }
-            return dfltSet.getValue(attr);
+            return dfltSet.getValue(attribute);
         }
     }
 
@@ -206,7 +206,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
     }
 
     public void setPorts(Port[] ports) {
-        portList = new UnmodifiableList<Port>(ports);
+        portList = new UnmodifiableList<>(ports);
     }
 
     public void setPorts(List<Port> ports) {
@@ -270,16 +270,16 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
 
     @Override
     public final void drawGhost(ComponentDrawContext context, Color color,
-            int x, int y, AttributeSet attrs) {
+            int x, int y, AttributeSet attributes) {
         InstancePainter painter = context.getInstancePainter();
         Graphics g = painter.getGraphics();
         g.setColor(color);
         g.translate(x, y);
-        painter.setFactory(this, attrs);
+        painter.setFactory(this, attributes);
         paintGhost(painter);
         g.translate(-x, -y);
         if (painter.getFactory() == null) {
-            super.drawGhost(context, color, x, y, attrs);
+            super.drawGhost(context, color, x, y, attributes);
         }
     }
 

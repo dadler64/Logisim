@@ -140,8 +140,8 @@ public class ProjectCircuitActions {
 
     public static void doAnalyze(Project proj, Circuit circuit) {
         Map<Instance, String> pinNames = Analyze.getPinLabels(circuit);
-        ArrayList<String> inputNames = new ArrayList<String>();
-        ArrayList<String> outputNames = new ArrayList<String>();
+        ArrayList<String> inputNames = new ArrayList<>();
+        ArrayList<String> outputNames = new ArrayList<>();
         for (Map.Entry<Instance, String> entry : pinNames.entrySet()) {
             Instance pin = entry.getKey();
             boolean isInput = Pin.FACTORY.isInputPin(pin);

@@ -98,7 +98,7 @@ public class CircuitBuilder {
             CircuitDetermination.Value value = (CircuitDetermination.Value) det;
             ComponentFactory factory = Constant.FACTORY;
             AttributeSet attrs = factory.createAttributeSet();
-            attrs.setValue(Constant.ATTR_VALUE,
+            attrs.setValue(Constant.ATTRIBUTE_VALUE,
                     Integer.valueOf(value.getValue()));
             Bounds bds = factory.getOffsetBounds(attrs);
             return new Layout(bds.getWidth(), bds.getHeight(),
@@ -310,7 +310,7 @@ public class CircuitBuilder {
                 Integer valInt = Integer.valueOf(val.toIntValue());
                 Location loc = parent.getEnd(index).getLocation();
                 AttributeSet attrs = Constant.FACTORY.createAttributeSet();
-                attrs.setValue(Constant.ATTR_VALUE, valInt);
+                attrs.setValue(Constant.ATTRIBUTE_VALUE, valInt);
                 circuit.add(Constant.FACTORY.createComponent(loc, attrs));
             }
         }
@@ -379,7 +379,7 @@ public class CircuitBuilder {
     // placeInputs
     //
     private static void placeInputs(CircuitMutation result, InputData inputData) {
-        ArrayList<Location> forbiddenYs = new ArrayList<Location>();
+        ArrayList<Location> forbiddenYs = new ArrayList<>();
         Comparator<Location> compareYs = new CompareYs();
         int curX = 40;
         int curY = 30;
@@ -492,7 +492,7 @@ public class CircuitBuilder {
 
         int startX;
         String[] names;
-        HashMap<String, SingleInput> inputs = new HashMap<String, SingleInput>();
+        HashMap<String, SingleInput> inputs = new HashMap<>();
 
         InputData() {
         }
@@ -515,7 +515,7 @@ public class CircuitBuilder {
     private static class SingleInput {
 
         int spineX;
-        ArrayList<Location> ys = new ArrayList<Location>();
+        ArrayList<Location> ys = new ArrayList<>();
 
         SingleInput(int spineX) {
             this.spineX = spineX;

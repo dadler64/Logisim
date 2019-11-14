@@ -33,8 +33,7 @@ public class Arithmetic extends Library {
 
     private List<Tool> tools = null;
 
-    public Arithmetic() {
-    }
+    public Arithmetic() { }
 
     @Override
     public String getName() {

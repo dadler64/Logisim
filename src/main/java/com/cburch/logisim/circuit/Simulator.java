@@ -5,26 +5,30 @@ package com.cburch.logisim.circuit;
 
 import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.prefs.AppPreferences;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Simulator {
-	/*begin DEBUGGING
-	private static PrintWriter debug_log;
+	// begin DEBUGGING
+	private static PrintWriter debugLog;
 	
 	static {
 		try {
-			debug_log = new PrintWriter(new BufferedWriter(new FileWriter("DEBUG")));
+			debugLog = new PrintWriter(new BufferedWriter(new FileWriter("DEBUG")));
 		} catch (IOException e) {
 			System.err.println("Could not open debug log"); //OK
 		}
 	}
 	
-	public static void log(String msg) {
-		debug_log.println(msg);
+	public static void log(String message) {
+		debugLog.println(message);
 	}
 	
 	public static void flushLog() {
-		debug_log.flush();
+		debugLog.flush();
 	}
 	//end DEBUGGING*/
 
@@ -35,7 +39,7 @@ public class Simulator {
     private PropagationManager manager;
     private SimulatorTicker ticker;
     private ArrayList<SimulatorListener> listeners
-            = new ArrayList<SimulatorListener>();
+            = new ArrayList<>();
 
     public Simulator() {
         manager = new PropagationManager();
@@ -162,21 +166,21 @@ public class Simulator {
 
     void firePropagationCompleted() {
         SimulatorEvent e = new SimulatorEvent(this);
-        for (SimulatorListener l : new ArrayList<SimulatorListener>(listeners)) {
+        for (SimulatorListener l : new ArrayList<>(listeners)) {
             l.propagationCompleted(e);
         }
     }
 
     void fireTickCompleted() {
         SimulatorEvent e = new SimulatorEvent(this);
-        for (SimulatorListener l : new ArrayList<SimulatorListener>(listeners)) {
+        for (SimulatorListener l : new ArrayList<>(listeners)) {
             l.tickCompleted(e);
         }
     }
 
     void fireSimulatorStateChanged() {
         SimulatorEvent e = new SimulatorEvent(this);
-        for (SimulatorListener l : new ArrayList<SimulatorListener>(listeners)) {
+        for (SimulatorListener l : new ArrayList<>(listeners)) {
             l.simulatorStateChanged(e);
         }
     }

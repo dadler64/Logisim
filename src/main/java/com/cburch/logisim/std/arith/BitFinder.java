@@ -46,7 +46,7 @@ public class BitFinder extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
+    public Bounds getOffsetBounds(AttributeSet attributes) {
         return Bounds.create(-40, -20, 40, 40);
     }
 

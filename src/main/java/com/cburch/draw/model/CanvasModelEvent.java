@@ -78,16 +78,16 @@ public class CanvasModelEvent extends EventObject {
         this(source, action, Collections.emptySet());
 
         HashSet<CanvasObject> affected;
-        affected = new HashSet<CanvasObject>(newValues.size());
+        affected = new HashSet<>(newValues.size());
         for (AttributeMapKey key : newValues.keySet()) {
             affected.add(key.getObject());
         }
         this.affected = affected;
 
         Map<AttributeMapKey, Object> oldValuesCopy;
-        oldValuesCopy = new HashMap<AttributeMapKey, Object>(oldValues);
+        oldValuesCopy = new HashMap<>(oldValues);
         Map<AttributeMapKey, Object> newValuesCopy;
-        newValuesCopy = new HashMap<AttributeMapKey, Object>(newValues);
+        newValuesCopy = new HashMap<>(newValues);
 
         this.oldValues = Collections.unmodifiableMap(oldValuesCopy);
         this.newValues = Collections.unmodifiableMap(newValuesCopy);
@@ -108,7 +108,7 @@ public class CanvasModelEvent extends EventObject {
         this(source, action, Collections.emptySet());
 
         ArrayList<CanvasObject> affected;
-        affected = new ArrayList<CanvasObject>(requests.size());
+        affected = new ArrayList<>(requests.size());
         for (ReorderRequest r : requests) {
             affected.add(r.getObject());
         }
@@ -175,7 +175,7 @@ public class CanvasModelEvent extends EventObject {
         if (ret == null) {
             Map<AttributeMapKey, Object> newVals = newValues;
             if (newVals != null) {
-                HashSet<CanvasObject> keys = new HashSet<CanvasObject>();
+                HashSet<CanvasObject> keys = new HashSet<>();
                 for (AttributeMapKey key : newVals.keySet()) {
                     keys.add(key.getObject());
                 }

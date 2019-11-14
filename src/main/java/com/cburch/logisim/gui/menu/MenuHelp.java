@@ -61,15 +61,15 @@ class MenuHelp extends JMenu implements ActionListener {
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
-        Object src = e.getSource();
-        if (src == guide) {
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
+        if (source == guide) {
             showHelp("guide");
-        } else if (src == tutorial) {
+        } else if (source == tutorial) {
             showHelp("tutorial");
-        } else if (src == library) {
+        } else if (source == library) {
             showHelp("libs");
-        } else if (src == about) {
+        } else if (source == about) {
             About.showAboutDialog(menubar.getParentWindow());
         }
     }

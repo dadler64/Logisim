@@ -82,7 +82,7 @@ class AboutCredits extends JComponent {
         // version, but they do appear in the acknowledgements section of the User's
         // Guide. Current contributors appear in both locations.
 
-        lines = new ArrayList<CreditsLine>();
+        lines = new ArrayList<>();
         linesHeight = 0; // computed in paintComponent
         lines.add(new CreditsLine(1, "www.cburch.com/logisim/"));
         lines.add(new CreditsLine(0, Strings.get("creditsRoleLead"),

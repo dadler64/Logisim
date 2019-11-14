@@ -94,7 +94,7 @@ class LayoutToolbarModel extends AbstractToolbarModel {
 
     private void buildContents() {
         List<ToolbarItem> oldItems = items;
-        List<ToolbarItem> newItems = new ArrayList<ToolbarItem>();
+        List<ToolbarItem> newItems = new ArrayList<>();
         int pos = -1;
         ToolbarData data = proj.getLogisimFile().getOptions().getToolbarData();
         for (Tool tool : data.getContents()) {

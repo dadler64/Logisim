@@ -21,7 +21,7 @@ import java.util.List;
 
 public class CircuitAttributes extends AbstractAttributeSet {
 
-    public static final Attribute<String> NAME_ATTR
+    public static final Attribute<String> NAME_ATTRIBUTE
             = Attributes.forString("circuit", Strings.getter("circuitName"));
 
     public static final Attribute<Direction> LABEL_LOCATION_ATTR
@@ -37,7 +37,7 @@ public class CircuitAttributes extends AbstractAttributeSet {
             = Attributes.forFont("clabelfont", Strings.getter("circuitLabelFontAttr"));
 
     private static final Attribute<?>[] STATIC_ATTRS = {
-            NAME_ATTR, CIRCUIT_LABEL_ATTR, CIRCUIT_LABEL_FACING_ATTR, CIRCUIT_LABEL_FONT_ATTR,
+            NAME_ATTRIBUTE, CIRCUIT_LABEL_ATTR, CIRCUIT_LABEL_FACING_ATTR, CIRCUIT_LABEL_FONT_ATTR,
     };
     private static final Object[] STATIC_DEFAULTS = {
             "", "", Direction.EAST, StdAttr.DEFAULT_LABEL_FONT,
@@ -45,7 +45,7 @@ public class CircuitAttributes extends AbstractAttributeSet {
     private static final List<Attribute<?>> INSTANCE_ATTRS
             = Arrays.asList(StdAttr.FACING, StdAttr.LABEL, LABEL_LOCATION_ATTR,
             StdAttr.LABEL_FONT,
-            CircuitAttributes.NAME_ATTR, CIRCUIT_LABEL_ATTR,
+            CircuitAttributes.NAME_ATTRIBUTE, CIRCUIT_LABEL_ATTR,
             CIRCUIT_LABEL_FACING_ATTR, CIRCUIT_LABEL_FONT_ATTR);
     private Circuit source;
     private Instance subcircInstance;
@@ -68,7 +68,7 @@ public class CircuitAttributes extends AbstractAttributeSet {
 
     static AttributeSet createBaseAttrs(Circuit source, String name) {
         AttributeSet ret = AttributeSets.fixedSet(STATIC_ATTRS, STATIC_DEFAULTS);
-        ret.setValue(CircuitAttributes.NAME_ATTR, name);
+        ret.setValue(CircuitAttributes.NAME_ATTRIBUTE, name);
         ret.addAttributeListener(new StaticListener(source));
         return ret;
     }
@@ -159,7 +159,7 @@ public class CircuitAttributes extends AbstractAttributeSet {
             fireAttributeValueChanged(LABEL_LOCATION_ATTR, val);
         } else {
             source.getStaticAttributes().setValue(attr, value);
-            if (attr == NAME_ATTR) {
+            if (attr == NAME_ATTRIBUTE) {
                 source.fireEvent(CircuitEvent.ACTION_SET_NAME, value);
             }
         }
@@ -177,7 +177,7 @@ public class CircuitAttributes extends AbstractAttributeSet {
         }
 
         public void attributeValueChanged(AttributeEvent e) {
-            if (e.getAttribute() == NAME_ATTR) {
+            if (e.getAttribute() == NAME_ATTRIBUTE) {
                 source.fireEvent(CircuitEvent.ACTION_SET_NAME, e.getValue());
             }
         }

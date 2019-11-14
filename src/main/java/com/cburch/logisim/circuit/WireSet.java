@@ -22,10 +22,10 @@ public class WireSet {
             points = Collections.emptySet();
         } else {
             this.wires = wires;
-            points = new HashSet<Location>();
+            points = new HashSet<>();
             for (Wire w : wires) {
-                points.add(w.e0);
-                points.add(w.e1);
+                points.add(w.start);
+                points.add(w.end);
             }
         }
     }

@@ -24,7 +24,7 @@ class Clipboard {
     private AttributeSet newAttrs;
 
     private Clipboard(Selection sel, AttributeSet viewAttrs) {
-        components = new HashSet<Component>();
+        components = new HashSet<>();
         oldAttrs = null;
         newAttrs = null;
         for (Component base : sel.getComponents()) {

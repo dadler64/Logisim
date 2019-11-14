@@ -62,16 +62,16 @@ class AttrTableSelectionModel extends AttributeSetTableModel
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attr, Object value)
+    public void setValueRequested(Attribute<Object> attribute, Object value)
             throws AttrTableSetException {
-        SelectionAttributes attrs = (SelectionAttributes) getAttributeSet();
+        SelectionAttributes attrs = (SelectionAttributes) getAttributes();
         HashMap<AttributeMapKey, Object> oldVals;
-        oldVals = new HashMap<AttributeMapKey, Object>();
+        oldVals = new HashMap<>();
         HashMap<AttributeMapKey, Object> newVals;
-        newVals = new HashMap<AttributeMapKey, Object>();
+        newVals = new HashMap<>();
         for (Map.Entry<AttributeSet, CanvasObject> ent : attrs.entries()) {
-            AttributeMapKey key = new AttributeMapKey(attr, ent.getValue());
-            oldVals.put(key, ent.getKey().getValue(attr));
+            AttributeMapKey key = new AttributeMapKey(attribute, ent.getValue());
+            oldVals.put(key, ent.getKey().getValue(attribute));
             newVals.put(key, value);
         }
         CanvasModel model = canvas.getModel();

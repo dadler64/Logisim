@@ -24,43 +24,42 @@ import java.util.Map;
 
 public class LoadedLibrary extends Library implements LibraryEventSource {
 
-    private Library base;
-    private boolean dirty;
+    private Library library;
+    private boolean isDirty;
     private MyListener myListener;
     private EventSourceWeakSupport<LibraryListener> listeners;
 
-    LoadedLibrary(Library base) {
-        dirty = false;
+    LoadedLibrary(Library library) {
+        isDirty = false;
         myListener = new MyListener();
-        listeners = new EventSourceWeakSupport<LibraryListener>();
+        listeners = new EventSourceWeakSupport<>();
 
-        while (base instanceof LoadedLibrary) {
-            base = ((LoadedLibrary) base).base;
+        while (library instanceof LoadedLibrary) {
+            library = ((LoadedLibrary) library).library;
         }
-        this.base = base;
-        if (base instanceof LibraryEventSource) {
-            ((LibraryEventSource) base).addLibraryListener(myListener);
+        this.library = library;
+        if (library instanceof LibraryEventSource) {
+            ((LibraryEventSource) library).addLibraryListener(myListener);
         }
     }
 
-    private static void replaceAll(Map<ComponentFactory, ComponentFactory> compMap,
+    private static void replaceAll(Map<ComponentFactory, ComponentFactory> componentMap,
             Map<Tool, Tool> toolMap) {
-        for (Project proj : Projects.getOpenProjects()) {
-            Tool oldTool = proj.getTool();
-            Circuit oldCircuit = proj.getCurrentCircuit();
+        for (Project project : Projects.getOpenProjects()) {
+            Tool oldTool = project.getTool();
+            Circuit oldCircuit = project.getCurrentCircuit();
             if (toolMap.containsKey(oldTool)) {
-                proj.setTool(toolMap.get(oldTool));
+                project.setTool(toolMap.get(oldTool));
             }
             SubcircuitFactory oldFactory = oldCircuit.getSubcircuitFactory();
-            if (compMap.containsKey(oldFactory)) {
-                SubcircuitFactory newFactory;
-                newFactory = (SubcircuitFactory) compMap.get(oldFactory);
-                proj.setCurrentCircuit(newFactory.getSubcircuit());
+            if (componentMap.containsKey(oldFactory)) {
+                SubcircuitFactory newFactory = (SubcircuitFactory) componentMap.get(oldFactory);
+                project.setCurrentCircuit(newFactory.getSubcircuit());
             }
-            replaceAll(proj.getLogisimFile(), compMap, toolMap);
+            replaceAll(project.getLogisimFile(), componentMap, toolMap);
         }
         for (LogisimFile file : LibraryManager.instance.getLogisimLibraries()) {
-            replaceAll(file, compMap, toolMap);
+            replaceAll(file, componentMap, toolMap);
         }
     }
 
@@ -80,7 +79,7 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
         for (Component comp : circuit.getNonWires()) {
             if (compMap.containsKey(comp.getFactory())) {
                 if (toReplace == null) {
-                    toReplace = new ArrayList<Component>();
+                    toReplace = new ArrayList<>();
                 }
                 toReplace.add(comp);
             }
@@ -126,49 +125,49 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
 
     @Override
     public String getName() {
-        return base.getName();
+        return library.getName();
     }
 
     @Override
     public String getDisplayName() {
-        return base.getDisplayName();
+        return library.getDisplayName();
     }
 
     @Override
     public boolean isDirty() {
-        return dirty || base.isDirty();
+        return isDirty || library.isDirty();
     }
 
     void setDirty(boolean value) {
-        if (dirty != value) {
-            dirty = value;
+        if (isDirty != value) {
+            isDirty = value;
             fireLibraryEvent(LibraryEvent.DIRTY_STATE, isDirty() ? Boolean.TRUE : Boolean.FALSE);
         }
     }
 
     @Override
     public List<? extends Tool> getTools() {
-        return base.getTools();
+        return library.getTools();
     }
 
     @Override
     public List<Library> getLibraries() {
-        return base.getLibraries();
+        return library.getLibraries();
     }
 
-    Library getBase() {
-        return base;
+    Library getLibrary() {
+        return library;
     }
 
-    void setBase(Library value) {
-        if (base instanceof LibraryEventSource) {
-            ((LibraryEventSource) base).removeLibraryListener(myListener);
+    void setLibrary(Library value) {
+        if (library instanceof LibraryEventSource) {
+            ((LibraryEventSource) library).removeLibraryListener(myListener);
         }
-        Library old = base;
-        base = value;
+        Library old = library;
+        library = value;
         resolveChanges(old);
-        if (base instanceof LibraryEventSource) {
-            ((LibraryEventSource) base).addLibraryListener(myListener);
+        if (library instanceof LibraryEventSource) {
+            ((LibraryEventSource) library).addLibraryListener(myListener);
         }
     }
 
@@ -190,18 +189,18 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
             return;
         }
 
-        if (!base.getDisplayName().equals(old.getDisplayName())) {
-            fireLibraryEvent(LibraryEvent.SET_NAME, base.getDisplayName());
+        if (!library.getDisplayName().equals(old.getDisplayName())) {
+            fireLibraryEvent(LibraryEvent.SET_NAME, library.getDisplayName());
         }
 
-        HashSet<Library> changes = new HashSet<Library>(old.getLibraries());
-        changes.removeAll(base.getLibraries());
+        HashSet<Library> changes = new HashSet<>(old.getLibraries());
+        changes.removeAll(library.getLibraries());
         for (Library lib : changes) {
             fireLibraryEvent(LibraryEvent.REMOVE_LIBRARY, lib);
         }
 
         changes.clear();
-        changes.addAll(base.getLibraries());
+        changes.addAll(library.getLibraries());
         changes.removeAll(old.getLibraries());
         for (Library lib : changes) {
             fireLibraryEvent(LibraryEvent.ADD_LIBRARY, lib);
@@ -209,10 +208,10 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
 
         HashMap<ComponentFactory, ComponentFactory> componentMap;
         HashMap<Tool, Tool> toolMap;
-        componentMap = new HashMap<ComponentFactory, ComponentFactory>();
-        toolMap = new HashMap<Tool, Tool>();
+        componentMap = new HashMap<>();
+        toolMap = new HashMap<>();
         for (Tool oldTool : old.getTools()) {
-            Tool newTool = base.getTool(oldTool.getName());
+            Tool newTool = library.getTool(oldTool.getName());
             toolMap.put(oldTool, newTool);
             if (oldTool instanceof AddTool) {
                 ComponentFactory oldFactory = ((AddTool) oldTool).getFactory();
@@ -226,13 +225,13 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
         }
         replaceAll(componentMap, toolMap);
 
-        HashSet<Tool> toolChanges = new HashSet<Tool>(old.getTools());
+        HashSet<Tool> toolChanges = new HashSet<>(old.getTools());
         toolChanges.removeAll(toolMap.keySet());
         for (Tool tool : toolChanges) {
             fireLibraryEvent(LibraryEvent.REMOVE_TOOL, tool);
         }
 
-        toolChanges = new HashSet<Tool>(base.getTools());
+        toolChanges = new HashSet<>(library.getTools());
         toolChanges.removeAll(toolMap.values());
         for (Tool tool : toolChanges) {
             fireLibraryEvent(LibraryEvent.ADD_TOOL, tool);

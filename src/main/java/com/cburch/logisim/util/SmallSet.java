@@ -20,7 +20,7 @@ public class SmallSet<E> extends AbstractSet<E> {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        SmallSet<String> set = new SmallSet<String>();
+        SmallSet<String> set = new SmallSet<>();
         java.io.BufferedReader in = new java.io.BufferedReader(
                 new java.io.InputStreamReader(System.in));
         while (true) {
@@ -51,7 +51,7 @@ public class SmallSet<E> extends AbstractSet<E> {
 
     @Override
     public SmallSet<E> clone() {
-        SmallSet<E> ret = new SmallSet<E>();
+        SmallSet<E> ret = new SmallSet<>();
         ret.size = this.size;
         if (size == 1) {
             ret.values = this.values;
@@ -152,7 +152,7 @@ public class SmallSet<E> extends AbstractSet<E> {
                 version = newVersion;
                 return true;
             } else {
-                HashSet<E> newValues = new HashSet<E>();
+                HashSet<E> newValues = new HashSet<>();
                 for (int i = 0; i < oldSize; i++) {
                     newValues.add(vals[i]);
                 }

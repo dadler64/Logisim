@@ -69,7 +69,7 @@ class ExpressionView extends JPanel {
 
     private static class ExpressionData {
 
-        final ArrayList<NotData> nots = new ArrayList<NotData>();
+        final ArrayList<NotData> nots = new ArrayList<>();
         String text;
         int[] badness;
 
@@ -216,15 +216,15 @@ class ExpressionView extends JPanel {
 
             if (fm == null) {
                 lineText = new String[]{exprData.text};
-                lineNots = new ArrayList<ArrayList<NotData>>();
+                lineNots = new ArrayList<>();
                 lineNots.add(exprData.nots);
                 computeNotDepths();
                 lineY = new int[]{MINIMUM_HEIGHT};
             } else {
                 if (exprData.text.length() == 0) {
                     lineText = new String[]{Strings.get("expressionEmpty")};
-                    lineNots = new ArrayList<ArrayList<NotData>>();
-                    lineNots.add(new ArrayList<NotData>());
+                    lineNots = new ArrayList<>();
+                    lineNots.add(new ArrayList<>());
                 } else {
                     computeLineText(fm);
                     computeLineNots();
@@ -246,7 +246,7 @@ class ExpressionView extends JPanel {
             }
 
             int startPos = 0;
-            ArrayList<String> lines = new ArrayList<String>();
+            ArrayList<String> lines = new ArrayList<>();
             while (startPos < text.length()) {
                 int stopPos = startPos + 1;
                 String bestLine = text.substring(startPos, stopPos);
@@ -282,9 +282,9 @@ class ExpressionView extends JPanel {
 
         private void computeLineNots() {
             ArrayList<NotData> allNots = exprData.nots;
-            lineNots = new ArrayList<ArrayList<NotData>>();
+            lineNots = new ArrayList<>();
             for (int i = 0; i < lineText.length; i++) {
-                lineNots.add(new ArrayList<NotData>());
+                lineNots.add(new ArrayList<>());
             }
             for (NotData nd : allNots) {
                 int pos = 0;

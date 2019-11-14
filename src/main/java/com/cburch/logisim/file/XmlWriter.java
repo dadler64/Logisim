@@ -37,95 +37,95 @@ import org.w3c.dom.Element;
 class XmlWriter {
 
     private LogisimFile file;
-    private Document doc;
-    private LibraryLoader loader;
-    private HashMap<Library, String> libs = new HashMap<Library, String>();
+    private Document document;
+    private LibraryLoader libraryLoader;
+    private HashMap<Library, String> libraries = new HashMap<>();
 
-    private XmlWriter(LogisimFile file, Document doc, LibraryLoader loader) {
+    private XmlWriter(LogisimFile file, Document document, LibraryLoader libraryLoader) {
         this.file = file;
-        this.doc = doc;
-        this.loader = loader;
+        this.document = document;
+        this.libraryLoader = libraryLoader;
     }
 
-    static void write(LogisimFile file, OutputStream out, LibraryLoader loader)
+    static void write(LogisimFile file, OutputStream outputStream, LibraryLoader libraryLoader)
             throws ParserConfigurationException,
             TransformerException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
-        Document doc = docBuilder.newDocument();
-        XmlWriter context = new XmlWriter(file, doc, loader);
+        Document document = docBuilder.newDocument();
+        XmlWriter context = new XmlWriter(file, document, libraryLoader);
         context.fromLogisimFile();
 
-        TransformerFactory tfFactory = TransformerFactory.newInstance();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
         try {
-            tfFactory.setAttribute("indent-number", Integer.valueOf(2));
+            transformerFactory.setAttribute("indent-number", 2);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
-        Transformer tf = tfFactory.newTransformer();
-        tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        tf.setOutputProperty(OutputKeys.INDENT, "yes");
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         try {
-            tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
-                    "2");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
 
-        Source src = new DOMSource(doc);
-        Result dest = new StreamResult(out);
-        tf.transform(src, dest);
+        Source src = new DOMSource(document);
+        Result dest = new StreamResult(outputStream);
+        transformer.transform(src, dest);
     }
 
-    Element fromLogisimFile() {
-        Element ret = doc.createElement("project");
-        doc.appendChild(ret);
-        ret.appendChild(doc.createTextNode("\nThis file is intended to be "
-                + "loaded by Logisim (http://www.cburch.com/logisim/).\n"));
-        ret.setAttribute("version", "1.0");
-        ret.setAttribute("source", Main.VERSION_NAME);
+    private Element fromLogisimFile() {
+        Element element = document.createElement("project");
+        document.appendChild(element);
+        element.appendChild(document.createTextNode("\nThis file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).\n"));
+        element.setAttribute("version", "1.0");
+        element.setAttribute("source", Main.VERSION_NAME);
 
-        for (Library lib : file.getLibraries()) {
-            Element elt = fromLibrary(lib);
-            if (elt != null) {
-                ret.appendChild(elt);
+        for (Library library : file.getLibraries()) {
+            Element libraryElement = fromLibrary(library);
+            if (libraryElement != null) {
+                element.appendChild(libraryElement);
             }
         }
 
         if (file.getMainCircuit() != null) {
-            Element mainElt = doc.createElement("main");
-            mainElt.setAttribute("name", file.getMainCircuit().getName());
-            ret.appendChild(mainElt);
+            Element mainElement = document.createElement("main");
+            mainElement.setAttribute("name", file.getMainCircuit().getName());
+            element.appendChild(mainElement);
         }
 
-        ret.appendChild(fromOptions());
-        ret.appendChild(fromMouseMappings());
-        ret.appendChild(fromToolbarData());
+        element.appendChild(fromOptions());
+        element.appendChild(fromMouseMappings());
+        element.appendChild(fromToolbarData());
 
-        for (Circuit circ : file.getCircuits()) {
-            ret.appendChild(fromCircuit(circ));
+        for (Circuit circuit : file.getCircuits()) {
+            element.appendChild(fromCircuit(circuit));
         }
-        return ret;
+        return element;
     }
 
     Element fromLibrary(Library lib) {
-        Element ret = doc.createElement("lib");
-        if (libs.containsKey(lib)) {
+        Element ret = document.createElement("lib");
+        if (libraries.containsKey(lib)) {
             return null;
         }
-        String name = "" + libs.size();
-        String desc = loader.getDescriptor(lib);
+        String name = "" + libraries.size();
+        String desc = libraryLoader.getDescriptor(lib);
         if (desc == null) {
-            loader.showError("library location unknown: "
+            libraryLoader.showError("library location unknown: "
                     + lib.getName());
             return null;
         }
-        libs.put(lib, name);
+        libraries.put(lib, name);
         ret.setAttribute("name", name);
         ret.setAttribute("desc", desc);
         for (Tool t : lib.getTools()) {
             AttributeSet attrs = t.getAttributeSet();
             if (attrs != null) {
-                Element toAdd = doc.createElement("tool");
+                Element toAdd = document.createElement("tool");
                 toAdd.setAttribute("name", t.getName());
                 addAttributeSetContent(toAdd, attrs, t);
                 if (toAdd.getChildNodes().getLength() > 0) {
@@ -137,90 +137,91 @@ class XmlWriter {
     }
 
     Element fromOptions() {
-        Element elt = doc.createElement("options");
+        Element elt = document.createElement("options");
         addAttributeSetContent(elt, file.getOptions().getAttributeSet(), null);
         return elt;
     }
 
-    Element fromMouseMappings() {
-        Element elt = doc.createElement("mappings");
+    private Element fromMouseMappings() {
+        Element element = document.createElement("mappings");
         MouseMappings map = file.getOptions().getMouseMappings();
         for (Map.Entry<Integer, Tool> entry : map.getMappings().entrySet()) {
             Integer mods = entry.getKey();
             Tool tool = entry.getValue();
-            Element toolElt = fromTool(tool);
-            String mapValue = InputEventUtil.toString(mods.intValue());
-            toolElt.setAttribute("map", mapValue);
-            elt.appendChild(toolElt);
+            Element toolElement = fromTool(tool);
+            String mapValue = InputEventUtil.toString(mods);
+            assert toolElement != null;
+            toolElement.setAttribute("map", mapValue);
+            element.appendChild(toolElement);
         }
-        return elt;
+        return element;
     }
 
-    Element fromToolbarData() {
-        Element elt = doc.createElement("toolbar");
+    private Element fromToolbarData() {
+        Element element = document.createElement("toolbar");
         ToolbarData toolbar = file.getOptions().getToolbarData();
         for (Tool tool : toolbar.getContents()) {
             if (tool == null) {
-                elt.appendChild(doc.createElement("sep"));
+                element.appendChild(document.createElement("sep"));
             } else {
-                elt.appendChild(fromTool(tool));
+                element.appendChild(fromTool(tool));
             }
         }
-        return elt;
+        return element;
     }
 
-    Element fromTool(Tool tool) {
-        Library lib = findLibrary(tool);
-        String lib_name;
-        if (lib == null) {
-            loader.showError(StringUtil.format("tool `%s' not found",
+    private Element fromTool(Tool tool) {
+        Library library = findLibrary(tool);
+        String libraryName;
+        if (library == null) {
+            libraryLoader.showError(StringUtil.format("tool `%s' not found",
                     tool.getDisplayName()));
             return null;
-        } else if (lib == file) {
-            lib_name = null;
+        } else if (library == file) {
+            libraryName = null;
         } else {
-            lib_name = libs.get(lib);
-            if (lib_name == null) {
-                loader.showError("unknown library within file");
+            libraryName = libraries.get(library);
+            if (libraryName == null) {
+                libraryLoader.showError("unknown library within file");
                 return null;
             }
         }
 
-        Element elt = doc.createElement("tool");
-        if (lib_name != null) {
-            elt.setAttribute("lib", lib_name);
+        Element element = document.createElement("tool");
+        if (libraryName != null) {
+            element.setAttribute("lib", libraryName);
         }
-        elt.setAttribute("name", tool.getName());
-        addAttributeSetContent(elt, tool.getAttributeSet(), tool);
-        return elt;
+        element.setAttribute("name", tool.getName());
+        addAttributeSetContent(element, tool.getAttributeSet(), tool);
+        return element;
     }
 
-    Element fromCircuit(Circuit circuit) {
-        Element ret = doc.createElement("circuit");
-        ret.setAttribute("name", circuit.getName());
-        addAttributeSetContent(ret, circuit.getStaticAttributes(), null);
+    private Element fromCircuit(Circuit circuit) {
+        Element CircuitElement = document.createElement("circuit");
+        CircuitElement.setAttribute("name", circuit.getName());
+        addAttributeSetContent(CircuitElement, circuit.getStaticAttributes(), null);
         if (!circuit.getAppearance().isDefaultAppearance()) {
-            Element appear = doc.createElement("appear");
-            for (Object o : circuit.getAppearance().getObjectsFromBottom()) {
-                if (o instanceof AbstractCanvasObject) {
-                    Element elt = ((AbstractCanvasObject) o).toSvgElement(doc);
-                    if (elt != null) {
-                        appear.appendChild(elt);
+            Element appearElement = document.createElement("appear");
+            for (Object object : circuit.getAppearance().getObjectsFromBottom()) {
+                if (object instanceof AbstractCanvasObject) {
+                    Element svgElement = ((AbstractCanvasObject) object).toSvgElement(document);
+                    if (svgElement != null) {
+                        appearElement.appendChild(svgElement);
                     }
                 }
             }
-            ret.appendChild(appear);
+            CircuitElement.appendChild(appearElement);
         }
         for (Wire w : circuit.getWires()) {
-            ret.appendChild(fromWire(w));
+            CircuitElement.appendChild(fromWire(w));
         }
         for (Component comp : circuit.getNonWires()) {
             Element elt = fromComponent(comp);
             if (elt != null) {
-                ret.appendChild(elt);
+                CircuitElement.appendChild(elt);
             }
         }
-        return ret;
+        return CircuitElement;
     }
 
     Element fromComponent(Component comp) {
@@ -228,19 +229,19 @@ class XmlWriter {
         Library lib = findLibrary(source);
         String lib_name;
         if (lib == null) {
-            loader.showError(source.getName() + " component not found");
+            libraryLoader.showError(source.getName() + " component not found");
             return null;
         } else if (lib == file) {
             lib_name = null;
         } else {
-            lib_name = libs.get(lib);
+            lib_name = libraries.get(lib);
             if (lib_name == null) {
-                loader.showError("unknown library within file");
+                libraryLoader.showError("unknown library within file");
                 return null;
             }
         }
 
-        Element ret = doc.createElement("comp");
+        Element ret = document.createElement("comp");
         if (lib_name != null) {
             ret.setAttribute("lib", lib_name);
         }
@@ -250,69 +251,69 @@ class XmlWriter {
         return ret;
     }
 
-    Element fromWire(Wire w) {
-        Element ret = doc.createElement("wire");
-        ret.setAttribute("from", w.getEnd0().toString());
-        ret.setAttribute("to", w.getEnd1().toString());
-        return ret;
+    private Element fromWire(Wire wire) {
+        Element element = document.createElement("wire");
+        element.setAttribute("from", wire.getEnd0().toString());
+        element.setAttribute("to", wire.getEnd1().toString());
+        return element;
     }
 
-    void addAttributeSetContent(Element elt, AttributeSet attrs,
+    private void addAttributeSetContent(Element element, AttributeSet attributes,
             AttributeDefaultProvider source) {
-        if (attrs == null) {
+        if (attributes == null) {
             return;
         }
-        LogisimVersion ver = Main.VERSION;
-        if (source != null && source.isAllDefaultValues(attrs, ver)) {
+        LogisimVersion version = Main.VERSION;
+        if (source != null && source.isAllDefaultValues(attributes, version)) {
             return;
         }
-        for (Attribute<?> attrBase : attrs.getAttributes()) {
+        for (Attribute<?> attributeBase : attributes.getAttributes()) {
             @SuppressWarnings("unchecked")
-            Attribute<Object> attr = (Attribute<Object>) attrBase;
-            Object val = attrs.getValue(attr);
-            if (attrs.isToSave(attr) && val != null) {
-                Object dflt = source == null ? null : source.getDefaultAttributeValue(attr, ver);
-                if (dflt == null || !dflt.equals(val)) {
-                    Element a = doc.createElement("a");
-                    a.setAttribute("name", attr.getName());
-                    String value = attr.toStandardString(val);
-                    if (value.indexOf("\n") >= 0) {
-                        a.appendChild(doc.createTextNode(value));
+            Attribute<Object> attribute = (Attribute<Object>) attributeBase;
+            Object object = attributes.getValue(attribute);
+            if (attributes.isToSave(attribute) && object != null) {
+                Object defaultValue = source == null ? null : source.getDefaultAttributeValue(attribute, version);
+                if (defaultValue == null || !defaultValue.equals(object)) {
+                    Element a = document.createElement("a");
+                    a.setAttribute("name", attribute.getName());
+                    String value = attribute.toStandardString(object);
+                    if (value.indexOf('\n') >= 0) {
+                        a.appendChild(document.createTextNode(value));
                     } else {
-                        a.setAttribute("val", attr.toStandardString(val));
+                        a.setAttribute("val", attribute.toStandardString(object));
                     }
-                    elt.appendChild(a);
+                    element.appendChild(a);
                 }
             }
         }
     }
 
-    Library findLibrary(Tool tool) {
+    private Library findLibrary(Tool tool) {
         if (libraryContains(file, tool)) {
             return file;
         }
-        for (Library lib : file.getLibraries()) {
-            if (libraryContains(lib, tool)) {
-                return lib;
+        for (Library library : file.getLibraries()) {
+            if (libraryContains(library, tool)) {
+                return library;
             }
         }
         return null;
     }
 
-    Library findLibrary(ComponentFactory source) {
+    private Library findLibrary(ComponentFactory source) {
         if (file.contains(source)) {
             return file;
         }
-        for (Library lib : file.getLibraries()) {
-            if (lib.contains(source)) {
-                return lib;
+        for (Library library : file.getLibraries()) {
+            if (library.contains(source)) {
+                return library;
             }
         }
         return null;
     }
 
-    boolean libraryContains(Library lib, Tool query) {
-        for (Tool tool : lib.getTools()) {
+    private boolean libraryContains(Library library, Tool query) {
+        for (Tool tool : library.getTools()) {
             if (tool.sharesSource(query)) {
                 return true;
             }

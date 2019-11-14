@@ -247,51 +247,51 @@ public class ProjectActions {
     }
 
     // returns true if save is completed
-    public static boolean doSaveAs(Project proj) {
-        Loader loader = proj.getLogisimFile().getLoader();
+    public static boolean doSaveAs(Project project) {
+        Loader loader = project.getLogisimFile().getLoader();
         JFileChooser chooser = loader.createChooser();
         chooser.setFileFilter(Loader.LOGISIM_FILTER);
         if (loader.getMainFile() != null) {
             chooser.setSelectedFile(loader.getMainFile());
         }
-        int returnVal = chooser.showSaveDialog(proj.getFrame());
-        if (returnVal != JFileChooser.APPROVE_OPTION) {
+        int showDialog = chooser.showSaveDialog(project.getFrame());    // This shows the dialog to save your file
+        if (showDialog != JFileChooser.APPROVE_OPTION) {
             return false;
         }
 
-        File f = chooser.getSelectedFile();
-        String circExt = Loader.LOGISIM_EXTENSION;
-        if (!f.getName().endsWith(circExt)) {
-            String old = f.getName();
-            int ext0 = old.lastIndexOf('.');
-            if (ext0 < 0 || !Pattern.matches("\\.\\p{L}{2,}[0-9]?", old.substring(ext0))) {
-                f = new File(f.getParentFile(), old + circExt);
+        File selectedFile = chooser.getSelectedFile();
+        String circuitExtension = Loader.LOGISIM_EXTENSION;
+        if (!selectedFile.getName().endsWith(circuitExtension)) { // See if the file has a '.circ' extension
+            String old = selectedFile.getName();
+            int dotIndex = old.lastIndexOf('.');
+            if (dotIndex < 0 || !Pattern.matches("\\.\\p{L}{2,}[0-9]?", old.substring(dotIndex))) {
+                selectedFile = new File(selectedFile.getParentFile(), old + circuitExtension);
             } else {
-                String ext = old.substring(ext0);
+                String extension = old.substring(dotIndex);
                 String ttl = Strings.get("replaceExtensionTitle");
-                String msg = Strings.get("replaceExtensionMessage", ext);
+                String message = Strings.get("replaceExtensionMessage", extension);
                 Object[] options = {
-                        Strings.get("replaceExtensionReplaceOpt", ext),
-                        Strings.get("replaceExtensionAddOpt", circExt),
+                        Strings.get("replaceExtensionReplaceOpt", extension),
+                        Strings.get("replaceExtensionAddOpt", circuitExtension),
                         Strings.get("replaceExtensionKeepOpt")
                 };
-                JOptionPane dlog = new JOptionPane(msg);
-                dlog.setMessageType(JOptionPane.QUESTION_MESSAGE);
-                dlog.setOptions(options);
-                dlog.createDialog(proj.getFrame(), ttl).setVisible(true);
+                JOptionPane dialog = new JOptionPane(message);
+                dialog.setMessageType(JOptionPane.QUESTION_MESSAGE);
+                dialog.setOptions(options);
+                dialog.createDialog(project.getFrame(), ttl).setVisible(true);
 
-                Object result = dlog.getValue();
+                Object result = dialog.getValue();
                 if (result == options[0]) {
-                    String name = old.substring(0, ext0) + circExt;
-                    f = new File(f.getParentFile(), name);
+                    String name = old.substring(0, dotIndex) + circuitExtension;
+                    selectedFile = new File(selectedFile.getParentFile(), name);
                 } else if (result == options[1]) {
-                    f = new File(f.getParentFile(), old + circExt);
+                    selectedFile = new File(selectedFile.getParentFile(), old + circuitExtension);
                 }
             }
         }
 
-        if (f.exists()) {
-            int confirm = JOptionPane.showConfirmDialog(proj.getFrame(),
+        if (selectedFile.exists()) {
+            int confirm = JOptionPane.showConfirmDialog(project.getFrame(),
                     Strings.get("confirmOverwriteMessage"),
                     Strings.get("confirmOverwriteTitle"),
                     JOptionPane.YES_NO_OPTION);
@@ -299,38 +299,38 @@ public class ProjectActions {
                 return false;
             }
         }
-        return doSave(proj, f);
+        return doSave(project, selectedFile);
     }
 
-    public static boolean doSave(Project proj) {
-        Loader loader = proj.getLogisimFile().getLoader();
-        File f = loader.getMainFile();
-        if (f == null) {
-            return doSaveAs(proj);
+    public static boolean doSave(Project project) {
+        Loader loader = project.getLogisimFile().getLoader();
+        File mainFile = loader.getMainFile(); // TODO: Is this showing up as null?
+        if (mainFile == null) {
+            return doSaveAs(project);
         } else {
-            return doSave(proj, f);
+            return doSave(project, mainFile);
         }
     }
 
-    private static boolean doSave(Project proj, File f) {
-        Loader loader = proj.getLogisimFile().getLoader();
-        Tool oldTool = proj.getTool();
-        proj.setTool(null);
-        boolean ret = loader.save(proj.getLogisimFile(), f);
-        if (ret) {
-            AppPreferences.updateRecentFile(f);
-            proj.setFileAsClean();
+    private static boolean doSave(Project project, File file) {
+        Loader loader = project.getLogisimFile().getLoader();
+        Tool oldTool = project.getTool();
+        project.setTool(null);
+        boolean isSaved = loader.save(project.getLogisimFile(), file);
+        if (isSaved) {
+            AppPreferences.updateRecentFile(file);
+            project.setFileAsClean();
         }
-        proj.setTool(oldTool);
-        return ret;
+        project.setTool(oldTool);
+        return isSaved;
     }
 
     public static void doQuit() {
         Frame top = Projects.getTopFrame();
         top.savePreferences();
 
-        for (Project proj : new ArrayList<Project>(Projects.getOpenProjects())) {
-            if (!proj.confirmClose(Strings.get("confirmQuitTitle"))) {
+        for (Project project : new ArrayList<>(Projects.getOpenProjects())) {
+            if (!project.confirmClose(Strings.get("confirmQuitTitle"))) {
                 return;
             }
         }
@@ -340,23 +340,23 @@ public class ProjectActions {
     private static class CreateFrame implements Runnable {
 
         private Loader loader;
-        private Project proj;
+        private Project project;
         private boolean isStartupScreen;
 
-        public CreateFrame(Loader loader, Project proj, boolean isStartup) {
+        private CreateFrame(Loader loader, Project project, boolean isStartup) {
             this.loader = loader;
-            this.proj = proj;
+            this.project = project;
             this.isStartupScreen = isStartup;
         }
 
         public void run() {
-            Frame frame = createFrame(null, proj);
+            Frame frame = createFrame(null, project);
             frame.setVisible(true);
             frame.toFront();
             frame.getCanvas().requestFocus();
             loader.setParent(frame);
             if (isStartupScreen) {
-                proj.setStartupScreen(true);
+                project.setStartupScreen(true);
             }
         }
     }

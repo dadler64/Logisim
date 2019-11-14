@@ -37,23 +37,23 @@ class WireFactory extends AbstractComponentFactory {
     }
 
     @Override
-    public Component createComponent(Location loc, AttributeSet attrs) {
-        Object dir = attrs.getValue(Wire.dir_attr);
-        int len = attrs.getValue(Wire.len_attr).intValue();
+    public Component createComponent(Location location, AttributeSet attributes) {
+        Object dir = attributes.getValue(Wire.DIRECTION_ATTRIBUTE);
+        int len = attributes.getValue(Wire.LENGTH_ATTRIBUTE).intValue();
 
-        if (dir == Wire.VALUE_HORZ) {
-            return Wire.create(loc, loc.translate(len, 0));
+        if (dir == Wire.VALUE_HORIZONTAL) {
+            return Wire.create(location, location.translate(len, 0));
         } else {
-            return Wire.create(loc, loc.translate(0, len));
+            return Wire.create(location, location.translate(0, len));
         }
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrs) {
-        Object dir = attrs.getValue(Wire.dir_attr);
-        int len = attrs.getValue(Wire.len_attr).intValue();
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        Object dir = attributes.getValue(Wire.DIRECTION_ATTRIBUTE);
+        int len = attributes.getValue(Wire.LENGTH_ATTRIBUTE).intValue();
 
-        if (dir == Wire.VALUE_HORZ) {
+        if (dir == Wire.VALUE_HORIZONTAL) {
             return Bounds.create(0, -2, len, 5);
         } else {
             return Bounds.create(-2, 0, 5, len);
@@ -65,14 +65,14 @@ class WireFactory extends AbstractComponentFactory {
     //
     @Override
     public void drawGhost(ComponentDrawContext context,
-            Color color, int x, int y, AttributeSet attrs) {
+            Color color, int x, int y, AttributeSet attributes) {
         Graphics g = context.getGraphics();
-        Object dir = attrs.getValue(Wire.dir_attr);
-        int len = attrs.getValue(Wire.len_attr).intValue();
+        Object dir = attributes.getValue(Wire.DIRECTION_ATTRIBUTE);
+        int len = attributes.getValue(Wire.LENGTH_ATTRIBUTE).intValue();
 
         g.setColor(color);
         GraphicsUtil.switchToWidth(g, 3);
-        if (dir == Wire.VALUE_HORZ) {
+        if (dir == Wire.VALUE_HORIZONTAL) {
             g.drawLine(x, y, x + len, y);
         } else {
             g.drawLine(x, y, x, y + len);

@@ -19,7 +19,7 @@ import java.util.LinkedList;
 
 class TextFieldCaret implements Caret, TextFieldListener {
 
-    private LinkedList<CaretListener> listeners = new LinkedList<CaretListener>();
+    private LinkedList<CaretListener> listeners = new LinkedList<>();
     private TextField field;
     private Graphics g;
     private String oldText;
@@ -158,7 +158,7 @@ class TextFieldCaret implements Caret, TextFieldListener {
         CaretEvent e = new CaretEvent(this, oldText, oldText);
         curText = oldText;
         pos = curText.length();
-        for (CaretListener l : new ArrayList<CaretListener>(listeners)) {
+        for (CaretListener l : new ArrayList<>(listeners)) {
             l.editingCanceled(e);
         }
         field.removeTextFieldListener(this);
@@ -167,7 +167,7 @@ class TextFieldCaret implements Caret, TextFieldListener {
     public void stopEditing() {
         CaretEvent e = new CaretEvent(this, oldText, curText);
         field.setText(curText);
-        for (CaretListener l : new ArrayList<CaretListener>(listeners)) {
+        for (CaretListener l : new ArrayList<>(listeners)) {
             l.editingStopped(e);
         }
         field.removeTextFieldListener(this);

@@ -60,8 +60,8 @@ public class Text extends InstanceFactory {
     }
 
     @Override
-    public Bounds getOffsetBounds(AttributeSet attrsBase) {
-        TextAttributes attrs = (TextAttributes) attrsBase;
+    public Bounds getOffsetBounds(AttributeSet attributes) {
+        TextAttributes attrs = (TextAttributes) attributes;
         String text = attrs.getText();
         if (text == null || text.equals("")) {
             return Bounds.EMPTY_BOUNDS;

@@ -106,7 +106,7 @@ public abstract class Expression {
     }
 
     public boolean isCircular() {
-        final HashSet<Expression> visited = new HashSet<Expression>();
+        final HashSet<Expression> visited = new HashSet<>();
         visited.add(this);
         return 1 == visit(new IntVisitor() {
             public int visitAnd(Expression a, Expression b) {

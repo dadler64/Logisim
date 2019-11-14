@@ -35,16 +35,15 @@ import org.xml.sax.SAXException;
 
 public class LogisimFile extends Library implements LibraryEventSource {
 
-    private EventSourceWeakSupport<LibraryListener> listeners
-            = new EventSourceWeakSupport<LibraryListener>();
+    private EventSourceWeakSupport<LibraryListener> listeners = new EventSourceWeakSupport<>();
     private Loader loader;
-    private LinkedList<String> messages = new LinkedList<String>();
+    private LinkedList<String> messages = new LinkedList<>();
     private Options options = new Options();
-    private LinkedList<AddTool> tools = new LinkedList<AddTool>();
-    private LinkedList<Library> libraries = new LinkedList<Library>();
+    private LinkedList<AddTool> tools = new LinkedList<>();
+    private LinkedList<Library> libraries = new LinkedList<>();
     private Circuit main = null;
     private String name;
-    private boolean dirty = false;
+    private boolean isDirty = false;
 
     LogisimFile(Loader loader) {
         this.loader = loader;
@@ -65,17 +64,17 @@ public class LogisimFile extends Library implements LibraryEventSource {
     // creation methods
     //
     public static LogisimFile createNew(Loader loader) {
-        LogisimFile ret = new LogisimFile(loader);
-        ret.main = new Circuit("main");
+        LogisimFile file = new LogisimFile(loader);
+        file.main = new Circuit("main");
         // The name will be changed in LogisimPreferences
-        ret.tools.add(new AddTool(ret.main.getSubcircuitFactory()));
-        return ret;
+        file.tools.add(new AddTool(file.main.getSubcircuitFactory()));
+        return file;
     }
 
     public static LogisimFile load(File file, Loader loader)
             throws IOException {
         InputStream in = new FileInputStream(file);
-        Throwable firstExcept = null;
+        Throwable firstExcept;
         try {
             return loadSub(in, loader);
         } catch (Throwable t) {
@@ -92,12 +91,13 @@ public class LogisimFile extends Library implements LibraryEventSource {
                 in = new ReaderInputStream(new FileReader(file), "UTF8");
                 return loadSub(in, loader);
             } catch (Throwable t) {
-                loader.showError(StringUtil.format(
-                        Strings.get("xmlFormatError"), firstExcept.toString()));
+                loader.showError(StringUtil.format(Strings.get("xmlFormatError"), firstExcept.toString()));
             } finally {
                 try {
                     in.close();
                 } catch (Throwable t) {
+                    System.out.println("Error closing the input stream.");
+                    t.printStackTrace();
                 }
             }
         }
@@ -116,7 +116,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
         }
     }
 
-    public static LogisimFile loadSub(InputStream in, Loader loader)
+    private static LogisimFile loadSub(InputStream in, Loader loader)
             throws IOException, SAXException {
         // fetch first line and then reset
         BufferedInputStream inBuffered = new BufferedInputStream(in);
@@ -167,12 +167,12 @@ public class LogisimFile extends Library implements LibraryEventSource {
 
     @Override
     public boolean isDirty() {
-        return dirty;
+        return isDirty;
     }
 
     public void setDirty(boolean value) {
-        if (dirty != value) {
-            dirty = value;
+        if (isDirty != value) {
+            isDirty = value;
             fireEvent(LibraryEvent.DIRTY_STATE, value ? Boolean.TRUE : Boolean.FALSE);
         }
     }
@@ -231,7 +231,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
     }
 
     public List<Circuit> getCircuits() {
-        List<Circuit> ret = new ArrayList<Circuit>(tools.size());
+        List<Circuit> ret = new ArrayList<>(tools.size());
         for (AddTool tool : tools) {
             SubcircuitFactory factory = (SubcircuitFactory) tool.getFactory();
             ret.add(factory.getSubcircuit());
@@ -344,7 +344,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
     }
 
     public String getUnloadLibraryMessage(Library lib) {
-        HashSet<ComponentFactory> factories = new HashSet<ComponentFactory>();
+        HashSet<ComponentFactory> factories = new HashSet<>();
         for (Tool tool : lib.getTools()) {
             if (tool instanceof AddTool) {
                 factories.add(((AddTool) tool).getFactory());
