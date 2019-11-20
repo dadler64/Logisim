@@ -74,7 +74,7 @@ This is a continuation of the original project since original development was ce
   See the [Features Status page]() on the project Wiki for information about the status of the above features as well as any additional plans for features
 
 ## How To Use
-  This project is a WIP and is not currently building correctly (see the [issues](https://github.com/dadler64/Logisim/issues)) so I recommend going to the original [Logisim website](http://www.cburch.com/logisim/) and downloading it from there until the bulds here are up and running.
+  This project is a WIP and although it is currently building correctly there are still [issues](https://github.com/dadler64/Logisim/issues) that keep coming up. At this tie, if you are looking for a fully wokring program I recommend going to the original [Logisim website](http://www.cburch.com/logisim/) and downloading the stable builds from there until the builds here are more stable.
   
   The initial release on the releases page is the one from the original Logisim website. I will periodically post ALPHA and BETA releases so that you can see what is being changed as this project progresses.
   
