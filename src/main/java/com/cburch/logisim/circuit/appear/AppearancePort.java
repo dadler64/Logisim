@@ -31,9 +31,9 @@ public class AppearancePort extends AppearanceElement {
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof AppearancePort) {
-            AppearancePort that = (AppearancePort) other;
+    public boolean matches(CanvasObject object) {
+        if (object instanceof AppearancePort) {
+            AppearancePort that = (AppearancePort) object;
             return this.matches(that) && this.pin == that.pin;
         } else {
             return false;
@@ -51,10 +51,10 @@ public class AppearancePort extends AppearanceElement {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
+    public Element toSvgElement(Document document) {
         Location loc = getLocation();
         Location pinLoc = pin.getLocation();
-        Element ret = doc.createElement("circ-port");
+        Element ret = document.createElement("circ-port");
         int r = isInput() ? INPUT_RADIUS : OUTPUT_RADIUS;
         ret.setAttribute("x", "" + (loc.getX() - r));
         ret.setAttribute("y", "" + (loc.getY() - r));
@@ -84,11 +84,11 @@ public class AppearancePort extends AppearanceElement {
     }
 
     @Override
-    public boolean contains(Location loc, boolean assumeFilled) {
+    public boolean contains(Location location, boolean assumeFilled) {
         if (isInput()) {
-            return getBounds().contains(loc);
+            return getBounds().contains(location);
         } else {
-            return super.isInCircle(loc, OUTPUT_RADIUS);
+            return super.isInCircle(location, OUTPUT_RADIUS);
         }
     }
 
@@ -105,18 +105,18 @@ public class AppearancePort extends AppearanceElement {
     }
 
     @Override
-    public void paint(Graphics g, HandleGesture gesture) {
+    public void paint(Graphics graphics, HandleGesture gesture) {
         Location location = getLocation();
         int x = location.getX();
         int y = location.getY();
-        g.setColor(COLOR);
+        graphics.setColor(COLOR);
         if (isInput()) {
             int r = INPUT_RADIUS;
-            g.drawRect(x - r, y - r, 2 * r, 2 * r);
+            graphics.drawRect(x - r, y - r, 2 * r, 2 * r);
         } else {
             int r = OUTPUT_RADIUS;
-            g.drawOval(x - r, y - r, 2 * r, 2 * r);
+            graphics.drawOval(x - r, y - r, 2 * r, 2 * r);
         }
-        g.fillOval(x - MINOR_RADIUS, y - MINOR_RADIUS, 2 * MINOR_RADIUS, 2 * MINOR_RADIUS);
+        graphics.fillOval(x - MINOR_RADIUS, y - MINOR_RADIUS, 2 * MINOR_RADIUS, 2 * MINOR_RADIUS);
     }
 }

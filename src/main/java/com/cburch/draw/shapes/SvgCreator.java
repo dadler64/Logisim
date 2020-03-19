@@ -17,168 +17,166 @@ class SvgCreator {
     private SvgCreator() {
     }
 
-    public static Element createRectangle(Document doc, Rectangle rect) {
-        return createRectangular(doc, rect);
+    public static Element createRectangle(Document document, Rectangle rectangle) {
+        return createRectangular(document, rectangle);
     }
 
-    public static Element createRoundRectangle(Document doc,
-            RoundRectangle rrect) {
-        Element elt = createRectangular(doc, rrect);
-        int r = rrect.getValue(DrawAttr.CORNER_RADIUS).intValue();
-        elt.setAttribute("rx", "" + r);
-        elt.setAttribute("ry", "" + r);
-        return elt;
+    public static Element createRoundRectangle(Document document, RoundRectangle roundRectangle) {
+        Element element = createRectangular(document, roundRectangle);
+        int cornerRadiusValue = roundRectangle.getValue(DrawAttr.CORNER_RADIUS);
+        element.setAttribute("rx", "" + cornerRadiusValue);
+        element.setAttribute("ry", "" + cornerRadiusValue);
+        return element;
     }
 
-    private static Element createRectangular(Document doc, Rectangular rect) {
-        Element elt = doc.createElement("rect");
-        elt.setAttribute("x", "" + rect.getX());
-        elt.setAttribute("y", "" + rect.getY());
-        elt.setAttribute("width", "" + rect.getWidth());
-        elt.setAttribute("height", "" + rect.getHeight());
-        populateFill(elt, rect);
-        return elt;
+    private static Element createRectangular(Document document, Rectangular rectangular) {
+        Element element = document.createElement("rect");
+        element.setAttribute("x", "" + rectangular.getX());
+        element.setAttribute("y", "" + rectangular.getY());
+        element.setAttribute("width", "" + rectangular.getWidth());
+        element.setAttribute("height", "" + rectangular.getHeight());
+        populateFill(element, rectangular);
+        return element;
     }
 
-    public static Element createOval(Document doc, Oval oval) {
+    public static Element createOval(Document document, Oval oval) {
         double x = oval.getX();
         double y = oval.getY();
         double width = oval.getWidth();
         double height = oval.getHeight();
-        Element elt = doc.createElement("ellipse");
-        elt.setAttribute("cx", "" + (x + width / 2));
-        elt.setAttribute("cy", "" + (y + height / 2));
-        elt.setAttribute("rx", "" + (width / 2));
-        elt.setAttribute("ry", "" + (height / 2));
-        populateFill(elt, oval);
-        return elt;
+        Element element = document.createElement("ellipse");
+        element.setAttribute("cx", "" + (x + width / 2));
+        element.setAttribute("cy", "" + (y + height / 2));
+        element.setAttribute("rx", "" + (width / 2));
+        element.setAttribute("ry", "" + (height / 2));
+        populateFill(element, oval);
+        return element;
     }
 
-    public static Element createLine(Document doc, Line line) {
-        Element elt = doc.createElement("line");
+    public static Element createLine(Document document, Line line) {
+        Element element = document.createElement("line");
         Location v1 = line.getEnd0();
         Location v2 = line.getEnd1();
-        elt.setAttribute("x1", "" + v1.getX());
-        elt.setAttribute("y1", "" + v1.getY());
-        elt.setAttribute("x2", "" + v2.getX());
-        elt.setAttribute("y2", "" + v2.getY());
-        populateStroke(elt, line);
-        return elt;
+        element.setAttribute("x1", "" + v1.getX());
+        element.setAttribute("y1", "" + v1.getY());
+        element.setAttribute("x2", "" + v2.getX());
+        element.setAttribute("y2", "" + v2.getY());
+        populateStroke(element, line);
+        return element;
     }
 
-    public static Element createCurve(Document doc, Curve curve) {
-        Element elt = doc.createElement("path");
-        Location e0 = curve.getEnd0();
-        Location e1 = curve.getEnd1();
-        Location ct = curve.getControl();
-        elt.setAttribute("d", "M" + e0.getX() + "," + e0.getY()
-                + " Q" + ct.getX() + "," + ct.getY()
-                + " " + e1.getX() + "," + e1.getY());
-        populateFill(elt, curve);
-        return elt;
+    public static Element createCurve(Document document, Curve curve) {
+        Element element = document.createElement("path");
+        Location end0 = curve.getEnd0();
+        Location end1 = curve.getEnd1();
+        Location control = curve.getControl();
+        element.setAttribute("d", "M" + end0.getX() + "," + end0.getY()
+                + " Q" + control.getX() + "," + control.getY()
+                + " " + end1.getX() + "," + end1.getY());
+        populateFill(element, curve);
+        return element;
     }
 
-    public static Element createPoly(Document doc, Poly poly) {
-        Element elt;
+    public static Element createPoly(Document document, Poly poly) {
+        Element element;
         if (poly.isClosed()) {
-            elt = doc.createElement("polygon");
+            element = document.createElement("polygon");
         } else {
-            elt = doc.createElement("polyline");
+            element = document.createElement("polyline");
         }
 
         StringBuilder points = new StringBuilder();
         boolean first = true;
-        for (Handle h : poly.getHandles(null)) {
+        for (Handle handle : poly.getHandles(null)) {
             if (!first) {
                 points.append(" ");
             }
-            points.append(h.getX() + "," + h.getY());
+            points.append(handle.getX());
+            points.append(",");
+            points.append(handle.getY());
             first = false;
         }
-        elt.setAttribute("points", points.toString());
+        element.setAttribute("points", points.toString());
 
-        populateFill(elt, poly);
-        return elt;
+        populateFill(element, poly);
+        return element;
     }
 
-    public static Element createText(Document doc, Text text) {
-        Element elt = doc.createElement("text");
-        Location loc = text.getLocation();
+    public static Element createText(Document document, Text text) {
+        Element element = document.createElement("text");
+        Location location = text.getLocation();
         Font font = text.getValue(DrawAttr.FONT);
         Color fill = text.getValue(DrawAttr.FILL_COLOR);
-        Object halign = text.getValue(DrawAttr.ALIGNMENT);
-        elt.setAttribute("x", "" + loc.getX());
-        elt.setAttribute("y", "" + loc.getY());
+        Object horizontalAlignment = text.getValue(DrawAttr.ALIGNMENT);
+        element.setAttribute("x", "" + location.getX());
+        element.setAttribute("y", "" + location.getY());
         if (!colorMatches(fill, Color.BLACK)) {
-            elt.setAttribute("fill", getColorString(fill));
+            element.setAttribute("fill", getColorString(fill));
         }
         if (showOpacity(fill)) {
-            elt.setAttribute("fill-opacity", getOpacityString(fill));
+            element.setAttribute("fill-opacity", getOpacityString(fill));
         }
-        elt.setAttribute("font-family", font.getFamily());
-        elt.setAttribute("font-size", "" + font.getSize());
+        element.setAttribute("font-family", font.getFamily());
+        element.setAttribute("font-size", "" + font.getSize());
         int style = font.getStyle();
         if ((style & Font.ITALIC) != 0) {
-            elt.setAttribute("font-style", "italic");
+            element.setAttribute("font-style", "italic");
         }
         if ((style & Font.BOLD) != 0) {
-            elt.setAttribute("font-weight", "bold");
+            element.setAttribute("font-weight", "bold");
         }
-        if (halign == DrawAttr.ALIGN_LEFT) {
-            elt.setAttribute("text-anchor", "start");
-        } else if (halign == DrawAttr.ALIGN_RIGHT) {
-            elt.setAttribute("text-anchor", "end");
+        if (horizontalAlignment == DrawAttr.ALIGN_LEFT) {
+            element.setAttribute("text-anchor", "start");
+        } else if (horizontalAlignment == DrawAttr.ALIGN_RIGHT) {
+            element.setAttribute("text-anchor", "end");
         } else {
-            elt.setAttribute("text-anchor", "middle");
+            element.setAttribute("text-anchor", "middle");
         }
-        elt.appendChild(doc.createTextNode(text.getText()));
-        return elt;
+        element.appendChild(document.createTextNode(text.getText()));
+        return element;
     }
 
-    private static void populateFill(Element elt, AbstractCanvasObject shape) {
+    private static void populateFill(Element element, AbstractCanvasObject shape) {
         Object type = shape.getValue(DrawAttr.PAINT_TYPE);
         if (type == DrawAttr.PAINT_FILL) {
-            elt.setAttribute("stroke", "none");
+            element.setAttribute("stroke", "none");
         } else {
-            populateStroke(elt, shape);
+            populateStroke(element, shape);
         }
         if (type == DrawAttr.PAINT_STROKE) {
-            elt.setAttribute("fill", "none");
+            element.setAttribute("fill", "none");
         } else {
             Color fill = shape.getValue(DrawAttr.FILL_COLOR);
             if (colorMatches(fill, Color.BLACK)) {
-                elt.removeAttribute("fill");
+                element.removeAttribute("fill");
             } else {
-                elt.setAttribute("fill", getColorString(fill));
+                element.setAttribute("fill", getColorString(fill));
             }
             if (showOpacity(fill)) {
-                elt.setAttribute("fill-opacity", getOpacityString(fill));
+                element.setAttribute("fill-opacity", getOpacityString(fill));
             }
         }
     }
 
-    private static void populateStroke(Element elt, AbstractCanvasObject shape) {
+    private static void populateStroke(Element element, AbstractCanvasObject shape) {
         Integer width = shape.getValue(DrawAttr.STROKE_WIDTH);
-        if (width != null && width.intValue() != 1) {
-            elt.setAttribute("stroke-width", width.toString());
+        if (width != null && width != 1) {
+            element.setAttribute("stroke-width", width.toString());
         }
         Color stroke = shape.getValue(DrawAttr.STROKE_COLOR);
-        elt.setAttribute("stroke", getColorString(stroke));
+        element.setAttribute("stroke", getColorString(stroke));
         if (showOpacity(stroke)) {
-            elt.setAttribute("stroke-opacity", getOpacityString(stroke));
+            element.setAttribute("stroke-opacity", getOpacityString(stroke));
         }
-        elt.setAttribute("fill", "none");
+        element.setAttribute("fill", "none");
     }
 
     private static boolean colorMatches(Color a, Color b) {
-        return a.getRed() == b.getRed() && a.getGreen() == b.getGreen()
-                && a.getBlue() == b.getBlue();
+        return a.getRed() == b.getRed() && a.getGreen() == b.getGreen() && a.getBlue() == b.getBlue();
     }
 
     private static String getColorString(Color color) {
-        return String.format("#%02x%02x%02x",
-                Integer.valueOf(color.getRed()), Integer.valueOf(color.getGreen()),
-                Integer.valueOf(color.getBlue()));
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     private static boolean showOpacity(Color color) {
@@ -187,6 +185,6 @@ class SvgCreator {
 
     private static String getOpacityString(Color color) {
         double alpha = color.getAlpha() / 255.0;
-        return String.format(Locale.US, "%5.3f", Double.valueOf(alpha));
+        return String.format(Locale.US, "%5.3f", alpha);
     }
 }

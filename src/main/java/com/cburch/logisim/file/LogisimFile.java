@@ -71,8 +71,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
         return file;
     }
 
-    public static LogisimFile load(File file, Loader loader)
-            throws IOException {
+    public static LogisimFile load(File file, Loader loader) throws IOException {
         InputStream in = new FileInputStream(file);
         Throwable firstExcept;
         try {

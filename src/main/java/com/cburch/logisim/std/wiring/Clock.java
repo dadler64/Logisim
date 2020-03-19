@@ -48,7 +48,7 @@ public class Clock extends InstanceFactory {
                 StdAttr.FACING, ATTR_HIGH, ATTR_LOW,
                 StdAttr.LABEL, Pin.ATTR_LABEL_LOC, StdAttr.LABEL_FONT
         }, new Object[]{
-                Direction.EAST, Integer.valueOf(1), Integer.valueOf(1),
+                Direction.EAST, 1, 1,
                 "", Direction.WEST, StdAttr.DEFAULT_LABEL_FONT
         });
         setFacingAttribute(StdAttr.FACING);
@@ -61,8 +61,8 @@ public class Clock extends InstanceFactory {
     //
     public static boolean tick(CircuitState circState, int ticks, Component comp) {
         AttributeSet attrs = comp.getAttributeSet();
-        int durationHigh = attrs.getValue(ATTR_HIGH).intValue();
-        int durationLow = attrs.getValue(ATTR_LOW).intValue();
+        int durationHigh = attrs.getValue(ATTR_HIGH);
+        int durationLow = attrs.getValue(ATTR_LOW);
         ClockState state = (ClockState) circState.getData(comp);
         if (state == null) {
             state = new ClockState();
@@ -176,10 +176,10 @@ public class Clock extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == Pin.ATTR_LABEL_LOC) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == Pin.ATTR_LABEL_LOC) {
             configureLabel(instance);
-        } else if (attr == StdAttr.FACING) {
+        } else if (attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             configureLabel(instance);
         }

@@ -21,8 +21,8 @@
 
 package com.cburch.logisim;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.gui.start.Startup;
-import com.cburch.logisim.util.log.Logger;
 
 public class Main {
 

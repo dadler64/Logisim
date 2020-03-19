@@ -31,18 +31,18 @@ class MemContents implements Cloneable, HexModel {
     //
     // HexModel methods
     //
-    public void addHexModelListener(HexModelListener l) {
+    public void addHexModelListener(HexModelListener listener) {
         if (listeners == null) {
             listeners = new EventSourceWeakSupport<>();
         }
-        listeners.add(l);
+        listeners.add(listener);
     }
 
-    public void removeHexModelListener(HexModelListener l) {
+    public void removeHexModelListener(HexModelListener listener) {
         if (listeners == null) {
             return;
         }
-        listeners.add(l);
+        listeners.add(listener);
         if (listeners.isEmpty()) {
             listeners = null;
         }
@@ -55,7 +55,7 @@ class MemContents implements Cloneable, HexModel {
         boolean found = false;
         for (HexModelListener l : listeners) {
             found = true;
-            l.metainfoChanged(this);
+            l.metaInfoChanged(this);
         }
         if (!found) {
             listeners = null;

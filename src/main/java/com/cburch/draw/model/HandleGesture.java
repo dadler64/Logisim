@@ -8,21 +8,22 @@ import java.awt.event.InputEvent;
 public class HandleGesture {
 
     private Handle handle;
-    private int dx;
-    private int dy;
+    private int deltaX;
+    private int deltaY;
     private int modifiersEx;
     private Handle resultingHandle;
 
-    public HandleGesture(Handle handle, int dx, int dy, int modifiersEx) {
+    public HandleGesture(Handle handle, int deltaX, int deltaY, int modifiersEx) {
         this.handle = handle;
-        this.dx = dx;
-        this.dy = dy;
+        this.deltaX = deltaX;
+        this.deltaY = deltaY;
         this.modifiersEx = modifiersEx;
     }
 
     @Override
     public String toString() {
-        return "HandleGesture[" + dx + "," + dy + ":" + handle.getObject() + "/" + handle.getX() + "," + handle.getY() + "]";
+        return "HandleGesture[" + deltaX + "," + deltaY + ":" + handle.getObject() + "/" + handle.getX() + "," + handle.getY()
+                + "]";
     }
 
     public Handle getHandle() {
@@ -30,11 +31,11 @@ public class HandleGesture {
     }
 
     public int getDeltaX() {
-        return dx;
+        return deltaX;
     }
 
     public int getDeltaY() {
-        return dy;
+        return deltaY;
     }
 
     public int getModifiersEx() {

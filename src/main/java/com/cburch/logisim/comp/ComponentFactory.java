@@ -36,7 +36,7 @@ public interface ComponentFactory extends AttributeDefaultProvider {
 
     AttributeSet createAttributeSet();
 
-    boolean isAllDefaultValues(AttributeSet attributes, LogisimVersion version);
+    boolean isAllDefaultValues(AttributeSet attributeSet, LogisimVersion version);
 
     Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version);
 
@@ -63,5 +63,5 @@ public interface ComponentFactory extends AttributeDefaultProvider {
      * supports the feature, or <code>null</code> if it does not support
      * the feature.
      */
-    Object getFeature(Object key, AttributeSet attrs);
+    Object getFeature(Object key, AttributeSet attributeSet);
 }

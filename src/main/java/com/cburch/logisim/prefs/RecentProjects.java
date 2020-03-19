@@ -29,9 +29,9 @@ class RecentProjects implements PreferenceChangeListener {
         preferences.addPreferenceChangeListener(this);
 
         // TODO: Fix error with recent files not loading
-//        for (int index = 0; index < MAX_NUM_RECENT; index++) {
+        for (int index = 0; index < MAX_NUM_RECENT; index++) {
 //            getAndDecode(preferences, index);
-//        }
+        }
     }
 
     private static boolean isSame(Object a, Object b) {

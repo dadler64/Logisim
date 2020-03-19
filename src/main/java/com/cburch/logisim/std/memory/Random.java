@@ -38,7 +38,7 @@ public class Random extends InstanceFactory {
                 StdAttr.WIDTH, ATTR_SEED, StdAttr.EDGE_TRIGGER,
                 StdAttr.LABEL, StdAttr.LABEL_FONT
         }, new Object[]{
-                BitWidth.create(8), Integer.valueOf(0), StdAttr.TRIG_RISING,
+                BitWidth.create(8), 0, StdAttr.TRIG_RISING,
                 "", StdAttr.DEFAULT_LABEL_FONT
         });
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
@@ -141,7 +141,7 @@ public class Random extends InstanceFactory {
         }
 
         void reset(Object seed) {
-            long start = seed instanceof Integer ? ((Integer) seed).intValue() : 0;
+            long start = seed instanceof Integer ? (Integer) seed : 0;
             if (start == 0) {
                 // Prior to 2.7.0, this would reset to the seed at the time of
                 // the StateData's creation. It seems more likely that what

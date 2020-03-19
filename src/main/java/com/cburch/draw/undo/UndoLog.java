@@ -25,21 +25,21 @@ public class UndoLog {
     //
     // listening methods
     //
-    public void addProjectListener(UndoLogListener what) {
-        listeners.add(what);
+    public void addProjectListener(UndoLogListener listener) {
+        listeners.add(listener);
     }
 
-    public void removeProjectListener(UndoLogListener what) {
-        listeners.remove(what);
+    public void removeProjectListener(UndoLogListener listener) {
+        listeners.remove(listener);
     }
 
     private void fireEvent(int action, Action actionObject) {
-        UndoLogEvent e = null;
+        UndoLogEvent event = null;
         for (UndoLogListener listener : listeners) {
-            if (e == null) {
-                e = new UndoLogEvent(this, action, actionObject);
+            if (event == null) {
+                event = new UndoLogEvent(this, action, actionObject);
             }
-            listener.undoLogChanged(e);
+            listener.undoLogChanged(event);
         }
     }
 
@@ -69,38 +69,38 @@ public class UndoLog {
     //
     // mutator methods
     //
-    public void doAction(Action act) {
-        if (act == null) {
+    public void doAction(Action action) {
+        if (action == null) {
             return;
         }
-        act.doIt();
-        logAction(act);
+        action.doIt();
+        logAction(action);
     }
 
-    public void logAction(Action act) {
+    private void logAction(Action action) {
         redoLog.clear();
         if (!undoLog.isEmpty()) {
-            Action prev = undoLog.getLast();
-            if (act.shouldAppendTo(prev)) {
-                if (prev.isModification()) {
+            Action previousAction = undoLog.getLast();
+            if (action.shouldAppendTo(previousAction)) {
+                if (previousAction.isModification()) {
                     --modCount;
                 }
-                Action joined = prev.append(act);
-                if (joined == null) {
-                    fireEvent(UndoLogEvent.ACTION_DONE, act);
+                Action joinedAction = previousAction.append(action);
+                if (joinedAction == null) {
+                    fireEvent(UndoLogEvent.ACTION_DONE, action);
                     return;
                 }
-                act = joined;
+                action = joinedAction;
             }
             while (undoLog.size() > MAX_UNDO_SIZE) {
                 undoLog.removeFirst();
             }
         }
-        undoLog.add(act);
-        if (act.isModification()) {
+        undoLog.add(action);
+        if (action.isModification()) {
             ++modCount;
         }
-        fireEvent(UndoLogEvent.ACTION_DONE, act);
+        fireEvent(UndoLogEvent.ACTION_DONE, action);
     }
 
     public void undoAction() {

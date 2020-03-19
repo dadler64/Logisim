@@ -51,11 +51,11 @@ public class TransmissionGate extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING || attr == Wiring.ATTR_GATE) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING || attribute == Wiring.ATTR_GATE) {
             instance.recomputeBounds();
             updatePorts(instance);
-        } else if (attr == StdAttr.WIDTH) {
+        } else if (attribute == StdAttr.WIDTH) {
             instance.fireInvalidated();
         }
     }
@@ -111,11 +111,11 @@ public class TransmissionGate extends InstanceFactory {
     }
 
     @Override
-    public boolean contains(Location loc, AttributeSet attrs) {
-        if (super.contains(loc, attrs)) {
-            Direction facing = attrs.getValue(StdAttr.FACING);
+    public boolean contains(Location location, AttributeSet attributeSet) {
+        if (super.contains(location, attributeSet)) {
+            Direction facing = attributeSet.getValue(StdAttr.FACING);
             Location center = Location.create(0, 0).translate(facing, -20);
-            return center.manhattanDistanceTo(loc) < 24;
+            return center.manhattanDistanceTo(location) < 24;
         } else {
             return false;
         }

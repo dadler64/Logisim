@@ -32,25 +32,23 @@ import javax.swing.KeyStroke;
 
 public class TextTool extends AbstractTool {
 
-    private DrawingAttributeSet attrs;
+    private DrawingAttributeSet attributeSet;
     private EditableLabelField field;
     private FieldListener fieldListener;
-    private Text curText;
-    private Canvas curCanvas;
+    private Text currentText;
+    private Canvas currentCanvas;
     private boolean isTextNew;
 
-    public TextTool(DrawingAttributeSet attrs) {
-        this.attrs = attrs;
-        curText = null;
+    public TextTool(DrawingAttributeSet attributeSet) {
+        this.attributeSet = attributeSet;
+        currentText = null;
         isTextNew = false;
         field = new EditableLabelField();
 
         fieldListener = new FieldListener();
         InputMap fieldInput = field.getInputMap();
-        fieldInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-                "commit");
-        fieldInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                "cancel");
+        fieldInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "commit");
+        fieldInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
         ActionMap fieldAction = field.getActionMap();
         fieldAction.put("commit", fieldListener);
         fieldAction.put("cancel", new CancelListener());
@@ -82,68 +80,68 @@ public class TextTool extends AbstractTool {
     }
 
     @Override
-    public void mousePressed(Canvas canvas, MouseEvent e) {
-        if (curText != null) {
+    public void mousePressed(Canvas canvas, MouseEvent event) {
+        if (currentText != null) {
             commitText(canvas);
         }
 
-        Text clicked = null;
-        boolean found = false;
-        int mx = e.getX();
-        int my = e.getY();
-        Location mloc = Location.create(mx, my);
-        for (CanvasObject o : canvas.getModel().getObjectsFromTop()) {
-            if (o instanceof Text && o.contains(mloc, true)) {
-                clicked = (Text) o;
-                found = true;
+        Text clickedText = null;
+        boolean isFound = false;
+        int mouseX = event.getX();
+        int mouseY = event.getY();
+        Location mouseLocation = Location.create(mouseX, mouseY);
+        for (CanvasObject object : canvas.getModel().getObjectsFromTop()) {
+            if (object instanceof Text && object.contains(mouseLocation, true)) {
+                clickedText = (Text) object;
+                isFound = true;
                 break;
             }
         }
-        if (!found) {
-            clicked = attrs.applyTo(new Text(mx, my, ""));
+        if (!isFound) {
+            clickedText = attributeSet.applyTo(new Text(mouseX, mouseY, ""));
         }
 
-        curText = clicked;
-        curCanvas = canvas;
-        isTextNew = !found;
-        clicked.getLabel().configureTextField(field, canvas.getZoomFactor());
-        field.setText(clicked.getText());
+        currentText = clickedText;
+        currentCanvas = canvas;
+        isTextNew = !isFound;
+        clickedText.getLabel().configureTextField(field, canvas.getZoomFactor());
+        field.setText(clickedText.getText());
         canvas.add(field);
 
-        Point fieldLoc = field.getLocation();
+        Point fieldLocation = field.getLocation();
         double zoom = canvas.getZoomFactor();
-        fieldLoc.x = (int) Math.round(mx * zoom - fieldLoc.x);
-        fieldLoc.y = (int) Math.round(my * zoom - fieldLoc.y);
-        int caret = field.viewToModel(fieldLoc);
+        fieldLocation.x = (int) Math.round(mouseX * zoom - fieldLocation.x);
+        fieldLocation.y = (int) Math.round(mouseY * zoom - fieldLocation.y);
+        int caret = field.viewToModel2D(fieldLocation);
         if (caret >= 0) {
             field.setCaretPosition(caret);
         }
         field.requestFocus();
 
-        canvas.getSelection().setSelected(clicked, true);
-        canvas.getSelection().setHidden(Collections.singleton(clicked), true);
-        clicked.addAttributeListener(fieldListener);
+        canvas.getSelection().setSelected(clickedText, true);
+        canvas.getSelection().setHidden(Collections.singleton(clickedText), true);
+        clickedText.addAttributeListener(fieldListener);
         canvas.repaint();
     }
 
     @Override
     public void zoomFactorChanged(Canvas canvas) {
-        Text t = curText;
-        if (t != null) {
-            t.getLabel().configureTextField(field, canvas.getZoomFactor());
+        Text currentText = this.currentText;
+        if (currentText != null) {
+            currentText.getLabel().configureTextField(field, canvas.getZoomFactor());
         }
     }
 
     @Override
-    public void draw(Canvas canvas, Graphics g) {
+    public void draw(Canvas canvas, Graphics graphics) {
         // actually, there's nothing to do here - it's handled by the field
     }
 
     private void cancelText(Canvas canvas) {
-        Text cur = curText;
-        if (cur != null) {
-            curText = null;
-            cur.removeAttributeListener(fieldListener);
+        Text currentText = this.currentText;
+        if (currentText != null) {
+            this.currentText = null;
+            currentText.removeAttributeListener(fieldListener);
             canvas.remove(field);
             canvas.getSelection().clearSelected();
             canvas.repaint();
@@ -151,54 +149,53 @@ public class TextTool extends AbstractTool {
     }
 
     private void commitText(Canvas canvas) {
-        Text cur = curText;
+        Text currentText = this.currentText;
         boolean isNew = isTextNew;
         String newText = field.getText();
-        if (cur == null) {
+        if (currentText == null) {
             return;
         }
         cancelText(canvas);
 
         if (isNew) {
             if (!newText.equals("")) {
-                cur.setText(newText);
-                canvas.doAction(new ModelAddAction(canvas.getModel(), cur));
+                currentText.setText(newText);
+                canvas.doAction(new ModelAddAction(canvas.getModel(), currentText));
             }
         } else {
-            String oldText = cur.getText();
+            String oldText = currentText.getText();
             if (newText.equals("")) {
-                canvas.doAction(new ModelRemoveAction(canvas.getModel(), cur));
+                canvas.doAction(new ModelRemoveAction(canvas.getModel(), currentText));
             } else if (!oldText.equals(newText)) {
-                canvas.doAction(new ModelEditTextAction(canvas.getModel(), cur,
-                        newText));
+                canvas.doAction(new ModelEditTextAction(canvas.getModel(), currentText, newText));
             }
         }
     }
 
     private class FieldListener extends AbstractAction implements AttributeListener {
 
-        public void actionPerformed(ActionEvent e) {
-            commitText(curCanvas);
+        public void actionPerformed(ActionEvent event) {
+            commitText(currentCanvas);
         }
 
-        public void attributeListChanged(AttributeEvent e) {
-            Text cur = curText;
-            if (cur != null) {
-                double zoom = curCanvas.getZoomFactor();
-                cur.getLabel().configureTextField(field, zoom);
-                curCanvas.repaint();
+        public void attributeListChanged(AttributeEvent event) {
+            Text currentText = TextTool.this.currentText;
+            if (currentText != null) {
+                double zoom = currentCanvas.getZoomFactor();
+                currentText.getLabel().configureTextField(field, zoom);
+                currentCanvas.repaint();
             }
         }
 
-        public void attributeValueChanged(AttributeEvent e) {
-            attributeListChanged(e);
+        public void attributeValueChanged(AttributeEvent event) {
+            attributeListChanged(event);
         }
     }
 
     private class CancelListener extends AbstractAction {
 
-        public void actionPerformed(ActionEvent e) {
-            cancelText(curCanvas);
+        public void actionPerformed(ActionEvent event) {
+            cancelText(currentCanvas);
         }
     }
 }

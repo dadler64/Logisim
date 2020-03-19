@@ -17,14 +17,14 @@ class Measures {
     private int spacerWidth;
     private int cellWidth;
     private int cellHeight;
-    private int cols;
+    private int columns;
     private int baseX;
-    private boolean guessed;
+    private boolean isGuessed;
 
     public Measures(HexEditor hex) {
         this.hex = hex;
-        this.guessed = true;
-        this.cols = 1;
+        this.isGuessed = true;
+        this.columns = 1;
         this.cellWidth = -1;
         this.cellHeight = -1;
         this.cellChars = 2;
@@ -34,7 +34,7 @@ class Measures {
     }
 
     public int getColumnCount() {
-        return cols;
+        return columns;
     }
 
     public int getBaseX() {
@@ -66,7 +66,7 @@ class Measures {
     }
 
     public int getValuesWidth() {
-        return ((cols - 1) / 4) * spacerWidth + cols * cellWidth;
+        return ((columns - 1) / 4) * spacerWidth + columns * cellWidth;
     }
 
     public long getBaseAddress(HexModel model) {
@@ -74,19 +74,19 @@ class Measures {
             return 0;
         } else {
             long addr0 = model.getFirstOffset();
-            return addr0 - addr0 % cols;
+            return addr0 - addr0 % columns;
         }
     }
 
-    public int toY(long addr) {
-        long row = (addr - getBaseAddress(hex.getModel())) / cols;
+    public int toY(long address) {
+        long row = (address - getBaseAddress(hex.getModel())) / columns;
         long ret = row * cellHeight;
         return ret < Integer.MAX_VALUE ? (int) ret : Integer.MAX_VALUE;
     }
 
-    public int toX(long addr) {
-        int col = (int) (addr % cols);
-        return baseX + (1 + (col / 4)) * spacerWidth + col * cellWidth;
+    public int toX(long address) {
+        int column = (int) (address % columns);
+        return baseX + (1 + (column / 4)) * spacerWidth + column * cellWidth;
     }
 
     public long toAddress(int x, int y) {
@@ -97,16 +97,16 @@ class Measures {
         long addr0 = model.getFirstOffset();
         long addr1 = model.getLastOffset();
 
-        long base = getBaseAddress(model) + ((long) y / cellHeight) * cols;
-        int offs = (x - baseX) / (cellWidth + (spacerWidth + 2) / 4);
-        if (offs < 0) {
-            offs = 0;
+        long base = getBaseAddress(model) + ((long) y / cellHeight) * columns;
+        int offset = (x - baseX) / (cellWidth + (spacerWidth + 2) / 4);
+        if (offset < 0) {
+            offset = 0;
         }
-        if (offs >= cols) {
-            offs = cols - 1;
+        if (offset >= columns) {
+            offset = columns - 1;
         }
 
-        long ret = base + offs;
+        long ret = base + offset;
         if (ret > addr1) {
             ret = addr1;
         }
@@ -116,9 +116,9 @@ class Measures {
         return ret;
     }
 
-    void ensureComputed(Graphics g) {
-        if (guessed || cellWidth < 0) {
-            computeCellSize(g);
+    void ensureComputed(Graphics graphics) {
+        if (isGuessed || cellWidth < 0) {
+            computeCellSize(graphics);
         }
     }
 
@@ -127,35 +127,35 @@ class Measures {
     }
 
     void widthChanged() {
-        int oldCols = cols;
+        int oldColumns = columns;
         int width;
-        if (guessed || cellWidth < 0) {
-            cols = 16;
+        if (isGuessed || cellWidth < 0) {
+            columns = 16;
             width = hex.getPreferredSize().width;
         } else {
             width = hex.getWidth();
             int ret = (width - headerWidth) / (cellWidth + (spacerWidth + 3) / 4);
             if (ret >= 16) {
-                cols = 16;
+                columns = 16;
             } else if (ret >= 8) {
-                cols = 8;
+                columns = 8;
             } else {
-                cols = 4;
+                columns = 4;
             }
         }
-        int lineWidth = headerWidth + cols * cellWidth
-                + ((cols / 4) - 1) * spacerWidth;
+        int lineWidth = headerWidth + columns * cellWidth
+                + ((columns / 4) - 1) * spacerWidth;
         int newBase = headerWidth + Math.max(0, (width - lineWidth) / 2);
         if (baseX != newBase) {
             baseX = newBase;
             hex.repaint();
         }
-        if (cols != oldCols) {
+        if (columns != oldColumns) {
             recompute();
         }
     }
 
-    private void computeCellSize(Graphics g) {
+    private void computeCellSize(Graphics graphics) {
         HexModel model = hex.getModel();
 
         // compute number of characters in headers and cells
@@ -164,8 +164,8 @@ class Measures {
             cellChars = 2;
         } else {
             int logSize = 0;
-            long addrEnd = model.getLastOffset();
-            while (addrEnd > (1L << logSize)) {
+            long addressEnd = model.getLastOffset();
+            while (addressEnd > (1L << logSize)) {
                 logSize++;
             }
             headerChars = (logSize + 3) / 4;
@@ -173,11 +173,11 @@ class Measures {
         }
 
         // compute character sizes
-        FontMetrics fm = g == null ? null : g.getFontMetrics(hex.getFont());
+        FontMetrics fontMetrics = graphics == null ? null : graphics.getFontMetrics(hex.getFont());
         int charWidth;
         int spaceWidth;
         int lineHeight;
-        if (fm == null) {
+        if (fontMetrics == null) {
             charWidth = 8;
             spaceWidth = 6;
             Font font = hex.getFont();
@@ -187,16 +187,16 @@ class Measures {
                 lineHeight = font.getSize();
             }
         } else {
-            guessed = false;
+            isGuessed = false;
             charWidth = 0;
             for (int i = 0; i < 16; i++) {
-                int width = fm.stringWidth(Integer.toHexString(i));
+                int width = fontMetrics.stringWidth(Integer.toHexString(i));
                 if (width > charWidth) {
                     charWidth = width;
                 }
             }
-            spaceWidth = fm.stringWidth(" ");
-            lineHeight = fm.getHeight();
+            spaceWidth = fontMetrics.stringWidth(" ");
+            lineHeight = fontMetrics.getHeight();
         }
 
         // update header and cell dimensions
@@ -206,14 +206,14 @@ class Measures {
         cellHeight = lineHeight;
 
         // compute preferred size
-        int width = headerWidth + cols * cellWidth + (cols / 4) * spacerWidth;
+        int width = headerWidth + columns * cellWidth + (columns / 4) * spacerWidth;
         long height;
         if (model == null) {
             height = 16 * cellHeight;
         } else {
             long addr0 = getBaseAddress(model);
             long addr1 = model.getLastOffset();
-            long rows = (int) (((addr1 - addr0 + 1) + cols - 1) / cols);
+            long rows = (int) (((addr1 - addr0 + 1) + columns - 1) / columns);
             height = rows * cellHeight;
             if (height > Integer.MAX_VALUE) {
                 height = Integer.MAX_VALUE;
@@ -221,11 +221,11 @@ class Measures {
         }
 
         // update preferred size
-        Dimension pref = hex.getPreferredSize();
-        if (pref.width != width || pref.height != height) {
-            pref.width = width;
-            pref.height = (int) height;
-            hex.setPreferredSize(pref);
+        Dimension preferredSize = hex.getPreferredSize();
+        if (preferredSize.width != width || preferredSize.height != height) {
+            preferredSize.width = width;
+            preferredSize.height = (int) height;
+            hex.setPreferredSize(preferredSize);
             hex.revalidate();
         }
 

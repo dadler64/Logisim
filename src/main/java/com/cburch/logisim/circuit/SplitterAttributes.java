@@ -168,7 +168,7 @@ class SplitterAttributes extends AbstractAttributeSet {
             configureOptions();
             parameters = null;
         } else if (attr == ATTR_FANOUT) {
-            int newValue = ((Integer) value).intValue();
+            int newValue = (Integer) value;
             byte[] bits = bit_end;
             for (int i = 0; i < bits.length; i++) {
                 if (bits[i] >= newValue) {
@@ -191,7 +191,7 @@ class SplitterAttributes extends AbstractAttributeSet {
             BitOutAttribute bitOutAttr = (BitOutAttribute) attr;
             int val;
             if (value instanceof Integer) {
-                val = ((Integer) value).intValue();
+                val = (Integer) value;
             } else {
                 val = ((BitOutOption) value).value + 1;
             }
@@ -241,7 +241,7 @@ class SplitterAttributes extends AbstractAttributeSet {
             if (bit_end[i] != dflt[i]) {
                 BitOutAttribute attr = (BitOutAttribute) attrs.get(offs + i);
                 bit_end[i] = dflt[i];
-                fireAttributeValueChanged(attr, Integer.valueOf(bit_end[i]));
+                fireAttributeValueChanged(attr, (int) bit_end[i]);
             }
         }
 
@@ -307,27 +307,27 @@ class SplitterAttributes extends AbstractAttributeSet {
         }
 
         public Object getDefault() {
-            return Integer.valueOf(which + 1);
+            return which + 1;
         }
 
         @Override
         public Integer parse(String value) {
             if (value.equals(unchosen_val)) {
-                return Integer.valueOf(0);
+                return 0;
             } else {
-                return Integer.valueOf(1 + Integer.parseInt(value));
+                return 1 + Integer.parseInt(value);
             }
         }
 
         @Override
         public String toDisplayString(Integer value) {
-            int index = value.intValue();
+            int index = value;
             return options[index].toString();
         }
 
         @Override
         public String toStandardString(Integer value) {
-            int index = value.intValue();
+            int index = value;
             if (index == 0) {
                 return unchosen_val;
             } else {
@@ -337,7 +337,7 @@ class SplitterAttributes extends AbstractAttributeSet {
 
         @Override
         public java.awt.Component getCellEditor(Integer value) {
-            int index = value.intValue();
+            int index = value;
             javax.swing.JComboBox combo = new javax.swing.JComboBox(options);
             combo.setSelectedIndex(index);
             return combo;

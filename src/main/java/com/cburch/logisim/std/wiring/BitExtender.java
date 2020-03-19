@@ -26,12 +26,11 @@ import java.awt.Graphics;
 public class BitExtender extends InstanceFactory {
 
     public static final BitExtender FACTORY = new BitExtender();
-    private static final Attribute<BitWidth> ATTR_IN_WIDTH
-            = Attributes.forBitWidth("in_width", Strings.getter("extenderInAttr"));
-    private static final Attribute<BitWidth> ATTR_OUT_WIDTH
-            = Attributes.forBitWidth("out_width", Strings.getter("extenderOutAttr"));
-    private static final Attribute<AttributeOption> ATTR_TYPE
-            = Attributes.forOption("type", Strings.getter("extenderTypeAttr"),
+    private static final Attribute<BitWidth> ATTR_IN_WIDTH = Attributes
+            .forBitWidth("in_width", Strings.getter("extenderInAttr"));
+    private static final Attribute<BitWidth> ATTR_OUT_WIDTH = Attributes
+            .forBitWidth("out_width", Strings.getter("extenderOutAttr"));
+    private static final Attribute<AttributeOption> ATTR_TYPE = Attributes.forOption("type", Strings.getter("extenderTypeAttr"),
             new AttributeOption[]{
                     new AttributeOption("zero", "zero", Strings.getter("extenderZeroType")),
                     new AttributeOption("one", "one", Strings.getter("extenderOneType")),
@@ -42,14 +41,10 @@ public class BitExtender extends InstanceFactory {
     public BitExtender() {
         super("Bit Extender", Strings.getter("extenderComponent"));
         setIconName("extender.gif");
-        setAttributes(new Attribute[]{
-                ATTR_IN_WIDTH, ATTR_OUT_WIDTH, ATTR_TYPE
-        }, new Object[]{
-                BitWidth.create(8), BitWidth.create(16), ATTR_TYPE.parse("zero")
-        });
+        setAttributes(new Attribute[]{ATTR_IN_WIDTH, ATTR_OUT_WIDTH, ATTR_TYPE},
+                new Object[]{BitWidth.create(8), BitWidth.create(16), ATTR_TYPE.parse("zero")});
         setFacingAttribute(StdAttr.FACING);
-        setKeyConfigurator(JoinedConfigurator.create(
-                new BitWidthConfigurator(ATTR_OUT_WIDTH),
+        setKeyConfigurator(JoinedConfigurator.create(new BitWidthConfigurator(ATTR_OUT_WIDTH),
                 new BitWidthConfigurator(ATTR_IN_WIDTH, 1, Value.MAX_WIDTH, 0)));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
     }
@@ -59,33 +54,40 @@ public class BitExtender extends InstanceFactory {
     //
     @Override
     public void paintInstance(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
-        FontMetrics fm = g.getFontMetrics();
-        int asc = fm.getAscent();
+        Graphics graphics = painter.getGraphics();
+        FontMetrics fontMetrics = graphics.getFontMetrics();
+        int ascent = fontMetrics.getAscent();
 
         painter.drawBounds();
 
-        String s0;
+        String label;
         String type = getType(painter.getAttributeSet());
-        if (type.equals("zero")) {
-            s0 = Strings.get("extenderZeroLabel");
-        } else if (type.equals("one")) {
-            s0 = Strings.get("extenderOneLabel");
-        } else if (type.equals("sign")) {
-            s0 = Strings.get("extenderSignLabel");
-        } else if (type.equals("input")) {
-            s0 = Strings.get("extenderInputLabel");
-        } else {
-            s0 = "???"; // should never happen
+        switch (type) {
+            case "zero":
+                label = Strings.get("extenderZeroLabel");
+                break;
+            case "one":
+                label = Strings.get("extenderOneLabel");
+                break;
+            case "sign":
+                label = Strings.get("extenderSignLabel");
+                break;
+            case "input":
+                label = Strings.get("extenderInputLabel");
+                break;
+            default:
+                label = "???"; // should never happen
+
+                break;
         }
-        String s1 = Strings.get("extenderMainLabel");
+        String mainLabel = Strings.get("extenderMainLabel");
         Bounds bds = painter.getBounds();
         int x = bds.getX() + bds.getWidth() / 2;
-        int y0 = bds.getY() + (bds.getHeight() / 2 + asc) / 2;
-        int y1 = bds.getY() + (3 * bds.getHeight() / 2 + asc) / 2;
-        GraphicsUtil.drawText(g, s0, x, y0,
+        int y0 = bds.getY() + (bds.getHeight() / 2 + ascent) / 2;
+        int y1 = bds.getY() + (3 * bds.getHeight() / 2 + ascent) / 2;
+        GraphicsUtil.drawText(graphics, label, x, y0,
                 GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
-        GraphicsUtil.drawText(g, s1, x, y1,
+        GraphicsUtil.drawText(graphics, mainLabel, x, y1,
                 GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
 
         BitWidth w0 = painter.getAttributeValue(ATTR_OUT_WIDTH);
@@ -107,8 +109,8 @@ public class BitExtender extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == ATTR_TYPE) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == ATTR_TYPE) {
             configurePorts(instance);
             instance.fireInvalidated();
         } else {

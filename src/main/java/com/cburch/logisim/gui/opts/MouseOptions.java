@@ -227,7 +227,7 @@ class MouseOptions extends OptionsPanel {
         public void mousePressed(MouseEvent e) {
             if (e.getSource() == addArea && curTool != null) {
                 Tool t = curTool.cloneTool();
-                Integer mods = Integer.valueOf(e.getModifiersEx());
+                Integer mods = e.getModifiersEx();
                 getProject().doAction(OptionsActions.setMapping(getOptions().getMouseMappings(), mods, t));
                 setSelectedRow(model.getRow(mods));
             }
@@ -319,7 +319,7 @@ class MouseOptions extends OptionsPanel {
         public Object getValueAt(int row, int column) {
             Integer key = cur_keys.get(row);
             if (column == 0) {
-                return InputEventUtil.toDisplayString(key.intValue());
+                return InputEventUtil.toDisplayString(key);
             } else {
                 Tool tool = getOptions().getMouseMappings().getToolFor(key);
                 return tool.getDisplayName();

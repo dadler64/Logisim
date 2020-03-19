@@ -63,9 +63,9 @@ class GrayCounter extends InstanceFactory {
      */
     @Override
     protected void configureNewInstance(Instance instance) {
-        Bounds bds = instance.getBounds();
+        Bounds bounds = instance.getBounds();
         instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                bds.getX() + bds.getWidth() / 2, bds.getY() - 3,
+                bounds.getX() + bounds.getWidth() / 2, bounds.getY() - 3,
                 GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
     }
 
@@ -74,12 +74,12 @@ class GrayCounter extends InstanceFactory {
         // This is the same as with SimpleGrayCounter, except that we use the
         // StdAttr.WIDTH attribute to determine the bit width to work with.
         BitWidth width = state.getAttributeValue(StdAttr.WIDTH);
-        CounterData cur = CounterData.get(state, width);
-        boolean trigger = cur.updateClock(state.getPort(0));
+        CounterData currentData = CounterData.get(state, width);
+        boolean trigger = currentData.updateClock(state.getPort(0));
         if (trigger) {
-            cur.setValue(GrayIncrementer.nextGray(cur.getValue()));
+            currentData.setValue(GrayIncrementer.nextGray(currentData.getValue()));
         }
-        state.setPort(1, cur.getValue(), 9);
+        state.setPort(1, currentData.getValue(), 9);
     }
 
     @Override
@@ -92,13 +92,13 @@ class GrayCounter extends InstanceFactory {
         painter.drawLabel();
 
         if (painter.getShowState()) {
-            BitWidth width = painter.getAttributeValue(StdAttr.WIDTH);
-            CounterData state = CounterData.get(painter, width);
-            Bounds bds = painter.getBounds();
+            BitWidth bitWidth = painter.getAttributeValue(StdAttr.WIDTH);
+            CounterData counterData = CounterData.get(painter, bitWidth);
+            Bounds bounds = painter.getBounds();
             GraphicsUtil.drawCenteredText(painter.getGraphics(),
-                    StringUtil.toHexString(width.getWidth(), state.getValue().toIntValue()),
-                    bds.getX() + bds.getWidth() / 2,
-                    bds.getY() + bds.getHeight() / 2);
+                    StringUtil.toHexString(bitWidth.getWidth(), counterData.getValue().toIntValue()),
+                    bounds.getX() + bounds.getWidth() / 2,
+                    bounds.getY() + bounds.getHeight() / 2);
         }
     }
 }

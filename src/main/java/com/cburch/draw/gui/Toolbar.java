@@ -21,17 +21,17 @@ class Toolbar extends JComponent {
 
     private static int ICON_WIDTH = 16;
     private static int ICON_HEIGHT = 16;
-    private static int ICON_SEP = 4;
+    private static int ICON_SEPARATION = 4;
     private Canvas canvas;
     private AbstractTool[][] tools;
     private Listener listener;
 
-    public Toolbar(Canvas canvas, DrawingAttributeSet attrs) {
+    public Toolbar(Canvas canvas, DrawingAttributeSet attributes) {
         this.canvas = canvas;
-        this.tools = new AbstractTool[][]{AbstractTool.getTools(attrs)};
+        this.tools = new AbstractTool[][]{AbstractTool.getTools(attributes)};
         this.listener = new Listener();
 
-        AbstractTool[] toolBase = AbstractTool.getTools(attrs);
+        AbstractTool[] toolBase = AbstractTool.getTools(attributes);
         this.tools = new AbstractTool[2][];
         this.tools[0] = new AbstractTool[(toolBase.length + 1) / 2];
         this.tools[1] = new AbstractTool[toolBase.length / 2];
@@ -39,8 +39,8 @@ class Toolbar extends JComponent {
             this.tools[i % 2][i / 2] = toolBase[i];
         }
 
-        setPreferredSize(new Dimension(3 * ICON_SEP + 2 * ICON_WIDTH,
-                ICON_SEP + tools[0].length * (ICON_HEIGHT + ICON_SEP)));
+        setPreferredSize(new Dimension(3 * ICON_SEPARATION + 2 * ICON_WIDTH,
+                ICON_SEPARATION + tools[0].length * (ICON_HEIGHT + ICON_SEPARATION)));
         addMouseListener(listener);
         addMouseMotionListener(listener);
     }
@@ -50,33 +50,32 @@ class Toolbar extends JComponent {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        g.clearRect(0, 0, getWidth(), getHeight());
+    public void paintComponent(Graphics graphics) {
+        graphics.clearRect(0, 0, getWidth(), getHeight());
         CanvasTool current = canvas.getTool();
         for (int i = 0; i < tools.length; i++) {
-            AbstractTool[] column = tools[i];
-            int x = ICON_SEP + i * (ICON_SEP + ICON_WIDTH);
-            int y = ICON_SEP;
-            for (int j = 0; j < column.length; j++) {
-                AbstractTool tool = column[j];
+            AbstractTool[] tools = this.tools[i];
+            int x = ICON_SEPARATION + i * (ICON_SEPARATION + ICON_WIDTH);
+            int y = ICON_SEPARATION;
+            for (AbstractTool tool : tools) {
                 if (tool == listener.toolPressed && listener.inTool) {
-                    g.setColor(Color.darkGray);
-                    g.fillRect(x, y, ICON_WIDTH, ICON_HEIGHT);
+                    graphics.setColor(Color.darkGray);
+                    graphics.fillRect(x, y, ICON_WIDTH, ICON_HEIGHT);
                 }
                 Icon icon = tool.getIcon();
                 if (icon != null) {
-                    icon.paintIcon(this, g, x, y);
+                    icon.paintIcon(this, graphics, x, y);
                 }
                 if (tool == current) {
-                    GraphicsUtil.switchToWidth(g, 2);
-                    g.setColor(Color.black);
-                    g.drawRect(x - 1, y - 1, ICON_WIDTH + 2, ICON_HEIGHT + 2);
+                    GraphicsUtil.switchToWidth(graphics, 2);
+                    graphics.setColor(Color.black);
+                    graphics.drawRect(x - 1, y - 1, ICON_WIDTH + 2, ICON_HEIGHT + 2);
                 }
-                y += ICON_HEIGHT + ICON_SEP;
+                y += ICON_HEIGHT + ICON_SEPARATION;
             }
         }
-        g.setColor(Color.black);
-        GraphicsUtil.switchToWidth(g, 1);
+        graphics.setColor(Color.black);
+        GraphicsUtil.switchToWidth(graphics, 1);
     }
 
     private class Listener implements MouseListener, MouseMotionListener {
@@ -86,28 +85,28 @@ class Toolbar extends JComponent {
         private int toolX;
         private int toolY;
 
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(MouseEvent event) {
         }
 
-        public void mouseEntered(MouseEvent e) {
+        public void mouseEntered(MouseEvent event) {
         }
 
-        public void mouseExited(MouseEvent e) {
+        public void mouseExited(MouseEvent event) {
         }
 
-        public void mousePressed(MouseEvent e) {
-            int mx = e.getX();
-            int my = e.getY();
-            int col = (e.getX() - ICON_SEP) / (ICON_WIDTH + ICON_SEP);
-            int row = (e.getY() - ICON_SEP) / (ICON_HEIGHT + ICON_SEP);
-            int x0 = ICON_SEP + col * (ICON_SEP + ICON_WIDTH);
-            int y0 = ICON_SEP + row * (ICON_SEP + ICON_HEIGHT);
+        public void mousePressed(MouseEvent event) {
+            int mx = event.getX();
+            int my = event.getY();
+            int column = (event.getX() - ICON_SEPARATION) / (ICON_WIDTH + ICON_SEPARATION);
+            int row = (event.getY() - ICON_SEPARATION) / (ICON_HEIGHT + ICON_SEPARATION);
+            int x0 = ICON_SEPARATION + column * (ICON_SEPARATION + ICON_WIDTH);
+            int y0 = ICON_SEPARATION + row * (ICON_SEPARATION + ICON_HEIGHT);
 
             if (mx >= x0 && mx < x0 + ICON_WIDTH
                     && my >= y0 && my < y0 + ICON_HEIGHT
-                    && col >= 0 && col < tools.length
-                    && row >= 0 && row < tools[col].length) {
-                toolPressed = tools[col][row];
+                    && column >= 0 && column < tools.length
+                    && row >= 0 && row < tools[column].length) {
+                toolPressed = tools[column][row];
                 inTool = true;
                 toolX = x0;
                 toolY = y0;
@@ -118,8 +117,8 @@ class Toolbar extends JComponent {
             }
         }
 
-        public void mouseReleased(MouseEvent e) {
-            mouseDragged(e);
+        public void mouseReleased(MouseEvent event) {
+            mouseDragged(event);
             if (inTool) {
                 canvas.setTool(toolPressed);
                 repaint();
@@ -128,23 +127,23 @@ class Toolbar extends JComponent {
             inTool = false;
         }
 
-        public void mouseDragged(MouseEvent e) {
-            int mx = e.getX();
-            int my = e.getY();
+        public void mouseDragged(MouseEvent event) {
+            int mx = event.getX();
+            int my = event.getY();
             int x0 = toolX;
             int y0 = toolY;
 
-            boolean was = inTool;
-            boolean now = toolPressed != null
+            boolean wasInTool = inTool;
+            boolean isInTool = toolPressed != null
                     && mx >= x0 && mx < x0 + ICON_WIDTH
                     && my >= y0 && my < y0 + ICON_HEIGHT;
-            if (was != now) {
-                inTool = now;
+            if (wasInTool != isInTool) {
+                inTool = isInTool;
                 repaint();
             }
         }
 
-        public void mouseMoved(MouseEvent e) {
+        public void mouseMoved(MouseEvent event) {
         }
 
     }

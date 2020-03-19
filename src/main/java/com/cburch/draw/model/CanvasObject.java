@@ -18,7 +18,7 @@ public interface CanvasObject {
 
     AttributeSet getAttributeSet();
 
-    <V> V getValue(Attribute<V> attr);
+    <V> V getValue(Attribute<V> attribute);
 
     Bounds getBounds();
 
@@ -26,7 +26,7 @@ public interface CanvasObject {
 
     int matchesHashCode();
 
-    boolean contains(Location loc, boolean assumeFilled);
+    boolean contains(Location location, boolean assumeFilled);
 
     boolean overlaps(CanvasObject other);
 
@@ -40,7 +40,7 @@ public interface CanvasObject {
 
     Handle canDeleteHandle(Location desired);
 
-    void paint(Graphics g, HandleGesture gesture);
+    void paint(Graphics graphics, HandleGesture gesture);
 
     Handle moveHandle(HandleGesture gesture);
 
@@ -48,7 +48,7 @@ public interface CanvasObject {
 
     Handle deleteHandle(Handle handle);
 
-    void translate(int dx, int dy);
+    void translate(int deltaX, int deltaY);
 
-    <V> void setValue(Attribute<V> attr, V value);
+    <V> void setValue(Attribute<V> attribute, V value);
 }

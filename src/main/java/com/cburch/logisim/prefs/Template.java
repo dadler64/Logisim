@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.prefs;
 
+import com.adlerd.logger.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,30 +20,32 @@ public class Template {
 
     public static Template createEmpty() {
         String circName = Strings.get("newCircuitName");
-        StringBuilder buf = new StringBuilder();
-        buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        buf.append("<project version=\"1.0\">");
-        buf.append(" <circuit name=\"" + circName + "\" />");
-        buf.append("</project>");
-        return new Template(buf.toString());
+        String builder = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<project version=\"1.0\">"
+                + " <circuit name=\""
+                + circName
+                + "\" />"
+                + "</project>";
+        return new Template(builder);
     }
 
     public static Template create(InputStream in) {
         InputStreamReader reader = new InputStreamReader(in);
-        char[] buf = new char[4096];
-        StringBuilder dest = new StringBuilder();
+        char[] buffer = new char[4096];
+        StringBuilder builder = new StringBuilder();
         while (true) {
             try {
-                int nbytes = reader.read(buf);
-                if (nbytes < 0) {
+                int nBytes = reader.read(buffer);
+                if (nBytes < 0) {
                     break;
                 }
-                dest.append(buf, 0, nbytes);
+                builder.append(buffer, 0, nBytes);
             } catch (IOException e) {
+                Logger.errorln(e);
                 break;
             }
         }
-        return new Template(dest.toString());
+        return new Template(builder.toString());
     }
 
     public InputStream createStream() {

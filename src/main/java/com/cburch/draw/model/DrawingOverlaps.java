@@ -25,36 +25,36 @@ class DrawingOverlaps {
     public Collection<CanvasObject> getObjectsOverlapping(CanvasObject o) {
         ensureUpdated();
 
-        List<CanvasObject> ret = map.get(o);
-        if (ret == null || ret.isEmpty()) {
+        List<CanvasObject> objects = map.get(o);
+        if (objects == null || objects.isEmpty()) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(ret);
+            return Collections.unmodifiableList(objects);
         }
     }
 
     private void ensureUpdated() {
-        for (CanvasObject o : untested) {
+        for (CanvasObject object : untested) {
             ArrayList<CanvasObject> over = new ArrayList<>();
-            for (CanvasObject o2 : map.keySet()) {
-                if (o != o2 && o.overlaps(o2)) {
-                    over.add(o2);
-                    addOverlap(o2, o);
+            for (CanvasObject otherObject : map.keySet()) {
+                if (object != otherObject && object.overlaps(otherObject)) {
+                    over.add(otherObject);
+                    addOverlap(otherObject, object);
                 }
             }
-            map.put(o, over);
+            map.put(object, over);
         }
         untested.clear();
     }
 
     private void addOverlap(CanvasObject a, CanvasObject b) {
-        List<CanvasObject> alist = map.get(a);
-        if (alist == null) {
-            alist = new ArrayList<>();
-            map.put(a, alist);
+        List<CanvasObject> aList = map.get(a);
+        if (aList == null) {
+            aList = new ArrayList<>();
+            map.put(a, aList);
         }
-        if (!alist.contains(b)) {
-            alist.add(b);
+        if (!aList.contains(b)) {
+            aList.add(b);
         }
     }
 
@@ -66,8 +66,8 @@ class DrawingOverlaps {
         untested.remove(shape);
         List<CanvasObject> mapped = map.remove(shape);
         if (mapped != null) {
-            for (CanvasObject o : mapped) {
-                List<CanvasObject> reverse = map.get(o);
+            for (CanvasObject object : mapped) {
+                List<CanvasObject> reverse = map.get(object);
                 if (reverse != null) {
                     reverse.remove(shape);
                 }
@@ -81,8 +81,8 @@ class DrawingOverlaps {
     }
 
     public void invalidateShapes(Collection<? extends CanvasObject> shapes) {
-        for (CanvasObject o : shapes) {
-            invalidateShape(o);
+        for (CanvasObject shape : shapes) {
+            invalidateShape(shape);
         }
     }
 }

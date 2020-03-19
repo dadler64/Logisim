@@ -37,9 +37,9 @@ public class AppearanceAnchor extends AppearanceElement {
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof AppearanceAnchor) {
-            AppearanceAnchor that = (AppearanceAnchor) other;
+    public boolean matches(CanvasObject object) {
+        if (object instanceof AppearanceAnchor) {
+            AppearanceAnchor that = (AppearanceAnchor) object;
             return super.matches(that) && this.facing.equals(that.facing);
         } else {
             return false;
@@ -57,9 +57,9 @@ public class AppearanceAnchor extends AppearanceElement {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
+    public Element toSvgElement(Document document) {
         Location loc = getLocation();
-        Element ret = doc.createElement("circ-anchor");
+        Element ret = document.createElement("circ-anchor");
         ret.setAttribute("x", "" + (loc.getX() - RADIUS));
         ret.setAttribute("y", "" + (loc.getY() - RADIUS));
         ret.setAttribute("width", "" + 2 * RADIUS);
@@ -79,33 +79,33 @@ public class AppearanceAnchor extends AppearanceElement {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V> V getValue(Attribute<V> attr) {
-        if (attr == FACING) {
+    public <V> V getValue(Attribute<V> attribute) {
+        if (attribute == FACING) {
             return (V) facing;
         } else {
-            return super.getValue(attr);
+            return super.getValue(attribute);
         }
     }
 
     @Override
-    protected void updateValue(Attribute<?> attr, Object value) {
-        if (attr == FACING) {
+    protected void updateValue(Attribute<?> attribute, Object value) {
+        if (attribute == FACING) {
             facing = (Direction) value;
         } else {
-            super.updateValue(attr, value);
+            super.updateValue(attribute, value);
         }
     }
 
     @Override
-    public void paint(Graphics g, HandleGesture gesture) {
+    public void paint(Graphics graphics, HandleGesture gesture) {
         Location location = getLocation();
         int x = location.getX();
         int y = location.getY();
-        g.setColor(SYMBOL_COLOR);
-        g.drawOval(x - RADIUS, y - RADIUS, 2 * RADIUS, 2 * RADIUS);
+        graphics.setColor(SYMBOL_COLOR);
+        graphics.drawOval(x - RADIUS, y - RADIUS, 2 * RADIUS, 2 * RADIUS);
         Location e0 = location.translate(facing, RADIUS);
         Location e1 = location.translate(facing, RADIUS + INDICATOR_LENGTH);
-        g.drawLine(e0.getX(), e0.getY(), e1.getX(), e1.getY());
+        graphics.drawLine(e0.getX(), e0.getY(), e1.getX(), e1.getY());
     }
 
     @Override
@@ -117,18 +117,18 @@ public class AppearanceAnchor extends AppearanceElement {
     }
 
     @Override
-    public boolean contains(Location loc, boolean assumeFilled) {
-        if (super.isInCircle(loc, RADIUS)) {
+    public boolean contains(Location location, boolean assumeFilled) {
+        if (super.isInCircle(location, RADIUS)) {
             return true;
         } else {
             Location center = getLocation();
             Location end = center.translate(facing, RADIUS + INDICATOR_LENGTH);
             if (facing == Direction.EAST || facing == Direction.WEST) {
-                return Math.abs(loc.getY() - center.getY()) < 2
-                        && (loc.getX() < center.getX()) != (loc.getX() < end.getX());
+                return Math.abs(location.getY() - center.getY()) < 2
+                        && (location.getX() < center.getX()) != (location.getX() < end.getX());
             } else {
-                return Math.abs(loc.getX() - center.getX()) < 2
-                        && (loc.getY() < center.getY()) != (loc.getY() < end.getY());
+                return Math.abs(location.getX() - center.getX()) < 2
+                        && (location.getY() < center.getY()) != (location.getY() < end.getY());
             }
         }
     }

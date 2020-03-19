@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Selection {
@@ -28,7 +29,7 @@ public class Selection {
     private HashMap<CanvasObject, String> suppressed;
     private Set<CanvasObject> suppressedView;
     private Handle selectedHandle;
-    private HandleGesture curHandleGesture;
+    private HandleGesture currentHandleGesture;
     private int moveDx;
     private int moveDy;
 
@@ -40,21 +41,21 @@ public class Selection {
         suppressedView = Collections.unmodifiableSet(suppressed.keySet());
     }
 
-    public void addSelectionListener(SelectionListener l) {
-        listeners.add(l);
+    public void addSelectionListener(SelectionListener listener) {
+        listeners.add(listener);
     }
 
-    public void removeSelectionListener(SelectionListener l) {
-        listeners.remove(l);
+    public void removeSelectionListener(SelectionListener listener) {
+        listeners.remove(listener);
     }
 
     private void fireChanged(int action, Collection<CanvasObject> affected) {
-        SelectionEvent e = null;
+        SelectionEvent event = null;
         for (SelectionListener listener : listeners) {
-            if (e == null) {
-                e = new SelectionEvent(this, action, affected);
+            if (event == null) {
+                event = new SelectionEvent(this, action, affected);
             }
-            listener.selectionChanged(e);
+            listener.selectionChanged(event);
         }
     }
 
@@ -72,8 +73,7 @@ public class Selection {
 
     public void clearSelected() {
         if (!selected.isEmpty()) {
-            ArrayList<CanvasObject> oldSelected;
-            oldSelected = new ArrayList<>(selected);
+            ArrayList<CanvasObject> oldSelected = new ArrayList<>(selected);
             selected.clear();
             suppressed.clear();
             setHandleSelected(null);
@@ -87,8 +87,7 @@ public class Selection {
 
     public void setSelected(Collection<CanvasObject> shapes, boolean value) {
         if (value) {
-            ArrayList<CanvasObject> added;
-            added = new ArrayList<>(shapes.size());
+            ArrayList<CanvasObject> added = new ArrayList<>(shapes.size());
             for (CanvasObject shape : shapes) {
                 if (selected.add(shape)) {
                     added.add(shape);
@@ -98,13 +97,12 @@ public class Selection {
                 fireChanged(SelectionEvent.ACTION_ADDED, added);
             }
         } else {
-            ArrayList<CanvasObject> removed;
-            removed = new ArrayList<>(shapes.size());
+            ArrayList<CanvasObject> removed = new ArrayList<>(shapes.size());
             for (CanvasObject shape : shapes) {
                 if (selected.remove(shape)) {
                     suppressed.remove(shape);
-                    Handle h = selectedHandle;
-                    if (h != null && h.getObject() == shape) {
+                    Handle handle = selectedHandle;
+                    if (handle != null && handle.getObject() == shape) {
                         setHandleSelected(null);
                     }
                     removed.add(shape);
@@ -117,16 +115,14 @@ public class Selection {
     }
 
     public void toggleSelected(Collection<CanvasObject> shapes) {
-        ArrayList<CanvasObject> added;
-        added = new ArrayList<>(shapes.size());
-        ArrayList<CanvasObject> removed;
-        removed = new ArrayList<>(shapes.size());
+        ArrayList<CanvasObject> added = new ArrayList<>(shapes.size());
+        ArrayList<CanvasObject> removed = new ArrayList<>(shapes.size());
         for (CanvasObject shape : shapes) {
             if (selected.contains(shape)) {
                 selected.remove(shape);
                 suppressed.remove(shape);
-                Handle h = selectedHandle;
-                if (h != null && h.getObject() == shape) {
+                Handle handle = selectedHandle;
+                if (handle != null && handle.getObject() == shape) {
                     setHandleSelected(null);
                 }
                 removed.add(shape);
@@ -149,7 +145,7 @@ public class Selection {
 
     public void clearDrawsSuppressed() {
         suppressed.clear();
-        curHandleGesture = null;
+        currentHandleGesture = null;
     }
 
     public Handle getSelectedHandle() {
@@ -157,35 +153,35 @@ public class Selection {
     }
 
     public void setHandleSelected(Handle handle) {
-        Handle cur = selectedHandle;
-        boolean same = cur == null ? handle == null : cur.equals(handle);
+        Handle selectedHandle = this.selectedHandle;
+        boolean same = Objects.equals(selectedHandle, handle);
         if (!same) {
-            selectedHandle = handle;
-            curHandleGesture = null;
-            Collection<CanvasObject> objs;
+            this.selectedHandle = handle;
+            currentHandleGesture = null;
+            Collection<CanvasObject> objects;
             if (handle == null) {
-                objs = Collections.emptySet();
+                objects = Collections.emptySet();
             } else {
-                objs = Collections.singleton(handle.getObject());
+                objects = Collections.singleton(handle.getObject());
             }
-            fireChanged(SelectionEvent.ACTION_HANDLE, objs);
+            fireChanged(SelectionEvent.ACTION_HANDLE, objects);
         }
     }
 
     public void setHandleGesture(HandleGesture gesture) {
-        HandleGesture g = curHandleGesture;
-        if (g != null) {
-            suppressed.remove(g.getHandle().getObject());
+        HandleGesture currentHandleGesture = this.currentHandleGesture;
+        if (currentHandleGesture != null) {
+            suppressed.remove(currentHandleGesture.getHandle().getObject());
         }
 
-        Handle h = gesture.getHandle();
-        suppressed.put(h.getObject(), MOVING_HANDLE);
-        curHandleGesture = gesture;
+        Handle handle = gesture.getHandle();
+        suppressed.put(handle.getObject(), MOVING_HANDLE);
+        this.currentHandleGesture = gesture;
     }
 
     public void setMovingShapes(Collection<? extends CanvasObject> shapes, int dx, int dy) {
-        for (CanvasObject o : shapes) {
-            suppressed.put(o, TRANSLATING);
+        for (CanvasObject shape : shapes) {
+            suppressed.put(shape, TRANSLATING);
         }
         moveDx = dx;
         moveDy = dy;
@@ -193,8 +189,8 @@ public class Selection {
 
     public void setHidden(Collection<? extends CanvasObject> shapes, boolean value) {
         if (value) {
-            for (CanvasObject o : shapes) {
-                suppressed.put(o, HIDDEN);
+            for (CanvasObject shape : shapes) {
+                suppressed.put(shape, HIDDEN);
             }
         } else {
             suppressed.keySet().removeAll(shapes);
@@ -210,13 +206,13 @@ public class Selection {
         moveDy = dy;
     }
 
-    public void drawSuppressed(Graphics g, CanvasObject shape) {
+    public void drawSuppressed(Graphics graphics, CanvasObject shape) {
         String state = suppressed.get(shape);
-        if (state == MOVING_HANDLE) {
-            shape.paint(g, curHandleGesture);
-        } else if (state == TRANSLATING) {
-            g.translate(moveDx, moveDy);
-            shape.paint(g, null);
+        if (state.equals(MOVING_HANDLE)) {
+            shape.paint(graphics, currentHandleGesture);
+        } else if (state.equals(TRANSLATING)) {
+            graphics.translate(moveDx, moveDy);
+            shape.paint(graphics, null);
         }
     }
 
@@ -228,8 +224,8 @@ public class Selection {
                 if (affected != null) {
                     selected.removeAll(affected);
                     suppressed.keySet().removeAll(affected);
-                    Handle h = selectedHandle;
-                    if (h != null && affected.contains(h.getObject())) {
+                    Handle handle = selectedHandle;
+                    if (handle != null && affected.contains(handle.getObject())) {
                         setHandleSelected(null);
                     }
                 }

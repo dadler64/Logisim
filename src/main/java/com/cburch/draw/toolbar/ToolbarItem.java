@@ -11,7 +11,7 @@ public interface ToolbarItem {
 
     boolean isSelectable();
 
-    void paintIcon(Component destination, Graphics g);
+    void paintIcon(Component destination, Graphics graphics);
 
     String getToolTip();
 

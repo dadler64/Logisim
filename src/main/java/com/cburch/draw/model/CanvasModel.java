@@ -14,18 +14,18 @@ import java.util.Map;
 public interface CanvasModel {
 
     // listener methods
-    void addCanvasModelListener(CanvasModelListener l);
+    void addCanvasModelListener(CanvasModelListener listener);
 
-    void removeCanvasModelListener(CanvasModelListener l);
+    void removeCanvasModelListener(CanvasModelListener listener);
 
     // methods that don't change any data in the model
-    void paint(Graphics g, Selection selection);
+    void paint(Graphics graphics, Selection selection);
 
     List<CanvasObject> getObjectsFromTop();
 
     List<CanvasObject> getObjectsFromBottom();
 
-    Collection<CanvasObject> getObjectsIn(Bounds bds);
+    Collection<CanvasObject> getObjectsIn(Bounds bounds);
 
     Collection<CanvasObject> getObjectsOverlapping(CanvasObject shape);
 

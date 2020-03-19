@@ -12,7 +12,6 @@ import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -29,7 +28,7 @@ import javax.swing.event.ChangeListener;
 public class Caret {
 
     private static final Stroke CURSOR_STROKE = new BasicStroke(2.0f);
-    private static Color SELECT_COLOR = new Color(192, 192, 255);
+    private static final Color SELECT_COLOR = new Color(192, 192, 255);
     private HexEditor hex;
     private ArrayList<ChangeListener> listeners;
     private long mark;
@@ -41,37 +40,37 @@ public class Caret {
         this.listeners = new ArrayList<>();
         this.cursor = -1;
 
-        Listener l = new Listener();
-        hex.addMouseListener(l);
-        hex.addMouseMotionListener(l);
-        hex.addKeyListener(l);
-        hex.addFocusListener(l);
+        Listener listener = new Listener();
+        hex.addMouseListener(listener);
+        hex.addMouseMotionListener(listener);
+        hex.addKeyListener(listener);
+        hex.addFocusListener(listener);
 
-        InputMap imap = hex.getInputMap();
-        ActionMap amap = hex.getActionMap();
+        InputMap inputMap = hex.getInputMap();
+        ActionMap actionMap = hex.getActionMap();
         AbstractAction nullAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             }
         };
         String nullKey = "null";
-        amap.put(nullKey, nullAction);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), nullKey);
-        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), nullKey);
+        actionMap.put(nullKey, nullAction);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), nullKey);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), nullKey);
     }
 
-    public void addChangeListener(ChangeListener l) {
-        listeners.add(l);
+    public void addChangeListener(ChangeListener listener) {
+        listeners.add(listener);
     }
 
-    public void removeChangeListener(ChangeListener l) {
-        listeners.remove(l);
+    public void removeChangeListener(ChangeListener listener) {
+        listeners.remove(listener);
     }
 
     public long getMark() {
@@ -84,8 +83,7 @@ public class Caret {
 
     public void setDot(long value, boolean keepMark) {
         HexModel model = hex.getModel();
-        if (model == null || value < model.getFirstOffset()
-                || value > model.getLastOffset()) {
+        if (model == null || value < model.getFirstOffset() || value > model.getLastOffset()) {
             value = -1;
         }
         if (cursor != value) {
@@ -104,18 +102,18 @@ public class Caret {
             expose(value, true);
             if (!listeners.isEmpty()) {
                 ChangeEvent event = new ChangeEvent(this);
-                for (ChangeListener l : listeners) {
-                    l.stateChanged(event);
+                for (ChangeListener listener : listeners) {
+                    listener.stateChanged(event);
                 }
             }
         }
     }
 
-    private void expose(long loc, boolean scrollTo) {
-        if (loc >= 0) {
+    private void expose(long location, boolean scrollTo) {
+        if (location >= 0) {
             Measures measures = hex.getMeasures();
-            int x = measures.toX(loc);
-            int y = measures.toY(loc);
+            int x = measures.toX(location);
+            int y = measures.toY(location);
             int w = measures.getCellWidth();
             int h = measures.getCellHeight();
             hex.repaint(x - 1, y - 1, w + 2, h + 2);
@@ -125,75 +123,73 @@ public class Caret {
         }
     }
 
-    void paintForeground(Graphics g, long start, long end) {
+    void paintForeground(Graphics graphics, long start, long end) {
         if (cursor >= start && cursor < end && hex.isFocusOwner()) {
             Measures measures = hex.getMeasures();
             int x = measures.toX(cursor);
             int y = measures.toY(cursor);
-            Graphics2D g2 = (Graphics2D) g;
-            Stroke oldStroke = g2.getStroke();
-            g2.setColor(hex.getForeground());
-            g2.setStroke(CURSOR_STROKE);
-            g2.drawRect(x, y, measures.getCellWidth() - 1,
-                    measures.getCellHeight() - 1);
-            g2.setStroke(oldStroke);
+            Graphics2D graphics2D = (Graphics2D) graphics;
+            Stroke oldStroke = graphics2D.getStroke();
+            graphics2D.setColor(hex.getForeground());
+            graphics2D.setStroke(CURSOR_STROKE);
+            graphics2D.drawRect(x, y, measures.getCellWidth() - 1, measures.getCellHeight() - 1);
+            graphics2D.setStroke(oldStroke);
         }
     }
 
     private class Listener implements MouseListener, MouseMotionListener,
             KeyListener, FocusListener {
 
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(MouseEvent event) {
         }
 
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(MouseEvent event) {
             Measures measures = hex.getMeasures();
-            long loc = measures.toAddress(e.getX(), e.getY());
-            setDot(loc, (e.getModifiers() & InputEvent.SHIFT_MASK) != 0);
+            long location = measures.toAddress(event.getX(), event.getY());
+            setDot(location, (event.getModifiersEx() & ActionEvent.SHIFT_MASK) != 0);
             if (!hex.isFocusOwner()) {
                 hex.requestFocus();
             }
         }
 
-        public void mouseReleased(MouseEvent e) {
-            mouseDragged(e);
+        public void mouseReleased(MouseEvent event) {
+            mouseDragged(event);
         }
 
-        public void mouseEntered(MouseEvent e) {
+        public void mouseEntered(MouseEvent event) {
         }
 
-        public void mouseExited(MouseEvent e) {
+        public void mouseExited(MouseEvent event) {
         }
 
-        public void mouseDragged(MouseEvent e) {
+        public void mouseDragged(MouseEvent event) {
             Measures measures = hex.getMeasures();
-            long loc = measures.toAddress(e.getX(), e.getY());
+            long loc = measures.toAddress(event.getX(), event.getY());
             setDot(loc, true);
 
-            // TODO should repeat dragged events when mouse leaves the
-            // component
+            // TODO should repeat dragged events when mouse leaves the component
         }
 
-        public void mouseMoved(MouseEvent e) {
+        public void mouseMoved(MouseEvent event) {
         }
 
-        public void keyTyped(KeyEvent e) {
-            int mask = e.getModifiers();
-            if ((mask & ~InputEvent.SHIFT_MASK) != 0) {
+        public void keyTyped(KeyEvent event) {
+            int mask = event.getModifiersEx();
+            if ((mask & ~ActionEvent.SHIFT_MASK) != 0) {
                 return;
             }
 
-            char c = e.getKeyChar();
-            int cols = hex.getMeasures().getColumnCount();
+            char c = event.getKeyChar();
+            int columnCount = hex.getMeasures().getColumnCount();
             switch (c) {
                 case ' ':
                     if (cursor >= 0) {
-                        setDot(cursor + 1, (mask & InputEvent.SHIFT_MASK) != 0);
+                        setDot(cursor + 1, (mask & ActionEvent.SHIFT_MASK) != 0);
                     }
                     break;
                 case '\n':
                     if (cursor >= 0) {
-                        setDot(cursor + cols, (mask & InputEvent.SHIFT_MASK) != 0);
+                        setDot(cursor + columnCount, (mask & ActionEvent.SHIFT_MASK) != 0);
                     }
                     break;
                 case '\u0008':
@@ -202,27 +198,26 @@ public class Caret {
                     // setDot(cursor - 1, (mask & InputEvent.SHIFT_MASK) != 0);
                     break;
                 default:
-                    int digit = Character.digit(e.getKeyChar(), 16);
+                    int digit = Character.digit(event.getKeyChar(), 16);
                     if (digit >= 0) {
                         HexModel model = hex.getModel();
-                        if (model != null && cursor >= model.getFirstOffset()
-                                && cursor <= model.getLastOffset()) {
-                            int curValue = model.get(cursor);
-                            int newValue = 16 * curValue + digit;
+                        if (model != null && cursor >= model.getFirstOffset() && cursor <= model.getLastOffset()) {
+                            int currentValue = model.get(cursor);
+                            int newValue = 16 * currentValue + digit;
                             model.set(cursor, newValue);
                         }
                     }
             }
         }
 
-        public void keyPressed(KeyEvent e) {
-            int cols = hex.getMeasures().getColumnCount();
+        public void keyPressed(KeyEvent event) {
+            int columnCount = hex.getMeasures().getColumnCount();
             int rows;
-            boolean shift = (e.getModifiers() & InputEvent.SHIFT_MASK) != 0;
-            switch (e.getKeyCode()) {
+            boolean shift = (event.getModifiersEx() & ActionEvent.SHIFT_MASK) != 0;
+            switch (event.getKeyCode()) {
                 case KeyEvent.VK_UP:
-                    if (cursor >= cols) {
-                        setDot(cursor - cols, shift);
+                    if (cursor >= columnCount) {
+                        setDot(cursor - columnCount, shift);
                     }
                     break;
                 case KeyEvent.VK_LEFT:
@@ -231,8 +226,8 @@ public class Caret {
                     }
                     break;
                 case KeyEvent.VK_DOWN:
-                    if (cursor >= hex.getModel().getFirstOffset() && cursor <= hex.getModel().getLastOffset() - cols) {
-                        setDot(cursor + cols, shift);
+                    if (cursor >= hex.getModel().getFirstOffset() && cursor <= hex.getModel().getLastOffset() - columnCount) {
+                        setDot(cursor + columnCount, shift);
                     }
                     break;
                 case KeyEvent.VK_RIGHT:
@@ -242,7 +237,7 @@ public class Caret {
                     break;
                 case KeyEvent.VK_HOME:
                     if (cursor >= 0) {
-                        int dist = (int) (cursor % cols);
+                        int dist = (int) (cursor % columnCount);
                         if (dist == 0) {
                             setDot(0, shift);
                         } else {
@@ -253,15 +248,15 @@ public class Caret {
                 case KeyEvent.VK_END:
                     if (cursor >= 0) {
                         HexModel model = hex.getModel();
-                        long dest = (cursor / cols * cols) + cols - 1;
+                        long destination = (cursor / columnCount * columnCount) + columnCount - 1;
                         if (model != null) {
                             long end = model.getLastOffset();
-                            if (dest > end || dest == cursor) {
-                                dest = end;
+                            if (destination > end || destination == cursor) {
+                                destination = end;
                             }
-                            setDot(dest, shift);
+                            setDot(destination, shift);
                         } else {
-                            setDot(dest, shift);
+                            setDot(destination, shift);
                         }
                     }
                     break;
@@ -272,12 +267,12 @@ public class Caret {
                     }
                     if (cursor >= 0) {
                         long max = hex.getModel().getLastOffset();
-                        if (cursor + rows * cols <= max) {
-                            setDot(cursor + rows * cols, shift);
+                        if (cursor + rows * columnCount <= max) {
+                            setDot(cursor + rows * columnCount, shift);
                         } else {
                             long n = cursor;
-                            while (n + cols < max) {
-                                n += cols;
+                            while (n + columnCount < max) {
+                                n += columnCount;
                             }
                             setDot(n, shift);
                         }
@@ -288,23 +283,23 @@ public class Caret {
                     if (rows > 2) {
                         rows--;
                     }
-                    if (cursor >= rows * cols) {
-                        setDot(cursor - rows * cols, shift);
-                    } else if (cursor >= cols) {
-                        setDot(cursor % cols, shift);
+                    if (cursor >= rows * columnCount) {
+                        setDot(cursor - rows * columnCount, shift);
+                    } else if (cursor >= columnCount) {
+                        setDot(cursor % columnCount, shift);
                     }
                     break;
             }
         }
 
-        public void keyReleased(KeyEvent e) {
+        public void keyReleased(KeyEvent event) {
         }
 
-        public void focusGained(FocusEvent e) {
+        public void focusGained(FocusEvent event) {
             expose(cursor, false);
         }
 
-        public void focusLost(FocusEvent e) {
+        public void focusLost(FocusEvent event) {
             expose(cursor, false);
         }
     }

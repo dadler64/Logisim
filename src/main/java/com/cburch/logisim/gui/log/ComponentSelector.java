@@ -237,8 +237,8 @@ class ComponentSelector extends JTree {
                     }
                 }
             }
-            Collections.sort(newChildren, new CompareByName());
-            Collections.sort(subcircs, this);
+            newChildren.sort(new CompareByName());
+            subcircs.sort(this);
             for (Component comp : subcircs) {
                 SubcircuitFactory factory = (SubcircuitFactory) comp.getFactory();
                 CircuitState state = factory.getSubstate(circuitState, comp);

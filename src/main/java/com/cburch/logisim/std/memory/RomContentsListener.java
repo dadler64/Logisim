@@ -21,7 +21,7 @@ class RomContentsListener implements HexModelListener {
         enabled = value;
     }
 
-    public void metainfoChanged(HexModel source) {
+    public void metaInfoChanged(HexModel source) {
         // ignore - this can only come from an already-registered
         // action
     }

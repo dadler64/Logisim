@@ -59,11 +59,11 @@ public class Button extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             computeTextField(instance);
-        } else if (attr == Io.ATTR_LABEL_LOCATION) {
+        } else if (attribute == Io.ATTR_LABEL_LOCATION) {
             computeTextField(instance);
         }
     }

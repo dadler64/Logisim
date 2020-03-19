@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.prefs;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.Main;
 import com.cburch.logisim.circuit.RadixOption;
 import com.cburch.logisim.data.Direction;
@@ -310,6 +311,7 @@ public class AppPreferences {
                         stream.close();
                     }
                 } catch (Throwable e) {
+                    Logger.errorln(e);
                     plainTemplate = getEmptyTemplate();
                 }
             }

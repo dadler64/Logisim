@@ -14,10 +14,10 @@ import javax.swing.Icon;
 
 public class RoundRectangleTool extends RectangularTool {
 
-    private DrawingAttributeSet attrs;
+    private DrawingAttributeSet attributeSet;
 
-    public RoundRectangleTool(DrawingAttributeSet attrs) {
-        this.attrs = attrs;
+    public RoundRectangleTool(DrawingAttributeSet attributeSet) {
+        this.attributeSet = attributeSet;
     }
 
     @Override
@@ -27,23 +27,23 @@ public class RoundRectangleTool extends RectangularTool {
 
     @Override
     public List<Attribute<?>> getAttributes() {
-        return DrawAttr.getRoundRectAttributes(attrs.getValue(DrawAttr.PAINT_TYPE));
+        return DrawAttr.getRoundRectAttributes(attributeSet.getValue(DrawAttr.PAINT_TYPE));
     }
 
     @Override
-    public CanvasObject createShape(int x, int y, int w, int h) {
-        return attrs.applyTo(new RoundRectangle(x, y, w, h));
+    public CanvasObject createShape(int x, int y, int width, int height) {
+        return attributeSet.applyTo(new RoundRectangle(x, y, width, height));
     }
 
     @Override
-    public void drawShape(Graphics g, int x, int y, int w, int h) {
-        int r = 2 * attrs.getValue(DrawAttr.CORNER_RADIUS).intValue();
-        g.drawRoundRect(x, y, w, h, r, r);
+    public void drawShape(Graphics graphics, int x, int y, int width, int height) {
+        int radius = 2 * attributeSet.getValue(DrawAttr.CORNER_RADIUS);
+        graphics.drawRoundRect(x, y, width, height, radius, radius);
     }
 
     @Override
-    public void fillShape(Graphics g, int x, int y, int w, int h) {
-        int r = 2 * attrs.getValue(DrawAttr.CORNER_RADIUS).intValue();
-        g.fillRoundRect(x, y, w, h, r, r);
+    public void fillShape(Graphics graphics, int x, int y, int width, int height) {
+        int radius = 2 * attributeSet.getValue(DrawAttr.CORNER_RADIUS);
+        graphics.fillRoundRect(x, y, width, height, radius, radius);
     }
 }

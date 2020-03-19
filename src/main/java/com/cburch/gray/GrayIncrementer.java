@@ -65,12 +65,12 @@ class GrayIncrementer extends InstanceFactory {
      * method just does some bit twiddling; it doesn't have much to do with
      * Logisim except that it manipulates Value and BitWidth objects.
      */
-    static Value nextGray(Value prev) {
-        BitWidth bits = prev.getBitWidth();
-        if (!prev.isFullyDefined()) {
-            return Value.createError(bits);
+    static Value nextGray(Value previousValue) {
+        BitWidth bitWidth = previousValue.getBitWidth();
+        if (!previousValue.isFullyDefined()) {
+            return Value.createError(bitWidth);
         }
-        int x = prev.toIntValue();
+        int x = previousValue.toIntValue();
         int ct = (x >> 16) ^ x; // compute parity of x
         ct = (ct >> 8) ^ ct;
         ct = (ct >> 4) ^ ct;
@@ -80,10 +80,10 @@ class GrayIncrementer extends InstanceFactory {
             x = x ^ 1;
         } else { // else flip bit just above last 1
             int y = x ^ (x & (x - 1)); // first compute the last 1
-            y = (y << 1) & bits.getMask();
+            y = (y << 1) & bitWidth.getMask();
             x = (y == 0 ? 0 : x ^ y);
         }
-        return Value.createKnown(bits, x);
+        return Value.createKnown(bitWidth, x);
     }
 
     /**

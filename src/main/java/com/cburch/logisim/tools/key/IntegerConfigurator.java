@@ -18,6 +18,6 @@ public class IntegerConfigurator extends NumericConfigurator<Integer> {
 
     @Override
     protected Integer createValue(int val) {
-        return Integer.valueOf(val);
+        return val;
     }
 }

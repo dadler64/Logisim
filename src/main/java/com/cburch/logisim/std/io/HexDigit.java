@@ -117,7 +117,7 @@ public class HexDigit extends InstanceFactory {
             summary |= 128;
         }
 
-        Object value = Integer.valueOf(summary);
+        Object value = summary;
         InstanceDataSingleton data = (InstanceDataSingleton) state.getData();
         if (data == null) {
             state.setData(new InstanceDataSingleton(value));

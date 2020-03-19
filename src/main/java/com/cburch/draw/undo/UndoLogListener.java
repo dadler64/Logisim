@@ -7,5 +7,5 @@ import java.util.EventListener;
 
 public interface UndoLogListener extends EventListener {
 
-    void undoLogChanged(UndoLogEvent e);
+    void undoLogChanged(UndoLogEvent event);
 }

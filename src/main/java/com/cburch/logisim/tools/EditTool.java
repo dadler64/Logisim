@@ -105,7 +105,7 @@ public class EditTool extends Tool {
     }
 
     @Override
-    public boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver) {
+    public boolean isAllDefaultValues(AttributeSet attributeSet, LogisimVersion version) {
         return true;
     }
 
@@ -282,7 +282,7 @@ public class EditTool extends Tool {
                     lastX = snapx;
                     lastY = snapy;
                     canvas.repaint();
-                    boolean ret = ((Boolean) o).booleanValue();
+                    boolean ret = (Boolean) o;
                     wireLoc = ret ? snap : NULL_LOCATION;
                     return ret;
                 }
@@ -292,7 +292,7 @@ public class EditTool extends Tool {
 
             boolean ret = isEligible && isWiringPoint(canvas, snap, mods);
             wireLoc = ret ? snap : NULL_LOCATION;
-            cache.put(snap, Boolean.valueOf(ret));
+            cache.put(snap, ret);
             int toRemove = cache.size() - CACHE_MAX_SIZE;
             Iterator<Location> it = cache.keySet().iterator();
             while (it.hasNext() && toRemove > 0) {

@@ -153,7 +153,7 @@ class Connector {
      */
     private static void sortConnects(ArrayList<ConnectionData> connects,
             final int dx, final int dy) {
-        Collections.sort(connects, new Comparator<ConnectionData>() {
+        connects.sort(new Comparator<ConnectionData>() {
             public int compare(ConnectionData ac, ConnectionData bc) {
                 Location a = ac.getLocation();
                 Location b = bc.getLocation();

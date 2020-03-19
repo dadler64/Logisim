@@ -40,7 +40,7 @@ public class ZOrder {
         for (CanvasObject o : model.getObjectsFromBottom()) {
             z++;
             if (querySet.contains(o)) {
-                ret.put(o, Integer.valueOf(z));
+                ret.put(o, z);
             }
         }
         return ret;

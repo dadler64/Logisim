@@ -57,7 +57,7 @@ public class MatchingSet<E extends CanvasObject> extends AbstractSet<E> {
 
         E value;
 
-        public Member(E value) {
+        private Member(E value) {
             this.value = value;
         }
 
@@ -76,22 +76,22 @@ public class MatchingSet<E extends CanvasObject> extends AbstractSet<E> {
 
     private static class MatchIterator<E extends CanvasObject> implements Iterator<E> {
 
-        private Iterator<Member<E>> it;
+        private Iterator<Member<E>> iterator;
 
-        MatchIterator(Iterator<Member<E>> it) {
-            this.it = it;
+        private MatchIterator(Iterator<Member<E>> iterator) {
+            this.iterator = iterator;
         }
 
         public boolean hasNext() {
-            return it.hasNext();
+            return iterator.hasNext();
         }
 
         public E next() {
-            return it.next().value;
+            return iterator.next().value;
         }
 
         public void remove() {
-            it.remove();
+            iterator.remove();
         }
 
     }

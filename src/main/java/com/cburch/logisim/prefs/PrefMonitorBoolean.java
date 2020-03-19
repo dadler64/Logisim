@@ -8,20 +8,20 @@ import java.util.prefs.Preferences;
 
 class PrefMonitorBoolean extends AbstractPrefMonitor<Boolean> {
 
-    private boolean dflt;
+    private boolean defaultValue;
     private boolean value;
 
-    PrefMonitorBoolean(String name, boolean dflt) {
+    PrefMonitorBoolean(String name, boolean defaultValue) {
         super(name);
-        this.dflt = dflt;
-        this.value = dflt;
-        Preferences prefs = AppPreferences.getPreferences();
-        set(Boolean.valueOf(prefs.getBoolean(name, dflt)));
-        prefs.addPreferenceChangeListener(this);
+        this.defaultValue = defaultValue;
+        this.value = defaultValue;
+        Preferences preferences = AppPreferences.getPreferences();
+        set(preferences.getBoolean(name, defaultValue));
+        preferences.addPreferenceChangeListener(this);
     }
 
     public Boolean get() {
-        return Boolean.valueOf(value);
+        return value;
     }
 
     @Override
@@ -30,19 +30,18 @@ class PrefMonitorBoolean extends AbstractPrefMonitor<Boolean> {
     }
 
     public void set(Boolean newValue) {
-        boolean newVal = newValue.booleanValue();
-        if (value != newVal) {
-            AppPreferences.getPreferences().putBoolean(getIdentifier(), newVal);
+        if (value != newValue) {
+            AppPreferences.getPreferences().putBoolean(getIdentifier(), newValue);
         }
     }
 
     public void preferenceChange(PreferenceChangeEvent event) {
-        Preferences prefs = event.getNode();
-        String prop = event.getKey();
+        Preferences preferences = event.getNode();
+        String property = event.getKey();
         String name = getIdentifier();
-        if (prop.equals(name)) {
+        if (property.equals(name)) {
             boolean oldValue = value;
-            boolean newValue = prefs.getBoolean(name, dflt);
+            boolean newValue = preferences.getBoolean(name, defaultValue);
             if (newValue != oldValue) {
                 value = newValue;
                 AppPreferences.firePropertyChange(name, oldValue, newValue);

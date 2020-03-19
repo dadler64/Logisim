@@ -48,7 +48,7 @@ public class Tty extends InstanceFactory {
                 ATTR_ROWS, ATTR_COLUMNS, StdAttr.EDGE_TRIGGER,
                 Io.ATTR_COLOR, Io.ATTR_BACKGROUND
         }, new Object[]{
-                Integer.valueOf(8), Integer.valueOf(32), StdAttr.TRIG_RISING,
+                8, 32, StdAttr.TRIG_RISING,
                 Color.BLACK, DEFAULT_BACKGROUND
         });
         setIconName("tty.gif");
@@ -67,7 +67,7 @@ public class Tty extends InstanceFactory {
 
     private static int getRowCount(Object val) {
         if (val instanceof Integer) {
-            return ((Integer) val).intValue();
+            return (Integer) val;
         } else {
             return 4;
         }
@@ -75,7 +75,7 @@ public class Tty extends InstanceFactory {
 
     private static int getColumnCount(Object val) {
         if (val instanceof Integer) {
-            return ((Integer) val).intValue();
+            return (Integer) val;
         } else {
             return 16;
         }
@@ -102,8 +102,8 @@ public class Tty extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == ATTR_ROWS || attr == ATTR_COLUMNS) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == ATTR_ROWS || attribute == ATTR_COLUMNS) {
             instance.recomputeBounds();
         }
     }

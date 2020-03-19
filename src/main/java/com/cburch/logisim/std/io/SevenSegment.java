@@ -42,9 +42,9 @@ public class SevenSegment extends InstanceFactory {
     static void drawBase(InstancePainter painter) {
         ensureSegments();
         InstanceDataSingleton data = (InstanceDataSingleton) painter.getData();
-        int summ = (data == null ? 0 : ((Integer) data.getValue()).intValue());
+        int summ = (data == null ? 0 : (Integer) data.getValue());
         Boolean active = painter.getAttributeValue(Io.ATTR_ACTIVE);
-        int desired = active == null || active.booleanValue() ? 1 : 0;
+        int desired = active == null || active ? 1 : 0;
 
         Bounds bds = painter.getBounds();
         int x = bds.getX() + 5;
@@ -98,7 +98,7 @@ public class SevenSegment extends InstanceFactory {
                 summary |= 1 << i;
             }
         }
-        Object value = Integer.valueOf(summary);
+        Object value = summary;
         InstanceDataSingleton data = (InstanceDataSingleton) state.getData();
         if (data == null) {
             state.setData(new InstanceDataSingleton(value));

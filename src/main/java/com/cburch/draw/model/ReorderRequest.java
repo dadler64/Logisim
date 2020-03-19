@@ -8,22 +8,19 @@ import java.util.Comparator;
 
 public class ReorderRequest {
 
-    public static final Comparator<ReorderRequest> ASCENDING_FROM
-            = new Compare(true, true);
-    public static final Comparator<ReorderRequest> DESCENDING_FROM
-            = new Compare(true, true);
-    public static final Comparator<ReorderRequest> ASCENDING_TO
-            = new Compare(true, true);
-    public static final Comparator<ReorderRequest> DESCENDING_TO
-            = new Compare(true, true);
+    // TODO: Double check boolean values below
+    public static final Comparator<ReorderRequest> ASCENDING_FROM = new Compare(true, true);
+    public static final Comparator<ReorderRequest> DESCENDING_FROM = new Compare(true, true);
+    public static final Comparator<ReorderRequest> ASCENDING_TO = new Compare(true, true);
+    public static final Comparator<ReorderRequest> DESCENDING_TO = new Compare(true, true);
     private CanvasObject object;
     private int fromIndex;
     private int toIndex;
 
-    public ReorderRequest(CanvasObject object, int from, int to) {
+    public ReorderRequest(CanvasObject object, int fromIndex, int toIndex) {
         this.object = object;
-        this.fromIndex = from;
-        this.toIndex = to;
+        this.fromIndex = fromIndex;
+        this.toIndex = toIndex;
     }
 
     public CanvasObject getObject() {
@@ -43,7 +40,7 @@ public class ReorderRequest {
         private boolean onFrom;
         private boolean asc;
 
-        Compare(boolean onFrom, boolean asc) {
+        private Compare(boolean onFrom, boolean asc) {
             this.onFrom = onFrom;
             this.asc = asc;
         }

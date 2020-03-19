@@ -13,13 +13,11 @@ import com.cburch.draw.model.CanvasModel;
 import com.cburch.draw.model.CanvasObject;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeSet;
-import com.cburch.logisim.gui.generic.AttrTableSetException;
 import com.cburch.logisim.gui.generic.AttributeSetTableModel;
 import java.util.HashMap;
 import java.util.Map;
 
-class AttrTableSelectionModel extends AttributeSetTableModel
-        implements SelectionListener {
+class AttrTableSelectionModel extends AttributeSetTableModel implements SelectionListener {
 
     private Canvas canvas;
 
@@ -31,17 +29,17 @@ class AttrTableSelectionModel extends AttributeSetTableModel
 
     @Override
     public String getTitle() {
-        Selection sel = canvas.getSelection();
+        Selection selection = canvas.getSelection();
         Class<? extends CanvasObject> commonClass = null;
         int commonCount = 0;
         CanvasObject firstObject = null;
         int totalCount = 0;
-        for (CanvasObject obj : sel.getSelected()) {
+        for (CanvasObject object : selection.getSelected()) {
             if (firstObject == null) {
-                firstObject = obj;
-                commonClass = obj.getClass();
+                firstObject = object;
+                commonClass = object.getClass();
                 commonCount = 1;
-            } else if (obj.getClass() == commonClass) {
+            } else if (object.getClass() == commonClass) {
                 commonCount++;
             } else {
                 commonClass = null;
@@ -56,32 +54,28 @@ class AttrTableSelectionModel extends AttributeSetTableModel
         } else if (commonCount == 1) {
             return Strings.get("selectionOne", firstObject.getDisplayName());
         } else {
-            return Strings.get("selectionMultiple", firstObject.getDisplayName(),
-                    "" + commonCount);
+            return Strings.get("selectionMultiple", firstObject.getDisplayName(), "" + commonCount);
         }
     }
 
     @Override
-    public void setValueRequested(Attribute<Object> attribute, Object value)
-            throws AttrTableSetException {
-        SelectionAttributes attrs = (SelectionAttributes) getAttributes();
-        HashMap<AttributeMapKey, Object> oldVals;
-        oldVals = new HashMap<>();
-        HashMap<AttributeMapKey, Object> newVals;
-        newVals = new HashMap<>();
-        for (Map.Entry<AttributeSet, CanvasObject> ent : attrs.entries()) {
-            AttributeMapKey key = new AttributeMapKey(attribute, ent.getValue());
-            oldVals.put(key, ent.getKey().getValue(attribute));
-            newVals.put(key, value);
+    public void setValueRequested(Attribute<Object> attribute, Object value) {
+        SelectionAttributes attributes = (SelectionAttributes) getAttributes();
+        HashMap<AttributeMapKey, Object> oldValues = new HashMap<>();
+        HashMap<AttributeMapKey, Object> newValues = new HashMap<>();
+        for (Map.Entry<AttributeSet, CanvasObject> entry : attributes.entries()) {
+            AttributeMapKey key = new AttributeMapKey(attribute, entry.getValue());
+            oldValues.put(key, entry.getKey().getValue(attribute));
+            newValues.put(key, value);
         }
         CanvasModel model = canvas.getModel();
-        canvas.doAction(new ModelChangeAttributeAction(model, oldVals, newVals));
+        canvas.doAction(new ModelChangeAttributeAction(model, oldValues, newValues));
     }
 
     //
     // SelectionListener method
     //
-    public void selectionChanged(SelectionEvent e) {
+    public void selectionChanged(SelectionEvent event) {
         fireTitleChanged();
     }
 }

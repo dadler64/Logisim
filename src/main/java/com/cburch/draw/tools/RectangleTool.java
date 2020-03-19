@@ -14,10 +14,10 @@ import javax.swing.Icon;
 
 public class RectangleTool extends RectangularTool {
 
-    private DrawingAttributeSet attrs;
+    private DrawingAttributeSet attributeSet;
 
-    public RectangleTool(DrawingAttributeSet attrs) {
-        this.attrs = attrs;
+    public RectangleTool(DrawingAttributeSet attributeSet) {
+        this.attributeSet = attributeSet;
     }
 
     @Override
@@ -27,21 +27,21 @@ public class RectangleTool extends RectangularTool {
 
     @Override
     public List<Attribute<?>> getAttributes() {
-        return DrawAttr.getFillAttributes(attrs.getValue(DrawAttr.PAINT_TYPE));
+        return DrawAttr.getFillAttributes(attributeSet.getValue(DrawAttr.PAINT_TYPE));
     }
 
     @Override
-    public CanvasObject createShape(int x, int y, int w, int h) {
-        return attrs.applyTo(new Rectangle(x, y, w, h));
+    public CanvasObject createShape(int x, int y, int width, int height) {
+        return attributeSet.applyTo(new Rectangle(x, y, width, height));
     }
 
     @Override
-    public void drawShape(Graphics g, int x, int y, int w, int h) {
-        g.drawRect(x, y, w, h);
+    public void drawShape(Graphics graphics, int x, int y, int width, int height) {
+        graphics.drawRect(x, y, width, height);
     }
 
     @Override
-    public void fillShape(Graphics g, int x, int y, int w, int h) {
-        g.fillRect(x, y, w, h);
+    public void fillShape(Graphics graphics, int x, int y, int width, int height) {
+        graphics.fillRect(x, y, width, height);
     }
 }

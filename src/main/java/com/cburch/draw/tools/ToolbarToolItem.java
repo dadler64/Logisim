@@ -28,16 +28,16 @@ public class ToolbarToolItem implements ToolbarItem {
         return true;
     }
 
-    public void paintIcon(Component destination, Graphics g) {
+    public void paintIcon(Component destination, Graphics graphics) {
         if (icon == null) {
-            g.setColor(new Color(255, 128, 128));
-            g.fillRect(4, 4, 8, 8);
-            g.setColor(Color.BLACK);
-            g.drawLine(4, 4, 12, 12);
-            g.drawLine(4, 12, 12, 4);
-            g.drawRect(4, 4, 8, 8);
+            graphics.setColor(new Color(255, 128, 128));
+            graphics.fillRect(4, 4, 8, 8);
+            graphics.setColor(Color.BLACK);
+            graphics.drawLine(4, 4, 12, 12);
+            graphics.drawLine(4, 12, 12, 4);
+            graphics.drawRect(4, 4, 8, 8);
         } else {
-            icon.paintIcon(destination, g, 4, 4);
+            icon.paintIcon(destination, graphics, 4, 4);
         }
     }
 

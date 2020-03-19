@@ -25,30 +25,28 @@ public class Text extends AbstractCanvasObject {
     private EditableLabel label;
 
     public Text(int x, int y, String text) {
-        this(x, y, EditableLabel.LEFT, EditableLabel.BASELINE, text,
-                DrawAttr.DEFAULT_FONT, Color.BLACK);
+        this(x, y, EditableLabel.LEFT, EditableLabel.BASELINE, text, DrawAttr.DEFAULT_FONT, Color.BLACK);
     }
 
-    private Text(int x, int y, int halign, int valign, String text, Font font,
-            Color color) {
+    private Text(int x, int y, int horizontalAlignment, int verticalAlign, String text, Font font, Color color) {
         label = new EditableLabel(x, y, text, font);
-        label.setColor(color);
-        label.setHorizontalAlignment(halign);
-        label.setVerticalAlignment(valign);
+        label.color = color;
+        label.setHorizontalAlignment(horizontalAlignment);
+        label.setVerticalAlignment(verticalAlign);
     }
 
     @Override
     public Text clone() {
-        Text ret = (Text) super.clone();
-        ret.label = this.label.clone();
-        return ret;
+        Text text = (Text) super.clone();
+        text.label = this.label.clone();
+        return text;
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof Text) {
-            Text that = (Text) other;
-            return this.label.equals(that.label);
+    public boolean matches(CanvasObject object) {
+        if (object instanceof Text) {
+            Text text = (Text) object;
+            return this.label.equals(text.label);
         } else {
             return false;
         }
@@ -60,8 +58,8 @@ public class Text extends AbstractCanvasObject {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
-        return SvgCreator.createText(doc, this);
+    public Element toSvgElement(Document document) {
+        return SvgCreator.createText(document, this);
     }
 
     public Location getLocation() {
@@ -92,36 +90,36 @@ public class Text extends AbstractCanvasObject {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V> V getValue(Attribute<V> attr) {
-        if (attr == DrawAttr.FONT) {
+    public <V> V getValue(Attribute<V> attribute) {
+        if (attribute == DrawAttr.FONT) {
             return (V) label.getFont();
-        } else if (attr == DrawAttr.FILL_COLOR) {
-            return (V) label.getColor();
-        } else if (attr == DrawAttr.ALIGNMENT) {
-            int halign = label.getHorizontalAlignment();
-            AttributeOption h;
-            if (halign == EditableLabel.LEFT) {
-                h = DrawAttr.ALIGN_LEFT;
-            } else if (halign == EditableLabel.RIGHT) {
-                h = DrawAttr.ALIGN_RIGHT;
+        } else if (attribute == DrawAttr.FILL_COLOR) {
+            return (V) label.color;
+        } else if (attribute == DrawAttr.ALIGNMENT) {
+            int horizontalAlignment = label.getHorizontalAlignment();
+            AttributeOption option;
+            if (horizontalAlignment == EditableLabel.LEFT) {
+                option = DrawAttr.ALIGN_LEFT;
+            } else if (horizontalAlignment == EditableLabel.RIGHT) {
+                option = DrawAttr.ALIGN_RIGHT;
             } else {
-                h = DrawAttr.ALIGN_CENTER;
+                option = DrawAttr.ALIGN_CENTER;
             }
-            return (V) h;
+            return (V) option;
         } else {
             return null;
         }
     }
 
     @Override
-    public void updateValue(Attribute<?> attr, Object value) {
-        if (attr == DrawAttr.FONT) {
+    public void updateValue(Attribute<?> attribute, Object value) {
+        if (attribute == DrawAttr.FONT) {
             label.setFont((Font) value);
-        } else if (attr == DrawAttr.FILL_COLOR) {
-            label.setColor((Color) value);
-        } else if (attr == DrawAttr.ALIGNMENT) {
+        } else if (attribute == DrawAttr.FILL_COLOR) {
+            label.color = (Color) value;
+        } else if (attribute == DrawAttr.ALIGNMENT) {
             Integer intVal = (Integer) ((AttributeOption) value).getValue();
-            label.setHorizontalAlignment(intVal.intValue());
+            label.setHorizontalAlignment(intVal);
         }
     }
 
@@ -131,24 +129,24 @@ public class Text extends AbstractCanvasObject {
     }
 
     @Override
-    public boolean contains(Location loc, boolean assumeFilled) {
-        return label.contains(loc.getX(), loc.getY());
+    public boolean contains(Location location, boolean assumeFilled) {
+        return label.contains(location.getX(), location.getY());
     }
 
     @Override
-    public void translate(int dx, int dy) {
-        label.setLocation(label.getX() + dx, label.getY() + dy);
+    public void translate(int deltaX, int deltaY) {
+        label.setLocation(label.getX() + deltaX, label.getY() + deltaY);
     }
 
     public List<Handle> getHandles() {
-        Bounds bds = label.getBounds();
-        int x = bds.getX();
-        int y = bds.getY();
-        int w = bds.getWidth();
-        int h = bds.getHeight();
+        Bounds bounds = label.getBounds();
+        int x = bounds.getX();
+        int y = bounds.getY();
+        int width = bounds.getWidth();
+        int height = bounds.getHeight();
         return UnmodifiableList.create(new Handle[]{
-                new Handle(this, x, y), new Handle(this, x + w, y),
-                new Handle(this, x + w, y + h), new Handle(this, x, y + h)});
+                new Handle(this, x, y), new Handle(this, x + width, y),
+                new Handle(this, x + width, y + height), new Handle(this, x, y + height)});
     }
 
     @Override
@@ -157,7 +155,7 @@ public class Text extends AbstractCanvasObject {
     }
 
     @Override
-    public void paint(Graphics g, HandleGesture gesture) {
-        label.paint(g);
+    public void paint(Graphics graphics, HandleGesture gesture) {
+        label.paint(graphics);
     }
 }

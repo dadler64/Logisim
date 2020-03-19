@@ -29,27 +29,21 @@ import com.cburch.logisim.util.Icons;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.Map;
 import javax.swing.Icon;
 
 class NotGate extends InstanceFactory {
 
-    public static final AttributeOption SIZE_NARROW
-            = new AttributeOption(Integer.valueOf(20),
-            Strings.getter("gateSizeNarrowOpt"));
-    public static final AttributeOption SIZE_WIDE
-            = new AttributeOption(Integer.valueOf(30),
-            Strings.getter("gateSizeWideOpt"));
-    public static final Attribute<AttributeOption> ATTR_SIZE
-            = Attributes.forOption("size", Strings.getter("gateSizeAttr"),
-            new AttributeOption[]{SIZE_NARROW, SIZE_WIDE});
+    public static final AttributeOption SIZE_NARROW = new AttributeOption(20, Strings.getter("gateSizeNarrowOpt"));
+    public static final AttributeOption SIZE_WIDE = new AttributeOption(30, Strings.getter("gateSizeWideOpt"));
+    public static final Attribute<AttributeOption> ATTR_SIZE = Attributes
+            .forOption("size", Strings.getter("gateSizeAttr"), new AttributeOption[]{SIZE_NARROW, SIZE_WIDE});
 
     private static final String RECT_LABEL = "1";
     private static final Icon toolIcon = Icons.getIcon("notGate.gif");
     private static final Icon toolIconRect = Icons.getIcon("notGateRect.gif");
     private static final Icon toolIconDin = Icons.getIcon("dinNotGate.gif");
 
-    public static InstanceFactory FACTORY = new NotGate();
+    public static final InstanceFactory FACTORY = new NotGate();
 
     private NotGate() {
         super("NOT Gate", Strings.getter("notGateComponent"));
@@ -69,27 +63,27 @@ class NotGate extends InstanceFactory {
     static void configureLabel(Instance instance, boolean isRectangular,
             Location control) {
         Object facing = instance.getAttributeValue(StdAttr.FACING);
-        Bounds bds = instance.getBounds();
+        Bounds bounds = instance.getBounds();
         int x;
         int y;
-        int halign;
+        int horizntalAlignment;
         if (facing == Direction.NORTH || facing == Direction.SOUTH) {
-            x = bds.getX() + bds.getWidth() / 2 + 2;
-            y = bds.getY() - 2;
-            halign = TextField.H_LEFT;
+            x = bounds.getX() + bounds.getWidth() / 2 + 2;
+            y = bounds.getY() - 2;
+            horizntalAlignment = TextField.H_LEFT;
         } else { // west or east
-            y = isRectangular ? bds.getY() - 2 : bds.getY();
-            if (control != null && control.getY() == bds.getY()) {
+            y = isRectangular ? bounds.getY() - 2 : bounds.getY();
+            if (control != null && control.getY() == bounds.getY()) {
                 // the control line will get in the way
                 x = control.getX() + 2;
-                halign = TextField.H_LEFT;
+                horizntalAlignment = TextField.H_LEFT;
             } else {
-                x = bds.getX() + bds.getWidth() / 2;
-                halign = TextField.H_CENTER;
+                x = bounds.getX() + bounds.getWidth() / 2;
+                horizntalAlignment = TextField.H_CENTER;
             }
         }
         instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, x, y,
-                halign, TextField.V_BASELINE);
+                horizntalAlignment, TextField.V_BASELINE);
     }
 
     @Override
@@ -142,8 +136,8 @@ class NotGate extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == ATTR_SIZE || attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == ATTR_SIZE || attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             configurePorts(instance);
             String gateShape = AppPreferences.GATE_SHAPE.get();
@@ -166,12 +160,10 @@ class NotGate extends InstanceFactory {
     @Override
     protected Object getInstanceFeature(final Instance instance, Object key) {
         if (key == ExpressionComputer.class) {
-            return new ExpressionComputer() {
-                public void computeExpression(Map<Location, Expression> expressionMap) {
-                    Expression e = expressionMap.get(instance.getPortLocation(1));
-                    if (e != null) {
-                        expressionMap.put(instance.getPortLocation(0), Expressions.not(e));
-                    }
+            return (ExpressionComputer) expressionMap -> {
+                Expression e = expressionMap.get(instance.getPortLocation(1));
+                if (e != null) {
+                    expressionMap.put(instance.getPortLocation(0), Expressions.not(e));
                 }
             };
         }
@@ -183,27 +175,27 @@ class NotGate extends InstanceFactory {
     //
     @Override
     public void paintIcon(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
-        g.setColor(Color.black);
+        Graphics graphics = painter.getGraphics();
+        graphics.setColor(Color.black);
         if (painter.getGateShape() == AppPreferences.SHAPE_RECTANGULAR) {
             if (toolIconRect != null) {
-                toolIconRect.paintIcon(painter.getDestination(), g, 2, 2);
+                toolIconRect.paintIcon(painter.getDestination(), graphics, 2, 2);
             } else {
-                g.drawRect(0, 2, 16, 16);
-                GraphicsUtil.drawCenteredText(g, RECT_LABEL, 8, 8);
-                g.drawOval(16, 8, 4, 4);
+                graphics.drawRect(0, 2, 16, 16);
+                GraphicsUtil.drawCenteredText(graphics, RECT_LABEL, 8, 8);
+                graphics.drawOval(16, 8, 4, 4);
             }
         } else if (painter.getGateShape() == AppPreferences.SHAPE_DIN40700) {
             if (toolIconDin != null) {
-                toolIconDin.paintIcon(painter.getDestination(), g, 2, 2);
+                toolIconDin.paintIcon(painter.getDestination(), graphics, 2, 2);
             } else {
-                g.drawRect(0, 2, 16, 16);
-                GraphicsUtil.drawCenteredText(g, RECT_LABEL, 8, 8);
-                g.drawOval(16, 8, 4, 4);
+                graphics.drawRect(0, 2, 16, 16);
+                GraphicsUtil.drawCenteredText(graphics, RECT_LABEL, 8, 8);
+                graphics.drawOval(16, 8, 4, 4);
             }
         } else {
             if (toolIcon != null) {
-                toolIcon.paintIcon(painter.getDestination(), g, 2, 2);
+                toolIcon.paintIcon(painter.getDestination(), graphics, 2, 2);
             } else {
                 int[] xp = new int[4];
                 int[] yp = new int[4];
@@ -215,8 +207,8 @@ class NotGate extends InstanceFactory {
                 yp[2] = 17;
                 xp[3] = 15;
                 yp[3] = 10;
-                g.drawPolyline(xp, yp, 4);
-                g.drawOval(15, 8, 4, 4);
+                graphics.drawPolyline(xp, yp, 4);
+                graphics.drawOval(15, 8, 4, 4);
             }
         }
     }
@@ -235,21 +227,21 @@ class NotGate extends InstanceFactory {
     }
 
     private void paintBase(InstancePainter painter) {
-        Graphics g = painter.getGraphics();
+        Graphics graphics = painter.getGraphics();
         Direction facing = painter.getAttributeValue(StdAttr.FACING);
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
-        g.translate(x, y);
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
+        graphics.translate(x, y);
         double rotate = 0.0;
-        if (facing != null && facing != Direction.EAST && g instanceof Graphics2D) {
+        if (facing != null && facing != Direction.EAST && graphics instanceof Graphics2D) {
             rotate = -facing.toRadians();
-            ((Graphics2D) g).rotate(rotate);
+            ((Graphics2D) graphics).rotate(rotate);
         }
 
         Object shape = painter.getGateShape();
         if (shape == AppPreferences.SHAPE_RECTANGULAR) {
-            paintRectangularBase(g, painter);
+            paintRectangularBase(graphics, painter);
         } else if (shape == AppPreferences.SHAPE_DIN40700) {
             int width = painter.getAttributeValue(ATTR_SIZE) == SIZE_NARROW ? 20 : 30;
             PainterDin.paintAnd(painter, width, 18, true);
@@ -258,9 +250,9 @@ class NotGate extends InstanceFactory {
         }
 
         if (rotate != 0.0) {
-            ((Graphics2D) g).rotate(-rotate);
+            ((Graphics2D) graphics).rotate(-rotate);
         }
-        g.translate(-x, -y);
+        graphics.translate(-x, -y);
     }
 
     private void paintRectangularBase(Graphics g, InstancePainter painter) {

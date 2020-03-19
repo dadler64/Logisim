@@ -3,6 +3,7 @@
 
 package com.cburch.gray;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Value;
 import com.cburch.logisim.instance.InstanceData;
@@ -25,7 +26,7 @@ class CounterData implements InstanceData, Cloneable {
     /**
      * Constructs a state with the given values.
      */
-    public CounterData(Value lastClock, Value value) {
+    private CounterData(Value lastClock, Value value) {
         this.lastClock = lastClock;
         this.value = value;
     }
@@ -35,17 +36,17 @@ class CounterData implements InstanceData, Cloneable {
      * generating the state if necessary.
      */
     public static CounterData get(InstanceState state, BitWidth width) {
-        CounterData ret = (CounterData) state.getData();
-        if (ret == null) {
+        CounterData data = (CounterData) state.getData();
+        if (data == null) {
             // If it doesn't yet exist, then we'll set it up with our default
             // values and put it into the circuit state so it can be retrieved
             // in future propagations.
-            ret = new CounterData(null, Value.createKnown(width, 0));
-            state.setData(ret);
-        } else if (!ret.value.getBitWidth().equals(width)) {
-            ret.value = ret.value.extendWidth(width.getWidth(), Value.FALSE);
+            data = new CounterData(null, Value.createKnown(width, 0));
+            state.setData(data);
+        } else if (!data.value.getBitWidth().equals(width)) {
+            data.value = data.value.extendWidth(width.getWidth(), Value.FALSE);
         }
-        return ret;
+        return data;
     }
 
     /**
@@ -60,6 +61,7 @@ class CounterData implements InstanceData, Cloneable {
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
+            Logger.errorln(e, false);
             return null;
         }
     }
@@ -68,9 +70,9 @@ class CounterData implements InstanceData, Cloneable {
      * Updates the last clock observed, returning true if triggered.
      */
     public boolean updateClock(Value value) {
-        Value old = lastClock;
+        Value oldValue = lastClock;
         lastClock = value;
-        return old == Value.FALSE && value == Value.TRUE;
+        return oldValue == Value.FALSE && value == Value.TRUE;
     }
 
     /**

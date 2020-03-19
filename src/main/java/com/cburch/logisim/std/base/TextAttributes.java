@@ -40,11 +40,11 @@ class TextAttributes extends AbstractAttributeSet {
     }
 
     int getHorizontalAlign() {
-        return ((Integer) halign.getValue()).intValue();
+        return (Integer) halign.getValue();
     }
 
     int getVerticalAlign() {
-        return ((Integer) valign.getValue()).intValue();
+        return (Integer) valign.getValue();
     }
 
     Bounds getOffsetBounds() {

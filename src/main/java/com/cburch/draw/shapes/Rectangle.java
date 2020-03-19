@@ -15,14 +15,14 @@ import org.w3c.dom.Element;
 
 public class Rectangle extends Rectangular {
 
-    public Rectangle(int x, int y, int w, int h) {
-        super(x, y, w, h);
+    public Rectangle(int x, int y, int width, int height) {
+        super(x, y, width, height);
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof Rectangle) {
-            return super.matches(other);
+    public boolean matches(CanvasObject object) {
+        if (object instanceof Rectangle) {
+            return super.matches(object);
         } else {
             return false;
         }
@@ -44,8 +44,8 @@ public class Rectangle extends Rectangular {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
-        return SvgCreator.createRectangle(doc, this);
+    public Element toSvgElement(Document document) {
+        return SvgCreator.createRectangle(document, this);
     }
 
     @Override
@@ -54,47 +54,47 @@ public class Rectangle extends Rectangular {
     }
 
     @Override
-    protected boolean contains(int x, int y, int w, int h, Location q) {
-        return isInRect(q.getX(), q.getY(), x, y, w, h);
+    protected boolean contains(int x, int y, int width, int height, Location q) {
+        return isInRectangle(q.getX(), q.getY(), x, y, width, height);
     }
 
     @Override
-    protected Location getRandomPoint(Bounds bds, Random rand) {
+    protected Location getRandomPoint(Bounds bounds, Random random) {
         if (getPaintType() == DrawAttr.PAINT_STROKE) {
-            int w = getWidth();
-            int h = getHeight();
-            int u = rand.nextInt(2 * w + 2 * h);
+            int width = getWidth();
+            int height = getHeight();
+            int u = random.nextInt(2 * width + 2 * height);
             int x = getX();
             int y = getY();
-            if (u < w) {
+            if (u < width) {
                 x += u;
-            } else if (u < 2 * w) {
-                x += (u - w);
-                y += h;
-            } else if (u < 2 * w + h) {
-                y += (u - 2 * w);
+            } else if (u < 2 * width) {
+                x += (u - width);
+                y += height;
+            } else if (u < 2 * width + height) {
+                y += (u - 2 * width);
             } else {
-                x += w;
-                y += (u - 2 * w - h);
+                x += width;
+                y += (u - 2 * width - height);
             }
-            int d = getStrokeWidth();
-            if (d > 1) {
-                x += rand.nextInt(d) - d / 2;
-                y += rand.nextInt(d) - d / 2;
+            int strokeWidth = getStrokeWidth();
+            if (strokeWidth > 1) {
+                x += random.nextInt(strokeWidth) - strokeWidth / 2;
+                y += random.nextInt(strokeWidth) - strokeWidth / 2;
             }
             return Location.create(x, y);
         } else {
-            return super.getRandomPoint(bds, rand);
+            return super.getRandomPoint(bounds, random);
         }
     }
 
     @Override
-    public void draw(Graphics g, int x, int y, int w, int h) {
-        if (setForFill(g)) {
-            g.fillRect(x, y, w, h);
+    public void draw(Graphics graphics, int x, int y, int width, int height) {
+        if (setForFill(graphics)) {
+            graphics.fillRect(x, y, width, height);
         }
-        if (setForStroke(g)) {
-            g.drawRect(x, y, w, h);
+        if (setForStroke(graphics)) {
+            graphics.drawRect(x, y, width, height);
         }
     }
 }

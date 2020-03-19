@@ -61,8 +61,8 @@ public class Shifter extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.WIDTH) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.WIDTH) {
             configurePorts(instance);
         }
     }

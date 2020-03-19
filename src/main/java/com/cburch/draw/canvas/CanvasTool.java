@@ -12,7 +12,7 @@ public abstract class CanvasTool {
 
     public abstract Cursor getCursor(Canvas canvas);
 
-    public void draw(Canvas canvas, Graphics g) {
+    public void draw(Canvas canvas, Graphics graphics) {
     }
 
     public void toolSelected(Canvas canvas) {
@@ -21,22 +21,22 @@ public abstract class CanvasTool {
     public void toolDeselected(Canvas canvas) {
     }
 
-    public void mouseMoved(Canvas canvas, MouseEvent e) {
+    public void mouseMoved(Canvas canvas, MouseEvent event) {
     }
 
-    public void mousePressed(Canvas canvas, MouseEvent e) {
+    public void mousePressed(Canvas canvas, MouseEvent event) {
     }
 
-    public void mouseDragged(Canvas canvas, MouseEvent e) {
+    public void mouseDragged(Canvas canvas, MouseEvent event) {
     }
 
-    public void mouseReleased(Canvas canvas, MouseEvent e) {
+    public void mouseReleased(Canvas canvas, MouseEvent event) {
     }
 
-    public void mouseEntered(Canvas canvas, MouseEvent e) {
+    public void mouseEntered(Canvas canvas, MouseEvent event) {
     }
 
-    public void mouseExited(Canvas canvas, MouseEvent e) {
+    public void mouseExited(Canvas canvas, MouseEvent event) {
     }
 
     /**
@@ -45,14 +45,13 @@ public abstract class CanvasTool {
     public void cancelMousePress(Canvas canvas) {
     }
 
-
-    public void keyPressed(Canvas canvas, KeyEvent e) {
+    public void keyPressed(Canvas canvas, KeyEvent event) {
     }
 
-    public void keyReleased(Canvas canvas, KeyEvent e) {
+    public void keyReleased(Canvas canvas, KeyEvent event) {
     }
 
-    public void keyTyped(Canvas canvas, KeyEvent e) {
+    public void keyTyped(Canvas canvas, KeyEvent event) {
     }
 
     public void zoomFactorChanged(Canvas canvas) {

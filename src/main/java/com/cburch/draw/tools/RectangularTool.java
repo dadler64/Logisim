@@ -17,22 +17,22 @@ import java.awt.event.MouseEvent;
 
 abstract class RectangularTool extends AbstractTool {
 
-    private boolean active;
+    private boolean isActive;
     private Location dragStart;
     private int lastMouseX;
     private int lastMouseY;
     private Bounds currentBounds;
 
     public RectangularTool() {
-        active = false;
+        isActive = false;
         currentBounds = Bounds.EMPTY_BOUNDS;
     }
 
-    public abstract CanvasObject createShape(int x, int y, int w, int h);
+    public abstract CanvasObject createShape(int x, int y, int width, int height);
 
-    public abstract void drawShape(Graphics g, int x, int y, int w, int h);
+    public abstract void drawShape(Graphics graphics, int x, int y, int width, int height);
 
-    public abstract void fillShape(Graphics g, int x, int y, int w, int h);
+    public abstract void fillShape(Graphics graphics, int x, int y, int width, int height);
 
     @Override
     public Cursor getCursor(Canvas canvas) {
@@ -41,96 +41,94 @@ abstract class RectangularTool extends AbstractTool {
 
     @Override
     public void toolDeselected(Canvas canvas) {
-        Bounds bds = currentBounds;
-        active = false;
-        repaintArea(canvas, bds);
+        Bounds bounds = currentBounds;
+        isActive = false;
+        repaintArea(canvas, bounds);
     }
 
     @Override
-    public void mousePressed(Canvas canvas, MouseEvent e) {
-        Location loc = Location.create(e.getX(), e.getY());
-        Bounds bds = Bounds.create(loc);
-        dragStart = loc;
-        lastMouseX = loc.getX();
-        lastMouseY = loc.getY();
-        active = canvas.getModel() != null;
-        repaintArea(canvas, bds);
+    public void mousePressed(Canvas canvas, MouseEvent event) {
+        Location location = Location.create(event.getX(), event.getY());
+        Bounds bounds = Bounds.create(location);
+        dragStart = location;
+        lastMouseX = location.getX();
+        lastMouseY = location.getY();
+        isActive = canvas.getModel() != null;
+        repaintArea(canvas, bounds);
     }
 
     @Override
-    public void mouseDragged(Canvas canvas, MouseEvent e) {
-        updateMouse(canvas, e.getX(), e.getY(), e.getModifiersEx());
+    public void mouseDragged(Canvas canvas, MouseEvent event) {
+        updateMouse(canvas, event.getX(), event.getY(), event.getModifiersEx());
     }
 
     @Override
-    public void mouseReleased(Canvas canvas, MouseEvent e) {
-        if (active) {
+    public void mouseReleased(Canvas canvas, MouseEvent event) {
+        if (isActive) {
             Bounds oldBounds = currentBounds;
-            Bounds bds = computeBounds(canvas, e.getX(), e.getY(), e.getModifiersEx());
+            Bounds bounds = computeBounds(canvas, event.getX(), event.getY(), event.getModifiersEx());
             currentBounds = Bounds.EMPTY_BOUNDS;
-            active = false;
+            isActive = false;
             CanvasObject add = null;
-            if (bds.getWidth() != 0 && bds.getHeight() != 0) {
+            if (bounds.getWidth() != 0 && bounds.getHeight() != 0) {
                 CanvasModel model = canvas.getModel();
-                add = createShape(bds.getX(), bds.getY(),
-                        bds.getWidth(), bds.getHeight());
+                add = createShape(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
                 canvas.doAction(new ModelAddAction(model, add));
-                repaintArea(canvas, oldBounds.add(bds));
+                repaintArea(canvas, oldBounds.add(bounds));
             }
             canvas.toolGestureComplete(this, add);
         }
     }
 
     @Override
-    public void keyPressed(Canvas canvas, KeyEvent e) {
-        int code = e.getKeyCode();
-        if (active && (code == KeyEvent.VK_SHIFT || code == KeyEvent.VK_ALT
-                || code == KeyEvent.VK_CONTROL)) {
-            updateMouse(canvas, lastMouseX, lastMouseY, e.getModifiersEx());
+    public void keyPressed(Canvas canvas, KeyEvent event) {
+        int code = event.getKeyCode();
+        if (isActive && (code == KeyEvent.VK_SHIFT || code == KeyEvent.VK_ALT || code == KeyEvent.VK_CONTROL)) {
+            updateMouse(canvas, lastMouseX, lastMouseY, event.getModifiersEx());
         }
     }
 
     @Override
-    public void keyReleased(Canvas canvas, KeyEvent e) {
-        keyPressed(canvas, e);
+    public void keyReleased(Canvas canvas, KeyEvent event) {
+        keyPressed(canvas, event);
     }
 
-    private void updateMouse(Canvas canvas, int mx, int my, int mods) {
+    private void updateMouse(Canvas canvas, int mouseX, int mouseY, int mods) {
         Bounds oldBounds = currentBounds;
-        Bounds bds = computeBounds(canvas, mx, my, mods);
-        if (!bds.equals(oldBounds)) {
-            currentBounds = bds;
-            repaintArea(canvas, oldBounds.add(bds));
+        Bounds bounds = computeBounds(canvas, mouseX, mouseY, mods);
+        if (!bounds.equals(oldBounds)) {
+            currentBounds = bounds;
+            repaintArea(canvas, oldBounds.add(bounds));
         }
     }
 
-    private Bounds computeBounds(Canvas canvas, int mx, int my, int mods) {
-        lastMouseX = mx;
-        lastMouseY = my;
-        if (!active) {
+    private Bounds computeBounds(Canvas canvas, int mouseX, int mouseY, int mods) {
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+        if (!isActive) {
             return Bounds.EMPTY_BOUNDS;
         } else {
             Location start = dragStart;
             int x0 = start.getX();
             int y0 = start.getY();
-            int x1 = mx;
-            int y1 = my;
+            int x1 = mouseX;
+            int y1 = mouseY;
             if (x0 == x1 && y0 == y1) {
                 return Bounds.EMPTY_BOUNDS;
             }
 
-            boolean ctrlDown = (mods & MouseEvent.CTRL_DOWN_MASK) != 0;
-            if (ctrlDown) {
+            boolean isCtrlDown = (mods & MouseEvent.CTRL_DOWN_MASK) != 0;
+            if (isCtrlDown) {
                 x0 = canvas.snapX(x0);
                 y0 = canvas.snapY(y0);
                 x1 = canvas.snapX(x1);
                 y1 = canvas.snapY(y1);
             }
 
-            boolean altDown = (mods & MouseEvent.ALT_DOWN_MASK) != 0;
-            boolean shiftDown = (mods & MouseEvent.SHIFT_DOWN_MASK) != 0;
-            if (altDown) {
-                if (shiftDown) {
+            boolean isAltDown = (mods & MouseEvent.ALT_DOWN_MASK) != 0;
+            boolean isShiftDown = (mods & MouseEvent.SHIFT_DOWN_MASK) != 0;
+            if (isAltDown) {
+                if (isShiftDown) {
                     int r = Math.min(Math.abs(x0 - x1), Math.abs(y0 - y1));
                     x1 = x0 + r;
                     y1 = y0 + r;
@@ -141,7 +139,7 @@ abstract class RectangularTool extends AbstractTool {
                     y0 = y0 - (y1 - y0);
                 }
             } else {
-                if (shiftDown) {
+                if (isShiftDown) {
                     int r = Math.min(Math.abs(x0 - x1), Math.abs(y0 - y1));
                     y1 = y1 < y0 ? y0 - r : y0 + r;
                     x1 = x1 < x0 ? x0 - r : x0 + r;
@@ -150,35 +148,36 @@ abstract class RectangularTool extends AbstractTool {
 
             int x = x0;
             int y = y0;
-            int w = x1 - x0;
-            int h = y1 - y0;
-            if (w < 0) {
+            int width = x1 - x0;
+            int height = y1 - y0;
+            if (width < 0) {
                 x = x1;
-                w = -w;
+                width = -width;
             }
-            if (h < 0) {
+            if (height < 0) {
                 y = y1;
-                h = -h;
+                height = -height;
             }
-            return Bounds.create(x, y, w, h);
+            return Bounds.create(x, y, width, height);
         }
     }
 
-    private void repaintArea(Canvas canvas, Bounds bds) {
+    private void repaintArea(Canvas canvas, Bounds bounds) {
         canvas.repaint();
 		/* The below doesn't work because Java doesn't deal correctly with stroke
 		 * widths that go outside the clip area
-		canvas.repaintCanvasCoords(bds.getX() - 10, bds.getY() - 10,
-				bds.getWidth() + 20, bds.getHeight() + 20);
+		canvas.repaintCanvasCoords(bounds.getX() - 10, bounds.getY() - 10,
+				bounds.getWidth() + 20, bounds.getHeight() + 20);
 		 */
     }
 
     @Override
-    public void draw(Canvas canvas, Graphics g) {
-        Bounds bds = currentBounds;
-        if (active && bds != null && bds != Bounds.EMPTY_BOUNDS) {
-            g.setColor(Color.GRAY);
-            drawShape(g, bds.getX(), bds.getY(), bds.getWidth(), bds.getHeight());
+    public void draw(Canvas canvas, Graphics graphics) {
+        Bounds currentBounds = this.currentBounds;
+        if (isActive && currentBounds != null && currentBounds != Bounds.EMPTY_BOUNDS) {
+            graphics.setColor(Color.GRAY);
+            drawShape(graphics, currentBounds.getX(), currentBounds.getY(), currentBounds.getWidth(),
+                    currentBounds.getHeight());
         }
     }
 

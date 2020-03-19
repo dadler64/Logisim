@@ -42,7 +42,7 @@ public class Keyboard extends InstanceFactory {
     public Keyboard() {
         super("Keyboard", Strings.getter("keyboardComponent"));
         setAttributes(new Attribute[]{ATTR_BUFFER, StdAttr.EDGE_TRIGGER},
-                new Object[]{Integer.valueOf(32), StdAttr.TRIG_RISING});
+                new Object[]{32, StdAttr.TRIG_RISING});
         setOffsetBounds(Bounds.create(0, -15, WIDTH, HEIGHT));
         setIconName("keyboard.gif");
         setInstancePoker(Poker.class);
@@ -63,7 +63,7 @@ public class Keyboard extends InstanceFactory {
 
     private static int getBufferLength(Object bufferAttr) {
         if (bufferAttr instanceof Integer) {
-            return ((Integer) bufferAttr).intValue();
+            return (Integer) bufferAttr;
         } else {
             return 32;
         }
@@ -142,7 +142,7 @@ public class Keyboard extends InstanceFactory {
                 str = state.toString();
                 for (int i = state.getNextSpecial(0); i >= 0; i = state.getNextSpecial(i + 1)) {
                     char c = state.getChar(i);
-                    specials.add(Integer.valueOf(c << 16 | i));
+                    specials.add(c << 16 | i);
                 }
                 if (!state.isDisplayValid()) {
                     fm = g.getFontMetrics(DEFAULT_FONT);
@@ -229,7 +229,7 @@ public class Keyboard extends InstanceFactory {
         int[] px = new int[3];
         int[] py = new int[3];
         for (Integer special : specials) {
-            int code = special.intValue();
+            int code = special;
             int pos = code & 0xFF;
             int w0;
             int w1;

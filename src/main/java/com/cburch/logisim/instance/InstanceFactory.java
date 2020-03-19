@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.instance;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.LogisimVersion;
 import com.cburch.logisim.circuit.CircuitState;
 import com.cburch.logisim.comp.AbstractComponentFactory;
@@ -40,7 +41,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
     private StringGetter defaultToolTip;
     private String iconName;
     private Icon icon;
-    private Attribute<?>[] attrs;
+    private Attribute<?>[] attributes;
     private Object[] defaults;
     private AttributeSet defaultSet;
     private Bounds bounds;
@@ -60,7 +61,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
         this.displayName = displayName;
         this.iconName = null;
         this.icon = null;
-        this.attrs = null;
+        this.attributes = null;
         this.defaults = null;
         this.bounds = Bounds.EMPTY_BOUNDS;
         this.portList = Collections.emptyList();
@@ -95,28 +96,27 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
     }
 
     @Override
-    public final void paintIcon(ComponentDrawContext context,
-            int x, int y, AttributeSet attributes) {
+    public final void paintIcon(ComponentDrawContext context, int x, int y, AttributeSet attributes) {
         InstancePainter painter = context.getInstancePainter();
         painter.setFactory(this, attributes);
-        Graphics g = painter.getGraphics();
-        g.translate(x, y);
+        Graphics graphics = painter.getGraphics();
+        graphics.translate(x, y);
         paintIcon(painter);
-        g.translate(-x, -y);
+        graphics.translate(-x, -y);
 
         if (painter.getFactory() == null) {
-            Icon i = icon;
-            if (i == null) {
-                String n = iconName;
-                if (n != null) {
-                    i = Icons.getIcon(n);
-                    if (i == null) {
-                        n = null;
+            Icon icon = this.icon;
+            if (icon == null) {
+                String iconName = this.iconName;
+                if (iconName != null) {
+                    icon = Icons.getIcon(iconName);
+                    if (icon == null) {
+                        iconName = null;
                     }
                 }
             }
-            if (i != null) {
-                i.paintIcon(context.getDestination(), g, x + 2, y + 2);
+            if (icon != null) {
+                icon.paintIcon(context.getDestination(), graphics, x + 2, y + 2);
             } else {
                 super.paintIcon(context, x, y, attributes);
             }
@@ -125,9 +125,9 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
 
     @Override
     public final Component createComponent(Location location, AttributeSet attributes) {
-        InstanceComponent ret = new InstanceComponent(this, location, attributes);
-        configureNewInstance(ret.getInstance());
-        return ret;
+        InstanceComponent component = new InstanceComponent(this, location, attributes);
+        configureNewInstance(component.getInstance());
+        return component;
     }
 
     public void setOffsetBounds(Bounds value) {
@@ -136,20 +136,19 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
 
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
-        Bounds ret = bounds;
-        if (ret == null) {
-            throw new RuntimeException("offset bounds unknown: "
-                    + "use setOffsetBounds or override getOffsetBounds");
+        Bounds bounds = this.bounds;
+        if (bounds == null) {
+            throw new RuntimeException("offset bounds unknown: use setOffsetBounds or override getOffsetBounds");
         }
-        return ret;
+        return bounds;
     }
 
-    public boolean contains(Location loc, AttributeSet attrs) {
-        Bounds bds = getOffsetBounds(attrs);
-        if (bds == null) {
+    public boolean contains(Location location, AttributeSet attributeSet) {
+        Bounds bounds = getOffsetBounds(attributeSet);
+        if (bounds == null) {
             return false;
         }
-        return bds.contains(loc, 1);
+        return bounds.contains(location, 1);
     }
 
 
@@ -169,35 +168,34 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
         keyConfigurator = value;
     }
 
-    public void setAttributes(Attribute<?>[] attrs, Object[] defaults) {
-        this.attrs = attrs;
+    public void setAttributes(Attribute<?>[] attributes, Object[] defaults) {
+        this.attributes = attributes;
         this.defaults = defaults;
     }
 
     @Override
     public AttributeSet createAttributeSet() {
-        Attribute<?>[] as = attrs;
-        AttributeSet ret = as == null ? AttributeSets.EMPTY : AttributeSets.fixedSet(as, defaults);
-        return ret;
+        Attribute<?>[] attributes = this.attributes;
+        return attributes == null ? AttributeSets.EMPTY : AttributeSets.fixedSet(attributes, defaults);
     }
 
     @Override
     public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
-        Attribute<?>[] as = attrs;
-        if (as != null) {
-            for (int i = 0; i < as.length; i++) {
-                if (as[i] == attribute) {
+        Attribute<?>[] attributes = this.attributes;
+        if (attributes != null) {
+            for (int i = 0; i < attributes.length; i++) {
+                if (attributes[i] == attribute) {
                     return defaults[i];
                 }
             }
             return null;
         } else {
-            AttributeSet dfltSet = defaultSet;
-            if (dfltSet == null) {
-                dfltSet = createAttributeSet();
-                defaultSet = dfltSet;
+            AttributeSet defaultSet = this.defaultSet;
+            if (defaultSet == null) {
+                defaultSet = createAttributeSet();
+                this.defaultSet = defaultSet;
             }
-            return dfltSet.getValue(attribute);
+            return defaultSet.getValue(attribute);
         }
     }
 
@@ -233,29 +231,29 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
         }
     }
 
-    public void setShouldSnap(boolean value) {
-        shouldSnap = Boolean.valueOf(value);
+    public void setShouldSnap(boolean shouldSnap) {
+        this.shouldSnap = shouldSnap;
     }
 
-    private boolean isClassOk(Class<?> sub, Class<?> sup) {
-        boolean isSub = sup.isAssignableFrom(sub);
-        if (!isSub) {
-            System.err.println(sub.getName() + " must be a subclass of " + sup.getName()); //OK
+    private boolean isClassOk(Class<?> subclass, Class<?> superclass) {
+        boolean isSubclass = superclass.isAssignableFrom(subclass);
+        if (!isSubclass) {
+            Logger.warnln(subclass.getName() + " must be a subclass of " + superclass.getName()); //OK
             return false;
         }
         try {
-            sub.getConstructor();
+            subclass.getConstructor();
             return true;
         } catch (SecurityException e) {
-            System.err.println(sub.getName() + " needs its no-args constructor to be public"); //OK
+            Logger.warnln(subclass.getName() + " needs its no-args constructor to be public"); //OK
         } catch (NoSuchMethodException e) {
-            System.err.println(sub.getName() + " is missing a no-arguments constructor"); //OK
+            Logger.warnln(subclass.getName() + " is missing a no-arguments constructor"); //OK
         }
         return true;
     }
 
     @Override
-    public final Object getFeature(Object key, AttributeSet attrs) {
+    public final Object getFeature(Object key, AttributeSet attributeSet) {
         if (key == FACING_ATTRIBUTE_KEY) {
             return facingAttribute;
         }
@@ -265,19 +263,18 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
         if (key == SHOULD_SNAP) {
             return shouldSnap;
         }
-        return super.getFeature(key, attrs);
+        return super.getFeature(key, attributeSet);
     }
 
     @Override
-    public final void drawGhost(ComponentDrawContext context, Color color,
-            int x, int y, AttributeSet attributes) {
+    public final void drawGhost(ComponentDrawContext context, Color color, int x, int y, AttributeSet attributes) {
         InstancePainter painter = context.getInstancePainter();
-        Graphics g = painter.getGraphics();
-        g.setColor(color);
-        g.translate(x, y);
+        Graphics graphics = painter.getGraphics();
+        graphics.setColor(color);
+        graphics.translate(x, y);
         painter.setFactory(this, attributes);
         paintGhost(painter);
-        g.translate(-x, -y);
+        graphics.translate(-x, -y);
         if (painter.getFactory() == null) {
             super.drawGhost(context, color, x, y, attributes);
         }
@@ -299,7 +296,7 @@ public abstract class InstanceFactory extends AbstractComponentFactory {
     protected void configureNewInstance(Instance instance) {
     }
 
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
     }
 
     protected Object getInstanceFeature(Instance instance, Object key) {

@@ -14,7 +14,6 @@ import com.cburch.logisim.instance.StdAttr;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +29,10 @@ class DefaultAppearance {
     static void sortPinList(List<Instance> pins, Direction facing) {
         if (facing == Direction.NORTH || facing == Direction.SOUTH) {
             Comparator<Instance> sortHorizontal = new CompareLocations(true);
-            Collections.sort(pins, sortHorizontal);
+            pins.sort(sortHorizontal);
         } else {
             Comparator<Instance> sortVertical = new CompareLocations(false);
-            Collections.sort(pins, sortVertical);
+            pins.sort(sortVertical);
         }
     }
 
@@ -98,10 +97,10 @@ class DefaultAppearance {
         Location e1 = Location.create(rx + (width + 8) / 2, ry + 1);
         Location ct = Location.create(rx + width / 2, ry + 11);
         Curve notch = new Curve(e0, e1, ct);
-        notch.setValue(DrawAttr.STROKE_WIDTH, Integer.valueOf(2));
+        notch.setValue(DrawAttr.STROKE_WIDTH, 2);
         notch.setValue(DrawAttr.STROKE_COLOR, Color.GRAY);
         Rectangle rect = new Rectangle(rx, ry, width, height);
-        rect.setValue(DrawAttr.STROKE_WIDTH, Integer.valueOf(2));
+        rect.setValue(DrawAttr.STROKE_WIDTH, 2);
 
         List<CanvasObject> ret = new ArrayList<>();
         ret.add(notch);

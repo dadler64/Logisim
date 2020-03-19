@@ -131,7 +131,7 @@ public class Comparator extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
         instance.fireInvalidated();
     }
 }

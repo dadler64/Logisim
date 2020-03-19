@@ -41,9 +41,9 @@ public class Line extends AbstractCanvasObject {
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof Line) {
-            Line that = (Line) other;
+    public boolean matches(CanvasObject object) {
+        if (object instanceof Line) {
+            Line that = (Line) object;
             return this.x0 == that.x0
                     && this.y0 == that.x1
                     && this.x1 == that.y0
@@ -65,8 +65,8 @@ public class Line extends AbstractCanvasObject {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
-        return SvgCreator.createLine(doc, this);
+    public Element toSvgElement(Document document) {
+        return SvgCreator.createLine(document, this);
     }
 
     public Location getEnd0() {
@@ -84,15 +84,15 @@ public class Line extends AbstractCanvasObject {
 
     @Override
     public List<Attribute<?>> getAttributes() {
-        return DrawAttr.ATTRS_STROKE;
+        return DrawAttr.ATTRIBUTES_STROKE;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V> V getValue(Attribute<V> attr) {
-        if (attr == DrawAttr.STROKE_COLOR) {
+    public <V> V getValue(Attribute<V> attribute) {
+        if (attribute == DrawAttr.STROKE_COLOR) {
             return (V) strokeColor;
-        } else if (attr == DrawAttr.STROKE_WIDTH) {
+        } else if (attribute == DrawAttr.STROKE_WIDTH) {
             return (V) Integer.valueOf(strokeWidth);
         } else {
             return null;
@@ -100,11 +100,11 @@ public class Line extends AbstractCanvasObject {
     }
 
     @Override
-    public void updateValue(Attribute<?> attr, Object value) {
-        if (attr == DrawAttr.STROKE_COLOR) {
-            strokeColor = (Color) value;
-        } else if (attr == DrawAttr.STROKE_WIDTH) {
-            strokeWidth = ((Integer) value).intValue();
+    public void updateValue(Attribute<?> attribute, Object object) {
+        if (attribute == DrawAttr.STROKE_COLOR) {
+            strokeColor = (Color) object;
+        } else if (attribute == DrawAttr.STROKE_WIDTH) {
+            strokeWidth = (Integer) object;
         }
     }
 
@@ -114,33 +114,33 @@ public class Line extends AbstractCanvasObject {
     }
 
     @Override
-    public Location getRandomPoint(Bounds bds, Random rand) {
-        double u = rand.nextDouble();
-        int x = (int) Math.round(x0 + u * (x1 - x0));
-        int y = (int) Math.round(y0 + u * (y1 - y0));
-        int w = strokeWidth;
-        if (w > 1) {
-            x += (rand.nextInt(w) - w / 2);
-            y += (rand.nextInt(w) - w / 2);
+    public Location getRandomPoint(Bounds bounds, Random random) {
+        double nextDouble = random.nextDouble();
+        int x = (int) Math.round(x0 + nextDouble * (x1 - x0));
+        int y = (int) Math.round(y0 + nextDouble * (y1 - y0));
+        int width = strokeWidth;
+        if (width > 1) {
+            x += (random.nextInt(width) - width / 2);
+            y += (random.nextInt(width) - width / 2);
         }
         return Location.create(x, y);
     }
 
     @Override
-    public boolean contains(Location loc, boolean assumeFilled) {
-        int xq = loc.getX();
-        int yq = loc.getY();
-        double d = LineUtil.ptDistSqSegment(x0, y0, x1, y1, xq, yq);
+    public boolean contains(Location location, boolean assumeFilled) {
+        int xq = location.getX();
+        int yq = location.getY();
+        double segment = LineUtil.ptDistSqSegment(x0, y0, x1, y1, xq, yq);
         int thresh = Math.max(ON_LINE_THRESH, strokeWidth / 2);
-        return d < thresh * thresh;
+        return segment < thresh * thresh;
     }
 
     @Override
-    public void translate(int dx, int dy) {
-        x0 += dx;
-        y0 += dy;
-        x1 += dx;
-        y1 += dy;
+    public void translate(int deltaX, int deltaY) {
+        x0 += deltaX;
+        y0 += deltaY;
+        x1 += deltaX;
+        y1 += deltaY;
     }
 
     public List<Handle> getHandles() {
@@ -172,41 +172,41 @@ public class Line extends AbstractCanvasObject {
 
     @Override
     public Handle moveHandle(HandleGesture gesture) {
-        Handle h = gesture.getHandle();
-        int dx = gesture.getDeltaX();
-        int dy = gesture.getDeltaY();
-        Handle ret = null;
-        if (h.isAt(x0, y0)) {
-            x0 += dx;
-            y0 += dy;
-            ret = new Handle(this, x0, y0);
+        Handle handle = gesture.getHandle();
+        int deltaX = gesture.getDeltaX();
+        int deltaY = gesture.getDeltaY();
+        Handle returnHandle = null;
+        if (handle.isAt(x0, y0)) {
+            x0 += deltaX;
+            y0 += deltaY;
+            returnHandle = new Handle(this, x0, y0);
         }
-        if (h.isAt(x1, y1)) {
-            x1 += dx;
-            y1 += dy;
-            ret = new Handle(this, x1, y1);
+        if (handle.isAt(x1, y1)) {
+            x1 += deltaX;
+            y1 += deltaY;
+            returnHandle = new Handle(this, x1, y1);
         }
         bounds = Bounds.create(x0, y0, 0, 0).add(x1, y1);
-        return ret;
+        return returnHandle;
     }
 
     @Override
-    public void paint(Graphics g, HandleGesture gesture) {
-        if (setForStroke(g)) {
+    public void paint(Graphics graphics, HandleGesture gesture) {
+        if (setForStroke(graphics)) {
             int x0 = this.x0;
             int y0 = this.y0;
             int x1 = this.x1;
             int y1 = this.y1;
-            Handle h = gesture.getHandle();
-            if (h.isAt(x0, y0)) {
+            Handle handle = gesture.getHandle();
+            if (handle.isAt(x0, y0)) {
                 x0 += gesture.getDeltaX();
                 y0 += gesture.getDeltaY();
             }
-            if (h.isAt(x1, y1)) {
+            if (handle.isAt(x1, y1)) {
                 x1 += gesture.getDeltaX();
                 y1 += gesture.getDeltaY();
             }
-            g.drawLine(x0, y0, x1, y1);
+            graphics.drawLine(x0, y0, x1, y1);
         }
     }
 

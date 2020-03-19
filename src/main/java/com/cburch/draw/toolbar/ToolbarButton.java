@@ -32,10 +32,10 @@ class ToolbarButton extends JComponent implements MouseListener {
 
     @Override
     public Dimension getPreferredSize() {
-        Dimension dim = item.getDimension(toolbar.getOrientation());
-        dim.width += 2 * BORDER;
-        dim.height += 2 * BORDER;
-        return dim;
+        Dimension dimension = item.getDimension(toolbar.getOrientation());
+        dimension.width += 2 * BORDER;
+        dimension.height += 2 * BORDER;
+        return dimension;
     }
 
     @Override
@@ -44,57 +44,57 @@ class ToolbarButton extends JComponent implements MouseListener {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics graphics) {
         if (toolbar.getPressed() == this) {
-            Dimension dim = item.getDimension(toolbar.getOrientation());
-            Color defaultColor = g.getColor();
-            GraphicsUtil.switchToWidth(g, 2);
-            g.setColor(Color.GRAY);
-            g.fillRect(BORDER, BORDER, dim.width, dim.height);
-            GraphicsUtil.switchToWidth(g, 1);
-            g.setColor(defaultColor);
+            Dimension dimension = item.getDimension(toolbar.getOrientation());
+            Color defaultColor = graphics.getColor();
+            GraphicsUtil.switchToWidth(graphics, 2);
+            graphics.setColor(Color.GRAY);
+            graphics.fillRect(BORDER, BORDER, dimension.width, dimension.height);
+            GraphicsUtil.switchToWidth(graphics, 1);
+            graphics.setColor(defaultColor);
         }
 
-        Graphics g2 = g.create();
-        g2.translate(BORDER, BORDER);
-        item.paintIcon(ToolbarButton.this, g2);
-        g2.dispose();
+        Graphics graphicsClone = graphics.create();
+        graphicsClone.translate(BORDER, BORDER);
+        item.paintIcon(ToolbarButton.this, graphicsClone);
+        graphicsClone.dispose();
 
         // draw selection indicator
         if (toolbar.getToolbarModel().isSelected(item)) {
-            Dimension dim = item.getDimension(toolbar.getOrientation());
-            GraphicsUtil.switchToWidth(g, 2);
-            g.setColor(Color.BLACK);
-            g.drawRect(BORDER, BORDER, dim.width, dim.height);
-            GraphicsUtil.switchToWidth(g, 1);
+            Dimension dimension = item.getDimension(toolbar.getOrientation());
+            GraphicsUtil.switchToWidth(graphics, 2);
+            graphics.setColor(Color.BLACK);
+            graphics.drawRect(BORDER, BORDER, dimension.width, dimension.height);
+            GraphicsUtil.switchToWidth(graphics, 1);
         }
     }
 
     @Override
-    public String getToolTipText(MouseEvent e) {
+    public String getToolTipText(MouseEvent event) {
         return item.getToolTip();
     }
 
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent event) {
         if (item != null && item.isSelectable()) {
             toolbar.setPressed(this);
         }
     }
 
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent event) {
         if (toolbar.getPressed() == this) {
             toolbar.getToolbarModel().itemSelected(item);
             toolbar.setPressed(null);
         }
     }
 
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(MouseEvent event) {
     }
 
-    public void mouseEntered(MouseEvent e) {
+    public void mouseEntered(MouseEvent event) {
     }
 
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(MouseEvent event) {
         toolbar.setPressed(null);
     }
 }

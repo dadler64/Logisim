@@ -64,13 +64,13 @@ public class PriorityEncoder extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING || attr == Plexers.ATTR_SELECT) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING || attribute == Plexers.ATTR_SELECT) {
             instance.recomputeBounds();
             updatePorts(instance);
-        } else if (attr == Plexers.ATTR_SELECT) {
+        } else if (attribute == Plexers.ATTR_SELECT) {
             updatePorts(instance);
-        } else if (attr == Plexers.ATTR_DISABLED) {
+        } else if (attribute == Plexers.ATTR_DISABLED) {
             instance.fireInvalidated();
         }
     }

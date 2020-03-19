@@ -16,16 +16,16 @@ class PrefMonitorInt extends AbstractPrefMonitor<Integer> {
         this.dflt = dflt;
         this.value = dflt;
         Preferences prefs = AppPreferences.getPreferences();
-        set(Integer.valueOf(prefs.getInt(name, dflt)));
+        set(prefs.getInt(name, dflt));
         prefs.addPreferenceChangeListener(this);
     }
 
     public Integer get() {
-        return Integer.valueOf(value);
+        return value;
     }
 
     public void set(Integer newValue) {
-        int newVal = newValue.intValue();
+        int newVal = newValue;
         if (value != newVal) {
             AppPreferences.getPreferences().putInt(getIdentifier(), newVal);
         }
@@ -41,7 +41,7 @@ class PrefMonitorInt extends AbstractPrefMonitor<Integer> {
             if (newValue != oldValue) {
                 value = newValue;
                 AppPreferences.firePropertyChange(name,
-                        Integer.valueOf(oldValue), Integer.valueOf(newValue));
+                        oldValue, newValue);
             }
         }
     }

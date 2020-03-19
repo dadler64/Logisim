@@ -3,6 +3,10 @@
 
 package com.cburch.logisim.gui.start;
 
+import static com.adlerd.logger.Logger.errorln;
+import static com.adlerd.logger.Logger.infoln;
+import static com.adlerd.logger.Logger.outputln;
+
 import com.cburch.logisim.Main;
 import com.cburch.logisim.file.LoadFailedException;
 import com.cburch.logisim.file.Loader;
@@ -27,26 +31,21 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class Startup {
 
-    // Uncomment ONLY ONE to change the UI theme
-    private static final String LOOK_AND_FEEL = "CrossPlatform";
     private static Startup startupTemp = null;
     // based on command line
+    private ArrayList<File> filesToOpen = new ArrayList<>();
     private boolean isTty;
-    private File templateFile = null;
     private boolean templateEmpty = false;
     private boolean templatePlain = false;
-    private ArrayList<File> filesToOpen = new ArrayList<>();
     private boolean showSplash;
+    private ArrayList<File> filesToPrint = new ArrayList<>();
     private File loadFile;
+    private boolean initialized = false;
     private HashMap<File, File> substitutions = new HashMap<>();
     private int ttyFormat = 0;
     // from other sources
-    private boolean initialized = false;
     private SplashScreen monitor = null;
-    private ArrayList<File> filesToPrint = new ArrayList<>();
-//    private static final String LOOK_AND_FEEL = "Motif";
-//    private static final String LOOK_AND_FEEL = "System";
-//    private static final String LOOK_AND_FEEL = "Windows";
+    private File templateFile = null;
 
     private Startup(boolean isTty) {
         this.isTty = isTty;
@@ -79,9 +78,11 @@ public class Startup {
             MacOsAdapter.addListeners(true);
         } catch (ClassNotFoundException ignored) {
         } catch (Throwable t) {
+            t.printStackTrace();
             try {
                 MacOsAdapter.addListeners(false);
-            } catch (Throwable ignored) {
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
         }
     }
@@ -94,10 +95,10 @@ public class Startup {
                 return;
             }
         }
-        System.err.println(Strings.get("invalidLocaleError")); //OK
-        System.err.println(Strings.get("invalidLocaleOptionsHeader")); //OK
+        errorln(Strings.get("invalidLocaleError")); //OK
+        errorln(Strings.get("invalidLocaleOptionsHeader")); //OK
         for (Locale option : options) {
-            System.err.println("   " + option.toString()); //OK
+            errorln("   " + option.toString()); //OK
         }
         System.exit(-1);
     }
@@ -136,36 +137,35 @@ public class Startup {
         }
 
         String theme;
-        switch (LOOK_AND_FEEL) {
-            case "CrossPlatform":
+        String os = System.getProperty("os.name").split(" ")[0]; // Get the first word of the os.name string
+
+        switch (os) {
+            case "Mac":
+                theme = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+                break;
+            case "Linux":
                 theme = UIManager.getCrossPlatformLookAndFeelClassName();
-                break;
-            case "Motif":
-                theme = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-                break;
-            case "System":
-                theme = UIManager.getSystemLookAndFeelClassName();
                 break;
             case "Windows":
                 theme = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
                 break;
             default:
-                System.err.println("Unexpected value of LOOK_AND_FEEL specified: " + LOOK_AND_FEEL);
-                theme = UIManager.getCrossPlatformLookAndFeelClassName();
+                errorln("Unknown theme specified for os: " + os);
+                theme = UIManager.getSystemLookAndFeelClassName();
         }
 
         try {
             UIManager.setLookAndFeel(theme);
         } catch (ClassNotFoundException e) {
-            System.err.println("Couldn't find class for specified look and feel:" + theme);
-            System.err.println("Did you include the L&F library in the class path?");
-            System.err.println("Using the default look and feel.");
+            errorln("Couldn't find class for specified look and feel:" + theme);
+            errorln("Did you include the L&F library in the class path?");
+            errorln("Using the default look and feel.");
         } catch (UnsupportedLookAndFeelException e) {
-            System.err.println("Can't use the specified look and feel (" + theme + ") on this platform.");
-            System.err.println("Using the default look and feel.");
+            errorln("Can't use the specified look and feel (" + theme + ") on this platform.");
+            errorln("Using the default look and feel.");
         } catch (Exception e) {
-            System.err.println("Couldn't get specified look and feel (" + theme + "), for some reason.");
-            System.err.println("Using the default look and feel.");
+            errorln("Couldn't get specified look and feel (" + theme + "), for some reason.");
+            errorln("Using the default look and feel.");
             e.printStackTrace(System.err);
         }
         // parse arguments
@@ -176,7 +176,7 @@ public class Startup {
                     i++;
                     String[] formats = args[i].split(",");
                     if (formats.length == 0) {
-                        System.err.println(Strings.get("ttyFormatError")); //OK
+                        errorln(Strings.get("ttyFormatError")); //OK
                     }
                     for (String format : formats) {
                         String fmt = format.trim();
@@ -197,12 +197,12 @@ public class Startup {
                                 startup.ttyFormat |= TtyInterface.FORMAT_STATISTICS;
                                 break;
                             default:
-                                System.err.println(Strings.get("ttyFormatError")); //OK
+                                errorln(Strings.get("ttyFormatError")); //OK
                                 break;
                         }
                     }
                 } else {
-                    System.err.println(Strings.get("ttyFormatError")); //OK
+                    errorln(Strings.get("ttyFormatError")); //OK
                     return null;
                 }
             } else if (arg.equals("-sub")) {
@@ -210,41 +210,41 @@ public class Startup {
                     File a = new File(args[i + 1]);
                     File b = new File(args[i + 2]);
                     if (startup.substitutions.containsKey(a)) {
-                        System.err.println(Strings.get("argDuplicateSubstitutionError")); //OK
+                        errorln(Strings.get("argDuplicateSubstitutionError")); //OK
                         return null;
                     } else {
                         startup.substitutions.put(a, b);
                         i += 2;
                     }
                 } else {
-                    System.err.println(Strings.get("argTwoSubstitutionError")); //OK
+                    errorln(Strings.get("argTwoSubstitutionError")); //OK
                     return null;
                 }
             } else if (arg.equals("-load")) {
                 if (i + 1 < args.length) {
                     i++;
                     if (startup.loadFile != null) {
-                        System.err.println(Strings.get("loadMultipleError")); //OK
+                        errorln(Strings.get("loadMultipleError")); //OK
                     }
                     startup.loadFile = new File(args[i]);
                 } else {
-                    System.err.println(Strings.get("loadNeedsFileError")); //OK
+                    errorln(Strings.get("loadNeedsFileError")); //OK
                     return null;
                 }
             } else if (arg.equals("-empty")) {
                 if (startup.templateFile != null || startup.templateEmpty || startup.templatePlain) {
-                    System.err.println(Strings.get("argOneTemplateError")); //OK
+                    errorln(Strings.get("argOneTemplateError")); //OK
                     return null;
                 }
                 startup.templateEmpty = true;
             } else if (arg.equals("-plain")) {
                 if (startup.templateFile != null || startup.templateEmpty || startup.templatePlain) {
-                    System.err.println(Strings.get("argOneTemplateError")); //OK
+                    errorln(Strings.get("argOneTemplateError")); //OK
                     return null;
                 }
                 startup.templatePlain = true;
             } else if (arg.equals("-version")) {
-                System.out.println(Main.VERSION_NAME); //OK
+                infoln(Main.VERSION_NAME); //OK
                 return null;
             } else if (arg.equals("-gates")) {
                 i++;
@@ -257,7 +257,7 @@ public class Startup {
                 } else if (a.equals("rectangular")) {
                     AppPreferences.GATE_SHAPE.set(AppPreferences.SHAPE_RECTANGULAR);
                 } else {
-                    System.err.println(Strings.get("argGatesOptionError")); //OK
+                    errorln(Strings.get("argGatesOptionError")); //OK
                     System.exit(-1);
                 }
             } else if (arg.equals("-locale")) {
@@ -277,12 +277,12 @@ public class Startup {
                 } else if (a.equals("no")) {
                     AppPreferences.ACCENTS_REPLACE.setBoolean(true);
                 } else {
-                    System.err.println(Strings.get("argAccentsOptionError")); //OK
+                    errorln(Strings.get("argAccentsOptionError")); //OK
                     System.exit(-1);
                 }
             } else if (arg.equals("-template")) {
                 if (startup.templateFile != null || startup.templateEmpty || startup.templatePlain) {
-                    System.err.println(Strings.get("argOneTemplateError")); //OK
+                    errorln(Strings.get("argOneTemplateError")); //OK
                     return null;
                 }
                 i++;
@@ -291,10 +291,10 @@ public class Startup {
                 }
                 startup.templateFile = new File(args[i]);
                 if (!startup.templateFile.exists()) {
-                    System.err.println(StringUtil.format( //OK
+                    errorln(StringUtil.format( //OK
                             Strings.get("templateMissingError"), args[i]));
                 } else if (!startup.templateFile.canRead()) {
-                    System.err.println(StringUtil.format( //OK
+                    errorln(StringUtil.format( //OK
                             Strings.get("templateCannotReadError"), args[i]));
                 }
             } else if (arg.equals("-nosplash")) {
@@ -309,33 +309,33 @@ public class Startup {
             }
         }
         if (startup.isTty && startup.filesToOpen.isEmpty()) {
-            System.err.println(Strings.get("ttyNeedsFileError")); //OK
+            errorln(Strings.get("ttyNeedsFileError")); //OK
             return null;
         }
         if (startup.loadFile != null && !startup.isTty) {
-            System.err.println(Strings.get("loadNeedsTtyError")); //OK
+            errorln(Strings.get("loadNeedsTtyError")); //OK
             return null;
         }
         return startup;
     }
 
     private static void printUsage() {
-        System.err.println(StringUtil.format(Strings.get("argUsage"), Startup.class.getName())); //OK
-        System.err.println(); //OK
-        System.err.println(Strings.get("argOptionHeader")); //OK
-        System.err.println("   " + Strings.get("argAccentsOption")); //OK
-        System.err.println("   " + Strings.get("argClearOption")); //OK
-        System.err.println("   " + Strings.get("argEmptyOption")); //OK
-        System.err.println("   " + Strings.get("argGatesOption")); //OK
-        System.err.println("   " + Strings.get("argHelpOption")); //OK
-        System.err.println("   " + Strings.get("argLoadOption")); //OK
-        System.err.println("   " + Strings.get("argLocaleOption")); //OK
-        System.err.println("   " + Strings.get("argNoSplashOption")); //OK
-        System.err.println("   " + Strings.get("argPlainOption")); //OK
-        System.err.println("   " + Strings.get("argSubOption")); //OK
-        System.err.println("   " + Strings.get("argTemplateOption")); //OK
-        System.err.println("   " + Strings.get("argTtyOption")); //OK
-        System.err.println("   " + Strings.get("argVersionOption")); //OK
+        outputln(StringUtil.format(Strings.get("argUsage"), Startup.class.getName())); //OK
+        outputln(""); //OK
+        outputln(Strings.get("argOptionHeader")); //OK
+        outputln("   " + Strings.get("argAccentsOption")); //OK
+        outputln("   " + Strings.get("argClearOption")); //OK
+        outputln("   " + Strings.get("argEmptyOption")); //OK
+        outputln("   " + Strings.get("argGatesOption")); //OK
+        outputln("   " + Strings.get("argHelpOption")); //OK
+        outputln("   " + Strings.get("argLoadOption")); //OK
+        outputln("   " + Strings.get("argLocaleOption")); //OK
+        outputln("   " + Strings.get("argNoSplashOption")); //OK
+        outputln("   " + Strings.get("argPlainOption")); //OK
+        outputln("   " + Strings.get("argSubOption")); //OK
+        outputln("   " + Strings.get("argTemplateOption")); //OK
+        outputln("   " + Strings.get("argTtyOption")); //OK
+        outputln("   " + Strings.get("argVersionOption")); //OK
         System.exit(-1);
     }
 
@@ -354,7 +354,7 @@ public class Startup {
             if (toPrint != null) {
                 toPrint.getFrame().dispose();
             } else {
-                System.err.println("'toPrint' == null");
+                errorln("'toPrint' == null");
             }
         } else {
             filesToPrint.add(file);
@@ -412,7 +412,7 @@ public class Startup {
                 + templateLoader.getBuiltin().getLibrary("Gates").getTools().size();
         if (count < 0) {
             // this will never happen, but the optimizer doesn't know that...
-            System.err.println("FATAL ERROR - no components"); //OK
+            errorln("FATAL ERROR - no components"); //OK
             System.exit(-1);
         }
 
@@ -450,7 +450,7 @@ public class Startup {
                 try {
                     ProjectActions.doOpen(monitor, fileToOpen, substitutions);
                 } catch (LoadFailedException ex) {
-                    System.err.println(fileToOpen.getName() + ": " + ex.getMessage()); //OK
+                    errorln(fileToOpen.getName() + ": " + ex.getMessage()); //OK
                     System.exit(-1);
                 }
                 if (first) {

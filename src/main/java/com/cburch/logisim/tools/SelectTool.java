@@ -122,7 +122,7 @@ public class SelectTool extends Tool {
     }
 
     @Override
-    public boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver) {
+    public boolean isAllDefaultValues(AttributeSet attributeSet, LogisimVersion version) {
         return true;
     }
 

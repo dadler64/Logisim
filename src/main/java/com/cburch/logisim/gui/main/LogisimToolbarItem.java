@@ -45,21 +45,21 @@ class LogisimToolbarItem implements ToolbarItem {
         return menu != null && menu.isEnabled(action);
     }
 
-    public void paintIcon(Component destination, Graphics g) {
-        if (!isSelectable() && g instanceof Graphics2D) {
+    public void paintIcon(Component destination, Graphics graphics) {
+        if (!isSelectable() && graphics instanceof Graphics2D) {
             Composite c = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-            ((Graphics2D) g).setComposite(c);
+            ((Graphics2D) graphics).setComposite(c);
         }
 
         if (icon == null) {
-            g.setColor(new Color(255, 128, 128));
-            g.fillRect(4, 4, 8, 8);
-            g.setColor(Color.BLACK);
-            g.drawLine(4, 4, 12, 12);
-            g.drawLine(4, 12, 12, 4);
-            g.drawRect(4, 4, 8, 8);
+            graphics.setColor(new Color(255, 128, 128));
+            graphics.fillRect(4, 4, 8, 8);
+            graphics.setColor(Color.BLACK);
+            graphics.drawLine(4, 4, 12, 12);
+            graphics.drawLine(4, 12, 12, 4);
+            graphics.drawRect(4, 4, 8, 8);
         } else {
-            icon.paintIcon(destination, g, 0, 1);
+            icon.paintIcon(destination, graphics, 0, 1);
         }
     }
 

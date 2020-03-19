@@ -100,7 +100,7 @@ abstract class AbstractGate extends InstanceFactory {
     public Bounds getOffsetBounds(AttributeSet attributes) {
         GateAttributes attrs = (GateAttributes) attributes;
         Direction facing = attrs.facing;
-        int size = ((Integer) attrs.size.getValue()).intValue();
+        int size = (Integer) attrs.size.getValue();
         int inputs = attrs.inputs;
         if (inputs % 2 == 0) {
             inputs++;
@@ -124,23 +124,23 @@ abstract class AbstractGate extends InstanceFactory {
     }
 
     @Override
-    public boolean contains(Location loc, AttributeSet attrsBase) {
-        GateAttributes attrs = (GateAttributes) attrsBase;
-        if (super.contains(loc, attrs)) {
+    public boolean contains(Location location, AttributeSet attributeSet) {
+        GateAttributes attrs = (GateAttributes) attributeSet;
+        if (super.contains(location, attrs)) {
             if (attrs.negated == 0) {
                 return true;
             } else {
                 Direction facing = attrs.facing;
-                Bounds bds = getOffsetBounds(attrsBase);
+                Bounds bds = getOffsetBounds(attributeSet);
                 int delt;
                 if (facing == Direction.NORTH) {
-                    delt = loc.getY() - (bds.getY() + bds.getHeight());
+                    delt = location.getY() - (bds.getY() + bds.getHeight());
                 } else if (facing == Direction.SOUTH) {
-                    delt = loc.getY() - bds.getY();
+                    delt = location.getY() - bds.getY();
                 } else if (facing == Direction.WEST) {
-                    delt = loc.getX() - (bds.getX() + bds.getHeight());
+                    delt = location.getX() - (bds.getX() + bds.getHeight());
                 } else {
-                    delt = loc.getX() - bds.getX();
+                    delt = location.getX() - bds.getX();
                 }
                 if (Math.abs(delt) > 5) {
                     return true;
@@ -148,7 +148,7 @@ abstract class AbstractGate extends InstanceFactory {
                     int inputs = attrs.inputs;
                     for (int i = 1; i <= inputs; i++) {
                         Location offs = getInputOffset(attrs, i);
-                        if (loc.manhattanDistanceTo(offs) <= 5) {
+                        if (location.manhattanDistanceTo(offs) <= 5) {
                             return true;
                         }
                     }
@@ -389,16 +389,16 @@ abstract class AbstractGate extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == GateAttributes.ATTR_SIZE || attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == GateAttributes.ATTR_SIZE || attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             computePorts(instance);
             computeLabel(instance);
-        } else if (attr == GateAttributes.ATTR_INPUTS
-                || attr instanceof NegateAttribute) {
+        } else if (attribute == GateAttributes.ATTR_INPUTS
+                || attribute instanceof NegateAttribute) {
             instance.recomputeBounds();
             computePorts(instance);
-        } else if (attr == GateAttributes.ATTRIBUTE_XOR) {
+        } else if (attribute == GateAttributes.ATTRIBUTE_XOR) {
             instance.fireInvalidated();
         }
     }
@@ -406,7 +406,7 @@ abstract class AbstractGate extends InstanceFactory {
     private void computeLabel(Instance instance) {
         GateAttributes attrs = (GateAttributes) instance.getAttributeSet();
         Direction facing = attrs.facing;
-        int baseWidth = ((Integer) attrs.size.getValue()).intValue();
+        int baseWidth = (Integer) attrs.size.getValue();
 
         int axis = baseWidth / 2 + (negateOutput ? 10 : 0);
         int perp = 0;
@@ -525,7 +525,7 @@ abstract class AbstractGate extends InstanceFactory {
     Location getInputOffset(GateAttributes attrs, int index) {
         int inputs = attrs.inputs;
         Direction facing = attrs.facing;
-        int size = ((Integer) attrs.size.getValue()).intValue();
+        int size = (Integer) attrs.size.getValue();
         int axisLength = size + bonusWidth + (negateOutput ? 10 : 0);
         int negated = attrs.negated;
 

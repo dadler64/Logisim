@@ -24,23 +24,22 @@ public class Curve extends FillableCanvasObject {
     private Location p2;
     private Bounds bounds;
 
-    public Curve(Location end0, Location end1, Location ctrl) {
+    public Curve(Location end0, Location end1, Location control) {
         this.p0 = end0;
-        this.p1 = ctrl;
+        this.p1 = control;
         this.p2 = end1;
         bounds = CurveUtil.getBounds(toArray(p0), toArray(p1), toArray(p2));
     }
 
-    private static double[] toArray(Location loc) {
-        return new double[]{loc.getX(), loc.getY()};
+    private static double[] toArray(Location location) {
+        return new double[]{location.getX(), location.getY()};
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof Curve) {
-            Curve that = (Curve) other;
-            return this.p0.equals(that.p0) && this.p1.equals(that.p1)
-                    && this.p2.equals(that.p2) && super.matches(that);
+    public boolean matches(CanvasObject object) {
+        if (object instanceof Curve) {
+            Curve curve = (Curve) object;
+            return this.p0.equals(curve.p0) && this.p1.equals(curve.p1) && this.p2.equals(curve.p2) && super.matches(curve);
         } else {
             return false;
         }
@@ -56,8 +55,8 @@ public class Curve extends FillableCanvasObject {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
-        return SvgCreator.createCurve(doc, this);
+    public Element toSvgElement(Document document) {
+        return SvgCreator.createCurve(document, this);
     }
 
     public Location getEnd0() {
@@ -73,8 +72,7 @@ public class Curve extends FillableCanvasObject {
     }
 
     public QuadCurve2D getCurve2D() {
-        return new QuadCurve2D.Double(p0.getX(), p0.getY(),
-                p1.getX(), p1.getY(), p2.getX(), p2.getY());
+        return new QuadCurve2D.Double(p0.getX(), p0.getY(), p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
     @Override
@@ -93,45 +91,46 @@ public class Curve extends FillableCanvasObject {
     }
 
     @Override
-    public boolean contains(Location loc, boolean assumeFilled) {
-        Object type = getPaintType();
-        if (assumeFilled && type == DrawAttr.PAINT_STROKE) {
-            type = DrawAttr.PAINT_STROKE_FILL;
+    public boolean contains(Location location, boolean assumeFilled) {
+        Object paintType = getPaintType();
+        if (assumeFilled && paintType == DrawAttr.PAINT_STROKE) {
+            paintType = DrawAttr.PAINT_STROKE_FILL;
         }
-        if (type != DrawAttr.PAINT_FILL) {
+        if (paintType != DrawAttr.PAINT_FILL) {
             int stroke = getStrokeWidth();
-            double[] q = toArray(loc);
+            double[] locations = toArray(location);
             double[] p0 = toArray(this.p0);
             double[] p1 = toArray(this.p1);
             double[] p2 = toArray(this.p2);
-            double[] p = CurveUtil.findNearestPoint(q, p0, p1, p2);
-            if (p == null) {
+            double[] nearestPoint = CurveUtil.findNearestPoint(locations, p0, p1, p2);
+            if (nearestPoint == null) {
                 return false;
             }
 
-            int thr;
-            if (type == DrawAttr.PAINT_STROKE) {
-                thr = Math.max(Line.ON_LINE_THRESH, stroke / 2);
+            int threshold;
+            if (paintType == DrawAttr.PAINT_STROKE) {
+                threshold = Math.max(Line.ON_LINE_THRESH, stroke / 2);
             } else {
-                thr = stroke / 2;
+                threshold = stroke / 2;
             }
-            if (LineUtil.distanceSquared(p[0], p[1], q[0], q[1]) < thr * thr) {
+            if (LineUtil.distanceSquared(nearestPoint[0], nearestPoint[1], locations[0], locations[1])
+                    < threshold * threshold) {
                 return true;
             }
         }
-        if (type != DrawAttr.PAINT_STROKE) {
+        if (paintType != DrawAttr.PAINT_STROKE) {
             QuadCurve2D curve = getCurve(null);
-            return curve.contains(loc.getX(), loc.getY());
+            return curve.contains(location.getX(), location.getY());
         }
         return false;
     }
 
     @Override
-    public void translate(int dx, int dy) {
-        p0 = p0.translate(dx, dy);
-        p1 = p1.translate(dx, dy);
-        p2 = p2.translate(dx, dy);
-        bounds = bounds.translate(dx, dy);
+    public void translate(int deltaX, int deltaY) {
+        p0 = p0.translate(deltaX, deltaY);
+        p1 = p1.translate(deltaX, deltaY);
+        p2 = p2.translate(deltaX, deltaY);
+        bounds = bounds.translate(deltaX, deltaY);
     }
 
     public List<Handle> getHandles() {
@@ -148,51 +147,51 @@ public class Curve extends FillableCanvasObject {
             return new Handle[]{new Handle(this, p0), new Handle(this, p1),
                     new Handle(this, p2)};
         } else {
-            Handle g = gesture.getHandle();
-            int gx = g.getX() + gesture.getDeltaX();
-            int gy = g.getY() + gesture.getDeltaY();
-            Handle[] ret = {new Handle(this, p0), new Handle(this, p1),
+            Handle gestureHandle = gesture.getHandle();
+            int gx = gestureHandle.getX() + gesture.getDeltaX();
+            int gy = gestureHandle.getY() + gesture.getDeltaY();
+            Handle[] handles = {new Handle(this, p0), new Handle(this, p1),
                     new Handle(this, p2)};
-            if (g.isAt(p0)) {
+            if (gestureHandle.isAt(p0)) {
                 if (gesture.isShiftDown()) {
-                    Location p = LineUtil.snapTo8Cardinals(p2, gx, gy);
-                    ret[0] = new Handle(this, p);
+                    Location point = LineUtil.snapTo8Cardinals(p2, gx, gy);
+                    handles[0] = new Handle(this, point);
                 } else {
-                    ret[0] = new Handle(this, gx, gy);
+                    handles[0] = new Handle(this, gx, gy);
                 }
-            } else if (g.isAt(p2)) {
+            } else if (gestureHandle.isAt(p2)) {
                 if (gesture.isShiftDown()) {
-                    Location p = LineUtil.snapTo8Cardinals(p0, gx, gy);
-                    ret[2] = new Handle(this, p);
+                    Location point = LineUtil.snapTo8Cardinals(p0, gx, gy);
+                    handles[2] = new Handle(this, point);
                 } else {
-                    ret[2] = new Handle(this, gx, gy);
+                    handles[2] = new Handle(this, gx, gy);
                 }
-            } else if (g.isAt(p1)) {
+            } else if (gestureHandle.isAt(p1)) {
                 if (gesture.isShiftDown()) {
                     double x0 = p0.getX();
                     double y0 = p0.getY();
                     double x1 = p2.getX();
                     double y1 = p2.getY();
-                    double midx = (x0 + x1) / 2;
-                    double midy = (y0 + y1) / 2;
-                    double dx = x1 - x0;
-                    double dy = y1 - y0;
+                    double midPointX = (x0 + x1) / 2;
+                    double midPointY = (y0 + y1) / 2;
+                    double deltaX = x1 - x0;
+                    double deltaY = y1 - y0;
                     double[] p = LineUtil.nearestPointInfinite(gx, gy,
-                            midx, midy, midx - dy, midy + dx);
+                            midPointX, midPointY, midPointX - deltaY, midPointY + deltaX);
                     gx = (int) Math.round(p[0]);
                     gy = (int) Math.round(p[1]);
                 }
                 if (gesture.isAltDown()) {
                     double[] e0 = {p0.getX(), p0.getY()};
                     double[] e1 = {p2.getX(), p2.getY()};
-                    double[] mid = {gx, gy};
-                    double[] ct = CurveUtil.interpolate(e0, e1, mid);
+                    double[] midPoint = {gx, gy};
+                    double[] ct = CurveUtil.interpolate(e0, e1, midPoint);
                     gx = (int) Math.round(ct[0]);
                     gy = (int) Math.round(ct[1]);
                 }
-                ret[1] = new Handle(this, gx, gy);
+                handles[1] = new Handle(this, gx, gy);
             }
-            return ret;
+            return handles;
         }
     }
 
@@ -203,38 +202,38 @@ public class Curve extends FillableCanvasObject {
 
     @Override
     public Handle moveHandle(HandleGesture gesture) {
-        Handle[] hs = getHandleArray(gesture);
-        Handle ret = null;
-        if (!hs[0].equals(p0)) {
-            p0 = hs[0].getLocation();
-            ret = hs[0];
+        Handle[] handles = getHandleArray(gesture);
+        Handle handle = null;
+        if (!handles[0].getLocation().equals(p0)) {
+            p0 = handles[0].getLocation();
+            handle = handles[0];
         }
-        if (!hs[1].equals(p1)) {
-            p1 = hs[1].getLocation();
-            ret = hs[1];
+        if (!handles[1].getLocation().equals(p1)) {
+            p1 = handles[1].getLocation();
+            handle = handles[1];
         }
-        if (!hs[2].equals(p2)) {
-            p2 = hs[2].getLocation();
-            ret = hs[2];
+        if (!handles[2].getLocation().equals(p2)) {
+            p2 = handles[2].getLocation();
+            handle = handles[2];
         }
         bounds = CurveUtil.getBounds(toArray(p0), toArray(p1), toArray(p2));
-        return ret;
+        return handle;
     }
 
     @Override
-    public void paint(Graphics g, HandleGesture gesture) {
+    public void paint(Graphics graphics, HandleGesture gesture) {
         QuadCurve2D curve = getCurve(gesture);
-        if (setForFill(g)) {
-            ((Graphics2D) g).fill(curve);
+        if (setForFill(graphics)) {
+            ((Graphics2D) graphics).fill(curve);
         }
-        if (setForStroke(g)) {
-            ((Graphics2D) g).draw(curve);
+        if (setForStroke(graphics)) {
+            ((Graphics2D) graphics).draw(curve);
         }
     }
 
     private QuadCurve2D getCurve(HandleGesture gesture) {
-        Handle[] p = getHandleArray(gesture);
-        return new QuadCurve2D.Double(p[0].getX(), p[0].getY(),
-                p[1].getX(), p[1].getY(), p[2].getX(), p[2].getY());
+        Handle[] handles = getHandleArray(gesture);
+        return new QuadCurve2D.Double(handles[0].getX(), handles[0].getY(), handles[1].getX(), handles[1].getY(),
+                handles[2].getX(), handles[2].getY());
     }
 }

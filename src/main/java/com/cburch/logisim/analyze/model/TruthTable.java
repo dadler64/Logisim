@@ -202,7 +202,7 @@ public class TruthTable {
                     outputColumns.put(output, newColumn);
                 }
             } else if (action == VariableListEvent.REMOVE) {
-                int index = ((Integer) event.getData()).intValue();
+                int index = (Integer) event.getData();
                 for (Map.Entry<String, Entry[]> curEntry : outputColumns.entrySet()) {
                     String output = curEntry.getKey();
                     Entry[] column = curEntry.getValue();
@@ -210,7 +210,7 @@ public class TruthTable {
                     outputColumns.put(output, newColumn);
                 }
             } else if (action == VariableListEvent.MOVE) {
-                int delta = ((Integer) event.getData()).intValue();
+                int delta = (Integer) event.getData();
                 int newIndex = model.getInputs().indexOf(event.getVariable());
                 for (Map.Entry<String, Entry[]> curEntry : outputColumns.entrySet()) {
                     String output = curEntry.getKey();
@@ -230,7 +230,7 @@ public class TruthTable {
             } else if (action == VariableListEvent.REPLACE) {
                 Entry[] column = outputColumns.remove(event.getVariable());
                 if (column != null) {
-                    int index = ((Integer) event.getData()).intValue();
+                    int index = (Integer) event.getData();
                     String newVariable = model.getOutputs().get(index);
                     outputColumns.put(newVariable, column);
                 }

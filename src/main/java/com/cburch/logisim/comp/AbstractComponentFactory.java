@@ -51,51 +51,48 @@ public abstract class AbstractComponentFactory implements ComponentFactory {
         return AttributeSets.EMPTY;
     }
 
-    public boolean isAllDefaultValues(AttributeSet attributes, LogisimVersion version) {
+    public boolean isAllDefaultValues(AttributeSet attributeSet, LogisimVersion version) {
         return false;
     }
 
     public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
-        AttributeSet dfltSet = defaultSet;
-        if (dfltSet == null) {
-            dfltSet = (AttributeSet) createAttributeSet().clone();
-            defaultSet = dfltSet;
+        AttributeSet defaultSet = this.defaultSet;
+        if (defaultSet == null) {
+            defaultSet = (AttributeSet) createAttributeSet().clone();
+            this.defaultSet = defaultSet;
         }
-        return dfltSet.getValue(attribute);
+        return defaultSet.getValue(attribute);
     }
 
     //
     // user interface methods
     //
-    public void drawGhost(ComponentDrawContext context, Color color,
-            int x, int y, AttributeSet attributes) {
-        Graphics g = context.getGraphics();
-        Bounds bds = getOffsetBounds(attributes);
-        g.setColor(color);
-        GraphicsUtil.switchToWidth(g, 2);
-        g.drawRect(x + bds.getX(), y + bds.getY(),
-                bds.getWidth(), bds.getHeight());
+    public void drawGhost(ComponentDrawContext context, Color color, int x, int y, AttributeSet attributes) {
+        Graphics graphics = context.getGraphics();
+        Bounds bounds = getOffsetBounds(attributes);
+        graphics.setColor(color);
+        GraphicsUtil.switchToWidth(graphics, 2);
+        graphics.drawRect(x + bounds.getX(), y + bounds.getY(), bounds.getWidth(), bounds.getHeight());
     }
 
-    public void paintIcon(ComponentDrawContext context,
-            int x, int y, AttributeSet attributes) {
-        Graphics g = context.getGraphics();
+    public void paintIcon(ComponentDrawContext context, int x, int y, AttributeSet attributes) {
+        Graphics graphics = context.getGraphics();
         if (toolIcon != null) {
-            toolIcon.paintIcon(context.getDestination(), g, x + 2, y + 2);
+            toolIcon.paintIcon(context.getDestination(), graphics, x + 2, y + 2);
         } else {
-            g.setColor(Color.black);
-            g.drawRect(x + 5, y + 2, 11, 17);
-            Value[] v = {Value.TRUE, Value.FALSE};
+            graphics.setColor(Color.black);
+            graphics.drawRect(x + 5, y + 2, 11, 17);
+            Value[] values = {Value.TRUE, Value.FALSE};
             for (int i = 0; i < 3; i++) {
-                g.setColor(v[i % 2].getColor());
-                g.fillOval(x + 5 - 1, y + 5 + 5 * i - 1, 3, 3);
-                g.setColor(v[(i + 1) % 2].getColor());
-                g.fillOval(x + 16 - 1, y + 5 + 5 * i - 1, 3, 3);
+                graphics.setColor(values[i % 2].getColor());
+                graphics.fillOval(x + 5 - 1, y + 5 + 5 * i - 1, 3, 3);
+                graphics.setColor(values[(i + 1) % 2].getColor());
+                graphics.fillOval(x + 16 - 1, y + 5 + 5 * i - 1, 3, 3);
             }
         }
     }
 
-    public Object getFeature(Object key, AttributeSet attrs) {
+    public Object getFeature(Object key, AttributeSet attributeSet) {
         return null;
     }
 

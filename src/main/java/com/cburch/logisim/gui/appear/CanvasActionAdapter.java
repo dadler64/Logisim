@@ -31,7 +31,7 @@ public class CanvasActionAdapter extends com.cburch.logisim.proj.Action {
     }
 
     @Override
-    public void doIt(Project proj) {
+    public void doIt(Project project) {
         wasDefault = circuit.getAppearance().isDefaultAppearance();
         if (affectsPorts()) {
             ActionTransaction xn = new ActionTransaction(true);
@@ -42,7 +42,7 @@ public class CanvasActionAdapter extends com.cburch.logisim.proj.Action {
     }
 
     @Override
-    public void undo(Project proj) {
+    public void undo(Project project) {
         if (affectsPorts()) {
             ActionTransaction xn = new ActionTransaction(false);
             xn.execute();
@@ -67,7 +67,7 @@ public class CanvasActionAdapter extends com.cburch.logisim.proj.Action {
 
         private boolean forward;
 
-        ActionTransaction(boolean forward) {
+        private ActionTransaction(boolean forward) {
             this.forward = forward;
         }
 

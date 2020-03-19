@@ -445,10 +445,10 @@ public class Probe extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == Pin.ATTR_LABEL_LOC) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == Pin.ATTR_LABEL_LOC) {
             configureLabel(instance);
-        } else if (attr == StdAttr.FACING || attr == RadixOption.ATTRIBUTE) {
+        } else if (attribute == StdAttr.FACING || attribute == RadixOption.ATTRIBUTE) {
             instance.recomputeBounds();
             configureLabel(instance);
         }

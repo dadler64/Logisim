@@ -15,16 +15,16 @@ import javax.swing.Icon;
 
 public abstract class AbstractTool extends CanvasTool {
 
-    public static AbstractTool[] getTools(DrawingAttributeSet attrs) {
+    public static AbstractTool[] getTools(DrawingAttributeSet attributes) {
         return new AbstractTool[]{
                 new SelectTool(),
-                new LineTool(attrs),
-                new CurveTool(attrs),
-                new PolyTool(false, attrs),
-                new RectangleTool(attrs),
-                new RoundRectangleTool(attrs),
-                new OvalTool(attrs),
-                new PolyTool(true, attrs),
+                new LineTool(attributes),
+                new CurveTool(attributes),
+                new PolyTool(false, attributes),
+                new RectangleTool(attributes),
+                new RoundRectangleTool(attributes),
+                new OvalTool(attributes),
+                new PolyTool(true, attributes),
         };
     }
 
@@ -51,27 +51,27 @@ public abstract class AbstractTool extends CanvasTool {
     }
 
     @Override
-    public void mouseMoved(Canvas canvas, MouseEvent e) {
+    public void mouseMoved(Canvas canvas, MouseEvent event) {
     }
 
     @Override
-    public void mousePressed(Canvas canvas, MouseEvent e) {
+    public void mousePressed(Canvas canvas, MouseEvent event) {
     }
 
     @Override
-    public void mouseDragged(Canvas canvas, MouseEvent e) {
+    public void mouseDragged(Canvas canvas, MouseEvent event) {
     }
 
     @Override
-    public void mouseReleased(Canvas canvas, MouseEvent e) {
+    public void mouseReleased(Canvas canvas, MouseEvent event) {
     }
 
     @Override
-    public void mouseEntered(Canvas canvas, MouseEvent e) {
+    public void mouseEntered(Canvas canvas, MouseEvent event) {
     }
 
     @Override
-    public void mouseExited(Canvas canvas, MouseEvent e) {
+    public void mouseExited(Canvas canvas, MouseEvent event) {
     }
 
     /**
@@ -82,18 +82,18 @@ public abstract class AbstractTool extends CanvasTool {
     }
 
     @Override
-    public void keyPressed(Canvas canvas, KeyEvent e) {
+    public void keyPressed(Canvas canvas, KeyEvent event) {
     }
 
     @Override
-    public void keyReleased(Canvas canvas, KeyEvent e) {
+    public void keyReleased(Canvas canvas, KeyEvent event) {
     }
 
     @Override
-    public void keyTyped(Canvas canvas, KeyEvent e) {
+    public void keyTyped(Canvas canvas, KeyEvent event) {
     }
 
     @Override
-    public void draw(Canvas canvas, Graphics g) {
+    public void draw(Canvas canvas, Graphics graphics) {
     }
 }

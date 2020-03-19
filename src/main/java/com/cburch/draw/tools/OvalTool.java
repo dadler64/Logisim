@@ -14,10 +14,10 @@ import javax.swing.Icon;
 
 public class OvalTool extends RectangularTool {
 
-    private DrawingAttributeSet attrs;
+    private DrawingAttributeSet attributeSet;
 
-    public OvalTool(DrawingAttributeSet attrs) {
-        this.attrs = attrs;
+    public OvalTool(DrawingAttributeSet attributeSet) {
+        this.attributeSet = attributeSet;
     }
 
     @Override
@@ -27,21 +27,21 @@ public class OvalTool extends RectangularTool {
 
     @Override
     public List<Attribute<?>> getAttributes() {
-        return DrawAttr.getFillAttributes(attrs.getValue(DrawAttr.PAINT_TYPE));
+        return DrawAttr.getFillAttributes(attributeSet.getValue(DrawAttr.PAINT_TYPE));
     }
 
     @Override
-    public CanvasObject createShape(int x, int y, int w, int h) {
-        return attrs.applyTo(new Oval(x, y, w, h));
+    public CanvasObject createShape(int x, int y, int width, int height) {
+        return attributeSet.applyTo(new Oval(x, y, width, height));
     }
 
     @Override
-    public void drawShape(Graphics g, int x, int y, int w, int h) {
-        g.drawOval(x, y, w, h);
+    public void drawShape(Graphics graphics, int x, int y, int width, int height) {
+        graphics.drawOval(x, y, width, height);
     }
 
     @Override
-    public void fillShape(Graphics g, int x, int y, int w, int h) {
-        g.fillOval(x, y, w, h);
+    public void fillShape(Graphics graphics, int x, int y, int width, int height) {
+        graphics.fillOval(x, y, width, height);
     }
 }

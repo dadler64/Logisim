@@ -52,10 +52,10 @@ class LayoutPopupManager implements SelectionListener, MouseListener, MouseMotio
         }
     }
 
-    public void selectionChanged(SelectionEvent e) {
-        int act = e.getAction();
+    public void selectionChanged(SelectionEvent event) {
+        int act = event.getAction();
         if (act == SelectionEvent.ACTION_ADDED) {
-            Set<AppearancePort> ports = shouldShowPopup(e.getAffected());
+            Set<AppearancePort> ports = shouldShowPopup(event.getAffected());
             if (ports == null) {
                 hideCurrentPopup();
             } else {

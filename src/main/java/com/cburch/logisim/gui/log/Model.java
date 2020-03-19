@@ -8,7 +8,6 @@ import com.cburch.logisim.data.Value;
 import com.cburch.logisim.util.EventSourceWeakSupport;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import javax.swing.JFrame;
 
 class Model {
@@ -134,12 +133,7 @@ class Model {
     }
 
     void fireSelectionChanged(ModelEvent e) {
-        for (Iterator<SelectionItem> it = log.keySet().iterator(); it.hasNext(); ) {
-            SelectionItem i = it.next();
-            if (selection.indexOf(i) < 0) {
-                it.remove();
-            }
-        }
+        log.keySet().removeIf(i -> selection.indexOf(i) < 0);
 
         for (ModelListener l : listeners) {
             l.selectionChanged(e);

@@ -20,25 +20,25 @@ public class ToolbarSeparator implements ToolbarItem {
         return false;
     }
 
-    public void paintIcon(Component destination, Graphics g) {
-        Dimension dim = destination.getSize();
-        g.setColor(Color.GRAY);
-        int x = 0;
-        int y = 0;
-        int w = dim.width;
-        int h = dim.height;
-        if (h >= w) { // separator is a vertical line in horizontal toolbar
-            h -= 8;
+    public void paintIcon(Component destination, Graphics graphics) {
+        Dimension dimension = destination.getSize();
+        graphics.setColor(Color.GRAY);
+        int x;
+        int y;
+        int width = dimension.width;
+        int height = dimension.height;
+        if (height >= width) { // separator is a vertical line in horizontal toolbar
+            height -= 8;
             y = 2;
-            x = (w - 2) / 2;
-            w = 2;
+            x = (width - 2) / 2;
+            width = 2;
         } else { // separator is a horizontal line in vertical toolbar
-            w -= 8;
+            width -= 8;
             x = 2;
-            y = (h - 2) / 2;
-            h = 2;
+            y = (height - 2) / 2;
+            height = 2;
         }
-        g.fillRect(x, y, w, h);
+        graphics.fillRect(x, y, width, height);
     }
 
     public String getToolTip() {

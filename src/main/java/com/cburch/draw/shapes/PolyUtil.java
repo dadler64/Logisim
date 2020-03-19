@@ -11,62 +11,59 @@ public class PolyUtil {
     private PolyUtil() {
     }
 
-    public static ClosestResult getClosestPoint(Location loc, boolean closed,
-            Handle[] hs) {
-        int xq = loc.getX();
-        int yq = loc.getY();
-        ClosestResult ret = new ClosestResult();
-        ret.dist = Double.MAX_VALUE;
-        if (hs.length > 0) {
-            Handle h0 = hs[0];
+    public static ClosestResult getClosestPoint(Location location, boolean isClosed, Handle[] handles) {
+        int xq = location.getX();
+        int yq = location.getY();
+        ClosestResult result = new ClosestResult();
+        result.distance = Double.MAX_VALUE;
+        if (handles.length > 0) {
+            Handle h0 = handles[0];
             int x0 = h0.getX();
             int y0 = h0.getY();
-            int stop = closed ? hs.length : (hs.length - 1);
+            int stop = isClosed ? handles.length : (handles.length - 1);
             for (int i = 0; i < stop; i++) {
-                Handle h1 = hs[(i + 1) % hs.length];
+                Handle h1 = handles[(i + 1) % handles.length];
                 int x1 = h1.getX();
                 int y1 = h1.getY();
-                double d = LineUtil.ptDistSqSegment(x0, y0, x1, y1, xq, yq);
-                if (d < ret.dist) {
-                    ret.dist = d;
-                    ret.prevHandle = h0;
-                    ret.nextHandle = h1;
+                double distanceSegment = LineUtil.ptDistSqSegment(x0, y0, x1, y1, xq, yq);
+                if (distanceSegment < result.distance) {
+                    result.distance = distanceSegment;
+                    result.previousHandle = h0;
+                    result.nextHandle = h1;
                 }
                 h0 = h1;
                 x0 = x1;
                 y0 = y1;
             }
         }
-        if (ret.dist == Double.MAX_VALUE) {
+        if (result.distance == Double.MAX_VALUE) {
             return null;
         } else {
-            Handle h0 = ret.prevHandle;
-            Handle h1 = ret.nextHandle;
-            double[] p = LineUtil.nearestPointSegment(xq, yq,
-                    h0.getX(), h0.getY(), h1.getX(), h1.getY());
-            ret.loc = Location.create((int) Math.round(p[0]),
-                    (int) Math.round(p[1]));
-            return ret;
+            Handle h0 = result.previousHandle;
+            Handle h1 = result.nextHandle;
+            double[] pointSegment = LineUtil.nearestPointSegment(xq, yq, h0.getX(), h0.getY(), h1.getX(), h1.getY());
+            result.location = Location.create((int) Math.round(pointSegment[0]), (int) Math.round(pointSegment[1]));
+            return result;
         }
     }
 
     public static class ClosestResult {
 
-        private double dist;
-        private Location loc;
-        private Handle prevHandle;
+        private double distance;
+        private Location location;
+        private Handle previousHandle;
         private Handle nextHandle;
 
         public double getDistanceSq() {
-            return dist;
+            return distance;
         }
 
         public Location getLocation() {
-            return loc;
+            return location;
         }
 
         public Handle getPreviousHandle() {
-            return prevHandle;
+            return previousHandle;
         }
 
         public Handle getNextHandle() {

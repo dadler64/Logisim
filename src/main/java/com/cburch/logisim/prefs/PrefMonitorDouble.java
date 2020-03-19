@@ -16,16 +16,16 @@ class PrefMonitorDouble extends AbstractPrefMonitor<Double> {
         this.dflt = dflt;
         this.value = dflt;
         Preferences prefs = AppPreferences.getPreferences();
-        set(Double.valueOf(prefs.getDouble(name, dflt)));
+        set(prefs.getDouble(name, dflt));
         prefs.addPreferenceChangeListener(this);
     }
 
     public Double get() {
-        return Double.valueOf(value);
+        return value;
     }
 
     public void set(Double newValue) {
-        double newVal = newValue.doubleValue();
+        double newVal = newValue;
         if (value != newVal) {
             AppPreferences.getPreferences().putDouble(getIdentifier(), newVal);
         }
@@ -41,7 +41,7 @@ class PrefMonitorDouble extends AbstractPrefMonitor<Double> {
             if (newValue != oldValue) {
                 value = newValue;
                 AppPreferences.firePropertyChange(name,
-                        Double.valueOf(oldValue), Double.valueOf(newValue));
+                        oldValue, newValue);
             }
         }
     }

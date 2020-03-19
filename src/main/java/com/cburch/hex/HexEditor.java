@@ -85,17 +85,17 @@ public class HexEditor extends JComponent implements Scrollable {
         int x1 = measures.toX(end) + measures.getCellWidth();
         int y0 = measures.toY(start);
         int y1 = measures.toY(end);
-        int h = measures.getCellHeight();
+        int height = measures.getCellHeight();
         if (y0 == y1) {
-            scrollRectToVisible(new Rectangle(x0, y0, x1 - x0, h));
+            scrollRectToVisible(new Rectangle(x0, y0, x1 - x0, height));
         } else {
-            scrollRectToVisible(new Rectangle(x0, y0, x1 - x0, (y1 + h) - y0));
+            scrollRectToVisible(new Rectangle(x0, y0, x1 - x0, (y1 + height) - y0));
         }
     }
 
     @Override
-    public void setFont(Font value) {
-        super.setFont(value);
+    public void setFont(Font font) {
+        super.setFont(font);
         measures.recompute();
     }
 
@@ -106,31 +106,31 @@ public class HexEditor extends JComponent implements Scrollable {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        measures.ensureComputed(g);
+    protected void paintComponent(Graphics graphics) {
+        measures.ensureComputed(graphics);
 
-        Rectangle clip = g.getClipBounds();
+        Rectangle clipBounds = graphics.getClipBounds();
         if (isOpaque()) {
-            g.setColor(getBackground());
-            g.fillRect(clip.x, clip.y, clip.width, clip.height);
+            graphics.setColor(getBackground());
+            graphics.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
         }
 
         long addr0 = model.getFirstOffset();
         long addr1 = model.getLastOffset();
 
-        long xaddr0 = measures.toAddress(0, clip.y);
+        long xaddr0 = measures.toAddress(0, clipBounds.y);
         if (xaddr0 == addr0) {
             xaddr0 = measures.getBaseAddress(model);
         }
-        long xaddr1 = measures.toAddress(getWidth(), clip.y + clip.height) + 1;
-        highlighter.paint(g, xaddr0, xaddr1);
+        long xaddr1 = measures.toAddress(getWidth(), clipBounds.y + clipBounds.height) + 1;
+        highlighter.paint(graphics, xaddr0, xaddr1);
 
-        g.setColor(getForeground());
-        Font baseFont = g.getFont();
-        FontMetrics baseFm = g.getFontMetrics(baseFont);
+        graphics.setColor(getForeground());
+        Font baseFont = graphics.getFont();
+        FontMetrics baseFm = graphics.getFontMetrics(baseFont);
         Font labelFont = baseFont.deriveFont(Font.ITALIC);
-        FontMetrics labelFm = g.getFontMetrics(labelFont);
-        int cols = measures.getColumnCount();
+        FontMetrics labelFm = graphics.getFontMetrics(labelFont);
+        int columnCount = measures.getColumnCount();
         int baseX = measures.getBaseX();
         int baseY = measures.toY(xaddr0) + baseFm.getAscent() + baseFm.getLeading() / 2;
         int dy = measures.getCellHeight();
@@ -138,37 +138,37 @@ public class HexEditor extends JComponent implements Scrollable {
         int labelChars = measures.getLabelChars();
         int cellWidth = measures.getCellWidth();
         int cellChars = measures.getCellChars();
-        for (long a = xaddr0; a < xaddr1; a += cols, baseY += dy) {
+        for (long a = xaddr0; a < xaddr1; a += columnCount, baseY += dy) {
             String label = toHex(a, labelChars);
-            g.setFont(labelFont);
-            g.drawString(label, baseX - labelWidth + (labelWidth - labelFm.stringWidth(label)) / 2, baseY);
-            g.setFont(baseFont);
+            graphics.setFont(labelFont);
+            graphics.drawString(label, baseX - labelWidth + (labelWidth - labelFm.stringWidth(label)) / 2, baseY);
+            graphics.setFont(baseFont);
             long b = a;
-            for (int j = 0; j < cols; j++, b++) {
+            for (int j = 0; j < columnCount; j++, b++) {
                 if (b >= addr0 && b <= addr1) {
                     String val = toHex(model.get(b), cellChars);
                     int x = measures.toX(b) + (cellWidth - baseFm.stringWidth(val)) / 2;
-                    g.drawString(val, x, baseY);
+                    graphics.drawString(val, x, baseY);
                 }
             }
         }
 
-        caret.paintForeground(g, xaddr0, xaddr1);
+        caret.paintForeground(graphics, xaddr0, xaddr1);
     }
 
     private String toHex(long value, int chars) {
-        String ret = Long.toHexString(value);
-        int retLen = ret.length();
+        StringBuilder hex = new StringBuilder(Long.toHexString(value));
+        int retLen = hex.length();
         if (retLen < chars) {
-            ret = "0" + ret;
+            hex.insert(0, "0");
             for (int i = retLen + 1; i < chars; i++) {
-                ret = "0" + ret;
+                hex.insert(0, "0");
             }
-            return ret;
+            return hex.toString();
         } else if (retLen == chars) {
-            return ret;
+            return hex.toString();
         } else {
-            return ret.substring(retLen - chars);
+            return hex.substring(retLen - chars);
         }
     }
 
@@ -205,8 +205,7 @@ public class HexEditor extends JComponent implements Scrollable {
         return getPreferredSize();
     }
 
-    public int getScrollableUnitIncrement(Rectangle vis,
-            int orientation, int direction) {
+    public int getScrollableUnitIncrement(Rectangle visibleRectangle, int orientation, int direction) {
         if (orientation == SwingConstants.VERTICAL) {
             int ret = measures.getCellHeight();
             if (ret < 1) {
@@ -218,25 +217,24 @@ public class HexEditor extends JComponent implements Scrollable {
             }
             return ret;
         } else {
-            return Math.max(1, vis.width / 20);
+            return Math.max(1, visibleRectangle.width / 20);
         }
     }
 
-    public int getScrollableBlockIncrement(Rectangle vis,
-            int orientation, int direction) {
+    public int getScrollableBlockIncrement(Rectangle visibleRectangle, int orientation, int direction) {
         if (orientation == SwingConstants.VERTICAL) {
             int height = measures.getCellHeight();
             if (height < 1) {
                 measures.recompute();
                 height = measures.getCellHeight();
                 if (height < 1) {
-                    return 19 * vis.height / 20;
+                    return 19 * visibleRectangle.height / 20;
                 }
             }
-            int lines = Math.max(1, (vis.height / height) - 1);
+            int lines = Math.max(1, (visibleRectangle.height / height) - 1);
             return lines * height;
         } else {
-            return 19 * vis.width / 20;
+            return 19 * visibleRectangle.width / 20;
         }
     }
 
@@ -250,13 +248,12 @@ public class HexEditor extends JComponent implements Scrollable {
 
     private class Listener implements HexModelListener {
 
-        public void metainfoChanged(HexModel source) {
+        public void metaInfoChanged(HexModel source) {
             measures.recompute();
             repaint();
         }
 
-        public void bytesChanged(HexModel source, long start, long numBytes,
-                int[] oldValues) {
+        public void bytesChanged(HexModel source, long start, long numBytes, int[] oldValues) {
             repaint(0, measures.toY(start),
                     getWidth(), measures.toY(start + numBytes) + measures.getCellHeight());
         }

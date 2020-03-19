@@ -75,9 +75,9 @@ public class AppearanceCanvas extends Canvas
     }
 
     @Override
-    public void setTool(CanvasTool value) {
+    public void setTool(CanvasTool tool) {
         hidePopup();
-        super.setTool(value);
+        super.setTool(tool);
     }
 
     @Override
@@ -92,14 +92,14 @@ public class AppearanceCanvas extends Canvas
     }
 
     @Override
-    public void setModel(CanvasModel value, ActionDispatcher dispatcher) {
+    public void setModel(CanvasModel model, ActionDispatcher dispatcher) {
         CanvasModel oldModel = super.getModel();
         if (oldModel != null) {
             oldModel.removeCanvasModelListener(listener);
         }
-        super.setModel(value, dispatcher);
-        if (value != null) {
-            value.addCanvasModelListener(listener);
+        super.setModel(model, dispatcher);
+        if (model != null) {
+            model.addCanvasModelListener(listener);
         }
     }
 
@@ -207,15 +207,15 @@ public class AppearanceCanvas extends Canvas
     }
 
     @Override
-    protected void paintBackground(Graphics g) {
-        super.paintBackground(g);
-        grid.paintGrid(g);
+    protected void paintBackground(Graphics graphics) {
+        super.paintBackground(graphics);
+        grid.paintGrid(graphics);
     }
 
     @Override
-    protected void paintForeground(Graphics g) {
+    protected void paintForeground(Graphics graphics) {
         double zoom = grid.getZoomFactor();
-        Graphics gScaled = g.create();
+        Graphics gScaled = graphics.create();
         if (zoom != 1.0 && zoom != 0.0 && gScaled instanceof Graphics2D) {
             ((Graphics2D) gScaled).scale(zoom, zoom);
         }
@@ -242,10 +242,10 @@ public class AppearanceCanvas extends Canvas
     }
 
     @Override
-    public JPopupMenu showPopupMenu(MouseEvent e, CanvasObject clicked) {
+    public JPopupMenu showPopupMenu(MouseEvent event, CanvasObject clicked) {
         double zoom = grid.getZoomFactor();
-        int x = (int) Math.round(e.getX() * zoom);
-        int y = (int) Math.round(e.getY() * zoom);
+        int x = (int) Math.round(event.getX() * zoom);
+        int y = (int) Math.round(event.getY() * zoom);
         if (clicked != null && getSelection().isSelected(clicked)) {
             AppearanceEditPopup popup = new AppearanceEditPopup(this);
             popup.show(this, x, y);

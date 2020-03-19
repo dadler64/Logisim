@@ -17,8 +17,8 @@ public class RoundRectangle extends Rectangular {
 
     private int radius;
 
-    public RoundRectangle(int x, int y, int w, int h) {
-        super(x, y, w, h);
+    public RoundRectangle(int x, int y, int width, int height) {
+        super(x, y, width, height);
         this.radius = 10;
     }
 
@@ -30,10 +30,10 @@ public class RoundRectangle extends Rectangular {
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof RoundRectangle) {
-            RoundRectangle that = (RoundRectangle) other;
-            return super.matches(other) && this.radius == that.radius;
+    public boolean matches(CanvasObject object) {
+        if (object instanceof RoundRectangle) {
+            RoundRectangle that = (RoundRectangle) object;
+            return super.matches(object) && this.radius == that.radius;
         } else {
             return false;
         }
@@ -50,8 +50,8 @@ public class RoundRectangle extends Rectangular {
     }
 
     @Override
-    public Element toSvgElement(Document doc) {
-        return SvgCreator.createRoundRectangle(doc, this);
+    public Element toSvgElement(Document document) {
+        return SvgCreator.createRoundRectangle(document, this);
     }
 
     @Override
@@ -61,123 +61,123 @@ public class RoundRectangle extends Rectangular {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V> V getValue(Attribute<V> attr) {
-        if (attr == DrawAttr.CORNER_RADIUS) {
+    public <V> V getValue(Attribute<V> attribute) {
+        if (attribute == DrawAttr.CORNER_RADIUS) {
             return (V) Integer.valueOf(radius);
         } else {
-            return super.getValue(attr);
+            return super.getValue(attribute);
         }
     }
 
     @Override
-    public void updateValue(Attribute<?> attr, Object value) {
-        if (attr == DrawAttr.CORNER_RADIUS) {
-            radius = ((Integer) value).intValue();
+    public void updateValue(Attribute<?> attribute, Object object) {
+        if (attribute == DrawAttr.CORNER_RADIUS) {
+            radius = (Integer) object;
         } else {
-            super.updateValue(attr, value);
+            super.updateValue(attribute, object);
         }
     }
 
     @Override
-    protected boolean contains(int x, int y, int w, int h, Location q) {
+    protected boolean contains(int x, int y, int width, int height, Location q) {
         int qx = q.getX();
         int qy = q.getY();
         int rx = radius;
         int ry = radius;
-        if (2 * rx > w) {
-            rx = w / 2;
+        if (2 * rx > width) {
+            rx = width / 2;
         }
-        if (2 * ry > h) {
-            ry = h / 2;
+        if (2 * ry > height) {
+            ry = height / 2;
         }
-        if (!isInRect(qx, qy, x, y, w, h)) {
+        if (!isInRectangle(qx, qy, x, y, width, height)) {
             return false;
         } else if (qx < x + rx) {
             if (qy < y + ry) {
                 return inCircle(qx, qy, x + rx, y + ry, rx, ry);
-            } else if (qy < y + h - ry) {
+            } else if (qy < y + height - ry) {
                 return true;
             } else {
-                return inCircle(qx, qy, x + rx, y + h - ry, rx, ry);
+                return inCircle(qx, qy, x + rx, y + height - ry, rx, ry);
             }
-        } else if (qx < x + w - rx) {
+        } else if (qx < x + width - rx) {
             return true;
         } else {
             if (qy < y + ry) {
-                return inCircle(qx, qy, x + w - rx, y + ry, rx, ry);
-            } else if (qy < y + h - ry) {
+                return inCircle(qx, qy, x + width - rx, y + ry, rx, ry);
+            } else if (qy < y + height - ry) {
                 return true;
             } else {
-                return inCircle(qx, qy, x + w - rx, y + h - ry, rx, ry);
+                return inCircle(qx, qy, x + width - rx, y + height - ry, rx, ry);
             }
         }
     }
 
     @Override
-    protected Location getRandomPoint(Bounds bds, Random rand) {
+    protected Location getRandomPoint(Bounds bounds, Random random) {
         if (getPaintType() == DrawAttr.PAINT_STROKE) {
-            int w = getWidth();
-            int h = getHeight();
-            int r = radius;
-            int horz = Math.max(0, w - 2 * r); // length of horizontal segment
-            int vert = Math.max(0, h - 2 * r);
-            double len = 2 * horz + 2 * vert + 2 * Math.PI * r;
-            double u = len * rand.nextDouble();
+            int width = getWidth();
+            int height = getHeight();
+            int radius = this.radius;
+            int horizontalLength = Math.max(0, width - 2 * radius); // length of horizontal segment
+            int verticalLength = Math.max(0, height - 2 * radius);
+            double length = 2 * horizontalLength + 2 * verticalLength + 2 * Math.PI * radius;
+            double u = length * random.nextDouble();
             int x = getX();
             int y = getY();
-            if (u < horz) {
-                x += r + (int) u;
-            } else if (u < 2 * horz) {
-                x += r + (int) (u - horz);
-                y += h;
-            } else if (u < 2 * horz + vert) {
-                y += r + (int) (u - 2 * horz);
-            } else if (u < 2 * horz + 2 * vert) {
-                x += w;
-                y += (u - 2 * w - h);
+            if (u < horizontalLength) {
+                x += radius + (int) u;
+            } else if (u < 2 * horizontalLength) {
+                x += radius + (int) (u - horizontalLength);
+                y += height;
+            } else if (u < 2 * horizontalLength + verticalLength) {
+                y += radius + (int) (u - 2 * horizontalLength);
+            } else if (u < 2 * horizontalLength + 2 * verticalLength) {
+                x += width;
+                y += (u - 2 * width - height);
             } else {
-                int rx = radius;
-                int ry = radius;
-                if (2 * rx > w) {
-                    rx = w / 2;
+                int radiusX = this.radius;
+                int radiusY = this.radius;
+                if (2 * radiusX > width) {
+                    radiusX = width / 2;
                 }
-                if (2 * ry > h) {
-                    ry = h / 2;
+                if (2 * radiusY > height) {
+                    radiusY = height / 2;
                 }
-                u = 2 * Math.PI * rand.nextDouble();
-                int dx = (int) Math.round(rx * Math.cos(u));
-                int dy = (int) Math.round(ry * Math.sin(u));
-                if (dx < 0) {
-                    x += r + dx;
+                u = 2 * Math.PI * random.nextDouble();
+                int deltaX = (int) Math.round(radiusX * Math.cos(u));
+                int deltaY = (int) Math.round(radiusY * Math.sin(u));
+                if (deltaX < 0) {
+                    x += radius + deltaX;
                 } else {
-                    x += r + horz + dx;
+                    x += radius + horizontalLength + deltaX;
                 }
-                if (dy < 0) {
-                    y += r + dy;
+                if (deltaY < 0) {
+                    y += radius + deltaY;
                 } else {
-                    y += r + vert + dy;
+                    y += radius + verticalLength + deltaY;
                 }
             }
 
-            int d = getStrokeWidth();
-            if (d > 1) {
-                x += rand.nextInt(d) - d / 2;
-                y += rand.nextInt(d) - d / 2;
+            int strokeWidth = getStrokeWidth();
+            if (strokeWidth > 1) {
+                x += random.nextInt(strokeWidth) - strokeWidth / 2;
+                y += random.nextInt(strokeWidth) - strokeWidth / 2;
             }
             return Location.create(x, y);
         } else {
-            return super.getRandomPoint(bds, rand);
+            return super.getRandomPoint(bounds, random);
         }
     }
 
     @Override
-    public void draw(Graphics g, int x, int y, int w, int h) {
-        int diam = 2 * radius;
-        if (setForFill(g)) {
-            g.fillRoundRect(x, y, w, h, diam, diam);
+    public void draw(Graphics graphics, int x, int y, int width, int height) {
+        int diameter = 2 * radius;
+        if (setForFill(graphics)) {
+            graphics.fillRoundRect(x, y, width, height, diameter, diameter);
         }
-        if (setForStroke(g)) {
-            g.drawRoundRect(x, y, w, h, diam, diam);
+        if (setForStroke(graphics)) {
+            graphics.drawRoundRect(x, y, width, height, diameter, diameter);
         }
     }
 }

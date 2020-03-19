@@ -24,18 +24,18 @@ abstract class FillableCanvasObject extends AbstractCanvasObject {
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof FillableCanvasObject) {
-            FillableCanvasObject that = (FillableCanvasObject) other;
-            boolean ret = this.paintType == that.paintType;
-            if (ret && this.paintType != DrawAttr.PAINT_FILL) {
-                ret = ret && this.strokeWidth == that.strokeWidth
+    public boolean matches(CanvasObject object) {
+        if (object instanceof FillableCanvasObject) {
+            FillableCanvasObject that = (FillableCanvasObject) object;
+            boolean isSame = this.paintType == that.paintType;
+            if (isSame && this.paintType != DrawAttr.PAINT_FILL) {
+                isSame = isSame && this.strokeWidth == that.strokeWidth
                         && this.strokeColor.equals(that.strokeColor);
             }
-            if (ret && this.paintType != DrawAttr.PAINT_STROKE) {
-                ret = ret && this.fillColor.equals(that.fillColor);
+            if (isSame && this.paintType != DrawAttr.PAINT_STROKE) {
+                isSame = isSame && this.fillColor.equals(that.fillColor);
             }
-            return ret;
+            return isSame;
         } else {
             return false;
         }
@@ -43,19 +43,19 @@ abstract class FillableCanvasObject extends AbstractCanvasObject {
 
     @Override
     public int matchesHashCode() {
-        int ret = paintType.hashCode();
+        int hashCode = paintType.hashCode();
         if (paintType != DrawAttr.PAINT_FILL) {
-            ret = ret * 31 + strokeWidth;
-            ret = ret * 31 + strokeColor.hashCode();
+            hashCode = hashCode * 31 + strokeWidth;
+            hashCode = hashCode * 31 + strokeColor.hashCode();
         } else {
-            ret = ret * 31 * 31;
+            hashCode = hashCode * 31 * 31;
         }
         if (paintType != DrawAttr.PAINT_STROKE) {
-            ret = ret * 31 + fillColor.hashCode();
+            hashCode = hashCode * 31 + fillColor.hashCode();
         } else {
-            ret = ret * 31;
+            hashCode = hashCode * 31;
         }
-        return ret;
+        return hashCode;
     }
 
     public AttributeOption getPaintType() {
@@ -68,14 +68,14 @@ abstract class FillableCanvasObject extends AbstractCanvasObject {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V> V getValue(Attribute<V> attr) {
-        if (attr == DrawAttr.PAINT_TYPE) {
+    public <V> V getValue(Attribute<V> attribute) {
+        if (attribute == DrawAttr.PAINT_TYPE) {
             return (V) paintType;
-        } else if (attr == DrawAttr.STROKE_COLOR) {
+        } else if (attribute == DrawAttr.STROKE_COLOR) {
             return (V) strokeColor;
-        } else if (attr == DrawAttr.FILL_COLOR) {
+        } else if (attribute == DrawAttr.FILL_COLOR) {
             return (V) fillColor;
-        } else if (attr == DrawAttr.STROKE_WIDTH) {
+        } else if (attribute == DrawAttr.STROKE_WIDTH) {
             return (V) Integer.valueOf(strokeWidth);
         } else {
             return null;
@@ -83,16 +83,16 @@ abstract class FillableCanvasObject extends AbstractCanvasObject {
     }
 
     @Override
-    public void updateValue(Attribute<?> attr, Object value) {
-        if (attr == DrawAttr.PAINT_TYPE) {
-            paintType = (AttributeOption) value;
+    public void updateValue(Attribute<?> attribute, Object object) {
+        if (attribute == DrawAttr.PAINT_TYPE) {
+            paintType = (AttributeOption) object;
             fireAttributeListChanged();
-        } else if (attr == DrawAttr.STROKE_COLOR) {
-            strokeColor = (Color) value;
-        } else if (attr == DrawAttr.FILL_COLOR) {
-            fillColor = (Color) value;
-        } else if (attr == DrawAttr.STROKE_WIDTH) {
-            strokeWidth = ((Integer) value).intValue();
+        } else if (attribute == DrawAttr.STROKE_COLOR) {
+            strokeColor = (Color) object;
+        } else if (attribute == DrawAttr.FILL_COLOR) {
+            fillColor = (Color) object;
+        } else if (attribute == DrawAttr.STROKE_WIDTH) {
+            strokeWidth = (Integer) object;
         }
     }
 }

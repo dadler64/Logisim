@@ -268,15 +268,15 @@ public class Pin extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == ATTR_TYPE) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == ATTR_TYPE) {
             configurePorts(instance);
-        } else if (attr == StdAttr.WIDTH || attr == StdAttr.FACING
-                || attr == Pin.ATTR_LABEL_LOC) {
+        } else if (attribute == StdAttr.WIDTH || attribute == StdAttr.FACING
+                || attribute == Pin.ATTR_LABEL_LOC) {
             instance.recomputeBounds();
             PinAttributes attrs = (PinAttributes) instance.getAttributeSet();
             Probe.configureLabel(instance, attrs.labelloc, attrs.facing);
-        } else if (attr == Pin.ATTR_TRISTATE || attr == Pin.ATTR_PULL) {
+        } else if (attribute == Pin.ATTR_TRISTATE || attribute == Pin.ATTR_PULL) {
             instance.fireInvalidated();
         }
     }

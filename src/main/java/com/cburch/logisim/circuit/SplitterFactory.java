@@ -110,7 +110,7 @@ public class SplitterFactory extends AbstractComponentFactory {
     }
 
     @Override
-    public Object getFeature(Object key, AttributeSet attrs) {
+    public Object getFeature(Object key, AttributeSet attributeSet) {
         if (key == FACING_ATTRIBUTE_KEY) {
             return StdAttr.FACING;
         } else if (key == KeyConfigurator.class) {
@@ -122,6 +122,6 @@ public class SplitterFactory extends AbstractComponentFactory {
                     new IntegerConfigurator(SplitterAttributes.ATTR_FANOUT, 1, 32, 0),
                     altConfig);
         }
-        return super.getFeature(key, attrs);
+        return super.getFeature(key, attributeSet);
     }
 }

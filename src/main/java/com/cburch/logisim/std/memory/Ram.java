@@ -66,8 +66,8 @@ public class Ram extends Mem {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        super.instanceAttributeChanged(instance, attr);
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        super.instanceAttributeChanged(instance, attribute);
         configurePorts(instance);
     }
 
@@ -315,7 +315,7 @@ public class Ram extends Mem {
                     ret = new Object[1 << addrBits];
                     logOptions[addrBits] = ret;
                     for (int i = 0; i < ret.length; i++) {
-                        ret[i] = Integer.valueOf(i);
+                        ret[i] = i;
                     }
                 }
                 return ret;
@@ -337,7 +337,7 @@ public class Ram extends Mem {
         public Value getLogValue(InstanceState state, Object option) {
             if (option instanceof Integer) {
                 MemState s = (MemState) state.getData();
-                int addr = ((Integer) option).intValue();
+                int addr = (Integer) option;
                 return Value.createKnown(BitWidth.create(s.getDataBits()),
                         s.getContents().get(addr));
             } else {

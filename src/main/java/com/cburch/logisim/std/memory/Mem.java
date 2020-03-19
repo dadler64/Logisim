@@ -184,7 +184,7 @@ abstract class Mem extends InstanceFactory {
             this.instance = instance;
         }
 
-        public void metainfoChanged(HexModel source) {
+        public void metaInfoChanged(HexModel source) {
         }
 
         public void bytesChanged(HexModel source, long start,

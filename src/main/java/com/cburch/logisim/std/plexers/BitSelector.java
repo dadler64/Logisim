@@ -57,11 +57,11 @@ public class BitSelector extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             updatePorts(instance);
-        } else if (attr == StdAttr.WIDTH || attr == GROUP_ATTR) {
+        } else if (attribute == StdAttr.WIDTH || attribute == GROUP_ATTR) {
             updatePorts(instance);
         }
     }

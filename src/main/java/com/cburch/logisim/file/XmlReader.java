@@ -543,7 +543,7 @@ class XmlReader {
             }
         }
 
-        Tool toTool(Element elt) throws XmlReaderException {
+        private Tool toTool(Element elt) throws XmlReaderException {
             Library lib = findLibrary(elt.getAttribute("lib"));
             String name = elt.getAttribute("name");
             if (name == null || name.equals("")) {

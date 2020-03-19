@@ -37,23 +37,23 @@ public abstract class AbstractCanvasObject
 
     public abstract String getDisplayName();
 
-    public abstract Element toSvgElement(Document doc);
+    public abstract Element toSvgElement(Document document);
 
-    public abstract boolean matches(CanvasObject other);
+    public abstract boolean matches(CanvasObject object);
 
     public abstract int matchesHashCode();
 
     public abstract Bounds getBounds();
 
-    public abstract boolean contains(Location loc, boolean assumeFilled);
+    public abstract boolean contains(Location location, boolean assumeFilled);
 
-    public abstract void translate(int dx, int dy);
+    public abstract void translate(int deltaX, int deltaY);
 
     public abstract List<Handle> getHandles(HandleGesture gesture);
 
-    protected abstract void updateValue(Attribute<?> attr, Object value);
+    protected abstract void updateValue(Attribute<?> attribute, Object value);
 
-    public abstract void paint(Graphics g, HandleGesture gesture);
+    public abstract void paint(Graphics graphics, HandleGesture gesture);
 
     public boolean canRemove() {
         return true;
@@ -67,7 +67,7 @@ public abstract class AbstractCanvasObject
         return null;
     }
 
-    public Handle canDeleteHandle(Location loc) {
+    public Handle canDeleteHandle(Location location) {
         return null;
     }
 
@@ -83,24 +83,24 @@ public abstract class AbstractCanvasObject
         throw new UnsupportedOperationException("deleteHandle");
     }
 
-    public boolean overlaps(CanvasObject other) {
+    public boolean overlaps(CanvasObject object) {
         Bounds a = this.getBounds();
-        Bounds b = other.getBounds();
+        Bounds b = object.getBounds();
         Bounds c = a.intersect(b);
-        Random rand = new Random();
+        Random random = new Random();
         if (c.getWidth() == 0 || c.getHeight() == 0) {
             return false;
-        } else if (other instanceof AbstractCanvasObject) {
-            AbstractCanvasObject that = (AbstractCanvasObject) other;
+        } else if (object instanceof AbstractCanvasObject) {
+            AbstractCanvasObject canvasObject = (AbstractCanvasObject) object;
             for (int i = 0; i < OVERLAP_TRIES; i++) {
                 if (i % 2 == 0) {
-                    Location loc = this.getRandomPoint(c, rand);
-                    if (loc != null && that.contains(loc, false)) {
+                    Location location = this.getRandomPoint(c, random);
+                    if (location != null && canvasObject.contains(location, false)) {
                         return true;
                     }
                 } else {
-                    Location loc = that.getRandomPoint(c, rand);
-                    if (loc != null && this.contains(loc, false)) {
+                    Location location = canvasObject.getRandomPoint(c, random);
+                    if (location != null && this.contains(location, false)) {
                         return true;
                     }
                 }
@@ -108,8 +108,8 @@ public abstract class AbstractCanvasObject
             return false;
         } else {
             for (int i = 0; i < OVERLAP_TRIES; i++) {
-                Location loc = this.getRandomPoint(c, rand);
-                if (loc != null && other.contains(loc, false)) {
+                Location location = this.getRandomPoint(c, random);
+                if (location != null && object.contains(location, false)) {
                     return true;
                 }
             }
@@ -117,15 +117,15 @@ public abstract class AbstractCanvasObject
         }
     }
 
-    protected Location getRandomPoint(Bounds bds, Random rand) {
-        int x = bds.getX();
-        int y = bds.getY();
-        int w = bds.getWidth();
-        int h = bds.getHeight();
+    protected Location getRandomPoint(Bounds bounds, Random random) {
+        int x = bounds.getX();
+        int y = bounds.getY();
+        int width = bounds.getWidth();
+        int height = bounds.getHeight();
         for (int i = 0; i < GENERATE_RANDOM_TRIES; i++) {
-            Location loc = Location.create(x + rand.nextInt(w), y + rand.nextInt(h));
-            if (contains(loc, false)) {
-                return loc;
+            Location location = Location.create(x + random.nextInt(width), y + random.nextInt(height));
+            if (contains(location, false)) {
+                return location;
             }
         }
         return null;
@@ -134,7 +134,7 @@ public abstract class AbstractCanvasObject
     // methods required by AttributeSet interface
     public abstract List<Attribute<?>> getAttributes();
 
-    public abstract <V> V getValue(Attribute<V> attr);
+    public abstract <V> V getValue(Attribute<V> attribute);
 
     public void addAttributeListener(AttributeListener l) {
         listeners.add(l);
@@ -147,10 +147,11 @@ public abstract class AbstractCanvasObject
     @Override
     public CanvasObject clone() {
         try {
-            AbstractCanvasObject ret = (AbstractCanvasObject) super.clone();
-            ret.listeners = new EventSourceWeakSupport<>();
-            return ret;
+            AbstractCanvasObject object = (AbstractCanvasObject) super.clone();
+            object.listeners = new EventSourceWeakSupport<>();
+            return object;
         } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -180,12 +181,12 @@ public abstract class AbstractCanvasObject
         return true;
     }
 
-    public final <V> void setValue(Attribute<V> attr, V value) {
-        Object old = getValue(attr);
+    public final <V> void setValue(Attribute<V> attribute, V value) {
+        Object old = getValue(attribute);
         boolean same = old == null ? value == null : old.equals(value);
         if (!same) {
-            updateValue(attr, value);
-            AttributeEvent e = new AttributeEvent(this, attr, value);
+            updateValue(attribute, value);
+            AttributeEvent e = new AttributeEvent(this, attribute, value);
             for (AttributeListener listener : listeners) {
                 listener.attributeValueChanged(e);
             }
@@ -209,12 +210,12 @@ public abstract class AbstractCanvasObject
         }
 
         Integer width = getValue(DrawAttr.STROKE_WIDTH);
-        if (width != null && width.intValue() > 0) {
+        if (width != null && width > 0) {
             Color color = getValue(DrawAttr.STROKE_COLOR);
             if (color != null && color.getAlpha() == 0) {
                 return false;
             } else {
-                GraphicsUtil.switchToWidth(g, width.intValue());
+                GraphicsUtil.switchToWidth(g, width);
                 if (color != null) {
                     g.setColor(color);
                 }

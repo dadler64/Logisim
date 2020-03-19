@@ -17,21 +17,21 @@ public class Test {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(new JScrollPane(editor));
         frame.pack();
+        frame.setTitle("Hex Test");
         frame.setVisible(true);
     }
 
     private static class Model implements HexModel {
 
-        private ArrayList<HexModelListener> listeners
-                = new ArrayList<>();
+        private ArrayList<HexModelListener> listeners = new ArrayList<>();
         private int[] data = new int[924];
 
-        public void addHexModelListener(HexModelListener l) {
-            listeners.add(l);
+        public void addHexModelListener(HexModelListener listener) {
+            listeners.add(listener);
         }
 
-        public void removeHexModelListener(HexModelListener l) {
-            listeners.remove(l);
+        public void removeHexModelListener(HexModelListener listener) {
+            listeners.remove(listener);
         }
 
         public long getFirstOffset() {
@@ -67,12 +67,12 @@ public class Test {
             }
         }
 
-        public void fill(long start, long len, int value) {
-            int[] oldValues = new int[(int) len];
-            System.arraycopy(data, (int) (start - 11111), oldValues, 0, (int) len);
-            Arrays.fill(data, (int) (start - 11111), (int) len, value);
+        public void fill(long start, long length, int value) {
+            int[] oldValues = new int[(int) length];
+            System.arraycopy(data, (int) (start - 11111), oldValues, 0, (int) length);
+            Arrays.fill(data, (int) (start - 11111), (int) length, value);
             for (HexModelListener l : listeners) {
-                l.bytesChanged(this, start, len, oldValues);
+                l.bytesChanged(this, start, length, oldValues);
             }
         }
     }

@@ -42,13 +42,13 @@ class SimpleGrayCounter extends InstanceFactory {
         // method. In this case, the state is in a CounterData object, which is
         // also where the helper method is defined. This helper method will end
         // up creating a CounterData object if one doesn't already exist.
-        CounterData cur = CounterData.get(state, BIT_WIDTH);
+        CounterData currentData = CounterData.get(state, BIT_WIDTH);
 
-        boolean trigger = cur.updateClock(state.getPort(0));
+        boolean trigger = currentData.updateClock(state.getPort(0));
         if (trigger) {
-            cur.setValue(GrayIncrementer.nextGray(cur.getValue()));
+            currentData.setValue(GrayIncrementer.nextGray(currentData.getValue()));
         }
-        state.setPort(1, cur.getValue(), 9);
+        state.setPort(1, currentData.getValue(), 9);
 
         // (You might be tempted to determine the counter's current value
         // via state.getPort(1). This is erroneous, though, because another
@@ -68,11 +68,11 @@ class SimpleGrayCounter extends InstanceFactory {
         // printer output), then skip this.
         if (painter.getShowState()) {
             CounterData state = CounterData.get(painter, BIT_WIDTH);
-            Bounds bds = painter.getBounds();
+            Bounds bounds = painter.getBounds();
             GraphicsUtil.drawCenteredText(painter.getGraphics(),
                     StringUtil.toHexString(BIT_WIDTH.getWidth(), state.getValue().toIntValue()),
-                    bds.getX() + bds.getWidth() / 2,
-                    bds.getY() + bds.getHeight() / 2);
+                    bounds.getX() + bounds.getWidth() / 2,
+                    bounds.getY() + bounds.getHeight() / 2);
         }
     }
 }

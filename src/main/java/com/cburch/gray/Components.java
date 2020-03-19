@@ -27,8 +27,7 @@ public class Components extends Library {
      * a no-arguments constructor method of the user-designated class.
      */
     public Components() {
-        tools = Arrays.asList(new AddTool(new GrayIncrementer()),
-                new AddTool(new SimpleGrayCounter()),
+        tools = Arrays.asList(new AddTool(new GrayIncrementer()), new AddTool(new SimpleGrayCounter()),
                 new AddTool(new GrayCounter()));
     }
 

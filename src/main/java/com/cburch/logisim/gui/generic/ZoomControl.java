@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.gui.generic;
 
+import com.adlerd.logger.Logger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -65,9 +66,9 @@ public class ZoomControl extends JPanel {
             double zoom = model.getZoomFactor();
             double[] choices = model.getZoomOptions();
             double factor = zoom * 100.0 * 1.001;
-            for (int i = 0; i < choices.length; i++) {
-                if (choices[i] > factor) {
-                    return toString(choices[i]);
+            for (double choice : choices) {
+                if (choice > factor) {
+                    return toString(choice);
                 }
             }
             return null;
@@ -101,6 +102,7 @@ public class ZoomControl extends JPanel {
                     double zoom = Double.parseDouble(s) / 100.0;
                     model.setZoomFactor(zoom);
                 } catch (NumberFormatException e) {
+                    Logger.errorln(e.getCause().getMessage());
                 }
             }
         }

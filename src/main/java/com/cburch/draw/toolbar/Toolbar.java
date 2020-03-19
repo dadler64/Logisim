@@ -13,18 +13,18 @@ public class Toolbar extends JPanel {
     public static final Object VERTICAL = new Object();
     public static final Object HORIZONTAL = new Object();
     private ToolbarModel model;
-    private JPanel subpanel;
+    private JPanel subPanel;
     private Object orientation;
     private MyListener myListener;
-    private ToolbarButton curPressed;
+    private ToolbarButton currentlyPressed;
 
     public Toolbar(ToolbarModel model) {
         super(new BorderLayout());
-        this.subpanel = new JPanel();
+        this.subPanel = new JPanel();
         this.model = model;
         this.orientation = HORIZONTAL;
         this.myListener = new MyListener();
-        this.curPressed = null;
+        this.currentlyPressed = null;
 
         this.add(new JPanel(), BorderLayout.CENTER);
         setOrientation(HORIZONTAL);
@@ -54,25 +54,25 @@ public class Toolbar extends JPanel {
     }
 
     private void computeContents() {
-        subpanel.removeAll();
-        ToolbarModel m = model;
-        if (m != null) {
-            for (ToolbarItem item : m.getItems()) {
-                subpanel.add(new ToolbarButton(this, item));
+        subPanel.removeAll();
+        ToolbarModel model = this.model;
+        if (model != null) {
+            for (ToolbarItem item : model.getItems()) {
+                subPanel.add(new ToolbarButton(this, item));
             }
-            subpanel.add(Box.createGlue());
+            subPanel.add(Box.createGlue());
         }
         revalidate();
     }
 
     ToolbarButton getPressed() {
-        return curPressed;
+        return currentlyPressed;
     }
 
     void setPressed(ToolbarButton value) {
-        ToolbarButton oldValue = curPressed;
+        ToolbarButton oldValue = currentlyPressed;
         if (oldValue != value) {
-            curPressed = value;
+            currentlyPressed = value;
             if (oldValue != null) {
                 oldValue.repaint();
             }
@@ -98,9 +98,9 @@ public class Toolbar extends JPanel {
         } else {
             throw new IllegalArgumentException();
         }
-        this.remove(subpanel);
-        subpanel.setLayout(new BoxLayout(subpanel, axis));
-        this.add(subpanel, position);
+        this.remove(subPanel);
+        subPanel.setLayout(new BoxLayout(subPanel, axis));
+        this.add(subPanel, position);
         this.orientation = value;
     }
 

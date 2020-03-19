@@ -99,7 +99,7 @@ public class Counter extends InstanceFactory {
 
         BitWidth dataWidth = state.getAttributeValue(StdAttr.WIDTH);
         Object triggerType = state.getAttributeValue(StdAttr.EDGE_TRIGGER);
-        int max = state.getAttributeValue(ATTR_MAX).intValue();
+        int max = state.getAttributeValue(ATTR_MAX);
         Value clock = state.getPort(CK);
         boolean triggered = data.updateClock(clock, triggerType);
 

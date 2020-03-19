@@ -72,7 +72,7 @@ public class AppearanceEditHandler extends EditHandler
             for (Map.Entry<CanvasObject, Integer> entry : zs.entrySet()) {
                 if (!(entry.getKey() instanceof AppearanceElement)) {
                     count++;
-                    int z = entry.getValue().intValue();
+                    int z = entry.getValue();
                     if (z < zmin) {
                         zmin = z;
                     }
@@ -287,7 +287,7 @@ public class AppearanceEditHandler extends EditHandler
     }
 
 
-    public void selectionChanged(SelectionEvent e) {
+    public void selectionChanged(SelectionEvent event) {
         computeEnabled();
     }
 

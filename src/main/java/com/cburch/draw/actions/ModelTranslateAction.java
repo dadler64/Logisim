@@ -45,24 +45,23 @@ public class ModelTranslateAction extends ModelAction {
     }
 
     @Override
-    public boolean shouldAppendTo(Action other) {
-        if (other instanceof ModelTranslateAction) {
-            ModelTranslateAction o = (ModelTranslateAction) other;
-            return this.moved.equals(o.moved);
+    public boolean shouldAppendTo(Action action) {
+        if (action instanceof ModelTranslateAction) {
+            ModelTranslateAction translateAction = (ModelTranslateAction) action;
+            return this.moved.equals(translateAction.moved);
         } else {
             return false;
         }
     }
 
     @Override
-    public Action append(Action other) {
-        if (other instanceof ModelTranslateAction) {
-            ModelTranslateAction o = (ModelTranslateAction) other;
-            if (this.moved.equals(o.moved)) {
-                return new ModelTranslateAction(getModel(), moved,
-                        this.dx + o.dx, this.dy + o.dy);
+    public Action append(Action action) {
+        if (action instanceof ModelTranslateAction) {
+            ModelTranslateAction translateAction = (ModelTranslateAction) action;
+            if (this.moved.equals(translateAction.moved)) {
+                return new ModelTranslateAction(getModel(), moved, dx + translateAction.dx, dy + translateAction.dy);
             }
         }
-        return super.append(other);
+        return super.append(action);
     }
 }

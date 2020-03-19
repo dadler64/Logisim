@@ -112,7 +112,7 @@ public class VariableList {
             throw new NoSuchElementException("input " + name);
         }
         data.remove(index);
-        fireEvent(VariableListEvent.REMOVE, name, Integer.valueOf(index));
+        fireEvent(VariableListEvent.REMOVE, name, index);
     }
 
     public void move(String name, int delta) {
@@ -134,7 +134,7 @@ public class VariableList {
         }
         data.remove(index);
         data.add(newIndex, name);
-        fireEvent(VariableListEvent.MOVE, name, Integer.valueOf(newIndex - index));
+        fireEvent(VariableListEvent.MOVE, name, newIndex - index);
     }
 
     public void replace(String oldName, String newName) {
@@ -146,7 +146,7 @@ public class VariableList {
             return;
         }
         data.set(index, newName);
-        fireEvent(VariableListEvent.REPLACE, oldName, Integer.valueOf(index));
+        fireEvent(VariableListEvent.REPLACE, oldName, index);
     }
 
 }

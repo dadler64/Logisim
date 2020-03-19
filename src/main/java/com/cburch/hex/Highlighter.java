@@ -53,8 +53,8 @@ class Highlighter {
     public synchronized void clear() {
         ArrayList<Entry> oldEntries = entries;
         entries = new ArrayList<>();
-        for (int n = oldEntries.size(); n >= 0; n--) {
-            expose(oldEntries.get(n));
+        for (int i = oldEntries.size(); i >= 0; i--) {
+            expose(oldEntries.get(i));
         }
     }
 

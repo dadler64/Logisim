@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -313,12 +312,7 @@ public class CircuitState implements InstanceData {
 
     void reset() {
         wireData = null;
-        for (Iterator<Component> it = componentData.keySet().iterator(); it.hasNext(); ) {
-            Component comp = it.next();
-            if (!(comp.getFactory() instanceof SubcircuitFactory)) {
-                it.remove();
-            }
-        }
+        componentData.keySet().removeIf(comp -> !(comp.getFactory() instanceof SubcircuitFactory));
         values.clear();
         dirtyComponents.clear();
         dirtyPoints.clear();

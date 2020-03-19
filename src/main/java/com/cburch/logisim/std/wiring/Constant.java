@@ -37,7 +37,7 @@ public class Constant extends InstanceFactory {
     private static final Color BACKGROUND_COLOR = new Color(230, 230, 230);
     private static final List<Attribute<?>> ATTRIBUTES
             = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, ATTRIBUTE_VALUE);
-    public static InstanceFactory FACTORY = new Constant();
+    public static final InstanceFactory FACTORY = new Constant();
 
     public Constant() {
         super("Constant", Strings.getter("constantComponent"));

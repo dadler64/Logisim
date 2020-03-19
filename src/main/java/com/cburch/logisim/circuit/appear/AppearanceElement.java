@@ -25,9 +25,9 @@ public abstract class AppearanceElement extends AbstractCanvasObject {
     }
 
     @Override
-    public boolean matches(CanvasObject other) {
-        if (other instanceof AppearanceElement) {
-            AppearanceElement that = (AppearanceElement) other;
+    public boolean matches(CanvasObject object) {
+        if (object instanceof AppearanceElement) {
+            AppearanceElement that = (AppearanceElement) object;
             return this.location.equals(that.location);
         } else {
             return false;
@@ -45,7 +45,7 @@ public abstract class AppearanceElement extends AbstractCanvasObject {
     }
 
     @Override
-    public <V> V getValue(Attribute<V> attr) {
+    public <V> V getValue(Attribute<V> attribute) {
         return null;
     }
 
@@ -55,13 +55,13 @@ public abstract class AppearanceElement extends AbstractCanvasObject {
     }
 
     @Override
-    protected void updateValue(Attribute<?> attr, Object value) {
+    protected void updateValue(Attribute<?> attribute, Object value) {
         // nothing to do
     }
 
     @Override
-    public void translate(int dx, int dy) {
-        location = location.translate(dx, dy);
+    public void translate(int deltaX, int deltaY) {
+        location = location.translate(deltaX, deltaY);
     }
 
     protected boolean isInCircle(Location loc, int radius) {
@@ -71,7 +71,7 @@ public abstract class AppearanceElement extends AbstractCanvasObject {
     }
 
     @Override
-    public Location getRandomPoint(Bounds bds, Random rand) {
+    public Location getRandomPoint(Bounds bounds, Random random) {
         return null; // this is only used to determine what lies on top of what - but the elements will always be on top anyway
     }
 

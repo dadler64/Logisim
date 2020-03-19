@@ -189,12 +189,12 @@ class ControlledBuffer extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING || attr == NotGate.ATTR_SIZE) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING || attribute == NotGate.ATTR_SIZE) {
             instance.recomputeBounds();
             configurePorts(instance);
             NotGate.configureLabel(instance, false, instance.getPortLocation(2));
-        } else if (attr == ATTR_CONTROL) {
+        } else if (attribute == ATTR_CONTROL) {
             configurePorts(instance);
             NotGate.configureLabel(instance, false, instance.getPortLocation(2));
         }

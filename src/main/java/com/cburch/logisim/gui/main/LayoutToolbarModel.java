@@ -126,18 +126,18 @@ class LayoutToolbarModel extends AbstractToolbarModel {
             return true;
         }
 
-        public void paintIcon(Component destination, Graphics g) {
+        public void paintIcon(Component destination, Graphics graphics) {
             // draw halo
             if (tool == haloedTool && AppPreferences.ATTRIBUTE_HALO.getBoolean()) {
-                g.setColor(Canvas.HALO_COLOR);
-                g.fillRect(1, 1, 22, 22);
+                graphics.setColor(Canvas.HALO_COLOR);
+                graphics.fillRect(1, 1, 22, 22);
             }
 
             // draw tool icon
-            g.setColor(Color.BLACK);
-            Graphics g_copy = g.create();
+            graphics.setColor(Color.BLACK);
+            Graphics g_copy = graphics.create();
             ComponentDrawContext c = new ComponentDrawContext(destination,
-                    null, null, g, g_copy);
+                    null, null, graphics, g_copy);
             tool.paintIcon(c, 2, 2);
             g_copy.dispose();
         }

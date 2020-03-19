@@ -270,7 +270,7 @@ class MemState implements InstanceData, Cloneable, HexModelListener {
         return (int) (bds.getY() + ENTRY_YOFFS + ENTRY_HEIGHT * (row - topRow));
     }
 
-    public void metainfoChanged(HexModel source) {
+    public void metaInfoChanged(HexModel source) {
         setBits(contents.getLogLength(), contents.getWidth());
     }
 

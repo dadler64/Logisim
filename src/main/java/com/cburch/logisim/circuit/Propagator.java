@@ -175,9 +175,7 @@ public class Propagator {
             }
 
 			// TODO: DEBUGGING - comment out
-			Simulator.log(data.time + ": proc " + data.location + " in "
-					+ data.state + " to " + data.value
-					+ " by " + data.cause); // */
+//			Logger.debugln("(Propagator.class ln:179) -> " + data.time + ": proc " + data.location + " in " + data.state + " to " + data.value + " by " + data.cause);
 
             if (changedPoints != null) {
                 changedPoints.add(state, data.location);
@@ -237,57 +235,54 @@ public class Propagator {
         }
         toProcess.add(new SetData(clock + delay, setDataSerialNumber,
                 state, point, cause, value));
-		// TODO: DEBUGGING - comment out
-		Simulator.log(String.format("%d: set %s in %s to %s by %s after %d",
-                clock, point, state, value, cause, delay));
-		         //*/
+        // TODO: DEBUGGING - comment out
+//        Logger.debugln(String.format("(Propagator.class ln:240) -> %d: set %s in %s to %s by %s after %d", clock, point, state, value, cause, delay));
 
         setDataSerialNumber++;
     }
 
-	// TODO: for the SimulatorPrototype class
-	void step() {
-		clock++;
-		
-		// propagate all values for this clock tick
-		HashMap<CircuitState, HashSet<ComponentPoint>> visited = new HashMap<>(); // State -> set of ComponentPoints handled
-		while (!toProcess.isEmpty()) {
-			SetData data;
-			data = toProcess.peek();
-			if (data.time != clock) break;
-			toProcess.remove();
-			CircuitState state = data.state;
-
-			// if it's already handled for this clock tick, continue
-			HashSet<ComponentPoint> handled = visited.get(state);
-			if (handled != null) {
-				if (!handled.add(new ComponentPoint(data.cause, data.location))) {
-                    continue;
-                }
-			} else {
-				handled = new HashSet<>();
-				visited.put(state, handled);
-				handled.add(new ComponentPoint(data.cause, data.location));
-			}
-			
-			if (oscillatorAdding) oscillatorPoints.add(state, data.location);
-
-			// change the information about value
-			SetData oldHead = state.causes.get(data.location);
-			Value   oldVal  = computeValue(oldHead);
-			SetData newHead = addCause(state, oldHead, data);
-			Value   newVal  = computeValue(newHead);
-
-			// if the value at point has changed, propagate it
-			if (!newVal.equals(oldVal)) {
-				state.markPointAsDirty(data.location);
-			}
-		}
-
-		clearDirtyPoints();
-		clearDirtyComponents();
-	}
-	// */
+    // TODO: for the SimulatorPrototype class
+//	void step() {
+//		clock++;
+//
+//		// propagate all values for this clock tick
+//		HashMap<CircuitState, HashSet<ComponentPoint>> visited = new HashMap<>(); // State -> set of ComponentPoints handled
+//		while (!toProcess.isEmpty()) {
+//			SetData data;
+//			data = toProcess.peek();
+//			if (data.time != clock) break;
+//			toProcess.remove();
+//			CircuitState state = data.state;
+//
+//			// if it's already handled for this clock tick, continue
+//			HashSet<ComponentPoint> handled = visited.get(state);
+//			if (handled != null) {
+//				if (!handled.add(new ComponentPoint(data.cause, data.location))) {
+//                    continue;
+//                }
+//			} else {
+//				handled = new HashSet<>();
+//				visited.put(state, handled);
+//				handled.add(new ComponentPoint(data.cause, data.location));
+//			}
+//
+//			if (oscillatorAdding) oscillatorPoints.add(state, data.location);
+//
+//			// change the information about value
+//			SetData oldHead = state.causes.get(data.location);
+//			Value   oldVal  = computeValue(oldHead);
+//			SetData newHead = addCause(state, oldHead, data);
+//			Value   newVal  = computeValue(newHead);
+//
+//			// if the value at point has changed, propagate it
+//			if (!newVal.equals(oldVal)) {
+//				state.markPointAsDirty(data.location);
+//			}
+//		}
+//
+//		clearDirtyPoints();
+//		clearDirtyComponents();
+//	}
 
     public boolean tick() {
         ticks++;
@@ -327,8 +322,7 @@ public class Propagator {
         root.processDirtyComponents();
     }
 
-    private SetData addCause(CircuitState state, SetData head,
-            SetData data) {
+    private SetData addCause(CircuitState state, SetData head, SetData data) {
         if (data.value == null) { // actually, it should be removed
             return removeCause(state, head, data.location, data.cause);
         }

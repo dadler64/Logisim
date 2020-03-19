@@ -8,12 +8,12 @@ public interface HexModel {
     /**
      * Registers a listener for changes to the values.
      */
-    void addHexModelListener(HexModelListener l);
+    void addHexModelListener(HexModelListener listener);
 
     /**
      * Unregisters a listener for changes to the values.
      */
-    void removeHexModelListener(HexModelListener l);
+    void removeHexModelListener(HexModelListener listener);
 
     /**
      * Returns the offset of the initial value to be displayed.

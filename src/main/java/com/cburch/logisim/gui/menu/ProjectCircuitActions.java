@@ -89,7 +89,7 @@ public class ProjectCircuitActions {
             field.requestFocusInWindow();
             Object action = pane.getValue();
             if (action == null || !(action instanceof Integer)
-                    || ((Integer) action).intValue() != JOptionPane.OK_OPTION) {
+                    || (Integer) action != JOptionPane.OK_OPTION) {
                 return null;
             }
 

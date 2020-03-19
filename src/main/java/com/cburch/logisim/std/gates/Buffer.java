@@ -108,8 +108,8 @@ class Buffer extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING) {
             instance.recomputeBounds();
             configurePorts(instance);
             NotGate.configureLabel(instance, false, null);

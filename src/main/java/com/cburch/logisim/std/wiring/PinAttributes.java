@@ -60,9 +60,9 @@ class PinAttributes extends ProbeAttributes {
         if (attr == StdAttr.WIDTH) {
             width = (BitWidth) value;
         } else if (attr == Pin.ATTR_TRISTATE) {
-            threeState = ((Boolean) value).booleanValue();
+            threeState = (Boolean) value;
         } else if (attr == Pin.ATTR_TYPE) {
-            type = ((Boolean) value).booleanValue() ? EndData.OUTPUT_ONLY : EndData.INPUT_ONLY;
+            type = (Boolean) value ? EndData.OUTPUT_ONLY : EndData.INPUT_ONLY;
         } else if (attr == Pin.ATTR_PULL) {
             pull = value;
         } else {

@@ -16,8 +16,7 @@ public class SelectionEvent extends EventObject {
     private int action;
     private Collection<CanvasObject> affected;
 
-    public SelectionEvent(Selection source, int action,
-            Collection<CanvasObject> affected) {
+    public SelectionEvent(Selection source, int action, Collection<CanvasObject> affected) {
         super(source);
         this.action = action;
         this.affected = affected;

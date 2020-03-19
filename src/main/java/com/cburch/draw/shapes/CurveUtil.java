@@ -54,9 +54,9 @@ public class CurveUtil {
 
         int x = (int) xMin;
         int y = (int) yMin;
-        int w = (int) Math.ceil(xMax) - x;
-        int h = (int) Math.ceil(yMax) - y;
-        return Bounds.create(x, y, w, h);
+        int width = (int) Math.ceil(xMax) - x;
+        int height = (int) Math.ceil(yMax) - y;
+        return Bounds.create(x, y, width, height);
     }
 
     private static double[] computeA(double[] p0, double[] p1) {
@@ -70,7 +70,7 @@ public class CurveUtil {
     }
 
     // returns { t:Number, pos:Point, dist:Number, nor:Point }
-    // (costs about 80 multiplications+additions)
+    // (costs about 80 multiplications +additions)
     // note: p0 and p2 are endpoints, p1 is control point
     public static double[] findNearestPoint(double[] q,
             double[] p0, double[] p1, double[] p2) {

@@ -25,29 +25,29 @@ import javax.swing.Icon;
 
 public class LineTool extends AbstractTool {
 
-    private DrawingAttributeSet attrs;
-    private boolean active;
+    private DrawingAttributeSet attributeSet;
+    private boolean isActive;
     private Location mouseStart;
     private Location mouseEnd;
     private int lastMouseX;
     private int lastMouseY;
 
-    public LineTool(DrawingAttributeSet attrs) {
-        this.attrs = attrs;
-        active = false;
+    public LineTool(DrawingAttributeSet attributeSet) {
+        this.attributeSet = attributeSet;
+        isActive = false;
     }
 
-    static Location snapTo4Cardinals(Location from, int mx, int my) {
+    static Location snapTo4Cardinals(Location from, int mouseX, int mouseY) {
         int px = from.getX();
         int py = from.getY();
-        if (mx != px && my != py) {
-            if (Math.abs(my - py) < Math.abs(mx - px)) {
-                return Location.create(mx, py);
+        if (mouseX != px && mouseY != py) {
+            if (Math.abs(mouseY - py) < Math.abs(mouseX - px)) {
+                return Location.create(mouseX, py);
             } else {
-                return Location.create(px, my);
+                return Location.create(px, mouseY);
             }
         }
-        return Location.create(mx, my); // should never happen
+        return Location.create(mouseX, mouseY); // should never happen
     }
 
     @Override
@@ -62,51 +62,51 @@ public class LineTool extends AbstractTool {
 
     @Override
     public List<Attribute<?>> getAttributes() {
-        return DrawAttr.ATTRS_STROKE;
+        return DrawAttr.ATTRIBUTES_STROKE;
     }
 
     @Override
     public void toolDeselected(Canvas canvas) {
-        active = false;
+        isActive = false;
         repaintArea(canvas);
     }
 
     @Override
-    public void mousePressed(Canvas canvas, MouseEvent e) {
-        int x = e.getX();
-        int y = e.getY();
-        int mods = e.getModifiersEx();
-        if ((mods & InputEvent.CTRL_DOWN_MASK) != 0) {
+    public void mousePressed(Canvas canvas, MouseEvent event) {
+        int x = event.getX();
+        int y = event.getY();
+        int modifiers = event.getModifiersEx();
+        if ((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
             x = canvas.snapX(x);
             y = canvas.snapY(y);
         }
-        Location loc = Location.create(x, y);
-        mouseStart = loc;
-        mouseEnd = loc;
-        lastMouseX = loc.getX();
-        lastMouseY = loc.getY();
-        active = canvas.getModel() != null;
+        Location location = Location.create(x, y);
+        mouseStart = location;
+        mouseEnd = location;
+        lastMouseX = location.getX();
+        lastMouseY = location.getY();
+        isActive = canvas.getModel() != null;
         repaintArea(canvas);
     }
 
     @Override
-    public void mouseDragged(Canvas canvas, MouseEvent e) {
-        updateMouse(canvas, e.getX(), e.getY(), e.getModifiersEx());
+    public void mouseDragged(Canvas canvas, MouseEvent event) {
+        updateMouse(canvas, event.getX(), event.getY(), event.getModifiersEx());
     }
 
     @Override
-    public void mouseReleased(Canvas canvas, MouseEvent e) {
-        if (active) {
-            updateMouse(canvas, e.getX(), e.getY(), e.getModifiersEx());
-            Location start = mouseStart;
-            Location end = mouseEnd;
+    public void mouseReleased(Canvas canvas, MouseEvent event) {
+        if (isActive) {
+            updateMouse(canvas, event.getX(), event.getY(), event.getModifiersEx());
+            Location mouseStart = this.mouseStart;
+            Location mouseEnd = this.mouseEnd;
             CanvasObject add = null;
-            if (!start.equals(end)) {
-                active = false;
+            if (!mouseStart.equals(mouseEnd)) {
+                isActive = false;
                 CanvasModel model = canvas.getModel();
-                Location[] ends = {start, end};
-                List<Location> locs = UnmodifiableList.create(ends);
-                add = attrs.applyTo(new Poly(false, locs));
+                Location[] ends = {mouseStart, mouseEnd};
+                List<Location> locations = UnmodifiableList.create(ends);
+                add = attributeSet.applyTo(new Poly(false, locations));
                 add.setValue(DrawAttr.PAINT_TYPE, DrawAttr.PAINT_STROKE);
                 canvas.doAction(new ModelAddAction(model, add));
                 repaintArea(canvas);
@@ -116,29 +116,29 @@ public class LineTool extends AbstractTool {
     }
 
     @Override
-    public void keyPressed(Canvas canvas, KeyEvent e) {
-        int code = e.getKeyCode();
-        if (active && (code == KeyEvent.VK_SHIFT || code == KeyEvent.VK_CONTROL)) {
-            updateMouse(canvas, lastMouseX, lastMouseY, e.getModifiersEx());
+    public void keyPressed(Canvas canvas, KeyEvent event) {
+        int code = event.getKeyCode();
+        if (isActive && (code == KeyEvent.VK_SHIFT || code == KeyEvent.VK_CONTROL)) {
+            updateMouse(canvas, lastMouseX, lastMouseY, event.getModifiersEx());
         }
     }
 
     @Override
-    public void keyReleased(Canvas canvas, KeyEvent e) {
-        keyPressed(canvas, e);
+    public void keyReleased(Canvas canvas, KeyEvent event) {
+        keyPressed(canvas, event);
     }
 
-    private void updateMouse(Canvas canvas, int mx, int my, int mods) {
-        if (active) {
-            boolean shift = (mods & MouseEvent.SHIFT_DOWN_MASK) != 0;
+    private void updateMouse(Canvas canvas, int mouseX, int mouseY, int modifiers) {
+        if (isActive) {
+            boolean isShiftDown = (modifiers & MouseEvent.SHIFT_DOWN_MASK) != 0;
             Location newEnd;
-            if (shift) {
-                newEnd = LineUtil.snapTo8Cardinals(mouseStart, mx, my);
+            if (isShiftDown) {
+                newEnd = LineUtil.snapTo8Cardinals(mouseStart, mouseX, mouseY);
             } else {
-                newEnd = Location.create(mx, my);
+                newEnd = Location.create(mouseX, mouseY);
             }
 
-            if ((mods & InputEvent.CTRL_DOWN_MASK) != 0) {
+            if ((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
                 int x = newEnd.getX();
                 int y = newEnd.getY();
                 x = canvas.snapX(x);
@@ -151,8 +151,8 @@ public class LineTool extends AbstractTool {
                 repaintArea(canvas);
             }
         }
-        lastMouseX = mx;
-        lastMouseY = my;
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
     }
 
     private void repaintArea(Canvas canvas) {
@@ -160,12 +160,12 @@ public class LineTool extends AbstractTool {
     }
 
     @Override
-    public void draw(Canvas canvas, Graphics g) {
-        if (active) {
-            Location start = mouseStart;
-            Location end = mouseEnd;
-            g.setColor(Color.GRAY);
-            g.drawLine(start.getX(), start.getY(), end.getX(), end.getY());
+    public void draw(Canvas canvas, Graphics graphics) {
+        if (isActive) {
+            Location mouseStart = this.mouseStart;
+            Location mouseEnd = this.mouseEnd;
+            graphics.setColor(Color.GRAY);
+            graphics.drawLine(mouseStart.getX(), mouseStart.getY(), mouseEnd.getX(), mouseEnd.getY());
         }
     }
 }

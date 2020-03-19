@@ -18,11 +18,11 @@ public class DrawAttr {
             = new Font("SansSerif", Font.PLAIN, 12);
 
     public static final AttributeOption ALIGN_LEFT
-            = new AttributeOption(Integer.valueOf(EditableLabel.LEFT), Strings.getter("alignStart"));
+            = new AttributeOption(EditableLabel.LEFT, Strings.getter("alignStart"));
     public static final AttributeOption ALIGN_CENTER
-            = new AttributeOption(Integer.valueOf(EditableLabel.CENTER), Strings.getter("alignMiddle"));
+            = new AttributeOption(EditableLabel.CENTER, Strings.getter("alignMiddle"));
     public static final AttributeOption ALIGN_RIGHT
-            = new AttributeOption(Integer.valueOf(EditableLabel.RIGHT), Strings.getter("alignEnd"));
+            = new AttributeOption(EditableLabel.RIGHT, Strings.getter("alignEnd"));
 
     public static final AttributeOption PAINT_STROKE
             = new AttributeOption("stroke", Strings.getter("paintStroke"));
@@ -54,7 +54,7 @@ public class DrawAttr {
             = createAttributes(new Attribute[]{FONT, ALIGNMENT, FILL_COLOR});
     public static final List<Attribute<?>> ATTRS_TEXT_TOOL // for text tool
             = createAttributes(new Attribute[]{FONT, ALIGNMENT, TEXT_DEFAULT_FILL});
-    public static final List<Attribute<?>> ATTRS_STROKE // for line, polyline
+    public static final List<Attribute<?>> ATTRIBUTES_STROKE // for line, polyline
             = createAttributes(new Attribute[]{STROKE_WIDTH, STROKE_COLOR});
 
     // attribute lists for rectangle, oval, polygon

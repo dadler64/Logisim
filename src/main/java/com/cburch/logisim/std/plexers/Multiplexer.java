@@ -65,7 +65,7 @@ public class Multiplexer extends InstanceFactory {
     public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
         if (attribute == Plexers.ATTR_ENABLE) {
             int newer = version.compareTo(LogisimVersion.get(2, 6, 3, 220));
-            return Boolean.valueOf(newer >= 0);
+            return newer >= 0;
         } else {
             return super.getDefaultAttributeValue(attribute, version);
         }
@@ -86,9 +86,9 @@ public class Multiplexer extends InstanceFactory {
     }
 
     @Override
-    public boolean contains(Location loc, AttributeSet attrs) {
-        Direction facing = attrs.getValue(StdAttr.FACING);
-        return Plexers.contains(loc, getOffsetBounds(attrs), facing);
+    public boolean contains(Location location, AttributeSet attributeSet) {
+        Direction facing = attributeSet.getValue(StdAttr.FACING);
+        return Plexers.contains(location, getOffsetBounds(attributeSet), facing);
     }
 
     @Override
@@ -98,14 +98,14 @@ public class Multiplexer extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING || attr == Plexers.ATTR_SELECT_LOC
-                || attr == Plexers.ATTR_SELECT) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING || attribute == Plexers.ATTR_SELECT_LOC
+                || attribute == Plexers.ATTR_SELECT) {
             instance.recomputeBounds();
             updatePorts(instance);
-        } else if (attr == StdAttr.WIDTH || attr == Plexers.ATTR_ENABLE) {
+        } else if (attribute == StdAttr.WIDTH || attribute == Plexers.ATTR_ENABLE) {
             updatePorts(instance);
-        } else if (attr == Plexers.ATTR_DISABLED) {
+        } else if (attribute == Plexers.ATTR_DISABLED) {
             instance.fireInvalidated();
         }
     }
@@ -115,7 +115,7 @@ public class Multiplexer extends InstanceFactory {
         Object selectLoc = instance.getAttributeValue(Plexers.ATTR_SELECT_LOC);
         BitWidth data = instance.getAttributeValue(StdAttr.WIDTH);
         BitWidth select = instance.getAttributeValue(Plexers.ATTR_SELECT);
-        boolean enable = instance.getAttributeValue(Plexers.ATTR_ENABLE).booleanValue();
+        boolean enable = instance.getAttributeValue(Plexers.ATTR_ENABLE);
 
         int selMult = selectLoc == Plexers.SELECT_BOTTOM_LEFT ? 1 : -1;
         int inputs = 1 << select.getWidth();
@@ -194,7 +194,7 @@ public class Multiplexer extends InstanceFactory {
     public void propagate(InstanceState state) {
         BitWidth data = state.getAttributeValue(StdAttr.WIDTH);
         BitWidth select = state.getAttributeValue(Plexers.ATTR_SELECT);
-        boolean enable = state.getAttributeValue(Plexers.ATTR_ENABLE).booleanValue();
+        boolean enable = state.getAttributeValue(Plexers.ATTR_ENABLE);
         int inputs = 1 << select.getWidth();
         Value en = enable ? state.getPort(inputs + 1) : Value.TRUE;
         Value out;
@@ -231,7 +231,7 @@ public class Multiplexer extends InstanceFactory {
         Bounds bds = painter.getBounds();
         Direction facing = painter.getAttributeValue(StdAttr.FACING);
         BitWidth select = painter.getAttributeValue(Plexers.ATTR_SELECT);
-        boolean enable = painter.getAttributeValue(Plexers.ATTR_ENABLE).booleanValue();
+        boolean enable = painter.getAttributeValue(Plexers.ATTR_ENABLE);
         int inputs = 1 << select.getWidth();
 
         // draw stubs for select/enable inputs that aren't on instance boundary

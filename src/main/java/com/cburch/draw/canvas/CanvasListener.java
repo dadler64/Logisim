@@ -15,8 +15,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.List;
 
-class CanvasListener implements MouseListener, MouseMotionListener, KeyListener,
-        CanvasModelListener {
+class CanvasListener implements MouseListener, MouseMotionListener, KeyListener, CanvasModelListener {
 
     private Canvas canvas;
     private CanvasTool tool;
@@ -30,94 +29,94 @@ class CanvasListener implements MouseListener, MouseMotionListener, KeyListener,
         return tool;
     }
 
-    public void setTool(CanvasTool value) {
-        CanvasTool oldValue = tool;
-        if (value != oldValue) {
-            tool = value;
-            if (oldValue != null) {
-                oldValue.toolDeselected(canvas);
+    public void setTool(CanvasTool tool) {
+        CanvasTool oldTool = this.tool;
+        if (tool != oldTool) {
+            this.tool = tool;
+            if (oldTool != null) {
+                oldTool.toolDeselected(canvas);
             }
-            if (value != null) {
-                value.toolSelected(canvas);
-                canvas.setCursor(value.getCursor(canvas));
+            if (tool != null) {
+                tool.toolSelected(canvas);
+                canvas.setCursor(tool.getCursor(canvas));
             } else {
                 canvas.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
     }
 
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent event) {
         if (tool != null) {
-            tool.mouseMoved(canvas, e);
+            tool.mouseMoved(canvas, event);
         }
     }
 
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent event) {
         canvas.requestFocus();
-        if (e.isPopupTrigger()) {
-            handlePopupTrigger(e);
-        } else if (e.getButton() == 1) {
+        if (event.isPopupTrigger()) {
+            handlePopupTrigger(event);
+        } else if (event.getButton() == 1) {
             if (tool != null) {
-                tool.mousePressed(canvas, e);
+                tool.mousePressed(canvas, event);
             }
         }
     }
 
-    public void mouseDragged(MouseEvent e) {
-        if (isButton1(e)) {
+    public void mouseDragged(MouseEvent event) {
+        if (isButton1(event)) {
             if (tool != null) {
-                tool.mouseDragged(canvas, e);
+                tool.mouseDragged(canvas, event);
             }
         } else {
             if (tool != null) {
-                tool.mouseMoved(canvas, e);
+                tool.mouseMoved(canvas, event);
             }
         }
     }
 
-    public void mouseReleased(MouseEvent e) {
-        if (e.isPopupTrigger()) {
+    public void mouseReleased(MouseEvent event) {
+        if (event.isPopupTrigger()) {
             if (tool != null) {
                 tool.cancelMousePress(canvas);
             }
-            handlePopupTrigger(e);
-        } else if (e.getButton() == 1) {
+            handlePopupTrigger(event);
+        } else if (event.getButton() == 1) {
             if (tool != null) {
-                tool.mouseReleased(canvas, e);
+                tool.mouseReleased(canvas, event);
             }
         }
     }
 
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(MouseEvent event) {
     }
 
-    public void mouseEntered(MouseEvent e) {
+    public void mouseEntered(MouseEvent event) {
         if (tool != null) {
-            tool.mouseEntered(canvas, e);
+            tool.mouseEntered(canvas, event);
         }
     }
 
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(MouseEvent event) {
         if (tool != null) {
-            tool.mouseExited(canvas, e);
+            tool.mouseExited(canvas, event);
         }
     }
 
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent event) {
         if (tool != null) {
-            tool.keyPressed(canvas, e);
+            tool.keyPressed(canvas, event);
         }
     }
 
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent event) {
         if (tool != null) {
-            tool.keyReleased(canvas, e);
+            tool.keyReleased(canvas, event);
         }
     }
 
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(KeyEvent event) {
         if (tool != null) {
-            tool.keyTyped(canvas, e);
+            tool.keyTyped(canvas, event);
         }
     }
 
@@ -126,28 +125,28 @@ class CanvasListener implements MouseListener, MouseMotionListener, KeyListener,
         canvas.repaint();
     }
 
-    private boolean isButton1(MouseEvent e) {
-        return (e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0;
+    private boolean isButton1(MouseEvent event) {
+        return (event.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0;
     }
 
-    private void handlePopupTrigger(MouseEvent e) {
-        Location loc = Location.create(e.getX(), e.getY());
+    private void handlePopupTrigger(MouseEvent event) {
+        Location location = Location.create(event.getX(), event.getY());
         List<CanvasObject> objects = canvas.getModel().getObjectsFromTop();
-        CanvasObject clicked = null;
-        for (CanvasObject o : objects) {
-            if (o.contains(loc, false)) {
-                clicked = o;
+        CanvasObject canvasObject = null;
+        for (CanvasObject object : objects) {
+            if (object.contains(location, false)) {
+                canvasObject = object;
                 break;
             }
         }
-        if (clicked == null) {
-            for (CanvasObject o : objects) {
-                if (o.contains(loc, true)) {
-                    clicked = o;
+        if (canvasObject == null) {
+            for (CanvasObject object : objects) {
+                if (object.contains(location, true)) {
+                    canvasObject = object;
                     break;
                 }
             }
         }
-        canvas.showPopupMenu(e, clicked);
+        canvas.showPopupMenu(event, canvasObject);
     }
 }

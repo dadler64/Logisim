@@ -20,32 +20,32 @@ import javax.swing.JFrame;
 public class Main {
 
     public static void main(String[] args) {
-        DrawingAttributeSet attrs = new DrawingAttributeSet();
-        Drawing model = new Drawing();
-        CanvasObject rect = attrs.applyTo(new Rectangle(25, 25, 50, 50));
-        model.addObjects(0, Collections.singleton(rect));
+        DrawingAttributeSet attributes = new DrawingAttributeSet();
+        Drawing drawing = new Drawing();
+        CanvasObject rectangle = attributes.applyTo(new Rectangle(25, 25, 50, 50));
+        drawing.addObjects(0, Collections.singleton(rectangle));
 
-        showFrame(model, "Drawing 1");
-        showFrame(model, "Drawing 2");
+        showFrame(drawing, "Drawing 1");
+        showFrame(drawing, "Drawing 2");
     }
 
-    private static void showFrame(Drawing model, String title) {
+    private static void showFrame(Drawing drawing, String title) {
         JFrame frame = new JFrame(title);
-        DrawingAttributeSet attrs = new DrawingAttributeSet();
+        DrawingAttributeSet attributes = new DrawingAttributeSet();
 
         Canvas canvas = new Canvas();
-        Toolbar toolbar = new Toolbar(canvas, attrs);
-        canvas.setModel(model, new UndoLogDispatcher(new UndoLog()));
+        Toolbar toolbar = new Toolbar(canvas, attributes);
+        canvas.setModel(drawing, new UndoLogDispatcher(new UndoLog()));
         canvas.setTool(toolbar.getDefaultTool());
 
         AttrTable table = new AttrTable(frame);
-        AttrTableDrawManager manager = new AttrTableDrawManager(canvas, table, attrs);
+        AttrTableDrawManager manager = new AttrTableDrawManager(canvas, table, attributes);
         manager.attributesSelected();
-        HorizontalSplitPane west = new HorizontalSplitPane(toolbar, table, 0.5);
-        VerticalSplitPane all = new VerticalSplitPane(west, canvas, 0.3);
+        HorizontalSplitPane westPane = new HorizontalSplitPane(toolbar, table, 0.5);
+        VerticalSplitPane splitPane = new VerticalSplitPane(westPane, canvas, 0.3);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(all, BorderLayout.CENTER);
+        frame.getContentPane().add(splitPane, BorderLayout.CENTER);
         frame.pack();
         frame.setVisible(true);
     }

@@ -42,19 +42,19 @@ public class Canvas extends JComponent {
         return listener.getTool();
     }
 
-    public void setTool(CanvasTool value) {
-        CanvasTool oldValue = listener.getTool();
-        if (value != oldValue) {
-            listener.setTool(value);
-            firePropertyChange(TOOL_PROPERTY, oldValue, value);
+    public void setTool(CanvasTool tool) {
+        CanvasTool oldTool = listener.getTool();
+        if (tool != oldTool) {
+            listener.setTool(tool);
+            firePropertyChange(TOOL_PROPERTY, oldTool, tool);
         }
     }
 
     public void toolGestureComplete(CanvasTool tool, CanvasObject created) {
-        // nothing to do - subclass may override
-    }
+    } // nothing to do - subclass may override
 
-    protected JPopupMenu showPopupMenu(MouseEvent e, CanvasObject clicked) {
+    @SuppressWarnings("UnusedReturnValue")
+    protected JPopupMenu showPopupMenu(MouseEvent event, CanvasObject clicked) {
         return null; // subclass will override if it supports popup menus
     }
 
@@ -62,8 +62,8 @@ public class Canvas extends JComponent {
         return selection;
     }
 
-    protected void setSelection(Selection value) {
-        selection = value;
+    protected void setSelection(Selection selection) {
+        this.selection = selection;
         repaint();
     }
 
@@ -71,20 +71,20 @@ public class Canvas extends JComponent {
         dispatcher.doAction(action);
     }
 
-    public void setModel(CanvasModel value, ActionDispatcher dispatcher) {
-        CanvasModel oldValue = model;
-        if (oldValue != value) {
+    public void setModel(CanvasModel model, ActionDispatcher dispatcher) {
+        CanvasModel oldValue = this.model;
+        if (oldValue != model) {
             if (oldValue != null) {
                 oldValue.removeCanvasModelListener(listener);
             }
-            model = value;
+            this.model = model;
             this.dispatcher = dispatcher;
-            if (value != null) {
-                value.addCanvasModelListener(listener);
+            if (model != null) {
+                model.addCanvasModelListener(listener);
             }
             selection.clearSelected();
             repaint();
-            firePropertyChange(MODEL_PROPERTY, oldValue, value);
+            firePropertyChange(MODEL_PROPERTY, oldValue, model);
         }
     }
 
@@ -105,27 +105,27 @@ public class Canvas extends JComponent {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        paintBackground(g);
-        paintForeground(g);
+    public void paintComponent(Graphics graphics) {
+        paintBackground(graphics);
+        paintForeground(graphics);
     }
 
-    protected void paintBackground(Graphics g) {
-        g.clearRect(0, 0, getWidth(), getHeight());
+    protected void paintBackground(Graphics graphics) {
+        graphics.clearRect(0, 0, getWidth(), getHeight());
     }
 
-    protected void paintForeground(Graphics g) {
+    protected void paintForeground(Graphics graphics) {
         CanvasModel model = this.model;
         CanvasTool tool = listener.getTool();
         if (model != null) {
-            Graphics dup = g.create();
-            model.paint(g, selection);
-            dup.dispose();
+            Graphics graphicsCopy = graphics.create();
+            model.paint(graphics, selection);
+            graphicsCopy.dispose();
         }
         if (tool != null) {
-            Graphics dup = g.create();
-            tool.draw(this, dup);
-            dup.dispose();
+            Graphics graphicsCopy = graphics.create();
+            tool.draw(this, graphicsCopy);
+            graphicsCopy.dispose();
         }
     }
 }

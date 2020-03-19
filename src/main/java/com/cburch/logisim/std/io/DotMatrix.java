@@ -59,8 +59,8 @@ public class DotMatrix extends InstanceFactory {
                 Io.ATTR_ON_COLOR, Io.ATTR_OFF_COLOR,
                 ATTR_PERSIST, ATTR_DOT_SHAPE
         }, new Object[]{
-                INPUT_COLUMN, Integer.valueOf(5), Integer.valueOf(7),
-                Color.GREEN, Color.DARK_GRAY, Integer.valueOf(0), SHAPE_SQUARE
+                INPUT_COLUMN, 5, 7,
+                Color.GREEN, Color.DARK_GRAY, 0, SHAPE_SQUARE
         });
         setIconName("dotmat.gif");
     }
@@ -68,8 +68,8 @@ public class DotMatrix extends InstanceFactory {
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
         Object input = attributes.getValue(ATTR_INPUT_TYPE);
-        int cols = attributes.getValue(ATTR_MATRIX_COLS).intValue();
-        int rows = attributes.getValue(ATTR_MATRIX_ROWS).intValue();
+        int cols = attributes.getValue(ATTR_MATRIX_COLS);
+        int rows = attributes.getValue(ATTR_MATRIX_ROWS);
         if (input == INPUT_COLUMN) {
             return Bounds.create(-5, -10 * rows, 10 * cols, 10 * rows);
         } else if (input == INPUT_ROW) {
@@ -90,9 +90,9 @@ public class DotMatrix extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == ATTR_MATRIX_ROWS || attr == ATTR_MATRIX_COLS
-                || attr == ATTR_INPUT_TYPE) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == ATTR_MATRIX_ROWS || attribute == ATTR_MATRIX_COLS
+                || attribute == ATTR_INPUT_TYPE) {
             instance.recomputeBounds();
             updatePorts(instance);
         }
@@ -100,8 +100,8 @@ public class DotMatrix extends InstanceFactory {
 
     private void updatePorts(Instance instance) {
         Object input = instance.getAttributeValue(ATTR_INPUT_TYPE);
-        int rows = instance.getAttributeValue(ATTR_MATRIX_ROWS).intValue();
-        int cols = instance.getAttributeValue(ATTR_MATRIX_COLS).intValue();
+        int rows = instance.getAttributeValue(ATTR_MATRIX_ROWS);
+        int cols = instance.getAttributeValue(ATTR_MATRIX_COLS);
         Port[] ps;
         if (input == INPUT_COLUMN) {
             ps = new Port[cols];
@@ -129,8 +129,8 @@ public class DotMatrix extends InstanceFactory {
     }
 
     private State getState(InstanceState state) {
-        int rows = state.getAttributeValue(ATTR_MATRIX_ROWS).intValue();
-        int cols = state.getAttributeValue(ATTR_MATRIX_COLS).intValue();
+        int rows = state.getAttributeValue(ATTR_MATRIX_ROWS);
+        int cols = state.getAttributeValue(ATTR_MATRIX_COLS);
         long clock = state.getTickCount();
 
         State data = (State) state.getData();
@@ -146,10 +146,10 @@ public class DotMatrix extends InstanceFactory {
     @Override
     public void propagate(InstanceState state) {
         Object type = state.getAttributeValue(ATTR_INPUT_TYPE);
-        int rows = state.getAttributeValue(ATTR_MATRIX_ROWS).intValue();
-        int cols = state.getAttributeValue(ATTR_MATRIX_COLS).intValue();
+        int rows = state.getAttributeValue(ATTR_MATRIX_ROWS);
+        int cols = state.getAttributeValue(ATTR_MATRIX_COLS);
         long clock = state.getTickCount();
-        long persist = clock + state.getAttributeValue(ATTR_PERSIST).intValue();
+        long persist = clock + state.getAttributeValue(ATTR_PERSIST);
 
         State data = getState(state);
         if (type == INPUT_ROW) {

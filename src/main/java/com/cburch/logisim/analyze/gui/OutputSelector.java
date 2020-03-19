@@ -141,7 +141,7 @@ class OutputSelector {
                     if (variable.equals(prototypeValue)) {
                         computePrototypeValue();
                     }
-                    index = ((Integer) event.getData()).intValue();
+                    index = (Integer) event.getData();
                     fireIntervalRemoved(this, index, index);
                     selection = select.getSelectedItem();
                     if (selection != null && selection.equals(variable)) {
@@ -157,7 +157,7 @@ class OutputSelector {
                     if (variable.equals(prototypeValue)) {
                         computePrototypeValue();
                     }
-                    index = ((Integer) event.getData()).intValue();
+                    index = (Integer) event.getData();
                     fireContentsChanged(this, index, index);
                     selection = select.getSelectedItem();
                     if (selection != null && selection.equals(variable)) {

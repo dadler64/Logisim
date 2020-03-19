@@ -4,19 +4,20 @@
 package com.cburch.draw.model;
 
 import com.cburch.logisim.data.Attribute;
+import java.util.Objects;
 
 public class AttributeMapKey {
 
-    private Attribute<?> attr;
+    private Attribute<?> attribute;
     private CanvasObject object;
 
-    public AttributeMapKey(Attribute<?> attr, CanvasObject object) {
-        this.attr = attr;
+    public AttributeMapKey(Attribute<?> attribute, CanvasObject object) {
+        this.attribute = attribute;
         this.object = object;
     }
 
     public Attribute<?> getAttribute() {
-        return attr;
+        return attribute;
     }
 
     public CanvasObject getObject() {
@@ -25,7 +26,7 @@ public class AttributeMapKey {
 
     @Override
     public int hashCode() {
-        int a = attr == null ? 0 : attr.hashCode();
+        int a = attribute == null ? 0 : attribute.hashCode();
         int b = object == null ? 0 : object.hashCode();
         return a ^ b;
     }
@@ -35,8 +36,7 @@ public class AttributeMapKey {
         if (!(other instanceof AttributeMapKey)) {
             return false;
         }
-        AttributeMapKey o = (AttributeMapKey) other;
-        return (attr == null ? o.attr == null : attr.equals(o.attr))
-                && (object == null ? o.object == null : object.equals(o.object));
+        AttributeMapKey mapKey = (AttributeMapKey) other;
+        return (Objects.equals(attribute, mapKey.attribute)) && (Objects.equals(object, mapKey.object));
     }
 }

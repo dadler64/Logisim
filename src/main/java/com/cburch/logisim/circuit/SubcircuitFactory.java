@@ -71,15 +71,15 @@ public class SubcircuitFactory extends InstanceFactory {
     }
 
     @Override
-    public boolean contains(Location loc, AttributeSet attrs) {
-        if (super.contains(loc, attrs)) {
-            Direction facing = attrs.getValue(StdAttr.FACING);
+    public boolean contains(Location location, AttributeSet attributeSet) {
+        if (super.contains(location, attributeSet)) {
+            Direction facing = attributeSet.getValue(StdAttr.FACING);
             Direction defaultFacing = source.getAppearance().getFacing();
             Location query;
             if (facing.equals(defaultFacing)) {
-                query = loc;
+                query = location;
             } else {
-                query = loc.rotate(facing, defaultFacing, 0, 0);
+                query = location.rotate(facing, defaultFacing, 0, 0);
             }
             return source.getAppearance().contains(query);
         } else {
@@ -106,10 +106,10 @@ public class SubcircuitFactory extends InstanceFactory {
     }
 
     @Override
-    public void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING) {
+    public void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING) {
             computePorts(instance);
-        } else if (attr == CircuitAttributes.LABEL_LOCATION_ATTR) {
+        } else if (attribute == CircuitAttributes.LABEL_LOCATION_ATTR) {
             configureLabel(instance);
         }
     }

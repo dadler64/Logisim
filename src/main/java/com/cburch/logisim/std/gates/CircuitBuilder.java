@@ -99,7 +99,7 @@ public class CircuitBuilder {
             ComponentFactory factory = Constant.FACTORY;
             AttributeSet attrs = factory.createAttributeSet();
             attrs.setValue(Constant.ATTRIBUTE_VALUE,
-                    Integer.valueOf(value.getValue()));
+                    value.getValue());
             Bounds bds = factory.getOffsetBounds(attrs);
             return new Layout(bds.getWidth(), bds.getHeight(),
                     -bds.getY(), factory, attrs,
@@ -121,7 +121,7 @@ public class CircuitBuilder {
 
                 AttributeSet attrs = factory.createAttributeSet();
                 attrs.setValue(GateAttributes.ATTR_SIZE, GateAttributes.SIZE_NARROW);
-                attrs.setValue(GateAttributes.ATTR_INPUTS, Integer.valueOf(2));
+                attrs.setValue(GateAttributes.ATTR_INPUTS, 2);
 
                 // determine layout's width
                 Bounds bds = factory.getOffsetBounds(attrs);
@@ -179,7 +179,7 @@ public class CircuitBuilder {
             attrs.setValue(GateAttributes.ATTR_SIZE, GateAttributes.SIZE_NARROW);
 
             int ins = sub.length;
-            attrs.setValue(GateAttributes.ATTR_INPUTS, Integer.valueOf(ins));
+            attrs.setValue(GateAttributes.ATTR_INPUTS, ins);
         }
 
         // determine layout's width
@@ -307,7 +307,7 @@ public class CircuitBuilder {
             Object factory = parent.getFactory();
             if (factory instanceof AbstractGate) {
                 Value val = ((AbstractGate) factory).getIdentity();
-                Integer valInt = Integer.valueOf(val.toIntValue());
+                Integer valInt = val.toIntValue();
                 Location loc = parent.getEnd(index).getLocation();
                 AttributeSet attrs = Constant.FACTORY.createAttributeSet();
                 attrs.setValue(Constant.ATTRIBUTE_VALUE, valInt);
@@ -394,7 +394,7 @@ public class CircuitBuilder {
                 // search for a Y that won't intersect with others
                 // (we needn't bother if the pin doesn't connect
                 // with anything anyway.)
-                Collections.sort(forbiddenYs, compareYs);
+                forbiddenYs.sort(compareYs);
                 while (Collections.binarySearch(forbiddenYs, spineLoc, compareYs) >= 0) {
                     curY += 10;
                     spineLoc = Location.create(spineX, curY);
@@ -432,7 +432,7 @@ public class CircuitBuilder {
                 // }
 
                 // create spine
-                Collections.sort(spine, compareYs);
+                spine.sort(compareYs);
                 Location prev = spine.get(0);
                 for (int k = 1, n = spine.size(); k < n; k++) {
                     Location cur = spine.get(k);

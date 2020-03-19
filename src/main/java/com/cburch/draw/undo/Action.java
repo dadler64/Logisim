@@ -15,11 +15,11 @@ public abstract class Action {
 
     public abstract void undo();
 
-    public boolean shouldAppendTo(Action other) {
+    public boolean shouldAppendTo(Action action) {
         return false;
     }
 
-    public Action append(Action other) {
-        return new ActionUnion(this, other);
+    public Action append(Action action) {
+        return new ActionUnion(this, action);
     }
 }

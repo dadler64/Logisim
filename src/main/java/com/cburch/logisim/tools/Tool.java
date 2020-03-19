@@ -21,8 +21,7 @@ import java.util.Set;
 //
 public abstract class Tool implements AttributeDefaultProvider {
 
-    private static Cursor dflt_cursor
-            = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 
     public abstract String getName();
 
@@ -49,11 +48,11 @@ public abstract class Tool implements AttributeDefaultProvider {
         return getAttributeSet();
     }
 
-    public boolean isAllDefaultValues(AttributeSet attrs, LogisimVersion ver) {
+    public boolean isAllDefaultValues(AttributeSet attributeSet, LogisimVersion version) {
         return false;
     }
 
-    public Object getDefaultAttributeValue(Attribute<?> attr, LogisimVersion ver) {
+    public Object getDefaultAttributeValue(Attribute<?> attribute, LogisimVersion version) {
         return null;
     }
 
@@ -112,7 +111,7 @@ public abstract class Tool implements AttributeDefaultProvider {
     }
 
     public Cursor getCursor() {
-        return dflt_cursor;
+        return DEFAULT_CURSOR;
     }
 
 }

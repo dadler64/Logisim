@@ -164,8 +164,8 @@ public class Text extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == ATTR_HALIGN || attr == ATTR_VALIGN) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == ATTR_HALIGN || attribute == ATTR_VALIGN) {
             configureLabel(instance);
         }
     }

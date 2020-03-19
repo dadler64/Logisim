@@ -153,11 +153,11 @@ public class Tunnel extends InstanceFactory {
     }
 
     @Override
-    protected void instanceAttributeChanged(Instance instance, Attribute<?> attr) {
-        if (attr == StdAttr.FACING) {
+    protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
+        if (attribute == StdAttr.FACING) {
             configureLabel(instance);
             instance.recomputeBounds();
-        } else if (attr == StdAttr.LABEL || attr == StdAttr.LABEL_FONT) {
+        } else if (attribute == StdAttr.LABEL || attribute == StdAttr.LABEL_FONT) {
             instance.recomputeBounds();
         }
     }

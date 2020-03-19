@@ -245,14 +245,14 @@ class VariableTab extends AnalyzerTab implements TabInterface {
                     fireIntervalAdded(this, index, index);
                     return;
                 case VariableListEvent.REMOVE:
-                    index = ((Integer) event.getData()).intValue();
+                    index = (Integer) event.getData();
                     fireIntervalRemoved(this, index, index);
                     return;
                 case VariableListEvent.MOVE:
                     fireContentsChanged(this, 0, getSize());
                     return;
                 case VariableListEvent.REPLACE:
-                    index = ((Integer) event.getData()).intValue();
+                    index = (Integer) event.getData();
                     fireContentsChanged(this, index, index);
                     return;
             }
@@ -325,7 +325,7 @@ class VariableTab extends AnalyzerTab implements TabInterface {
                     break;
                 case VariableListEvent.REMOVE:
                     if (event.getVariable().equals(list.getSelectedValue())) {
-                        int index = ((Integer) event.getData()).intValue();
+                        int index = (Integer) event.getData();
                         if (index >= data.size()) {
                             if (data.isEmpty()) {
                                 list.setSelectedIndices(new int[0]);
