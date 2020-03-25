@@ -3,10 +3,8 @@
 
 package com.cburch.draw.util;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import javax.swing.BorderFactory;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 
 public class EditableLabelField extends JTextField {
 
@@ -25,5 +23,9 @@ public class EditableLabelField extends JTextField {
         graphics.setColor(getBackground());
         graphics.fillRect(0, 0, getWidth(), getHeight());
         super.paintComponent(graphics);
+    }
+
+    public int viewToModel2D(Point fieldLocation) {
+        return fieldLocation.x;
     }
 }

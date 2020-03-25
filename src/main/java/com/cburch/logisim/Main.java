@@ -21,7 +21,6 @@
 
 package com.cburch.logisim;
 
-import com.adlerd.logger.Logger;
 import com.cburch.logisim.gui.start.Startup;
 
 public class Main {
@@ -32,7 +31,7 @@ public class Main {
     public static final Release RELEASE_TYPE = Release.ALPHA;
 
     public static void main(String[] args) {
-        Logger.start(); // Start the logger
+//        Logger.start(); // Start the logger
 
         Startup startup = Startup.parseArgs(args);
         if (startup == null) {
