@@ -1,9 +1,8 @@
 # Folders
-out/
-.idea/
-target/
-src/test/
-.gradle/
+/out
+/.idea
+/target
+/src/test
 
 # Build Files
 dependency-reduced-pom.xml
