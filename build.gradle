@@ -54,7 +54,6 @@ subprojects.each { subproject ->
 
 // All in one JAR file //
 jar {
-    // Add dependencies
     def deps = []
     
     subprojects.each { subproject ->
@@ -70,8 +69,8 @@ jar {
 
     manifest {
         attributes 'Main-Class': 'com.cburch.logisim.Main',
-            'SplashScreen-Image': 'src/main/resources/logisim/img/logisim-icon.ico',
-            'PennSim-Version': project.version
+                'SplashScreen-Image': 'src/main/resources/logisim/img/logisim-icon-128.png',
+                'Logisim-Version': project.version
     }
 
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
@@ -86,67 +85,73 @@ launch4j {
     errTitle 'Logisim Windows Wrapper'
     copyright 'Dan Adler (C) 2019,2020'
     fileDescription = 'Continuation on the Logisim circuit simulator'
-    icon projectDir.path + 'src/main/resources/logisim/img/logisim-icon.ico'
+    icon projectDir.path + '/src/main/resources/logisim/img/logisim-icon.ico'
     bundledJrePath = '%JAVA_HOME%'
-    outfile = 'PennSim.exe'
 }
 
 // Packages for Linux //
-ospackage {
+//ospackage {
 //    buildDeb.dependsOn 'proguard'
 //    buildRpm.dependsOn 'proguard'
-    buildDeb.dependsOn 'jar'
-    buildRpm.dependsOn 'jar'
-
-    license = file('LICENSE')
-    maintainer 'Dan Adler <dadler64@users.noreply.github.com>'
-    os LINUX
-    packageDescription 'Continuation on the Logisim circuit simulator'
-    packageGroup 'java'
-    packageName 'logisim'
-    release '0'
-    summary 'Software Simulator'
-    url 'https://github.com/dadler64/logisim'
-
-    logger.debug('/opt/' + project.name)
-    into '/opt/' + project.name
-    from (jar) {
-        fileMode 0755
-    }
-    from ('src/linux/resources/') {
-        fileMode 0755
-    }
-    from 'LICENSE', 'README.md'
-
+//    buildDeb.dependsOn 'jar'
+//    buildRpm.dependsOn 'jar'
+//
+//    license = file('LICENSE')
+//    maintainer 'Dan Adler <dadler64@users.noreply.github.com>'
+//    os LINUX
+//    packageDescription 'Continuation on the Logisim circuit simulator'
+//    packageGroup 'java'
+//    packageName 'logisim'
+//    release '0'
+//    summary 'Software Simulator'
+//    url 'https://github.com/dadler64/logisim'
+//
+//    logger.debug('/opt/' + project.name)
+//    into '/opt/' + project.name
+//    from (jar) {
+//        fileMode 0755
+//    }
+//    from ('dist/linux/resources/') {
+//        fileMode 0755
+//    }
+//    from 'LICENSE', 'README.md'
+//
 //    postInstall 'cd /opt/' + project.name + '; ln -s ./' + file(jar).name + ' ./pennsim.jar; ' +
 //            'xdg-icon-resource install --size 128 --novendor ./PenSimIcon.png pennsim; xdg-desktop-menu install ./*.desktop'
 //    preUninstall 'cd /opt/' + project.name + '; rm -f ./jd-gui.jar; rm -fr ./ext; xdg-desktop-menu uninstall ./*.desktop'
-}
+//}
 
-// Distributions for OSX and Windows //
+// Distributions for MacOS and Windows //
 distributions {
+
     osx.contents {
-        into('PennSim.app/Contents') {
-            from('src/osx/resources') {
+        into('Logisim.app/Contents') {
+            into('Logisim.app/Contents/Resources') {
+                from('dist/macos/resources') {
+                    include 'logisim.icns'
+                }
+            }
+            from('dist/macos/resources') {
                 include 'Info.plist'
                 expand VERSION: project.version,
 //                        JAR: file(proguard.outJarFiles[0]).name
-                        JAR: jar
+                        JAR: jar.baseName
             }
         }
-        into('PennSim.app/Contents/MacOS') {
-            from('src/osx/resources') {
+        into('Logisim.app/Contents/MacOS') {
+            from('dist/macos/resources') {
                 include 'universalJavaApplicationStub.sh'
                 fileMode 0755
             }
         }
-        into('PennSim.app/Contents/Resources/Java') {
+        into('Logisim.app/Contents/Resources/Java') {
             from jar
         }
         from 'LICENSE', 'README.md'
     }
+
     windows.contents {
-        from 'build/launch4j/pennsim.exe'
+        from 'build/launch4j/Logisim.exe'
         from 'LICENSE', 'README.md'
     }
 
@@ -159,11 +164,13 @@ distributions {
     osxDistZip.dependsOn 'jar'
 }
 
-build.finalizedBy buildDeb
-build.finalizedBy buildRpm
+//build.finalizedBy buildDeb
+//build.finalizedBy buildRpm
 
 
+//====================
 // Local Dependencies
+//====================
 repositories {
     flatDir {
         dirs 'libs'
@@ -171,9 +178,9 @@ repositories {
 }
 
 dependencies {
-    implementation name: 'ColorPicker'
-    implementation name: 'FontChooser'
-    implementation name: 'JavaHelp'
-    implementation name: 'Logger-1.0.0'
-    implementation name: 'MRJAdapter'
+    compile name: 'ColorPicker'
+    compile name: 'FontChooser'
+    compile name: 'JavaHelp'
+    compile name: 'Logger-1.0.0'
+    compile name: 'MRJAdapter'
 }
