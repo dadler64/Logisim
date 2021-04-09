@@ -8,18 +8,18 @@ import java.util.prefs.Preferences;
 
 class PrefMonitorStringOpts extends AbstractPrefMonitor<String> {
 
-    private String[] opts;
+    private final String[] opts;
+    private final String defaultValue;
     private String value;
-    private String dflt;
 
-    PrefMonitorStringOpts(String name, String[] opts, String dflt) {
+    PrefMonitorStringOpts(String name, String[] opts, String defaultValue) {
         super(name);
         this.opts = opts;
         this.value = opts[0];
-        this.dflt = dflt;
-        Preferences prefs = AppPreferences.getPreferences();
-        set(prefs.get(name, dflt));
-        prefs.addPreferenceChangeListener(this);
+        this.defaultValue = defaultValue;
+        Preferences preferences = AppPreferences.getPreferences();
+        set(preferences.get(name, defaultValue));
+        preferences.addPreferenceChangeListener(this);
     }
 
     private static boolean isSame(String a, String b) {
@@ -38,23 +38,22 @@ class PrefMonitorStringOpts extends AbstractPrefMonitor<String> {
     }
 
     public void preferenceChange(PreferenceChangeEvent event) {
-        Preferences prefs = event.getNode();
+        Preferences preferences = event.getNode();
         String prop = event.getKey();
         String name = getIdentifier();
         if (prop.equals(name)) {
             String oldValue = value;
-            String newValue = prefs.get(name, dflt);
+            String newValue = preferences.get(name, defaultValue);
             if (!isSame(oldValue, newValue)) {
-                String[] o = opts;
                 String chosen = null;
-                for (int i = 0; i < o.length; i++) {
-                    if (isSame(o[i], newValue)) {
-                        chosen = o[i];
+                for (String s : opts) {
+                    if (isSame(s, newValue)) {
+                        chosen = s;
                         break;
                     }
                 }
                 if (chosen == null) {
-                    chosen = dflt;
+                    chosen = defaultValue;
                 }
                 value = chosen;
                 AppPreferences.firePropertyChange(name, oldValue, chosen);

@@ -40,14 +40,12 @@ class NorGate extends AbstractGate {
     }
 
     @Override
-    protected void paintDinShape(InstancePainter painter, int width, int height,
-            int inputs) {
+    protected void paintDinShape(InstancePainter painter, int width, int height, int inputs) {
         PainterDin.paintOr(painter, width, height, true);
     }
 
     @Override
-    protected Value computeOutput(Value[] inputs, int numInputs,
-            InstanceState state) {
+    protected Value computeOutput(Value[] inputs, int numInputs, InstanceState state) {
         return GateFunctions.computeOr(inputs, numInputs).not();
     }
 
@@ -58,11 +56,11 @@ class NorGate extends AbstractGate {
 
     @Override
     protected Expression computeExpression(Expression[] inputs, int numInputs) {
-        Expression ret = inputs[0];
+        Expression expression = inputs[0];
         for (int i = 1; i < numInputs; i++) {
-            ret = Expressions.or(ret, inputs[i]);
+            expression = Expressions.or(expression, inputs[i]);
         }
-        return Expressions.not(ret);
+        return Expressions.not(expression);
     }
 
     @Override

@@ -12,10 +12,10 @@ public class Toolbar extends JPanel {
 
     public static final Object VERTICAL = new Object();
     public static final Object HORIZONTAL = new Object();
+    private final JPanel subPanel;
+    private final MyListener myListener;
     private ToolbarModel model;
-    private JPanel subPanel;
     private Object orientation;
-    private MyListener myListener;
     private ToolbarButton currentlyPressed;
 
     public Toolbar(ToolbarModel model) {

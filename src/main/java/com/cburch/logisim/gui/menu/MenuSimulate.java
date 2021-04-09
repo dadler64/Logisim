@@ -27,39 +27,39 @@ import javax.swing.event.ChangeListener;
 
 class MenuSimulate extends Menu {
 
-    private LogisimMenuBar menubar;
-    private MyListener myListener = new MyListener();
+    private final LogisimMenuBar menubar;
+    private final MyListener myListener = new MyListener();
+    private final MenuItemCheckImpl run;
+    private final JMenuItem reset = new JMenuItem();
+    private final MenuItemImpl step;
+    private final MenuItemCheckImpl ticksEnabled;
+    private final MenuItemImpl tickOnce;
+    private final JMenu tickFreq = new JMenu();
+    private final TickFrequencyChoice[] tickFrequencies = {
+        new TickFrequencyChoice(4096),
+        new TickFrequencyChoice(2048),
+        new TickFrequencyChoice(1024),
+        new TickFrequencyChoice(512),
+        new TickFrequencyChoice(256),
+        new TickFrequencyChoice(128),
+        new TickFrequencyChoice(64),
+        new TickFrequencyChoice(32),
+        new TickFrequencyChoice(16),
+        new TickFrequencyChoice(8),
+        new TickFrequencyChoice(4),
+        new TickFrequencyChoice(2),
+        new TickFrequencyChoice(1),
+        new TickFrequencyChoice(0.5),
+        new TickFrequencyChoice(0.25),
+    };
+    private final JMenu downStateMenu = new JMenu();
+    private final ArrayList<CircuitStateMenuItem> downStateItems = new ArrayList<>();
+    private final JMenu upStateMenu = new JMenu();
+    private final ArrayList<CircuitStateMenuItem> upStateItems = new ArrayList<>();
+    private final JMenuItem log = new JMenuItem();
     private CircuitState currentState = null;
     private CircuitState bottomState = null;
     private Simulator currentSim = null;
-    private MenuItemCheckImpl run;
-    private JMenuItem reset = new JMenuItem();
-    private MenuItemImpl step;
-    private MenuItemCheckImpl ticksEnabled;
-    private MenuItemImpl tickOnce;
-    private JMenu tickFreq = new JMenu();
-    private TickFrequencyChoice[] tickFrequencies = {
-            new TickFrequencyChoice(4096),
-            new TickFrequencyChoice(2048),
-            new TickFrequencyChoice(1024),
-            new TickFrequencyChoice(512),
-            new TickFrequencyChoice(256),
-            new TickFrequencyChoice(128),
-            new TickFrequencyChoice(64),
-            new TickFrequencyChoice(32),
-            new TickFrequencyChoice(16),
-            new TickFrequencyChoice(8),
-            new TickFrequencyChoice(4),
-            new TickFrequencyChoice(2),
-            new TickFrequencyChoice(1),
-            new TickFrequencyChoice(0.5),
-            new TickFrequencyChoice(0.25),
-    };
-    private JMenu downStateMenu = new JMenu();
-    private ArrayList<CircuitStateMenuItem> downStateItems = new ArrayList<>();
-    private JMenu upStateMenu = new JMenu();
-    private ArrayList<CircuitStateMenuItem> upStateItems = new ArrayList<>();
-    private JMenuItem log = new JMenuItem();
 
     public MenuSimulate(LogisimMenuBar menubar) {
         this.menubar = menubar;
@@ -74,17 +74,17 @@ class MenuSimulate extends Menu {
         menubar.registerItem(LogisimMenuBar.TICK_ENABLE, ticksEnabled);
         menubar.registerItem(LogisimMenuBar.TICK_STEP, tickOnce);
 
-        int menuMask = getToolkit().getMenuShortcutKeyMask();
+        int menuMask = getToolkit().getMenuShortcutKeyMaskEx();
         run.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_E, menuMask));
+            KeyEvent.VK_E, menuMask));
         reset.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_R, menuMask));
+            KeyEvent.VK_R, menuMask));
         step.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_I, menuMask));
+            KeyEvent.VK_I, menuMask));
         tickOnce.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_T, menuMask));
+            KeyEvent.VK_T, menuMask));
         ticksEnabled.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_K, menuMask));
+            KeyEvent.VK_K, menuMask));
 
         ButtonGroup buttonGroup = new ButtonGroup();
         for (TickFrequencyChoice tickFrequency : tickFrequencies) {
@@ -222,7 +222,7 @@ class MenuSimulate extends Menu {
         menu.removeAll();
         menu.setEnabled(items.size() > 0);
         boolean first = true;
-        int mask = getToolkit().getMenuShortcutKeyMask();
+        int mask = getToolkit().getMenuShortcutKeyMaskEx();
         for (int i = items.size() - 1; i >= 0; i--) {
             JMenuItem item = items.get(i);
             menu.add(item);
@@ -253,9 +253,9 @@ class MenuSimulate extends Menu {
     }
 
     private class TickFrequencyChoice extends JRadioButtonMenuItem
-            implements ActionListener {
+        implements ActionListener {
 
-        private double frequency;
+        private final double frequency;
 
         private TickFrequencyChoice(double value) {
             frequency = value;
@@ -293,7 +293,7 @@ class MenuSimulate extends Menu {
 
     private class CircuitStateMenuItem extends JMenuItem implements CircuitListener, ActionListener {
 
-        private CircuitState circuitState;
+        private final CircuitState circuitState;
 
         private CircuitStateMenuItem(CircuitState circuitState) {
             this.circuitState = circuitState;
@@ -324,7 +324,7 @@ class MenuSimulate extends Menu {
 
         public void actionPerformed(ActionEvent event) {
             Object source = event.getSource();
-            Project project = menubar.getProject();
+            Project project = menubar.getMenuProject();
             Simulator simulator = project == null ? null : project.getSimulator();
             if (source.equals(run) || source.equals(LogisimMenuBar.SIMULATE_ENABLE)) {
                 if (simulator != null) {
@@ -348,15 +348,17 @@ class MenuSimulate extends Menu {
                     simulator.setIsTicking(!simulator.isTicking());
                 }
             } else if (source.equals(log)) {
-                assert menubar.getProject() != null;
-                LogFrame frame = menubar.getProject().getLogFrame(true);
+                assert menubar.getMenuProject() != null;
+                LogFrame frame = menubar.getMenuProject().getLogFrame(true);
                 frame.setVisible(true);
             }
         }
 
-        public void propagationCompleted(SimulatorEvent event) { }
+        public void propagationCompleted(SimulatorEvent event) {
+        }
 
-        public void tickCompleted(SimulatorEvent event) { }
+        public void tickCompleted(SimulatorEvent event) {
+        }
 
         public void simulatorStateChanged(SimulatorEvent event) {
             Simulator simulator = event.getSource();

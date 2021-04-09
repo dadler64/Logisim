@@ -22,6 +22,7 @@ import com.cburch.logisim.instance.StdAttr;
 import com.cburch.logisim.util.GraphicsUtil;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Objects;
 
 public class Probe extends InstanceFactory {
 
@@ -36,34 +37,33 @@ public class Probe extends InstanceFactory {
 
     static void paintValue(InstancePainter painter, Value value) {
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds(); // intentionally with no graphics object - we don't want label included
+        Bounds bounds = painter.getBounds(); // intentionally with no graphics object - we don't want label included
 
         RadixOption radix = painter.getAttributeValue(RadixOption.ATTRIBUTE);
         if (radix == null || radix == RadixOption.RADIX_2) {
-            int x = bds.getX();
-            int y = bds.getY();
+            int x = bounds.getX();
+            int y = bounds.getY();
             int wid = value.getWidth();
             if (wid == 0) {
-                x += bds.getWidth() / 2;
-                y += bds.getHeight() / 2;
+                x += bounds.getWidth() / 2;
+                y += bounds.getHeight() / 2;
                 GraphicsUtil.switchToWidth(g, 2);
                 g.drawLine(x - 4, y, x + 4, y);
                 return;
             }
-            int x0 = bds.getX() + bds.getWidth() - 5;
+            int x0 = bounds.getX() + bounds.getWidth() - 5;
             int compWidth = wid * 10;
-            if (compWidth < bds.getWidth() - 3) {
-                x0 = bds.getX() + (bds.getWidth() + compWidth) / 2 - 5;
+            if (compWidth < bounds.getWidth() - 3) {
+                x0 = bounds.getX() + (bounds.getWidth() + compWidth) / 2 - 5;
             }
             int cx = x0;
-            int cy = bds.getY() + bds.getHeight() - 12;
-            int cur = 0;
+            int cy = bounds.getY() + bounds.getHeight() - 12;
+            int current = 0;
             for (int k = 0; k < wid; k++) {
-                GraphicsUtil.drawCenteredText(g,
-                        value.get(k).toDisplayString(), cx, cy);
-                ++cur;
-                if (cur == 8) {
-                    cur = 0;
+                GraphicsUtil.drawCenteredText(g, value.get(k).toDisplayString(), cx, cy);
+                ++current;
+                if (current == 8) {
+                    current = 0;
                     cx = x0;
                     cy -= 20;
                 } else {
@@ -73,8 +73,8 @@ public class Probe extends InstanceFactory {
         } else {
             String text = radix.toString(value);
             GraphicsUtil.drawCenteredText(g, text,
-                    bds.getX() + bds.getWidth() / 2,
-                    bds.getY() + bds.getHeight() / 2);
+                bounds.getX() + bounds.getWidth() / 2,
+                bounds.getY() + bounds.getHeight() / 2);
         }
     }
 
@@ -87,35 +87,35 @@ public class Probe extends InstanceFactory {
     // static methods
     //
     static Bounds getOffsetBounds(Direction dir, BitWidth width,
-            RadixOption radix) {
-        Bounds ret = null;
+        RadixOption radix) {
+        Bounds bounds = null;
         int len = radix == null || radix == RadixOption.RADIX_2 ? width.getWidth() : radix.getMaxLength(width);
         if (dir == Direction.EAST) {
             switch (len) {
                 case 0:
                 case 1:
-                    ret = Bounds.create(-20, -10, 20, 20);
+                    bounds = Bounds.create(-20, -10, 20, 20);
                     break;
                 case 2:
-                    ret = Bounds.create(-20, -10, 20, 20);
+                    bounds = Bounds.create(-20, -10, 20, 20);
                     break;
                 case 3:
-                    ret = Bounds.create(-30, -10, 30, 20);
+                    bounds = Bounds.create(-30, -10, 30, 20);
                     break;
                 case 4:
-                    ret = Bounds.create(-40, -10, 40, 20);
+                    bounds = Bounds.create(-40, -10, 40, 20);
                     break;
                 case 5:
-                    ret = Bounds.create(-50, -10, 50, 20);
+                    bounds = Bounds.create(-50, -10, 50, 20);
                     break;
                 case 6:
-                    ret = Bounds.create(-60, -10, 60, 20);
+                    bounds = Bounds.create(-60, -10, 60, 20);
                     break;
                 case 7:
-                    ret = Bounds.create(-70, -10, 70, 20);
+                    bounds = Bounds.create(-70, -10, 70, 20);
                     break;
                 case 8:
-                    ret = Bounds.create(-80, -10, 80, 20);
+                    bounds = Bounds.create(-80, -10, 80, 20);
                     break;
                 case 9:
                 case 10:
@@ -125,7 +125,7 @@ public class Probe extends InstanceFactory {
                 case 14:
                 case 15:
                 case 16:
-                    ret = Bounds.create(-80, -20, 80, 40);
+                    bounds = Bounds.create(-80, -20, 80, 40);
                     break;
                 case 17:
                 case 18:
@@ -135,7 +135,7 @@ public class Probe extends InstanceFactory {
                 case 22:
                 case 23:
                 case 24:
-                    ret = Bounds.create(-80, -30, 80, 60);
+                    bounds = Bounds.create(-80, -30, 80, 60);
                     break;
                 case 25:
                 case 26:
@@ -145,35 +145,35 @@ public class Probe extends InstanceFactory {
                 case 30:
                 case 31:
                 case 32:
-                    ret = Bounds.create(-80, -40, 80, 80);
+                    bounds = Bounds.create(-80, -40, 80, 80);
                     break;
             }
         } else if (dir == Direction.WEST) {
             switch (len) {
                 case 0:
                 case 1:
-                    ret = Bounds.create(0, -10, 20, 20);
+                    bounds = Bounds.create(0, -10, 20, 20);
                     break;
                 case 2:
-                    ret = Bounds.create(0, -10, 20, 20);
+                    bounds = Bounds.create(0, -10, 20, 20);
                     break;
                 case 3:
-                    ret = Bounds.create(0, -10, 30, 20);
+                    bounds = Bounds.create(0, -10, 30, 20);
                     break;
                 case 4:
-                    ret = Bounds.create(0, -10, 40, 20);
+                    bounds = Bounds.create(0, -10, 40, 20);
                     break;
                 case 5:
-                    ret = Bounds.create(0, -10, 50, 20);
+                    bounds = Bounds.create(0, -10, 50, 20);
                     break;
                 case 6:
-                    ret = Bounds.create(0, -10, 60, 20);
+                    bounds = Bounds.create(0, -10, 60, 20);
                     break;
                 case 7:
-                    ret = Bounds.create(0, -10, 70, 20);
+                    bounds = Bounds.create(0, -10, 70, 20);
                     break;
                 case 8:
-                    ret = Bounds.create(0, -10, 80, 20);
+                    bounds = Bounds.create(0, -10, 80, 20);
                     break;
                 case 9:
                 case 10:
@@ -183,7 +183,7 @@ public class Probe extends InstanceFactory {
                 case 14:
                 case 15:
                 case 16:
-                    ret = Bounds.create(0, -20, 80, 40);
+                    bounds = Bounds.create(0, -20, 80, 40);
                     break;
                 case 17:
                 case 18:
@@ -193,7 +193,7 @@ public class Probe extends InstanceFactory {
                 case 22:
                 case 23:
                 case 24:
-                    ret = Bounds.create(0, -30, 80, 60);
+                    bounds = Bounds.create(0, -30, 80, 60);
                     break;
                 case 25:
                 case 26:
@@ -203,35 +203,35 @@ public class Probe extends InstanceFactory {
                 case 30:
                 case 31:
                 case 32:
-                    ret = Bounds.create(0, -40, 80, 80);
+                    bounds = Bounds.create(0, -40, 80, 80);
                     break;
             }
         } else if (dir == Direction.SOUTH) {
             switch (len) {
                 case 0:
                 case 1:
-                    ret = Bounds.create(-10, -20, 20, 20);
+                    bounds = Bounds.create(-10, -20, 20, 20);
                     break;
                 case 2:
-                    ret = Bounds.create(-10, -20, 20, 20);
+                    bounds = Bounds.create(-10, -20, 20, 20);
                     break;
                 case 3:
-                    ret = Bounds.create(-15, -20, 30, 20);
+                    bounds = Bounds.create(-15, -20, 30, 20);
                     break;
                 case 4:
-                    ret = Bounds.create(-20, -20, 40, 20);
+                    bounds = Bounds.create(-20, -20, 40, 20);
                     break;
                 case 5:
-                    ret = Bounds.create(-25, -20, 50, 20);
+                    bounds = Bounds.create(-25, -20, 50, 20);
                     break;
                 case 6:
-                    ret = Bounds.create(-30, -20, 60, 20);
+                    bounds = Bounds.create(-30, -20, 60, 20);
                     break;
                 case 7:
-                    ret = Bounds.create(-35, -20, 70, 20);
+                    bounds = Bounds.create(-35, -20, 70, 20);
                     break;
                 case 8:
-                    ret = Bounds.create(-40, -20, 80, 20);
+                    bounds = Bounds.create(-40, -20, 80, 20);
                     break;
                 case 9:
                 case 10:
@@ -241,7 +241,7 @@ public class Probe extends InstanceFactory {
                 case 14:
                 case 15:
                 case 16:
-                    ret = Bounds.create(-40, -40, 80, 40);
+                    bounds = Bounds.create(-40, -40, 80, 40);
                     break;
                 case 17:
                 case 18:
@@ -251,7 +251,7 @@ public class Probe extends InstanceFactory {
                 case 22:
                 case 23:
                 case 24:
-                    ret = Bounds.create(-40, -60, 80, 60);
+                    bounds = Bounds.create(-40, -60, 80, 60);
                     break;
                 case 25:
                 case 26:
@@ -261,35 +261,35 @@ public class Probe extends InstanceFactory {
                 case 30:
                 case 31:
                 case 32:
-                    ret = Bounds.create(-40, -80, 80, 80);
+                    bounds = Bounds.create(-40, -80, 80, 80);
                     break;
             }
         } else if (dir == Direction.NORTH) {
             switch (len) {
                 case 0:
                 case 1:
-                    ret = Bounds.create(-10, 0, 20, 20);
+                    bounds = Bounds.create(-10, 0, 20, 20);
                     break;
                 case 2:
-                    ret = Bounds.create(-10, 0, 20, 20);
+                    bounds = Bounds.create(-10, 0, 20, 20);
                     break;
                 case 3:
-                    ret = Bounds.create(-15, 0, 30, 20);
+                    bounds = Bounds.create(-15, 0, 30, 20);
                     break;
                 case 4:
-                    ret = Bounds.create(-20, 0, 40, 20);
+                    bounds = Bounds.create(-20, 0, 40, 20);
                     break;
                 case 5:
-                    ret = Bounds.create(-25, 0, 50, 20);
+                    bounds = Bounds.create(-25, 0, 50, 20);
                     break;
                 case 6:
-                    ret = Bounds.create(-30, 0, 60, 20);
+                    bounds = Bounds.create(-30, 0, 60, 20);
                     break;
                 case 7:
-                    ret = Bounds.create(-35, 0, 70, 20);
+                    bounds = Bounds.create(-35, 0, 70, 20);
                     break;
                 case 8:
-                    ret = Bounds.create(-40, 0, 80, 20);
+                    bounds = Bounds.create(-40, 0, 80, 20);
                     break;
                 case 9:
                 case 10:
@@ -299,7 +299,7 @@ public class Probe extends InstanceFactory {
                 case 14:
                 case 15:
                 case 16:
-                    ret = Bounds.create(-40, 0, 80, 40);
+                    bounds = Bounds.create(-40, 0, 80, 40);
                     break;
                 case 17:
                 case 18:
@@ -309,7 +309,7 @@ public class Probe extends InstanceFactory {
                 case 22:
                 case 23:
                 case 24:
-                    ret = Bounds.create(-40, 0, 80, 60);
+                    bounds = Bounds.create(-40, 0, 80, 60);
                     break;
                 case 25:
                 case 26:
@@ -319,63 +319,61 @@ public class Probe extends InstanceFactory {
                 case 30:
                 case 31:
                 case 32:
-                    ret = Bounds.create(-40, 0, 80, 80);
+                    bounds = Bounds.create(-40, 0, 80, 80);
                     break;
             }
         }
-        if (ret == null) {
-            ret = Bounds.create(0, -10, 20, 20); // should never happen
+        if (bounds == null) {
+            bounds = Bounds.create(0, -10, 20, 20); // should never happen
         }
-        return ret;
+        return bounds;
     }
 
-    static void configureLabel(Instance instance, Direction labelLoc,
-            Direction facing) {
-        Bounds bds = instance.getBounds();
+    static void configureLabel(Instance instance, Direction labelLocation, Direction facing) {
+        Bounds bounds = instance.getBounds();
         int x;
         int y;
-        int halign;
-        int valign;
-        if (labelLoc == Direction.NORTH) {
-            halign = TextField.H_CENTER;
-            valign = TextField.V_BOTTOM;
-            x = bds.getX() + bds.getWidth() / 2;
-            y = bds.getY() - 2;
-            if (facing == labelLoc) {
-                halign = TextField.H_LEFT;
+        int hAlign;
+        int vAlign;
+        if (labelLocation == Direction.NORTH) {
+            hAlign = TextField.H_CENTER;
+            vAlign = TextField.V_BOTTOM;
+            x = bounds.getX() + bounds.getWidth() / 2;
+            y = bounds.getY() - 2;
+            if (facing == labelLocation) {
+                hAlign = TextField.H_LEFT;
                 x += 2;
             }
-        } else if (labelLoc == Direction.SOUTH) {
-            halign = TextField.H_CENTER;
-            valign = TextField.V_TOP;
-            x = bds.getX() + bds.getWidth() / 2;
-            y = bds.getY() + bds.getHeight() + 2;
-            if (facing == labelLoc) {
-                halign = TextField.H_LEFT;
+        } else if (labelLocation == Direction.SOUTH) {
+            hAlign = TextField.H_CENTER;
+            vAlign = TextField.V_TOP;
+            x = bounds.getX() + bounds.getWidth() / 2;
+            y = bounds.getY() + bounds.getHeight() + 2;
+            if (facing == labelLocation) {
+                hAlign = TextField.H_LEFT;
                 x += 2;
             }
-        } else if (labelLoc == Direction.EAST) {
-            halign = TextField.H_LEFT;
-            valign = TextField.V_CENTER;
-            x = bds.getX() + bds.getWidth() + 2;
-            y = bds.getY() + bds.getHeight() / 2;
-            if (facing == labelLoc) {
-                valign = TextField.V_BOTTOM;
+        } else if (labelLocation == Direction.EAST) {
+            hAlign = TextField.H_LEFT;
+            vAlign = TextField.V_CENTER;
+            x = bounds.getX() + bounds.getWidth() + 2;
+            y = bounds.getY() + bounds.getHeight() / 2;
+            if (facing == labelLocation) {
+                vAlign = TextField.V_BOTTOM;
                 y -= 2;
             }
         } else { // WEST
-            halign = TextField.H_RIGHT;
-            valign = TextField.V_CENTER;
-            x = bds.getX() - 2;
-            y = bds.getY() + bds.getHeight() / 2;
-            if (facing == labelLoc) {
-                valign = TextField.V_BOTTOM;
+            hAlign = TextField.H_RIGHT;
+            vAlign = TextField.V_CENTER;
+            x = bounds.getX() - 2;
+            y = bounds.getY() + bounds.getHeight() / 2;
+            if (facing == labelLocation) {
+                vAlign = TextField.V_BOTTOM;
                 y -= 2;
             }
         }
 
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                x, y, halign, valign);
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, x, y, hAlign, vAlign);
     }
 
     @Override
@@ -395,9 +393,8 @@ public class Probe extends InstanceFactory {
     @Override
     public void paintGhost(InstancePainter painter) {
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getOffsetBounds();
-        g.drawOval(bds.getX() + 1, bds.getY() + 1,
-                bds.getWidth() - 1, bds.getHeight() - 1);
+        Bounds bounds = painter.getOffsetBounds();
+        g.drawOval(bounds.getX() + 1, bounds.getY() + 1, bounds.getWidth() - 1, bounds.getHeight() - 1);
     }
 
     @Override
@@ -405,18 +402,16 @@ public class Probe extends InstanceFactory {
         Value value = getValue(painter);
 
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds(); // intentionally with no graphics object - we don't want label included
-        int x = bds.getX();
-        int y = bds.getY();
+        Bounds bounds = painter.getBounds(); // intentionally with no graphics object - we don't want label included
+        int x = bounds.getX();
+        int y = bounds.getY();
         g.setColor(Color.WHITE);
-        g.fillRect(x + 5, y + 5, bds.getWidth() - 10, bds.getHeight() - 10);
+        g.fillRect(x + 5, y + 5, bounds.getWidth() - 10, bounds.getHeight() - 10);
         g.setColor(Color.GRAY);
         if (value.getWidth() <= 1) {
-            g.drawOval(x + 1, y + 1,
-                    bds.getWidth() - 2, bds.getHeight() - 2);
+            g.drawOval(x + 1, y + 1, bounds.getWidth() - 2, bounds.getHeight() - 2);
         } else {
-            g.drawRoundRect(x + 1, y + 1,
-                    bds.getWidth() - 2, bds.getHeight() - 2, 6, 6);
+            g.drawRoundRect(x + 1, y + 1, bounds.getWidth() - 2, bounds.getHeight() - 2, 6, 6);
         }
 
         g.setColor(Color.BLACK);
@@ -424,8 +419,8 @@ public class Probe extends InstanceFactory {
 
         if (!painter.getShowState()) {
             if (value.getWidth() > 0) {
-                GraphicsUtil.drawCenteredText(g, "x" + value.getWidth(),
-                        bds.getX() + bds.getWidth() / 2, bds.getY() + bds.getHeight() / 2);
+                GraphicsUtil.drawCenteredText(g, "x" + value.getWidth(), bounds.getX() + bounds.getWidth() / 2,
+                    bounds.getY() + bounds.getHeight() / 2);
             }
         } else {
             paintValue(painter, value);
@@ -459,7 +454,7 @@ public class Probe extends InstanceFactory {
         StateData oldData = (StateData) state.getData();
         Value oldValue = oldData == null ? Value.NIL : oldData.curValue;
         Value newValue = state.getPort(0);
-        boolean same = oldValue == null ? newValue == null : oldValue.equals(newValue);
+        boolean same = Objects.equals(oldValue, newValue);
         if (!same) {
             if (oldData == null) {
                 oldData = new StateData();
@@ -482,7 +477,7 @@ public class Probe extends InstanceFactory {
 
     void configureLabel(Instance instance) {
         ProbeAttributes attrs = (ProbeAttributes) instance.getAttributeSet();
-        Probe.configureLabel(instance, attrs.labelloc, attrs.facing);
+        Probe.configureLabel(instance, attrs.labelLocation, attrs.facing);
     }
 
     private static class StateData implements InstanceData, Cloneable {
@@ -506,8 +501,8 @@ public class Probe extends InstanceFactory {
 
         @Override
         public String getLogName(InstanceState state, Object option) {
-            String ret = state.getAttributeValue(StdAttr.LABEL);
-            return ret != null && !ret.equals("") ? ret : null;
+            String name = state.getAttributeValue(StdAttr.LABEL);
+            return name != null && !name.equals("") ? name : null;
         }
 
         @Override

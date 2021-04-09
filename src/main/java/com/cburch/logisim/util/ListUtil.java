@@ -12,8 +12,7 @@ public class ListUtil {
     private ListUtil() {
     }
 
-    public static <E> List<E> joinImmutableLists(List<? extends E> a,
-            List<? extends E> b) {
+    public static <E> List<E> joinImmutableLists(List<? extends E> a, List<? extends E> b) {
         return new JoinedList<>(a, b);
     }
 
@@ -43,8 +42,7 @@ public class ListUtil {
 
         @Override
         public Iterator<E> iterator() {
-            return IteratorUtil.createJoinedIterator(a.iterator(),
-                    b.iterator());
+            return IteratorUtil.createJoinedIterator(a.iterator(), b.iterator());
         }
 
     }

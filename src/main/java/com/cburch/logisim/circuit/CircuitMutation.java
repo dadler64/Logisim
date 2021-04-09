@@ -16,8 +16,8 @@ import java.util.Map;
 
 public final class CircuitMutation extends CircuitTransaction {
 
-    private Circuit primary;
-    private List<CircuitChange> changes;
+    private final Circuit primary;
+    private final List<CircuitChange> changes;
 
     public CircuitMutation(Circuit circuit) {
         this.primary = circuit;
@@ -88,13 +88,13 @@ public final class CircuitMutation extends CircuitTransaction {
         HashMap<Circuit, Integer> accessMap = new HashMap<>();
         HashSet<Circuit> supercircsDone = new HashSet<>();
         for (CircuitChange change : changes) {
-            Circuit circ = change.getCircuit();
-            accessMap.put(circ, READ_WRITE);
+            Circuit circuit = change.getCircuit();
+            accessMap.put(circuit, READ_WRITE);
 
             if (change.concernsSupercircuit()) {
-                boolean isFirstForCirc = supercircsDone.add(circ);
+                boolean isFirstForCirc = supercircsDone.add(circuit);
                 if (isFirstForCirc) {
-                    for (Circuit supercirc : circ.getCircuitsUsingThis()) {
+                    for (Circuit supercirc : circuit.getCircuitsUsingThis()) {
                         accessMap.put(supercirc, READ_WRITE);
                     }
                 }

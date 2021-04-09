@@ -11,13 +11,12 @@ import javax.swing.JRadioButtonMenuItem;
 
 public abstract class WindowMenuItemManager {
 
-    private MyListener myListener = new MyListener();
+    private final MyListener myListener = new MyListener();
     private String text;
-    private boolean persistent;
+    private final boolean persistent;
     private boolean listenerAdded = false;
     private boolean inManager = false;
-    private HashMap<WindowMenu, JRadioButtonMenuItem> menuItems
-            = new HashMap<>();
+    private final HashMap<WindowMenu, JRadioButtonMenuItem> menuItems = new HashMap<>();
 
     public WindowMenuItemManager(String text, boolean persistent) {
         this.text = text;

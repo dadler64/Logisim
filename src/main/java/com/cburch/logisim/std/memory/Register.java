@@ -31,39 +31,44 @@ public class Register extends InstanceFactory {
 
     public Register() {
         super("Register", Strings.getter("registerComponent"));
-        setAttributes(new Attribute[]{
-                StdAttr.WIDTH, StdAttr.TRIGGER,
-                StdAttr.LABEL, StdAttr.LABEL_FONT
-        }, new Object[]{
-                BitWidth.create(8), StdAttr.TRIG_RISING,
-                "", StdAttr.DEFAULT_LABEL_FONT
-        });
+        setAttributes(
+            new Attribute[]{
+                StdAttr.WIDTH,
+                StdAttr.TRIGGER,
+                StdAttr.LABEL,
+                StdAttr.LABEL_FONT
+            }, new Object[]{
+                BitWidth.create(8),
+                StdAttr.TRIG_RISING,
+                "",
+                StdAttr.DEFAULT_LABEL_FONT
+            }
+        );
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setOffsetBounds(Bounds.create(-30, -20, 30, 40));
         setIconName("register.gif");
         setInstancePoker(RegisterPoker.class);
         setInstanceLogger(RegisterLogger.class);
 
-        Port[] ps = new Port[5];
-        ps[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
-        ps[IN] = new Port(-30, 0, Port.INPUT, StdAttr.WIDTH);
-        ps[CK] = new Port(-20, 20, Port.INPUT, 1);
-        ps[CLR] = new Port(-10, 20, Port.INPUT, 1);
-        ps[EN] = new Port(-30, 10, Port.INPUT, 1);
-        ps[OUT].setToolTip(Strings.getter("registerQTip"));
-        ps[IN].setToolTip(Strings.getter("registerDTip"));
-        ps[CK].setToolTip(Strings.getter("registerClkTip"));
-        ps[CLR].setToolTip(Strings.getter("registerClrTip"));
-        ps[EN].setToolTip(Strings.getter("registerEnableTip"));
-        setPorts(ps);
+        Port[] ports = new Port[5];
+        ports[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
+        ports[IN] = new Port(-30, 0, Port.INPUT, StdAttr.WIDTH);
+        ports[CK] = new Port(-20, 20, Port.INPUT, 1);
+        ports[CLR] = new Port(-10, 20, Port.INPUT, 1);
+        ports[EN] = new Port(-30, 10, Port.INPUT, 1);
+        ports[OUT].setToolTip(Strings.getter("registerQTip"));
+        ports[IN].setToolTip(Strings.getter("registerDTip"));
+        ports[CK].setToolTip(Strings.getter("registerClkTip"));
+        ports[CLR].setToolTip(Strings.getter("registerClrTip"));
+        ports[EN].setToolTip(Strings.getter("registerEnableTip"));
+        setPorts(ports);
     }
 
     @Override
     protected void configureNewInstance(Instance instance) {
-        Bounds bds = instance.getBounds();
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                bds.getX() + bds.getWidth() / 2, bds.getY() - 3,
-                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+        Bounds bounds = instance.getBounds();
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, bounds.getX() + bounds.getWidth() / 2, bounds.getY() - 3,
+            GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
     }
 
     @Override
@@ -76,11 +81,11 @@ public class Register extends InstanceFactory {
 
         BitWidth dataWidth = state.getAttributeValue(StdAttr.WIDTH);
         Object triggerType = state.getAttributeValue(StdAttr.TRIGGER);
-        boolean triggered = data.updateClock(state.getPort(CK), triggerType);
+        boolean isTriggered = data.updateClock(state.getPort(CK), triggerType);
 
         if (state.getPort(CLR) == Value.TRUE) {
             data.value = 0;
-        } else if (triggered && state.getPort(EN) != Value.FALSE) {
+        } else if (isTriggered && state.getPort(EN) != Value.FALSE) {
             Value in = state.getPort(IN);
             if (in.isFullyDefined()) {
                 data.value = in.toIntValue();
@@ -93,17 +98,17 @@ public class Register extends InstanceFactory {
     @Override
     public void paintInstance(InstancePainter painter) {
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds();
-        RegisterData state = (RegisterData) painter.getData();
-        BitWidth widthVal = painter.getAttributeValue(StdAttr.WIDTH);
-        int width = widthVal == null ? 8 : widthVal.getWidth();
+        Bounds bounds = painter.getBounds();
+        RegisterData data = (RegisterData) painter.getData();
+        BitWidth widthValue = painter.getAttributeValue(StdAttr.WIDTH);
+        int width = widthValue == null ? 8 : widthValue.getWidth();
 
         // determine text to draw in label
         String a;
         String b = null;
         if (painter.getShowState()) {
-            int val = state == null ? 0 : state.value;
-            String str = StringUtil.toHexString(width, val);
+            int value = data == null ? 0 : data.value;
+            String str = StringUtil.toHexString(width, value);
             if (str.length() <= 4) {
                 a = str;
             } else {
@@ -113,7 +118,7 @@ public class Register extends InstanceFactory {
             }
         } else {
             a = Strings.get("registerLabel");
-            b = Strings.get("registerWidthLabel", "" + widthVal.getWidth());
+            b = Strings.get("registerWidthLabel", "" + widthValue.getWidth());
         }
 
         // draw boundary, label
@@ -136,13 +141,10 @@ public class Register extends InstanceFactory {
 
         // draw contents
         if (b == null) {
-            GraphicsUtil.drawText(g, a, bds.getX() + 15, bds.getY() + 4,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+            GraphicsUtil.drawText(g, a, bounds.getX() + 15, bounds.getY() + 4, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
         } else {
-            GraphicsUtil.drawText(g, a, bds.getX() + 15, bds.getY() + 3,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
-            GraphicsUtil.drawText(g, b, bds.getX() + 15, bds.getY() + 15,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+            GraphicsUtil.drawText(g, a, bounds.getX() + 15, bounds.getY() + 3, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+            GraphicsUtil.drawText(g, b, bounds.getX() + 15, bounds.getY() + 15, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
         }
     }
 }

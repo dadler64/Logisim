@@ -79,7 +79,7 @@ public class Expressions {
         @Override
         public int hashCode() {
             return 31 * (31 * getClass().hashCode() + a.hashCode())
-                    + b.hashCode();
+                + b.hashCode();
         }
     }
 
@@ -166,7 +166,7 @@ public class Expressions {
 
     private static class Not extends Expression {
 
-        private Expression a;
+        private final Expression a;
 
         Not(Expression a) {
             this.a = a;
@@ -209,7 +209,7 @@ public class Expressions {
 
     private static class Variable extends Expression {
 
-        private String name;
+        private final String name;
 
         Variable(String name) {
             this.name = name;
@@ -252,7 +252,7 @@ public class Expressions {
 
     private static class Constant extends Expression {
 
-        private int value;
+        private final int value;
 
         Constant(int value) {
             this.value = value;

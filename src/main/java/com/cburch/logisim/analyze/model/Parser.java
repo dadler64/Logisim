@@ -186,7 +186,7 @@ public class Parser {
 
     private static boolean okCharacter(char c) {
         return Character.isWhitespace(c) || Character.isJavaIdentifierStart(c)
-                || "()01~^+!&|".indexOf(c) >= 0;
+            || "()01~^+!&|".indexOf(c) >= 0;
     }
 
     private static Expression parse(ArrayList<Token> tokens) throws ParserException {
@@ -217,7 +217,7 @@ public class Parser {
             } else if (t.type == TOKEN_NOT) {
                 if (current != null) {
                     push(stack, current, Expression.AND_LEVEL,
-                            new Token(TOKEN_AND, t.offset, Strings.get("implicitAndOperator")));
+                        new Token(TOKEN_AND, t.offset, Strings.get("implicitAndOperator")));
                 }
                 push(stack, null, Expression.NOT_LEVEL, t);
                 current = null;
@@ -226,7 +226,7 @@ public class Parser {
             } else if (t.type == TOKEN_LPAREN) {
                 if (current != null) {
                     push(stack, current, Expression.AND_LEVEL,
-                            new Token(TOKEN_AND, t.offset, 0, Strings.get("implicitAndOperator")));
+                        new Token(TOKEN_AND, t.offset, 0, Strings.get("implicitAndOperator")));
                 }
                 push(stack, null, -2, t);
                 current = null;
@@ -271,7 +271,7 @@ public class Parser {
     }
 
     private static void push(ArrayList<Context> stack, Expression expr,
-            int level, Token cause) {
+        int level, Token cause) {
         stack.add(new Context(expr, level, cause));
     }
 
@@ -288,7 +288,7 @@ public class Parser {
     }
 
     private static Expression popTo(ArrayList<Context> stack, int level,
-            Expression current) throws ParserException {
+        Expression current) throws ParserException {
         while (!stack.isEmpty() && peekLevel(stack) >= level) {
             Context top = pop(stack);
             if (current == null) {

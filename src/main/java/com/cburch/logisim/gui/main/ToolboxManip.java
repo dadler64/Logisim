@@ -33,16 +33,16 @@ import javax.swing.JPopupMenu;
 
 class ToolboxManip implements ProjectExplorerListener {
 
-    private Project proj;
-    private ProjectExplorer explorer;
-    private MyListener myListener = new MyListener();
+    private final Project project;
+    private final ProjectExplorer explorer;
+    private final MyListener myListener = new MyListener();
     private Tool lastSelected = null;
 
-    ToolboxManip(Project proj, ProjectExplorer explorer) {
-        this.proj = proj;
+    ToolboxManip(Project project, ProjectExplorer explorer) {
+        this.project = project;
         this.explorer = explorer;
-        proj.addProjectListener(myListener);
-        myListener.setFile(null, proj.getLogisimFile());
+        project.addProjectListener(myListener);
+        myListener.setFile(null, project.getLogisimFile());
     }
 
     public void selectionChanged(ProjectExplorerEvent event) {
@@ -55,17 +55,17 @@ class ToolboxManip implements ProjectExplorerListener {
                 if (source instanceof SubcircuitFactory) {
                     SubcircuitFactory circFact = (SubcircuitFactory) source;
                     Circuit circ = circFact.getSubcircuit();
-                    if (proj.getCurrentCircuit() == circ) {
-                        AttrTableModel m = new AttrTableCircuitModel(proj, circ);
-                        proj.getFrame().setAttrTableModel(m);
+                    if (project.getCurrentCircuit() == circ) {
+                        AttrTableModel m = new AttrTableCircuitModel(project, circ);
+                        project.getFrame().setAttrTableModel(m);
                         return;
                     }
                 }
             }
 
-            lastSelected = proj.getTool();
-            proj.setTool(tool);
-            proj.getFrame().viewAttributes(tool);
+            lastSelected = project.getTool();
+            project.setTool(tool);
+            project.getFrame().viewAttributes(tool);
         }
     }
 
@@ -78,10 +78,10 @@ class ToolboxManip implements ProjectExplorerListener {
                 ComponentFactory source = tool.getFactory();
                 if (source instanceof SubcircuitFactory) {
                     SubcircuitFactory circFact = (SubcircuitFactory) source;
-                    proj.setCurrentCircuit(circFact.getSubcircuit());
-                    proj.getFrame().setEditorView(Frame.EDIT_LAYOUT);
+                    project.setCurrentCircuit(circFact.getSubcircuit());
+                    project.getFrame().setEditorView(Frame.EDIT_LAYOUT);
                     if (lastSelected != null) {
-                        proj.setTool(lastSelected);
+                        project.setTool(lastSelected);
                     }
                 }
             }
@@ -89,27 +89,27 @@ class ToolboxManip implements ProjectExplorerListener {
     }
 
     public void moveRequested(ProjectExplorerEvent event, AddTool dragged, AddTool target) {
-        LogisimFile file = proj.getLogisimFile();
+        LogisimFile file = project.getLogisimFile();
         int draggedIndex = file.getTools().indexOf(dragged);
         int targetIndex = file.getTools().indexOf(target);
         if (targetIndex > draggedIndex) {
             targetIndex++;
         }
-        proj.doAction(LogisimFileActions.moveCircuit(dragged, targetIndex));
+        project.doAction(LogisimFileActions.moveCircuit(dragged, targetIndex));
     }
 
     public void deleteRequested(ProjectExplorerEvent event) {
         Object request = event.getTarget();
         if (request instanceof ProjectExplorerLibraryNode) {
             Library lib = ((ProjectExplorerLibraryNode) request).getValue();
-            ProjectLibraryActions.doUnloadLibrary(proj, lib);
+            ProjectLibraryActions.doUnloadLibrary(project, lib);
         } else if (request instanceof ProjectExplorerToolNode) {
             Tool tool = ((ProjectExplorerToolNode) request).getValue();
             if (tool instanceof AddTool) {
                 ComponentFactory factory = ((AddTool) tool).getFactory();
                 if (factory instanceof SubcircuitFactory) {
                     SubcircuitFactory circFact = (SubcircuitFactory) factory;
-                    ProjectCircuitActions.doRemoveCircuit(proj, circFact.getSubcircuit());
+                    ProjectCircuitActions.doRemoveCircuit(project, circFact.getSubcircuit());
                 }
             }
         }
@@ -124,7 +124,7 @@ class ToolboxManip implements ProjectExplorerListener {
                 ComponentFactory source = tool.getFactory();
                 if (source instanceof SubcircuitFactory) {
                     Circuit circ = ((SubcircuitFactory) source).getSubcircuit();
-                    return Popups.forCircuit(proj, tool, circ);
+                    return Popups.forCircuit(project, tool, circ);
                 } else {
                     return null;
                 }
@@ -133,11 +133,11 @@ class ToolboxManip implements ProjectExplorerListener {
             }
         } else if (clicked instanceof ProjectExplorerLibraryNode) {
             Library lib = ((ProjectExplorerLibraryNode) clicked).getValue();
-            if (lib == proj.getLogisimFile()) {
-                return Popups.forProject(proj);
+            if (lib == project.getLogisimFile()) {
+                return Popups.forProject(project);
             } else {
                 boolean is_top = event.getTreePath().getPathCount() <= 2;
-                return Popups.forLibrary(proj, lib, is_top);
+                return Popups.forLibrary(project, lib, is_top);
             }
         } else {
             return null;
@@ -145,7 +145,7 @@ class ToolboxManip implements ProjectExplorerListener {
     }
 
     private class MyListener
-            implements ProjectListener, LibraryListener, AttributeListener {
+        implements ProjectListener, LibraryListener, AttributeListener {
 
         private LogisimFile curFile = null;
 
@@ -153,7 +153,7 @@ class ToolboxManip implements ProjectExplorerListener {
             int action = event.getAction();
             if (action == ProjectEvent.ACTION_SET_FILE) {
                 setFile((LogisimFile) event.getOldData(),
-                        (LogisimFile) event.getData());
+                    (LogisimFile) event.getData());
                 explorer.repaint();
             }
         }

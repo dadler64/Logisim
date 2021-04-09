@@ -8,9 +8,8 @@ import java.util.List;
 
 class WindowMenuManager {
 
-    private static ArrayList<WindowMenu> menus = new ArrayList<>();
-    private static ArrayList<WindowMenuItemManager> managers
-            = new ArrayList<>();
+    private static final ArrayList<WindowMenu> menus = new ArrayList<>();
+    private static final ArrayList<WindowMenuItemManager> managers = new ArrayList<>();
     private static WindowMenuItemManager currentManager = null;
 
     private WindowMenuManager() {

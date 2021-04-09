@@ -32,9 +32,9 @@ import javax.swing.KeyStroke;
 
 public class TextTool extends AbstractTool {
 
-    private DrawingAttributeSet attributeSet;
-    private EditableLabelField field;
-    private FieldListener fieldListener;
+    private final DrawingAttributeSet attributeSet;
+    private final EditableLabelField field;
+    private final FieldListener fieldListener;
     private Text currentText;
     private Canvas currentCanvas;
     private boolean isTextNew;

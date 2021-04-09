@@ -28,8 +28,8 @@ class GrayCounter extends InstanceFactory {
         super("Gray Counter");
         setOffsetBounds(Bounds.create(-30, -15, 30, 30));
         setPorts(new Port[]{
-                new Port(-30, 0, Port.INPUT, 1),
-                new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH),
+            new Port(-30, 0, Port.INPUT, 1),
+            new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH),
         });
 
         // We'll have width, label, and label font attributes. The latter two
@@ -37,8 +37,16 @@ class GrayCounter extends InstanceFactory {
         // we'll also need configureNewInstance to configure the label's
         // location).
         setAttributes(
-                new Attribute[]{StdAttr.WIDTH, StdAttr.LABEL, StdAttr.LABEL_FONT},
-                new Object[]{BitWidth.create(4), "", StdAttr.DEFAULT_LABEL_FONT});
+            new Attribute[]{
+                StdAttr.WIDTH,
+                StdAttr.LABEL,
+                StdAttr.LABEL_FONT
+            }, new Object[]{
+                BitWidth.create(4),
+                "",
+                StdAttr.DEFAULT_LABEL_FONT
+            }
+        );
 
         // The following method invocation sets things up so that the instance's
         // state can be manipulated using the Poke Tool.
@@ -65,8 +73,8 @@ class GrayCounter extends InstanceFactory {
     protected void configureNewInstance(Instance instance) {
         Bounds bounds = instance.getBounds();
         instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                bounds.getX() + bounds.getWidth() / 2, bounds.getY() - 3,
-                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+            bounds.getX() + bounds.getWidth() / 2, bounds.getY() - 3,
+            GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
     }
 
     @Override
@@ -96,9 +104,9 @@ class GrayCounter extends InstanceFactory {
             CounterData counterData = CounterData.get(painter, bitWidth);
             Bounds bounds = painter.getBounds();
             GraphicsUtil.drawCenteredText(painter.getGraphics(),
-                    StringUtil.toHexString(bitWidth.getWidth(), counterData.getValue().toIntValue()),
-                    bounds.getX() + bounds.getWidth() / 2,
-                    bounds.getY() + bounds.getHeight() / 2);
+                StringUtil.toHexString(bitWidth.getWidth(), counterData.getValue().toIntValue()),
+                bounds.getX() + bounds.getWidth() / 2,
+                bounds.getY() + bounds.getHeight() / 2);
         }
     }
 }

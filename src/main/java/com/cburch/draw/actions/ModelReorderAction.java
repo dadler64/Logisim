@@ -15,9 +15,9 @@ import java.util.Map;
 
 public class ModelReorderAction extends ModelAction {
 
-    private ArrayList<ReorderRequest> requests;
-    private ArrayList<CanvasObject> objects;
-    private int type;
+    private final ArrayList<ReorderRequest> requests;
+    private final ArrayList<CanvasObject> objects;
+    private final int type;
 
     public ModelReorderAction(CanvasModel model, List<ReorderRequest> requests) {
         super(model);

@@ -19,12 +19,12 @@ import javax.swing.JComponent;
 
 class Toolbar extends JComponent {
 
-    private static int ICON_WIDTH = 16;
-    private static int ICON_HEIGHT = 16;
-    private static int ICON_SEPARATION = 4;
-    private Canvas canvas;
+    private static final int ICON_WIDTH = 16;
+    private static final int ICON_HEIGHT = 16;
+    private static final int ICON_SEPARATION = 4;
+    private final Canvas canvas;
+    private final Listener listener;
     private AbstractTool[][] tools;
-    private Listener listener;
 
     public Toolbar(Canvas canvas, DrawingAttributeSet attributes) {
         this.canvas = canvas;
@@ -40,7 +40,7 @@ class Toolbar extends JComponent {
         }
 
         setPreferredSize(new Dimension(3 * ICON_SEPARATION + 2 * ICON_WIDTH,
-                ICON_SEPARATION + tools[0].length * (ICON_HEIGHT + ICON_SEPARATION)));
+            ICON_SEPARATION + tools[0].length * (ICON_HEIGHT + ICON_SEPARATION)));
         addMouseListener(listener);
         addMouseMotionListener(listener);
     }
@@ -103,9 +103,9 @@ class Toolbar extends JComponent {
             int y0 = ICON_SEPARATION + row * (ICON_SEPARATION + ICON_HEIGHT);
 
             if (mx >= x0 && mx < x0 + ICON_WIDTH
-                    && my >= y0 && my < y0 + ICON_HEIGHT
-                    && column >= 0 && column < tools.length
-                    && row >= 0 && row < tools[column].length) {
+                && my >= y0 && my < y0 + ICON_HEIGHT
+                && column >= 0 && column < tools.length
+                && row >= 0 && row < tools[column].length) {
                 toolPressed = tools[column][row];
                 inTool = true;
                 toolX = x0;
@@ -134,9 +134,7 @@ class Toolbar extends JComponent {
             int y0 = toolY;
 
             boolean wasInTool = inTool;
-            boolean isInTool = toolPressed != null
-                    && mx >= x0 && mx < x0 + ICON_WIDTH
-                    && my >= y0 && my < y0 + ICON_HEIGHT;
+            boolean isInTool = toolPressed != null && mx >= x0 && mx < x0 + ICON_WIDTH && my >= y0 && my < y0 + ICON_HEIGHT;
             if (wasInTool != isInTool) {
                 inTool = isInTool;
                 repaint();

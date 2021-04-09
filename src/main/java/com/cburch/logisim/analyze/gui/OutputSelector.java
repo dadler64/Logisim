@@ -16,9 +16,9 @@ import javax.swing.JPanel;
 
 class OutputSelector {
 
-    private VariableList source;
-    private JLabel label = new JLabel();
-    private JComboBox select = new JComboBox();
+    private final VariableList source;
+    private final JLabel label = new JLabel();
+    private final JComboBox<Object> select = new JComboBox<>();
     private String prototypeValue = null;
 
     public OutputSelector(AnalyzerModel model) {
@@ -40,7 +40,7 @@ class OutputSelector {
         return label;
     }
 
-    public JComboBox getComboBox() {
+    public JComboBox<Object> getComboBox() {
         return select;
     }
 
@@ -89,8 +89,7 @@ class OutputSelector {
         }
     }
 
-    private class Model extends AbstractListModel
-            implements ComboBoxModel, VariableListListener {
+    private class Model extends AbstractListModel<Object> implements ComboBoxModel<Object>, VariableListListener {
 
         private Object selected;
 

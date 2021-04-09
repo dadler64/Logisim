@@ -31,14 +31,14 @@ import javax.swing.event.ChangeListener;
 
 public class HexFrame extends LFrame {
 
-    private WindowMenuManager windowManager = new WindowMenuManager();
-    private EditListener editListener = new EditListener();
-    private MyListener myListener = new MyListener();
-    private HexModel model;
-    private HexEditor editor;
-    private JButton open = new JButton();
-    private JButton save = new JButton();
-    private JButton close = new JButton();
+    private final WindowMenuManager windowManager = new WindowMenuManager();
+    private final EditListener editListener = new EditListener();
+    private final MyListener myListener = new MyListener();
+    private final HexModel model;
+    private final HexEditor editor;
+    private final JButton open = new JButton();
+    private final JButton save = new JButton();
+    private final JButton close = new JButton();
 
     public HexFrame(Project proj, HexModel model) {
         setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -59,8 +59,8 @@ public class HexFrame extends LFrame {
 
         Dimension pref = editor.getPreferredSize();
         JScrollPane scroll = new JScrollPane(editor,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         pref.height = Math.min(pref.height, pref.width * 3 / 2);
         scroll.setPreferredSize(pref);
         scroll.getViewport().setBackground(editor.getBackground());
@@ -95,7 +95,7 @@ public class HexFrame extends LFrame {
     }
 
     private class WindowMenuManager extends WindowMenuItemManager
-            implements LocaleListener {
+        implements LocaleListener {
 
         WindowMenuManager() {
             super(Strings.get("hexFrameMenuItem"), false);
@@ -113,7 +113,7 @@ public class HexFrame extends LFrame {
     }
 
     private class MyListener
-            implements ActionListener, LocaleListener {
+        implements ActionListener, LocaleListener {
 
         private File lastFile = null;
 
@@ -130,7 +130,7 @@ public class HexFrame extends LFrame {
                         lastFile = f;
                     } catch (IOException e) {
                         JOptionPane.showMessageDialog(HexFrame.this, e.getMessage(),
-                                Strings.get("hexOpenErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                            Strings.get("hexOpenErrorTitle"), JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else if (src == save) {
@@ -144,12 +144,12 @@ public class HexFrame extends LFrame {
                         lastFile = f;
                     } catch (IOException e) {
                         JOptionPane.showMessageDialog(HexFrame.this, e.getMessage(),
-                                Strings.get("hexSaveErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                            Strings.get("hexSaveErrorTitle"), JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else if (src == close) {
                 WindowEvent e = new WindowEvent(HexFrame.this,
-                        WindowEvent.WINDOW_CLOSING);
+                    WindowEvent.WINDOW_CLOSING);
                 HexFrame.this.processWindowEvent(e);
             }
         }

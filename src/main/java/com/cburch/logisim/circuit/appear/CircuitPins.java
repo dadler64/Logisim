@@ -22,9 +22,9 @@ import java.util.Set;
 
 public class CircuitPins {
 
-    private PortManager appearanceManager;
-    private MyComponentListener myComponentListener;
-    private Set<Instance> pins;
+    private final PortManager appearanceManager;
+    private final MyComponentListener myComponentListener;
+    private final Set<Instance> pins;
 
     CircuitPins(PortManager appearanceManager) {
         this.appearanceManager = appearanceManager;
@@ -76,7 +76,7 @@ public class CircuitPins {
     }
 
     private class MyComponentListener
-            implements ComponentListener, AttributeListener {
+        implements ComponentListener, AttributeListener {
 
         public void endChanged(ComponentEvent e) {
             appearanceManager.updatePorts();
@@ -91,7 +91,7 @@ public class CircuitPins {
         public void attributeValueChanged(AttributeEvent e) {
             Attribute<?> attr = e.getAttribute();
             if (attr == StdAttr.FACING || attr == StdAttr.LABEL
-                    || attr == Pin.ATTR_TYPE) {
+                || attr == Pin.ATTR_TYPE) {
                 appearanceManager.updatePorts();
             }
         }

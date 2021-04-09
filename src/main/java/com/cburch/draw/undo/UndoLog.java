@@ -10,9 +10,9 @@ public class UndoLog {
 
     private static final int MAX_UNDO_SIZE = 64;
 
-    private EventSourceWeakSupport<UndoLogListener> listeners;
-    private LinkedList<Action> undoLog;
-    private LinkedList<Action> redoLog;
+    private final EventSourceWeakSupport<UndoLogListener> listeners;
+    private final LinkedList<Action> undoLog;
+    private final LinkedList<Action> redoLog;
     private int modCount;
 
     public UndoLog() {

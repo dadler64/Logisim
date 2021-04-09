@@ -17,9 +17,9 @@ class LibraryManager {
 
     public static final LibraryManager instance = new LibraryManager();
 
-    private static final char DESCRIPTOR_SEPERATOR = '#';
-    private HashMap<LibraryDescriptor, WeakReference<LoadedLibrary>> fileMap;
-    private WeakHashMap<LoadedLibrary, LibraryDescriptor> invMap;
+    private static final char DESCRIPTOR_SEPARATOR = '#';
+    private final HashMap<LibraryDescriptor, WeakReference<LoadedLibrary>> fileMap;
+    private final WeakHashMap<LoadedLibrary, LibraryDescriptor> invMap;
 
     private LibraryManager() {
         fileMap = new HashMap<>();
@@ -74,7 +74,7 @@ class LibraryManager {
     public Library loadLibrary(Loader loader, String descriptor) {
         // It may already be loaded.
         // Otherwise we'll have to decode it.
-        int separator = descriptor.indexOf(DESCRIPTOR_SEPERATOR);
+        int separator = descriptor.indexOf(DESCRIPTOR_SEPARATOR);
         if (separator < 0) {
             loader.showError(StringUtil.format(Strings.get("fileDescriptorError"), descriptor));
             return null;
@@ -95,7 +95,7 @@ class LibraryManager {
                 return loadLogisimLibrary(loader, fileToRead);
             }
             case "jar": {
-                int separatorLocation = name.lastIndexOf(DESCRIPTOR_SEPERATOR);
+                int separatorLocation = name.lastIndexOf(DESCRIPTOR_SEPARATOR);
                 String fileName = name.substring(0, separatorLocation);
                 String className = name.substring(separatorLocation + 1);
                 File fileToRead = loader.getFileFor(fileName, Loader.JAR_FILTER);
@@ -149,7 +149,7 @@ class LibraryManager {
         LibraryDescriptor descriptor = invMap.get(loadedLibrary);
         if (descriptor == null) {
             loader.showError(StringUtil.format(Strings.get("unknownLibraryFileError"),
-                    loadedLibrary.getDisplayName()));
+                loadedLibrary.getDisplayName()));
         } else {
             try {
                 descriptor.setBase(loader, loadedLibrary);
@@ -198,14 +198,14 @@ class LibraryManager {
     @SuppressWarnings("SuspiciousMethodCalls")
     public String getDescriptor(Loader loader, Library library) {
         if (loader.getBuiltin().getLibraries().contains(library)) {
-            return DESCRIPTOR_SEPERATOR + library.getName();
+            return DESCRIPTOR_SEPARATOR + library.getName();
         } else {
             LibraryDescriptor descriptor = invMap.get(library);
             if (descriptor != null) {
                 return descriptor.toDescriptor(loader);
             } else {
                 throw new LoaderException(StringUtil.format(Strings.get("fileDescriptorUnknownError"),
-                        library.getDisplayName()));
+                    library.getDisplayName()));
             }
         }
     }
@@ -233,12 +233,12 @@ class LibraryManager {
         abstract String toDescriptor(Loader loader);
 
         abstract void setBase(Loader loader, LoadedLibrary loadedLibrary)
-                throws LoadFailedException;
+            throws LoadFailedException;
     }
 
     private static class LogisimProjectDescriptor extends LibraryDescriptor {
 
-        private File file;
+        private final File file;
 
         private LogisimProjectDescriptor(File file) {
             this.file = file;
@@ -276,8 +276,8 @@ class LibraryManager {
 
     private static class JarDescriptor extends LibraryDescriptor {
 
-        private File file;
-        private String className;
+        private final File file;
+        private final String className;
 
         private JarDescriptor(File file, String className) {
             this.file = file;
@@ -291,7 +291,7 @@ class LibraryManager {
 
         @Override
         String toDescriptor(Loader loader) {
-            return "jar#" + toRelative(loader, file) + DESCRIPTOR_SEPERATOR + className;
+            return "jar#" + toRelative(loader, file) + DESCRIPTOR_SEPARATOR + className;
         }
 
         @Override

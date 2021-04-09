@@ -57,33 +57,31 @@ public class MenuTool extends Tool {
     public void mousePressed(Canvas canvas, Graphics g, MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        Location pt = Location.create(x, y);
+        Location point = Location.create(x, y);
 
         JPopupMenu menu;
-        Project proj = canvas.getProject();
-        Selection sel = proj.getSelection();
-        Collection<Component> in_sel = sel.getComponentsContaining(pt, g);
-        if (!in_sel.isEmpty()) {
-            Component comp = in_sel.iterator().next();
-            if (sel.getComponents().size() > 1) {
-                menu = new MenuSelection(proj);
+        Project project = canvas.getProject();
+        Selection selection = project.getSelection();
+        Collection<Component> components = selection.getComponentsContaining(point, g);
+        if (!components.isEmpty()) {
+            Component component = components.iterator().next();
+            if (selection.getComponents().size() > 1) {
+                menu = new MenuSelection(project);
             } else {
-                menu = new MenuComponent(proj,
-                        canvas.getCircuit(), comp);
-                MenuExtender extender = (MenuExtender) comp.getFeature(MenuExtender.class);
+                menu = new MenuComponent(project, canvas.getCircuit(), component);
+                MenuExtender extender = (MenuExtender) component.getFeature(MenuExtender.class);
                 if (extender != null) {
-                    extender.configureMenu(menu, proj);
+                    extender.configureMenu(menu, project);
                 }
             }
         } else {
-            Collection<Component> cl = canvas.getCircuit().getAllContaining(pt, g);
-            if (!cl.isEmpty()) {
-                Component comp = cl.iterator().next();
-                menu = new MenuComponent(proj,
-                        canvas.getCircuit(), comp);
-                MenuExtender extender = (MenuExtender) comp.getFeature(MenuExtender.class);
+            Collection<Component> allContaining = canvas.getCircuit().getAllContaining(point, g);
+            if (!allContaining.isEmpty()) {
+                Component component = allContaining.iterator().next();
+                menu = new MenuComponent(project, canvas.getCircuit(), component);
+                MenuExtender extender = (MenuExtender) component.getFeature(MenuExtender.class);
                 if (extender != null) {
-                    extender.configureMenu(menu, proj);
+                    extender.configureMenu(menu, project);
                 }
             } else {
                 menu = null;
@@ -96,82 +94,81 @@ public class MenuTool extends Tool {
     }
 
     @Override
-    public void paintIcon(ComponentDrawContext c, int x, int y) {
-        Graphics g = c.getGraphics();
+    public void paintIcon(ComponentDrawContext context, int x, int y) {
+        Graphics g = context.getGraphics();
         g.fillRect(x + 2, y + 1, 9, 2);
         g.drawRect(x + 2, y + 3, 15, 12);
         g.setColor(Color.lightGray);
         g.drawLine(x + 4, y + 2, x + 8, y + 2);
-        for (int y_offs = y + 6; y_offs < y + 15; y_offs += 3) {
-            g.drawLine(x + 4, y_offs, x + 14, y_offs);
+        for (int yOffset = y + 6; yOffset < y + 15; yOffset += 3) {
+            g.drawLine(x + 4, yOffset, x + 14, yOffset);
         }
     }
 
-    private class MenuComponent extends JPopupMenu
-            implements ActionListener {
+    private static class MenuComponent extends JPopupMenu implements ActionListener {
 
-        Project proj;
-        Circuit circ;
-        Component comp;
-        JMenuItem del = new JMenuItem(Strings.get("compDeleteItem"));
-        JMenuItem attrs = new JMenuItem(Strings.get("compShowAttrItem"));
+        Project project;
+        Circuit circuit;
+        Component component;
+        JMenuItem deleteItem = new JMenuItem(Strings.get("compDeleteItem"));
+        JMenuItem showAttrItem = new JMenuItem(Strings.get("compShowAttrItem"));
 
-        MenuComponent(Project proj, Circuit circ, Component comp) {
-            this.proj = proj;
-            this.circ = circ;
-            this.comp = comp;
-            boolean canChange = proj.getLogisimFile().contains(circ);
+        MenuComponent(Project project, Circuit circuit, Component component) {
+            this.project = project;
+            this.circuit = circuit;
+            this.component = component;
+            boolean canChange = project.getLogisimFile().contains(circuit);
 
-            add(del);
-            del.addActionListener(this);
-            del.setEnabled(canChange);
-            add(attrs);
-            attrs.addActionListener(this);
+            add(deleteItem);
+            deleteItem.addActionListener(this);
+            deleteItem.setEnabled(canChange);
+            add(showAttrItem);
+            showAttrItem.addActionListener(this);
         }
 
         public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            if (src == del) {
-                Circuit circ = proj.getCurrentCircuit();
-                CircuitMutation xn = new CircuitMutation(circ);
-                xn.remove(comp);
-                proj.doAction(xn.toAction(Strings.getter("removeComponentAction", comp.getFactory().getDisplayGetter())));
-            } else if (src == attrs) {
-                proj.getFrame().viewComponentAttributes(circ, comp);
+            Object source = e.getSource();
+            if (source == deleteItem) {
+                Circuit circuit = project.getCurrentCircuit();
+                CircuitMutation mutation = new CircuitMutation(circuit);
+                mutation.remove(component);
+                project.doAction(
+                    mutation.toAction(Strings.getter("removeComponentAction", component.getFactory().getDisplayGetter())));
+            } else if (source == showAttrItem) {
+                project.getFrame().viewComponentAttributes(circuit, component);
             }
         }
     }
 
-    private class MenuSelection extends JPopupMenu
-            implements ActionListener {
+    private static class MenuSelection extends JPopupMenu implements ActionListener {
 
-        Project proj;
-        JMenuItem del = new JMenuItem(Strings.get("selDeleteItem"));
-        JMenuItem cut = new JMenuItem(Strings.get("selCutItem"));
-        JMenuItem copy = new JMenuItem(Strings.get("selCopyItem"));
+        Project project;
+        JMenuItem deleteItem = new JMenuItem(Strings.get("selDeleteItem"));
+        JMenuItem cutItem = new JMenuItem(Strings.get("selCutItem"));
+        JMenuItem copyItem = new JMenuItem(Strings.get("selCopyItem"));
 
-        MenuSelection(Project proj) {
-            this.proj = proj;
-            boolean canChange = proj.getLogisimFile().contains(proj.getCurrentCircuit());
-            add(del);
-            del.addActionListener(this);
-            del.setEnabled(canChange);
-            add(cut);
-            cut.addActionListener(this);
-            cut.setEnabled(canChange);
-            add(copy);
-            copy.addActionListener(this);
+        MenuSelection(Project project) {
+            this.project = project;
+            boolean canChange = project.getLogisimFile().contains(project.getCurrentCircuit());
+            add(deleteItem);
+            deleteItem.addActionListener(this);
+            deleteItem.setEnabled(canChange);
+            add(cutItem);
+            cutItem.addActionListener(this);
+            cutItem.setEnabled(canChange);
+            add(copyItem);
+            copyItem.addActionListener(this);
         }
 
         public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            Selection sel = proj.getSelection();
-            if (src == del) {
-                proj.doAction(SelectionActions.clear(sel));
-            } else if (src == cut) {
-                proj.doAction(SelectionActions.cut(sel));
-            } else if (src == copy) {
-                proj.doAction(SelectionActions.copy(sel));
+            Object source = e.getSource();
+            Selection sel = project.getSelection();
+            if (source == deleteItem) {
+                project.doAction(SelectionActions.clear(sel));
+            } else if (source == cutItem) {
+                project.doAction(SelectionActions.cut(sel));
+            } else if (source == copyItem) {
+                project.doAction(SelectionActions.copy(sel));
             }
         }
 

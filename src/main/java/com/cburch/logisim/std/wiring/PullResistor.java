@@ -29,12 +29,12 @@ import javax.swing.Icon;
 public class PullResistor extends InstanceFactory {
 
     public static final Attribute<AttributeOption> ATTR_PULL_TYPE
-            = Attributes.forOption("pull", Strings.getter("pullTypeAttr"),
-            new AttributeOption[]{
-                    new AttributeOption(Value.FALSE, "0", Strings.getter("pullZeroType")),
-                    new AttributeOption(Value.TRUE, "1", Strings.getter("pullOneType")),
-                    new AttributeOption(Value.ERROR, "X", Strings.getter("pullErrorType"))
-            });
+        = Attributes.forOption("pull", Strings.getter("pullTypeAttr"),
+        new AttributeOption[]{
+            new AttributeOption(Value.FALSE, "0", Strings.getter("pullZeroType")),
+            new AttributeOption(Value.TRUE, "1", Strings.getter("pullOneType")),
+            new AttributeOption(Value.ERROR, "X", Strings.getter("pullErrorType"))
+        });
 
     public static final PullResistor FACTORY = new PullResistor();
 
@@ -43,8 +43,15 @@ public class PullResistor extends InstanceFactory {
 
     public PullResistor() {
         super("Pull Resistor", Strings.getter("pullComponent"));
-        setAttributes(new Attribute[]{StdAttr.FACING, ATTR_PULL_TYPE},
-                new Object[]{Direction.SOUTH, ATTR_PULL_TYPE.parse("0")});
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                ATTR_PULL_TYPE
+            }, new Object[]{
+                Direction.SOUTH,
+                ATTR_PULL_TYPE.parse("0")
+            }
+        );
         setFacingAttribute(StdAttr.FACING);
     }
 
@@ -53,8 +60,8 @@ public class PullResistor extends InstanceFactory {
     }
 
     private static Value getPullValue(AttributeSet attrs) {
-        AttributeOption opt = attrs.getValue(ATTR_PULL_TYPE);
-        return (Value) opt.getValue();
+        AttributeOption option = attrs.getValue(ATTR_PULL_TYPE);
+        return (Value) option.getValue();
     }
 
     @Override
@@ -93,9 +100,9 @@ public class PullResistor extends InstanceFactory {
 
     @Override
     public void paintInstance(InstancePainter painter) {
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
         Graphics g = painter.getGraphics();
         g.translate(x, y);
         Value pull = getPullValue(painter.getAttributeSet());
@@ -105,8 +112,7 @@ public class PullResistor extends InstanceFactory {
         painter.drawPorts();
     }
 
-    private void paintBase(InstancePainter painter, Value pullValue,
-            Color inColor, Color outColor) {
+    private void paintBase(InstancePainter painter, Value pullValue, Color inColor, Color outColor) {
         boolean color = painter.shouldDrawColor();
         Direction facing = painter.getAttributeValue(StdAttr.FACING);
         Graphics g = painter.getGraphics();
@@ -117,16 +123,16 @@ public class PullResistor extends InstanceFactory {
         }
         if (facing == Direction.EAST) {
             GraphicsUtil.drawText(g, pullValue.toDisplayString(), -32, 0,
-                    GraphicsUtil.H_RIGHT, GraphicsUtil.V_CENTER);
+                GraphicsUtil.H_RIGHT, GraphicsUtil.V_CENTER);
         } else if (facing == Direction.WEST) {
             GraphicsUtil.drawText(g, pullValue.toDisplayString(), 32, 0,
-                    GraphicsUtil.H_LEFT, GraphicsUtil.V_CENTER);
+                GraphicsUtil.H_LEFT, GraphicsUtil.V_CENTER);
         } else if (facing == Direction.NORTH) {
             GraphicsUtil.drawText(g, pullValue.toDisplayString(), 0, 32,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+                GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
         } else {
             GraphicsUtil.drawText(g, pullValue.toDisplayString(), 0, -32,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
         }
 
         double rotate = 0.0;
@@ -163,7 +169,7 @@ public class PullResistor extends InstanceFactory {
     protected void configureNewInstance(Instance instance) {
         instance.addAttributeListener();
         instance.setPorts(new Port[]{
-                new Port(0, 0, Port.INOUT, BitWidth.UNKNOWN)
+            new Port(0, 0, Port.INOUT, BitWidth.UNKNOWN)
         });
     }
 

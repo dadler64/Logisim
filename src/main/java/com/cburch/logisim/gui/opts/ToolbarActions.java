@@ -21,13 +21,11 @@ class ToolbarActions {
         return new RemoveTool(toolbar, pos);
     }
 
-    public static Action moveTool(ToolbarData toolbar,
-            int src, int dest) {
+    public static Action moveTool(ToolbarData toolbar, int src, int dest) {
         return new MoveTool(toolbar, src, dest);
     }
 
-    public static Action addSeparator(ToolbarData toolbar,
-            int pos) {
+    public static Action addSeparator(ToolbarData toolbar, int pos) {
         return new AddSeparator(toolbar, pos);
     }
 
@@ -126,7 +124,7 @@ class ToolbarActions {
             if (other instanceof MoveTool) {
                 MoveTool o = (MoveTool) other;
                 return this.toolbar == o.toolbar
-                        && o.dest == this.oldpos;
+                    && o.dest == this.oldpos;
             } else {
                 return false;
             }

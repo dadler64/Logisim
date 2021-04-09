@@ -23,7 +23,7 @@ public class IteratorUtil {
     }
 
     public static <E> Iterator<E> createJoinedIterator(Iterator<? extends E> i0,
-            Iterator<? extends E> i1) {
+        Iterator<? extends E> i1) {
         if (!i0.hasNext()) {
             @SuppressWarnings("unchecked")
             Iterator<E> ret = (Iterator<E>) i1;
@@ -57,7 +57,7 @@ public class IteratorUtil {
 
     private static class UnitIterator<E> implements Iterator<E> {
 
-        private E data;
+        private final E data;
         private boolean taken = false;
 
         private UnitIterator(E data) {
@@ -83,7 +83,7 @@ public class IteratorUtil {
 
     private static class ArrayIterator<E> implements Iterator<E> {
 
-        private E[] data;
+        private final E[] data;
         private int i = -1;
 
         private ArrayIterator(E[] data) {
@@ -109,33 +109,33 @@ public class IteratorUtil {
 
     private static class IteratorUnion<E> implements Iterator<E> {
 
-        Iterator<? extends E> cur;
+        Iterator<? extends E> current;
         Iterator<? extends E> next;
 
-        private IteratorUnion(Iterator<? extends E> cur, Iterator<? extends E> next) {
-            this.cur = cur;
+        private IteratorUnion(Iterator<? extends E> current, Iterator<? extends E> next) {
+            this.current = current;
             this.next = next;
         }
 
         public E next() {
-            if (!cur.hasNext()) {
+            if (!current.hasNext()) {
                 if (next == null) {
                     throw new NoSuchElementException();
                 }
-                cur = next;
-                if (!cur.hasNext()) {
+                current = next;
+                if (!current.hasNext()) {
                     throw new NoSuchElementException();
                 }
             }
-            return cur.next();
+            return current.next();
         }
 
         public boolean hasNext() {
-            return cur.hasNext() || (next != null && next.hasNext());
+            return current.hasNext() || (next != null && next.hasNext());
         }
 
         public void remove() {
-            cur.remove();
+            current.remove();
         }
     }
 

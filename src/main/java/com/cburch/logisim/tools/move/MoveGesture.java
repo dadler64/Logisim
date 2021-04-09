@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.tools.move;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.circuit.Circuit;
 import com.cburch.logisim.circuit.Wire;
 import com.cburch.logisim.comp.Component;
@@ -19,16 +20,14 @@ import java.util.Set;
 
 public class MoveGesture {
 
-    private MoveRequestListener listener;
-    private Circuit circuit;
-    private HashSet<Component> selected;
-
+    private final MoveRequestListener listener;
+    private final Circuit circuit;
+    private final HashSet<Component> selected;
+    private final HashMap<MoveRequest, MoveResult> cachedResults;
     private transient Set<ConnectionData> connections;
     private transient AvoidanceMap initAvoid;
-    private HashMap<MoveRequest, MoveResult> cachedResults;
 
-    public MoveGesture(MoveRequestListener listener, Circuit circuit,
-            Collection<Component> selected) {
+    public MoveGesture(MoveRequestListener listener, Circuit circuit, Collection<Component> selected) {
         this.listener = listener;
         this.circuit = circuit;
         this.selected = new HashSet<>(selected);
@@ -37,26 +36,25 @@ public class MoveGesture {
         this.cachedResults = new HashMap<>();
     }
 
-    private static Set<ConnectionData> computeConnections(Circuit circuit,
-            Set<Component> selected) {
+    private static Set<ConnectionData> computeConnections(Circuit circuit, Set<Component> selected) {
         if (selected == null || selected.isEmpty()) {
             return Collections.emptySet();
         }
 
         // first identify locations that might be connected
-        Set<Location> locs = new HashSet<>();
-        for (Component comp : selected) {
-            for (EndData end : comp.getEnds()) {
-                locs.add(end.getLocation());
+        Set<Location> locations = new HashSet<>();
+        for (Component component : selected) {
+            for (EndData end : component.getEnds()) {
+                locations.add(end.getLocation());
             }
         }
 
         // now see which of them require connection
-        Set<ConnectionData> conns = new HashSet<>();
-        for (Location loc : locs) {
+        Set<ConnectionData> connections = new HashSet<>();
+        for (Location location : locations) {
             boolean found = false;
-            for (Component comp : circuit.getComponents(loc)) {
-                if (!selected.contains(comp)) {
+            for (Component component : circuit.getComponents(location)) {
+                if (!selected.contains(component)) {
                     found = true;
                     break;
                 }
@@ -64,52 +62,50 @@ public class MoveGesture {
             if (found) {
                 List<Wire> wirePath;
                 Location wirePathStart;
-                Wire lastOnPath = findWire(circuit, loc, selected, null);
+                Wire lastOnPath = findWire(circuit, location, selected, null);
                 if (lastOnPath == null) {
                     wirePath = Collections.emptyList();
-                    wirePathStart = loc;
+                    wirePathStart = location;
                 } else {
                     wirePath = new ArrayList<>();
-                    Location cur = loc;
-                    for (Wire w = lastOnPath; w != null;
-                            w = findWire(circuit, cur, selected, w)) {
-                        wirePath.add(w);
-                        cur = w.getOtherEnd(cur);
+                    Location currentLocation = location;
+                    for (Wire wire = lastOnPath; wire != null; wire = findWire(circuit, currentLocation, selected, wire)) {
+                        wirePath.add(wire);
+                        currentLocation = wire.getOtherEnd(currentLocation);
                     }
                     Collections.reverse(wirePath);
-                    wirePathStart = cur;
+                    wirePathStart = currentLocation;
                 }
 
-                Direction dir = null;
+                Direction direction = null;
                 if (lastOnPath != null) {
-                    Location other = lastOnPath.getOtherEnd(loc);
-                    int dx = loc.getX() - other.getX();
-                    int dy = loc.getY() - other.getY();
+                    Location other = lastOnPath.getOtherEnd(location);
+                    int dx = location.getX() - other.getX();
+                    int dy = location.getY() - other.getY();
                     if (Math.abs(dx) > Math.abs(dy)) {
-                        dir = dx > 0 ? Direction.EAST : Direction.WEST;
+                        direction = dx > 0 ? Direction.EAST : Direction.WEST;
                     } else {
-                        dir = dy > 0 ? Direction.SOUTH : Direction.NORTH;
+                        direction = dy > 0 ? Direction.SOUTH : Direction.NORTH;
                     }
                 }
-                conns.add(new ConnectionData(loc, dir, wirePath, wirePathStart));
+                connections.add(new ConnectionData(location, direction, wirePath, wirePathStart));
             }
         }
-        return conns;
+        return connections;
     }
 
-    private static Wire findWire(Circuit circ, Location loc,
-            Set<Component> ignore, Wire ignoreW) {
-        Wire ret = null;
-        for (Component comp : circ.getComponents(loc)) {
-            if (!ignore.contains(comp) && comp != ignoreW) {
-                if (ret == null && comp instanceof Wire) {
-                    ret = (Wire) comp;
+    private static Wire findWire(Circuit circuit, Location location, Set<Component> ignore, Wire ignoreWire) {
+        Wire wire = null;
+        for (Component comp : circuit.getComponents(location)) {
+            if (!ignore.contains(comp) && comp != ignoreWire) {
+                if (wire == null && comp instanceof Wire) {
+                    wire = (Wire) comp;
                 } else {
                     return null;
                 }
             }
         }
-        return ret;
+        return wire;
     }
 
     HashSet<Component> getSelected() {
@@ -117,24 +113,24 @@ public class MoveGesture {
     }
 
     AvoidanceMap getFixedAvoidanceMap() {
-        AvoidanceMap ret = initAvoid;
-        if (ret == null) {
-            HashSet<Component> comps = new HashSet<>(circuit.getNonWires());
-            comps.addAll(circuit.getWires());
-            comps.removeAll(selected);
-            ret = AvoidanceMap.create(comps, 0, 0);
-            initAvoid = ret;
+        AvoidanceMap initAvoid = this.initAvoid;
+        if (initAvoid == null) {
+            HashSet<Component> components = new HashSet<>(circuit.getNonWires());
+            components.addAll(circuit.getWires());
+            components.removeAll(selected);
+            initAvoid = AvoidanceMap.create(components, 0, 0);
+            this.initAvoid = initAvoid;
         }
-        return ret;
+        return initAvoid;
     }
 
     Set<ConnectionData> getConnections() {
-        Set<ConnectionData> ret = connections;
-        if (ret == null) {
-            ret = computeConnections(circuit, selected);
-            connections = ret;
+        Set<ConnectionData> connections = this.connections;
+        if (connections == null) {
+            connections = computeConnections(circuit, selected);
+            this.connections = connections;
         }
-        return ret;
+        return connections;
     }
 
     public MoveResult findResult(int dx, int dy) {
@@ -161,17 +157,18 @@ public class MoveGesture {
         MoveRequest request = new MoveRequest(this, dx, dy);
         ConnectorThread.enqueueRequest(request, true);
         synchronized (cachedResults) {
-            Object result = cachedResults.get(request);
+            MoveResult result = cachedResults.get(request);
             while (result == null) {
                 try {
                     cachedResults.wait();
                 } catch (InterruptedException e) {
+                    Logger.debugln(e.getMessage());
                     Thread.currentThread().interrupt();
                     return null;
                 }
                 result = cachedResults.get(request);
             }
-            return (MoveResult) result;
+            return result;
         }
     }
 

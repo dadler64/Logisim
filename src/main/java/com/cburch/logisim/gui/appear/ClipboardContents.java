@@ -12,15 +12,14 @@ import java.util.Collections;
 
 class ClipboardContents {
 
-    static final ClipboardContents EMPTY
-            = new ClipboardContents(Collections.emptySet(), null, null);
+    static final ClipboardContents EMPTY = new ClipboardContents(Collections.emptySet(), null, null);
 
-    private Collection<CanvasObject> onClipboard;
-    private Location anchorLocation;
-    private Direction anchorFacing;
+    private final Collection<CanvasObject> onClipboard;
+    private final Location anchorLocation;
+    private final Direction anchorFacing;
 
     public ClipboardContents(Collection<CanvasObject> onClipboard,
-            Location anchorLocation, Direction anchorFacing) {
+        Location anchorLocation, Direction anchorFacing) {
         this.onClipboard = Collections.unmodifiableList(new ArrayList<>(onClipboard));
         this.anchorLocation = anchorLocation;
         this.anchorFacing = anchorFacing;

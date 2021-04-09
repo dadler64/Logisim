@@ -33,16 +33,27 @@ class Buffer extends InstanceFactory {
 
     private Buffer() {
         super("Buffer", Strings.getter("bufferComponent"));
-        setAttributes(new Attribute[]{StdAttr.FACING, StdAttr.WIDTH,
-                        GateAttributes.ATTRIBUTE_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT},
-                new Object[]{Direction.EAST, BitWidth.ONE,
-                        GateAttributes.OUTPUT_01, "", StdAttr.DEFAULT_LABEL_FONT});
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                StdAttr.WIDTH,
+                GateAttributes.ATTRIBUTE_OUTPUT,
+                StdAttr.LABEL,
+                StdAttr.LABEL_FONT
+            }, new Object[]{
+                Direction.EAST,
+                BitWidth.ONE,
+                GateAttributes.OUTPUT_01,
+                "",
+                StdAttr.DEFAULT_LABEL_FONT
+            }
+        );
         setIcon(Icons.getIcon("bufferGate.gif"));
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setPorts(new Port[]{
-                new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH),
-                new Port(0, -20, Port.INPUT, StdAttr.WIDTH),
+            new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH),
+            new Port(0, -20, Port.INPUT, StdAttr.WIDTH),
         });
     }
 
@@ -92,9 +103,9 @@ class Buffer extends InstanceFactory {
 
     @Override
     public void propagate(InstanceState state) {
-        Value in = state.getPort(1);
-        in = Buffer.repair(state, in);
-        state.setPort(0, in, GateAttributes.DELAY);
+        Value value = state.getPort(1);
+        value = Buffer.repair(state, value);
+        state.setPort(0, value, GateAttributes.DELAY);
     }
 
     //
@@ -160,9 +171,9 @@ class Buffer extends InstanceFactory {
 
     private void paintBase(InstancePainter painter) {
         Direction facing = painter.getAttributeValue(StdAttr.FACING);
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
         Graphics g = painter.getGraphics();
         g.translate(x, y);
         double rotate = 0.0;

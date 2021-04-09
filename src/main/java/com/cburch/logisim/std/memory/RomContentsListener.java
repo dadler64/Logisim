@@ -10,11 +10,11 @@ import com.cburch.logisim.proj.Project;
 
 class RomContentsListener implements HexModelListener {
 
-    Project proj;
+    Project project;
     boolean enabled = true;
 
-    RomContentsListener(Project proj) {
-        this.proj = proj;
+    RomContentsListener(Project project) {
+        this.project = project;
     }
 
     void setEnabled(boolean value) {
@@ -26,30 +26,27 @@ class RomContentsListener implements HexModelListener {
         // action
     }
 
-    public void bytesChanged(HexModel source, long start,
-            long numBytes, int[] oldValues) {
-        if (enabled && proj != null && oldValues != null) {
+    public void bytesChanged(HexModel source, long start, long numBytes, int[] oldValues) {
+        if (enabled && project != null && oldValues != null) {
             // this change needs to be logged in the undo log
             int[] newValues = new int[oldValues.length];
             for (int i = 0; i < newValues.length; i++) {
                 newValues[i] = source.get(start + i);
             }
-            proj.doAction(new Change(this, (MemContents) source,
-                    start, oldValues, newValues));
+            project.doAction(new Change(this, (MemContents) source, start, oldValues, newValues));
         }
     }
 
     private static class Change extends Action {
 
-        private RomContentsListener source;
-        private MemContents contents;
-        private long start;
-        private int[] oldValues;
-        private int[] newValues;
+        private final RomContentsListener source;
+        private final MemContents contents;
+        private final long start;
+        private final int[] oldValues;
+        private final int[] newValues;
         private boolean completed = true;
 
-        Change(RomContentsListener source, MemContents contents,
-                long start, int[] oldValues, int[] newValues) {
+        Change(RomContentsListener source, MemContents contents, long start, int[] oldValues, int[] newValues) {
             this.source = source;
             this.contents = contents;
             this.start = start;
@@ -63,7 +60,7 @@ class RomContentsListener implements HexModelListener {
         }
 
         @Override
-        public void doIt(Project proj) {
+        public void doIt(Project project) {
             if (!completed) {
                 completed = true;
                 try {
@@ -76,7 +73,7 @@ class RomContentsListener implements HexModelListener {
         }
 
         @Override
-        public void undo(Project proj) {
+        public void undo(Project project) {
             if (completed) {
                 completed = false;
                 try {
@@ -91,10 +88,10 @@ class RomContentsListener implements HexModelListener {
         @Override
         public boolean shouldAppendTo(Action other) {
             if (other instanceof Change) {
-                Change o = (Change) other;
-                long oEnd = o.start + o.newValues.length;
+                Change change = (Change) other;
+                long oEnd = change.start + change.newValues.length;
                 long end = start + newValues.length;
-                if (oEnd >= start && end >= o.start) {
+                if (oEnd >= start && end >= change.start) {
                     return true;
                 }
             }
@@ -104,18 +101,18 @@ class RomContentsListener implements HexModelListener {
         @Override
         public Action append(Action other) {
             if (other instanceof Change) {
-                Change o = (Change) other;
-                long oEnd = o.start + o.newValues.length;
+                Change change = (Change) other;
+                long oEnd = change.start + change.newValues.length;
                 long end = start + newValues.length;
-                if (oEnd >= start && end >= o.start) {
-                    long nStart = Math.min(start, o.start);
+                if (oEnd >= start && end >= change.start) {
+                    long nStart = Math.min(start, change.start);
                     long nEnd = Math.max(end, oEnd);
                     int[] nOld = new int[(int) (nEnd - nStart)];
                     int[] nNew = new int[(int) (nEnd - nStart)];
-                    System.arraycopy(o.oldValues, 0, nOld, (int) (o.start - nStart), o.oldValues.length);
+                    System.arraycopy(change.oldValues, 0, nOld, (int) (change.start - nStart), change.oldValues.length);
                     System.arraycopy(oldValues, 0, nOld, (int) (start - nStart), oldValues.length);
                     System.arraycopy(newValues, 0, nNew, (int) (start - nStart), newValues.length);
-                    System.arraycopy(o.newValues, 0, nNew, (int) (o.start - nStart), o.newValues.length);
+                    System.arraycopy(change.newValues, 0, nNew, (int) (change.start - nStart), change.newValues.length);
                     return new Change(source, contents, nStart, nOld, nNew);
                 }
             }

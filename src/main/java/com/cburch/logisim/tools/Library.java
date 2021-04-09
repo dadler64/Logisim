@@ -74,9 +74,9 @@ public abstract class Library {
     }
 
     public Library getLibrary(String name) {
-        for (Library lib : getLibraries()) {
-            if (lib.getName().equals(name)) {
-                return lib;
+        for (Library library : getLibraries()) {
+            if (library.getName().equals(name)) {
+                return library;
             }
         }
         return null;

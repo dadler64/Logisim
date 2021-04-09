@@ -11,11 +11,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JCheckBox;
 
-class PrefBoolean extends JCheckBox
-        implements ActionListener, PropertyChangeListener {
+class PrefBoolean extends JCheckBox implements ActionListener, PropertyChangeListener {
 
-    private PrefMonitor<Boolean> pref;
-    private StringGetter title;
+    private final PrefMonitor<Boolean> pref;
+    private final StringGetter title;
 
     PrefBoolean(PrefMonitor<Boolean> pref, StringGetter title) {
         super(title.get());

@@ -59,8 +59,7 @@ abstract class CircuitDetermination {
     static class Gate extends CircuitDetermination {
 
         private ComponentFactory factory;
-        private ArrayList<CircuitDetermination> inputs
-                = new ArrayList<>();
+        private ArrayList<CircuitDetermination> inputs = new ArrayList<>();
 
         private Gate(ComponentFactory factory) {
             this.factory = factory;
@@ -99,8 +98,7 @@ abstract class CircuitDetermination {
             }
         }
 
-        private CircuitDetermination convertToTwoInputsSub(int start, int stop,
-                ComponentFactory subFactory) {
+        private CircuitDetermination convertToTwoInputsSub(int start, int stop, ComponentFactory subFactory) {
             if (stop - start == 1) {
                 CircuitDetermination a = inputs.get(start);
                 a.convertToTwoInputs();
@@ -134,6 +132,7 @@ abstract class CircuitDetermination {
                 notAllInputs(); // the order of these two lines is significant
                 notOutput();
             } else if (factory == NandGate.FACTORY) {
+                // Ok?
             } else {
                 throw new IllegalArgumentException("Cannot handle " + factory.getDisplayName());
             }
@@ -164,8 +163,7 @@ abstract class CircuitDetermination {
 
         @Override
         boolean isNandNot() {
-            return factory == NandGate.FACTORY
-                    && inputs.size() == 2 && inputs.get(0) == inputs.get(1);
+            return factory == NandGate.FACTORY && inputs.size() == 2 && inputs.get(0) == inputs.get(1);
         }
 
         @Override
@@ -217,7 +215,7 @@ abstract class CircuitDetermination {
 
     static class Input extends CircuitDetermination {
 
-        private String name;
+        private final String name;
 
         private Input(String name) {
             this.name = name;
@@ -230,7 +228,7 @@ abstract class CircuitDetermination {
 
     static class Value extends CircuitDetermination {
 
-        private int value;
+        private final int value;
 
         private Value(int value) {
             this.value = value;
@@ -241,8 +239,7 @@ abstract class CircuitDetermination {
         }
     }
 
-    private static class Determine
-            implements ExpressionVisitor<CircuitDetermination> {
+    private static class Determine implements ExpressionVisitor<CircuitDetermination> {
 
         public CircuitDetermination visitAnd(Expression a, Expression b) {
             return binary(a.visit(this), b.visit(this), AndGate.FACTORY);
@@ -256,41 +253,40 @@ abstract class CircuitDetermination {
             return binary(a.visit(this), b.visit(this), XorGate.FACTORY);
         }
 
-        private Gate binary(CircuitDetermination aret,
-                CircuitDetermination bret, ComponentFactory factory) {
-            if (aret instanceof Gate) {
-                Gate a = (Gate) aret;
+        private Gate binary(CircuitDetermination aRet, CircuitDetermination bRet, ComponentFactory factory) {
+            if (aRet instanceof Gate) {
+                Gate a = (Gate) aRet;
                 if (a.factory == factory) {
-                    if (bret instanceof Gate) {
-                        Gate b = (Gate) bret;
+                    if (bRet instanceof Gate) {
+                        Gate b = (Gate) bRet;
                         if (b.factory == factory) {
                             a.inputs.addAll(b.inputs);
                             return a;
                         }
                     }
-                    a.inputs.add(bret);
+                    a.inputs.add(bRet);
                     return a;
                 }
             }
 
-            if (bret instanceof Gate) {
-                Gate b = (Gate) bret;
+            if (bRet instanceof Gate) {
+                Gate b = (Gate) bRet;
                 if (b.factory == factory) {
-                    b.inputs.add(aret);
+                    b.inputs.add(aRet);
                     return b;
                 }
             }
 
             Gate ret = new Gate(factory);
-            ret.inputs.add(aret);
-            ret.inputs.add(bret);
+            ret.inputs.add(aRet);
+            ret.inputs.add(bRet);
             return ret;
         }
 
         public CircuitDetermination visitNot(Expression aBase) {
-            CircuitDetermination aret = aBase.visit(this);
-            if (aret instanceof Gate) {
-                Gate a = (Gate) aret;
+            CircuitDetermination aRet = aBase.visit(this);
+            if (aRet instanceof Gate) {
+                Gate a = (Gate) aRet;
                 if (a.factory == AndGate.FACTORY) {
                     a.factory = NandGate.FACTORY;
                     return a;
@@ -304,7 +300,7 @@ abstract class CircuitDetermination {
             }
 
             Gate ret = new Gate(NotGate.FACTORY);
-            ret.inputs.add(aret);
+            ret.inputs.add(aRet);
             return ret;
         }
 

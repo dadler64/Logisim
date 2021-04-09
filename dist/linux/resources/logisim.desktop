@@ -1,9 +1,0 @@
-[Desktop Entry]
-Comment=Logisim Circuit Simulator
-Terminal=false
-Name=Logisim
-Exec=java -jar /opt/logisim/logisim.jar
-Type=Application
-Icon=logisim
-MimeType=application/java;application/java-vm;application/java-archive
-StartupWMClass=com-cburch-logisim-Main

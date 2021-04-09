@@ -8,16 +8,16 @@ import java.util.prefs.Preferences;
 
 class PrefMonitorInt extends AbstractPrefMonitor<Integer> {
 
-    private int dflt;
+    private final int defaultValue;
     private int value;
 
-    PrefMonitorInt(String name, int dflt) {
+    PrefMonitorInt(String name, int defaultValue) {
         super(name);
-        this.dflt = dflt;
-        this.value = dflt;
-        Preferences prefs = AppPreferences.getPreferences();
-        set(prefs.getInt(name, dflt));
-        prefs.addPreferenceChangeListener(this);
+        this.defaultValue = defaultValue;
+        this.value = defaultValue;
+        Preferences preferences = AppPreferences.getPreferences();
+        set(preferences.getInt(name, defaultValue));
+        preferences.addPreferenceChangeListener(this);
     }
 
     public Integer get() {
@@ -32,16 +32,16 @@ class PrefMonitorInt extends AbstractPrefMonitor<Integer> {
     }
 
     public void preferenceChange(PreferenceChangeEvent event) {
-        Preferences prefs = event.getNode();
+        Preferences preferences = event.getNode();
         String prop = event.getKey();
         String name = getIdentifier();
         if (prop.equals(name)) {
             int oldValue = value;
-            int newValue = prefs.getInt(name, dflt);
+            int newValue = preferences.getInt(name, defaultValue);
             if (newValue != oldValue) {
                 value = newValue;
                 AppPreferences.firePropertyChange(name,
-                        oldValue, newValue);
+                    oldValue, newValue);
             }
         }
     }

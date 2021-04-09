@@ -12,15 +12,15 @@ public class EndData {
     public static final int OUTPUT_ONLY = 2;
     public static final int INPUT_OUTPUT = 3;
 
-    private Location loc;
-    private BitWidth width;
-    private int i_o;
-    private boolean exclusive;
+    private final Location loc;
+    private final BitWidth width;
+    private final int io;
+    private final boolean exclusive;
 
     public EndData(Location loc, BitWidth width, int type, boolean exclusive) {
         this.loc = loc;
         this.width = width;
-        this.i_o = type;
+        this.io = type;
         this.exclusive = exclusive;
     }
 
@@ -33,11 +33,11 @@ public class EndData {
     }
 
     public boolean isInput() {
-        return (i_o & INPUT_ONLY) != 0;
+        return (io & INPUT_ONLY) != 0;
     }
 
     public boolean isOutput() {
-        return (i_o & OUTPUT_ONLY) != 0;
+        return (io & OUTPUT_ONLY) != 0;
     }
 
     public Location getLocation() {
@@ -49,7 +49,7 @@ public class EndData {
     }
 
     public int getType() {
-        return i_o;
+        return io;
     }
 
     @Override
@@ -62,6 +62,6 @@ public class EndData {
         }
         EndData o = (EndData) other;
         return o.loc.equals(this.loc) && o.width.equals(this.width)
-                && o.i_o == this.i_o && o.exclusive == this.exclusive;
+            && o.io == this.io && o.exclusive == this.exclusive;
     }
 }

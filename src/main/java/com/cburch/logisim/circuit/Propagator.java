@@ -19,14 +19,16 @@ import java.util.Random;
 
 public class Propagator {
 
-    private static int lastId = 0;
-    private int id = lastId++;
-    private CircuitState root; // root of state tree
     /**
      * The number of clock cycles to let pass before deciding that the
      * circuit is oscillating.
      */
     private static final int SIM_LIMIT = 1000;
+    private static int lastId = 0;
+    private final int id = lastId++;
+    private final CircuitState root; // root of state tree
+    private final PriorityQueue<SetData> toProcess = new PriorityQueue<>();
+    private final Random noiseSource = new Random();
     /**
      * On average, one out of every 2**simRandomShift propagations
      * through a component is delayed one step more than the component
@@ -35,13 +37,11 @@ public class Propagator {
      * practice).
      */
     private volatile int simulateRandomShift;
-    private PriorityQueue<SetData> toProcess = new PriorityQueue<>();
     private int clock = 0;
     private boolean isOscillating = false;
     private boolean oscillatorAdding = false;
     private PropagationPoints oscillatorPoints = new PropagationPoints();
     private int ticks = 0;
-    private Random noiseSource = new Random();
     private int noiseCount = 0;
     private int setDataSerialNumber = 0;
 
@@ -174,7 +174,7 @@ public class Propagator {
                 handled.add(new ComponentPoint(data.cause, data.location));
             }
 
-			// TODO: DEBUGGING - comment out
+            // TODO: DEBUGGING - comment out
 //			Logger.debugln("(Propagator.class ln:179) -> " + data.time + ": proc " + data.location + " in " + data.state + " to " + data.value + " by " + data.cause);
 
             if (changedPoints != null) {
@@ -211,7 +211,7 @@ public class Propagator {
     // package-protected helper methods
     //
     void setValue(CircuitState state, Location point, Value value,
-            Component cause, int delay) {
+        Component cause, int delay) {
         if (cause instanceof Wire || cause instanceof Splitter) {
             return;
         }
@@ -234,7 +234,7 @@ public class Propagator {
             }
         }
         toProcess.add(new SetData(clock + delay, setDataSerialNumber,
-                state, point, cause, value));
+            state, point, cause, value));
         // TODO: DEBUGGING - comment out
 //        Logger.debugln(String.format("(Propagator.class ln:240) -> %d: set %s in %s to %s by %s after %d", clock, point, state, value, cause, delay));
 
@@ -354,7 +354,7 @@ public class Propagator {
     }
 
     private SetData removeCause(CircuitState state, SetData head,
-            Location location, Component cause) {
+        Location location, Component cause) {
         HashMap<Location, SetData> causes = state.causes;
         if (head != null) {
             if (head.cause == cause) {
@@ -381,16 +381,17 @@ public class Propagator {
     }
 
     static class SetData implements Comparable<SetData> {
-        private int time;
-        private int serialNumber;
-        private CircuitState state; // state of circuit containing component
-        private Component cause;    // component emitting the value
-        private Location location;  // the location at which value is emitted
+
+        private final int time;
+        private final int serialNumber;
+        private final CircuitState state; // state of circuit containing component
+        private final Component cause;    // component emitting the value
+        private final Location location;  // the location at which value is emitted
         private Value value;        // value being emitted
         private SetData next = null;
 
         private SetData(int time, int serialNumber, CircuitState state,
-                Location location, Component cause, Value value) {
+            Location location, Component cause, Value value) {
             this.time = time;
             this.serialNumber = serialNumber;
             this.state = state;
@@ -413,7 +414,7 @@ public class Propagator {
             Propagator newProp = newState.getPropagator();
             int clockTime = newProp.clock - state.getPropagator().clock;
             SetData setData = new SetData(this.time + clockTime,
-                    newProp.setDataSerialNumber, newState, location, cause, value);
+                newProp.setDataSerialNumber, newState, location, cause, value);
             newProp.setDataSerialNumber++;
             if (this.next != null) {
                 setData.next = this.next.cloneFor(newState);
@@ -429,8 +430,8 @@ public class Propagator {
 
     private static class ComponentPoint {
 
-        private Component cause;
-        private Location location;
+        private final Component cause;
+        private final Location location;
 
         private ComponentPoint(Component cause, Location location) {
             this.cause = cause;
@@ -454,13 +455,14 @@ public class Propagator {
 
     private static class Listener implements AttributeListener {
 
-        private WeakReference<Propagator> propagators;
+        private final WeakReference<Propagator> propagators;
 
         private Listener(Propagator propagator) {
             propagators = new WeakReference<>(propagator);
         }
 
-        public void attributeListChanged(AttributeEvent event) { }
+        public void attributeListChanged(AttributeEvent event) {
+        }
 
         public void attributeValueChanged(AttributeEvent event) {
             Propagator propagator = propagators.get();

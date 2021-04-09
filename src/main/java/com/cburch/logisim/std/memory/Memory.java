@@ -12,27 +12,27 @@ public class Memory extends Library {
 
     protected static final int DELAY = 5;
 
-    private static FactoryDescription[] DESCRIPTIONS = {
-            new FactoryDescription("D Flip-Flop", Strings.getter("dFlipFlopComponent"),
-                    "dFlipFlop.gif", "DFlipFlop"),
-            new FactoryDescription("T Flip-Flop", Strings.getter("tFlipFlopComponent"),
-                    "tFlipFlop.gif", "TFlipFlop"),
-            new FactoryDescription("J-K Flip-Flop", Strings.getter("jkFlipFlopComponent"),
-                    "jkFlipFlop.gif", "JKFlipFlop"),
-            new FactoryDescription("S-R Flip-Flop", Strings.getter("srFlipFlopComponent"),
-                    "srFlipFlop.gif", "SRFlipFlop"),
-            new FactoryDescription("Register", Strings.getter("registerComponent"),
-                    "register.gif", "Register"),
-            new FactoryDescription("Counter", Strings.getter("counterComponent"),
-                    "counter.gif", "Counter"),
-            new FactoryDescription("Shift Register", Strings.getter("shiftRegisterComponent"),
-                    "shiftreg.gif", "ShiftRegister"),
-            new FactoryDescription("Random", Strings.getter("randomComponent"),
-                    "random.gif", "Random"),
-            new FactoryDescription("RAM", Strings.getter("ramComponent"),
-                    "ram.gif", "Ram"),
-            new FactoryDescription("ROM", Strings.getter("romComponent"),
-                    "rom.gif", "Rom"),
+    private static final FactoryDescription[] DESCRIPTIONS = {
+        new FactoryDescription("D Flip-Flop", Strings.getter("dFlipFlopComponent"),
+            "dFlipFlop.gif", "DFlipFlop"),
+        new FactoryDescription("T Flip-Flop", Strings.getter("tFlipFlopComponent"),
+            "tFlipFlop.gif", "TFlipFlop"),
+        new FactoryDescription("J-K Flip-Flop", Strings.getter("jkFlipFlopComponent"),
+            "jkFlipFlop.gif", "JKFlipFlop"),
+        new FactoryDescription("S-R Flip-Flop", Strings.getter("srFlipFlopComponent"),
+            "srFlipFlop.gif", "SRFlipFlop"),
+        new FactoryDescription("Register", Strings.getter("registerComponent"),
+            "register.gif", "Register"),
+        new FactoryDescription("Counter", Strings.getter("counterComponent"),
+            "counter.gif", "Counter"),
+        new FactoryDescription("Shift Register", Strings.getter("shiftRegisterComponent"),
+            "shiftreg.gif", "ShiftRegister"),
+        new FactoryDescription("Random", Strings.getter("randomComponent"),
+            "random.gif", "Random"),
+        new FactoryDescription("RAM", Strings.getter("ramComponent"),
+            "ram.gif", "Ram"),
+        new FactoryDescription("ROM", Strings.getter("romComponent"),
+            "rom.gif", "Rom"),
     };
 
     private List<Tool> tools = null;

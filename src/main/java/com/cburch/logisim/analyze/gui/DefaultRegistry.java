@@ -11,7 +11,7 @@ import javax.swing.JRootPane;
 
 class DefaultRegistry {
 
-    private JRootPane rootPane;
+    private final JRootPane rootPane;
 
     public DefaultRegistry(JRootPane rootPane) {
         this.rootPane = rootPane;
@@ -24,7 +24,7 @@ class DefaultRegistry {
 
     private class MyListener implements FocusListener {
 
-        private JButton defaultButton;
+        private final JButton defaultButton;
 
         private MyListener(JButton defaultButton) {
             this.defaultButton = defaultButton;

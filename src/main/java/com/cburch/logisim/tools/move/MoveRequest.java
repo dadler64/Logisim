@@ -5,9 +5,9 @@ package com.cburch.logisim.tools.move;
 
 class MoveRequest {
 
-    private MoveGesture gesture;
-    private int dx;
-    private int dy;
+    private final MoveGesture gesture;
+    private final int dx;
+    private final int dy;
 
     public MoveRequest(MoveGesture gesture, int dx, int dy) {
         this.gesture = gesture;
@@ -30,8 +30,8 @@ class MoveRequest {
     @Override
     public boolean equals(Object other) {
         if (other instanceof MoveRequest) {
-            MoveRequest o = (MoveRequest) other;
-            return this.gesture == o.gesture && this.dx == o.dx && this.dy == o.dy;
+            MoveRequest request = (MoveRequest) other;
+            return this.gesture == request.gesture && this.dx == request.dx && this.dy == request.dy;
         } else {
             return false;
         }

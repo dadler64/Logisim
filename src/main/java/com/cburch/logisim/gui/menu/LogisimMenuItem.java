@@ -5,7 +5,7 @@ package com.cburch.logisim.gui.menu;
 
 public class LogisimMenuItem {
 
-    private String name;
+    private final String name;
 
     LogisimMenuItem(String name) {
         this.name = name;

@@ -24,9 +24,9 @@ import java.util.TreeMap;
 
 public class CircuitAppearance extends Drawing {
 
-    private Circuit circuit;
-    private EventSourceWeakSupport<CircuitAppearanceListener> listeners;
-    private CircuitPins circuitPins;
+    private final Circuit circuit;
+    private final EventSourceWeakSupport<CircuitAppearanceListener> listeners;
+    private final CircuitPins circuitPins;
     private boolean isDefault;
     private boolean suppressRecompute;
 

@@ -24,14 +24,14 @@ import javax.swing.JTextField;
 
 class FilePanel extends LogPanel {
 
-    private Listener listener = new Listener();
-    private JLabel enableLabel = new JLabel();
-    private JButton enableButton = new JButton();
-    private JLabel fileLabel = new JLabel();
-    private JTextField fileField = new JTextField();
-    private JButton selectButton = new JButton();
-    private JCheckBox headerCheckBox = new JCheckBox();
-    private JFileChooser chooser = JFileChoosers.create();
+    private final Listener listener = new Listener();
+    private final JLabel enableLabel = new JLabel();
+    private final JButton enableButton = new JButton();
+    private final JLabel fileLabel = new JLabel();
+    private final JTextField fileField = new JTextField();
+    private final JButton selectButton = new JButton();
+    private final JCheckBox headerCheckBox = new JCheckBox();
+    private final JFileChooser chooser = JFileChoosers.create();
 
     public FilePanel(LogFrame frame) {
         super(frame);
@@ -166,30 +166,32 @@ class FilePanel extends LogPanel {
                 File file = chooser.getSelectedFile();
                 if (file.exists() && (!file.canWrite() || file.isDirectory())) {
                     JOptionPane.showMessageDialog(getLogFrame(),
-                            StringUtil.format(Strings.get("fileCannotWriteMessage"), file.getName()),
-                            Strings.get("fileCannotWriteTitle"),
-                            JOptionPane.OK_OPTION);
+                        StringUtil.format(Strings.get("fileCannotWriteMessage"), file.getName()),
+                        Strings.get("fileCannotWriteTitle"),
+                        JOptionPane.OK_OPTION);
                     return;
                 }
                 if (file.exists() && file.length() > 0) {
                     String[] options = {
-                            Strings.get("fileOverwriteOption"),
-                            Strings.get("fileAppendOption"),
-                            Strings.get("fileCancelOption"),
+                        Strings.get("fileOverwriteOption"),
+                        Strings.get("fileAppendOption"),
+                        Strings.get("fileCancelOption"),
                     };
                     int option = JOptionPane.showOptionDialog(getLogFrame(),
-                            StringUtil.format(Strings.get("fileExistsMessage"), file.getName()),
-                            Strings.get("fileExistsTitle"),
-                            0, JOptionPane.QUESTION_MESSAGE, null,
-                            options, options[0]);
+                        StringUtil.format(Strings.get("fileExistsMessage"), file.getName()),
+                        Strings.get("fileExistsTitle"),
+                        0, JOptionPane.QUESTION_MESSAGE, null,
+                        options, options[0]);
                     if (option == 0) {
                         try {
                             FileWriter delete = new FileWriter(file);
                             delete.close();
                         } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     } else if (option == 1) {
                         // do nothing
+                        System.err.println("WARNING: No option for 1!");
                     } else {
                         return;
                     }

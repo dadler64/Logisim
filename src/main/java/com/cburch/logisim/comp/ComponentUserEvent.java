@@ -9,7 +9,7 @@ import com.cburch.logisim.gui.main.Canvas;
 
 public class ComponentUserEvent {
 
-    private Canvas canvas;
+    private final Canvas canvas;
     private int x = 0;
     private int y = 0;
 

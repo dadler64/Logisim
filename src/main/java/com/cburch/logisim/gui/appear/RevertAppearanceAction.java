@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class RevertAppearanceAction extends Action {
 
-    private Circuit circuit;
+    private final Circuit circuit;
     private ArrayList<CanvasObject> old;
     private boolean wasDefault;
 

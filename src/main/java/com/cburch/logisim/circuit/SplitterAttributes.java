@@ -10,9 +10,11 @@ import com.cburch.logisim.data.Attributes;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Direction;
 import com.cburch.logisim.instance.StdAttr;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.JComboBox;
 
 class SplitterAttributes extends AbstractAttributeSet {
 
@@ -336,9 +338,9 @@ class SplitterAttributes extends AbstractAttributeSet {
         }
 
         @Override
-        public java.awt.Component getCellEditor(Integer value) {
+        public Component getCellEditor(Integer value) {
             int index = value;
-            javax.swing.JComboBox combo = new javax.swing.JComboBox(options);
+            JComboBox<BitOutOption> combo = new JComboBox<>(options);
             combo.setSelectedIndex(index);
             return combo;
         }

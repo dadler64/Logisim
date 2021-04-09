@@ -18,13 +18,13 @@ import javax.swing.Icon;
 
 class LogisimToolbarItem implements ToolbarItem {
 
-    private MenuListener menu;
+    private final MenuListener menu;
+    private final LogisimMenuItem action;
     private Icon icon;
-    private LogisimMenuItem action;
     private StringGetter toolTip;
 
     public LogisimToolbarItem(MenuListener menu, String iconName,
-            LogisimMenuItem action, StringGetter toolTip) {
+        LogisimMenuItem action, StringGetter toolTip) {
         this.menu = menu;
         this.icon = Icons.getIcon(iconName);
         this.action = action;

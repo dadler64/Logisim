@@ -34,14 +34,14 @@ import org.xml.sax.SAXException;
 
 class XmlReader {
 
-    private LibraryLoader loader;
+    private final LibraryLoader loader;
 
     XmlReader(Loader loader) {
         this.loader = loader;
     }
 
     private static void findLibraryUses(ArrayList<Element> destinations, String label,
-            Iterable<Element> candidates) {
+        Iterable<Element> candidates) {
         for (Element elements : candidates) {
             String lib = elements.getAttribute("lib");
             if (lib.equals(label)) {
@@ -201,9 +201,9 @@ class XmlReader {
 
         HashMap<String, String> labelMap = new HashMap<>();
         addToLabelMap(labelMap, oldBaseLabel, newBaseLabel, "Poke Tool;"
-                + "Edit Tool;Select Tool;Wiring Tool;Text Tool;Menu Tool;Text");
+            + "Edit Tool;Select Tool;Wiring Tool;Text Tool;Menu Tool;Text");
         addToLabelMap(labelMap, oldBaseLabel, wiringLabel, "Splitter;Pin;"
-                + "Probe;Tunnel;Clock;Pull Resistor;Bit Extender");
+            + "Probe;Tunnel;Clock;Pull Resistor;Bit Extender");
         addToLabelMap(labelMap, gatesLabel, wiringLabel, "Constant");
         relocateTools(oldBaseElement, newBaseElement, labelMap);
         relocateTools(oldBaseElement, wiringElement, labelMap);
@@ -213,7 +213,7 @@ class XmlReader {
     }
 
     private void addToLabelMap(HashMap<String, String> labelMap, String sourceLabel,
-            String destinationLabel, String toolNames) {
+        String destinationLabel, String toolNames) {
         if (sourceLabel != null && destinationLabel != null) {
             for (String tool : toolNames.split(";")) {
                 labelMap.put(sourceLabel + ":" + tool, destinationLabel);
@@ -275,16 +275,16 @@ class XmlReader {
 
             ArrayList<Element> elementsToRemove = new ArrayList<>();
             findLibraryUses(elementsToRemove, legacyLabel,
-                    XmlIterator.forDescendantElements(root, "comp"));
+                XmlIterator.forDescendantElements(root, "comp"));
             boolean componentsRemoved = !elementsToRemove.isEmpty();
             findLibraryUses(elementsToRemove, legacyLabel,
-                    XmlIterator.forDescendantElements(root, "tool"));
+                XmlIterator.forDescendantElements(root, "tool"));
             for (Element elt : elementsToRemove) {
                 elt.getParentNode().removeChild(elt);
             }
             if (componentsRemoved) {
                 String error = "Some components have been deleted;"
-                        + " the Legacy library is no longer supported.";
+                    + " the Legacy library is no longer supported.";
                 Element element = document.createElement("message");
                 element.setAttribute("value", error);
                 root.appendChild(element);
@@ -307,10 +307,10 @@ class XmlReader {
 
     class ReadContext {
 
-        private LogisimFile file;
+        private final LogisimFile file;
         private LogisimVersion sourceVersion;
-        private HashMap<String, Library> libraries = new HashMap<>();
-        private ArrayList<String> messages;
+        private final HashMap<String, Library> libraries = new HashMap<>();
+        private final ArrayList<String> messages;
 
         private ReadContext(LogisimFile file) {
             this.file = file;
@@ -448,7 +448,7 @@ class XmlReader {
         }
 
         private void loadAppearance(Element appearElt, CircuitData circData,
-                String context) {
+            String context) {
             Map<Location, Instance> pins = new HashMap<>();
             for (Component comp : circData.knownComponents.values()) {
                 if (comp.getFactory() == Pin.FACTORY) {
@@ -463,13 +463,13 @@ class XmlReader {
                     AbstractCanvasObject m = AppearanceSvgReader.createShape(sub, pins);
                     if (m == null) {
                         addError(Strings.get("fileAppearanceNotFound", sub.getTagName()),
-                                context + "." + sub.getTagName());
+                            context + "." + sub.getTagName());
                     } else {
                         shapes.add(m);
                     }
                 } catch (RuntimeException e) {
                     addError(Strings.get("fileAppearanceError", sub.getTagName()),
-                            context + "." + sub.getTagName());
+                        context + "." + sub.getTagName());
                 }
             }
             if (!shapes.isEmpty()) {
@@ -502,7 +502,7 @@ class XmlReader {
                     mods = InputEventUtil.fromString(mods_str);
                 } catch (NumberFormatException e) {
                     loader.showError(StringUtil.format(
-                            Strings.get("mappingBadError"), mods_str));
+                        Strings.get("mappingBadError"), mods_str));
                     continue;
                 }
 
@@ -557,7 +557,7 @@ class XmlReader {
         }
 
         void initAttributeSet(Element parentElt, AttributeSet attrs,
-                AttributeDefaultProvider defaults) throws XmlReaderException {
+            AttributeDefaultProvider defaults) throws XmlReaderException {
             ArrayList<String> messages = null;
 
             HashMap<String, String> attrsDefined = new HashMap<>();
@@ -585,7 +585,7 @@ class XmlReader {
 
             LogisimVersion ver = sourceVersion;
             boolean setDefaults = defaults != null
-                    && !defaults.isAllDefaultValues(attrs, ver);
+                && !defaults.isAllDefaultValues(attrs, ver);
             // We need to process this in order, and we have to refetch the
             // attribute list each time because it may change as we iterate
             // (as it will for a splitter).
@@ -614,8 +614,8 @@ class XmlReader {
                             messages = new ArrayList<>();
                         }
                         messages.add(StringUtil.format(
-                                Strings.get("attrValueInvalidError"),
-                                attrVal, attrName));
+                            Strings.get("attrValueInvalidError"),
+                            attrVal, attrName));
                     }
                 }
             }
@@ -632,7 +632,7 @@ class XmlReader {
             Library ret = libraries.get(lib_name);
             if (ret == null) {
                 throw new XmlReaderException(StringUtil.format(
-                        Strings.get("libMissingError"), lib_name));
+                    Strings.get("libMissingError"), lib_name));
             } else {
                 return ret;
             }

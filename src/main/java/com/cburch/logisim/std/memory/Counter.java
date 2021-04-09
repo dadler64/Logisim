@@ -26,20 +26,18 @@ import java.awt.Graphics;
 public class Counter extends InstanceFactory {
 
     static final AttributeOption ON_GOAL_WRAP = new AttributeOption("wrap",
-            "wrap", Strings.getter("counterGoalWrap"));
+        "wrap", Strings.getter("counterGoalWrap"));
     static final AttributeOption ON_GOAL_STAY = new AttributeOption("stay",
-            "stay", Strings.getter("counterGoalStay"));
+        "stay", Strings.getter("counterGoalStay"));
     static final AttributeOption ON_GOAL_CONT = new AttributeOption("continue",
-            "continue", Strings.getter("counterGoalContinue"));
+        "continue", Strings.getter("counterGoalContinue"));
     static final AttributeOption ON_GOAL_LOAD = new AttributeOption("load",
-            "load", Strings.getter("counterGoalLoad"));
+        "load", Strings.getter("counterGoalLoad"));
 
     static final Attribute<Integer> ATTR_MAX = Attributes.forHexInteger("max",
-            Strings.getter("counterMaxAttr"));
+        Strings.getter("counterMaxAttr"));
     static final Attribute<AttributeOption> ATTR_ON_GOAL = Attributes.forOption("ongoal",
-            Strings.getter("counterGoalAttr"),
-            new AttributeOption[]{ON_GOAL_WRAP, ON_GOAL_STAY, ON_GOAL_CONT,
-                    ON_GOAL_LOAD});
+        Strings.getter("counterGoalAttr"), new AttributeOption[]{ON_GOAL_WRAP, ON_GOAL_STAY, ON_GOAL_CONT, ON_GOAL_LOAD});
 
     private static final int DELAY = 8;
     private static final int OUT = 0;
@@ -58,22 +56,22 @@ public class Counter extends InstanceFactory {
         setInstanceLogger(RegisterLogger.class);
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
 
-        Port[] ps = new Port[7];
-        ps[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
-        ps[IN] = new Port(-30, 0, Port.INPUT, StdAttr.WIDTH);
-        ps[CK] = new Port(-20, 20, Port.INPUT, 1);
-        ps[CLR] = new Port(-10, 20, Port.INPUT, 1);
-        ps[LD] = new Port(-30, -10, Port.INPUT, 1);
-        ps[CT] = new Port(-30, 10, Port.INPUT, 1);
-        ps[CARRY] = new Port(0, 10, Port.OUTPUT, 1);
-        ps[OUT].setToolTip(Strings.getter("counterQTip"));
-        ps[IN].setToolTip(Strings.getter("counterDataTip"));
-        ps[CK].setToolTip(Strings.getter("counterClockTip"));
-        ps[CLR].setToolTip(Strings.getter("counterResetTip"));
-        ps[LD].setToolTip(Strings.getter("counterLoadTip"));
-        ps[CT].setToolTip(Strings.getter("counterEnableTip"));
-        ps[CARRY].setToolTip(Strings.getter("counterCarryTip"));
-        setPorts(ps);
+        Port[] ports = new Port[7];
+        ports[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
+        ports[IN] = new Port(-30, 0, Port.INPUT, StdAttr.WIDTH);
+        ports[CK] = new Port(-20, 20, Port.INPUT, 1);
+        ports[CLR] = new Port(-10, 20, Port.INPUT, 1);
+        ports[LD] = new Port(-30, -10, Port.INPUT, 1);
+        ports[CT] = new Port(-30, 10, Port.INPUT, 1);
+        ports[CARRY] = new Port(0, 10, Port.OUTPUT, 1);
+        ports[OUT].setToolTip(Strings.getter("counterQTip"));
+        ports[IN].setToolTip(Strings.getter("counterDataTip"));
+        ports[CK].setToolTip(Strings.getter("counterClockTip"));
+        ports[CLR].setToolTip(Strings.getter("counterResetTip"));
+        ports[LD].setToolTip(Strings.getter("counterLoadTip"));
+        ports[CT].setToolTip(Strings.getter("counterEnableTip"));
+        ports[CARRY].setToolTip(Strings.getter("counterCarryTip"));
+        setPorts(ports);
     }
 
     @Override
@@ -83,10 +81,9 @@ public class Counter extends InstanceFactory {
 
     @Override
     protected void configureNewInstance(Instance instance) {
-        Bounds bds = instance.getBounds();
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                bds.getX() + bds.getWidth() / 2, bds.getY() - 3,
-                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+        Bounds bounds = instance.getBounds();
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, bounds.getX() + bounds.getWidth() / 2, bounds.getY() - 3,
+            GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
     }
 
     @Override
@@ -103,53 +100,53 @@ public class Counter extends InstanceFactory {
         Value clock = state.getPort(CK);
         boolean triggered = data.updateClock(clock, triggerType);
 
-        Value newValue;
+        Value value;
         boolean carry;
         if (state.getPort(CLR) == Value.TRUE) {
-            newValue = Value.createKnown(dataWidth, 0);
+            value = Value.createKnown(dataWidth, 0);
             carry = false;
         } else {
             boolean ld = state.getPort(LD) == Value.TRUE;
             boolean ct = state.getPort(CT) != Value.FALSE;
-            int oldVal = data.value;
-            int newVal;
+            int oldValue = data.value;
+            int newValue;
             if (!triggered) {
-                newVal = oldVal;
+                newValue = oldValue;
             } else if (ct) { // trigger, enable = 1: should increment or decrement
                 int goal = ld ? 0 : max;
-                if (oldVal == goal) {
+                if (oldValue == goal) {
                     Object onGoal = state.getAttributeValue(ATTR_ON_GOAL);
                     if (onGoal == ON_GOAL_WRAP) {
-                        newVal = ld ? max : 0;
+                        newValue = ld ? max : 0;
                     } else if (onGoal == ON_GOAL_STAY) {
-                        newVal = oldVal;
+                        newValue = oldValue;
                     } else if (onGoal == ON_GOAL_LOAD) {
                         Value in = state.getPort(IN);
-                        newVal = in.isFullyDefined() ? in.toIntValue() : 0;
-                        if (newVal > max) {
-                            newVal &= max;
+                        newValue = in.isFullyDefined() ? in.toIntValue() : 0;
+                        if (newValue > max) {
+                            newValue &= max;
                         }
                     } else if (onGoal == ON_GOAL_CONT) {
-                        newVal = ld ? oldVal - 1 : oldVal + 1;
+                        newValue = ld ? oldValue - 1 : oldValue + 1;
                     } else {
                         System.err.println("Invalid goal attribute " + onGoal); //OK
-                        newVal = ld ? max : 0;
+                        newValue = ld ? max : 0;
                     }
                 } else {
-                    newVal = ld ? oldVal - 1 : oldVal + 1;
+                    newValue = ld ? oldValue - 1 : oldValue + 1;
                 }
             } else if (ld) { // trigger, enable = 0, load = 1: should load
                 Value in = state.getPort(IN);
-                newVal = in.isFullyDefined() ? in.toIntValue() : 0;
-                if (newVal > max) {
-                    newVal &= max;
+                newValue = in.isFullyDefined() ? in.toIntValue() : 0;
+                if (newValue > max) {
+                    newValue &= max;
                 }
             } else { // trigger, enable = 0, load = 0: no change
-                newVal = oldVal;
+                newValue = oldValue;
             }
-            newValue = Value.createKnown(dataWidth, newVal);
-            newVal = newValue.toIntValue();
-            carry = newVal == (ld && ct ? 0 : max);
+            value = Value.createKnown(dataWidth, newValue);
+            newValue = value.toIntValue();
+            carry = newValue == (ld && ct ? 0 : max);
 			/* I would want this if I were worried about the carry signal
 			 * outrunning the clock. But the component's delay should be
 			 * enough to take care of it.
@@ -163,25 +160,25 @@ public class Counter extends InstanceFactory {
 			*/
         }
 
-        data.value = newValue.toIntValue();
-        state.setPort(OUT, newValue, DELAY);
+        data.value = value.toIntValue();
+        state.setPort(OUT, value, DELAY);
         state.setPort(CARRY, carry ? Value.TRUE : Value.FALSE, DELAY);
     }
 
     @Override
     public void paintInstance(InstancePainter painter) {
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds();
+        Bounds bounds = painter.getBounds();
         RegisterData state = (RegisterData) painter.getData();
-        BitWidth widthVal = painter.getAttributeValue(StdAttr.WIDTH);
-        int width = widthVal == null ? 8 : widthVal.getWidth();
+        BitWidth widthValue = painter.getAttributeValue(StdAttr.WIDTH);
+        int width = widthValue == null ? 8 : widthValue.getWidth();
 
         // determine text to draw in label
         String a;
         String b = null;
         if (painter.getShowState()) {
-            int val = state == null ? 0 : state.value;
-            String str = StringUtil.toHexString(width, val);
+            int value = state == null ? 0 : state.value;
+            String str = StringUtil.toHexString(width, value);
             if (str.length() <= 4) {
                 a = str;
             } else {
@@ -191,7 +188,7 @@ public class Counter extends InstanceFactory {
             }
         } else {
             a = Strings.get("counterLabel");
-            b = Strings.get("registerWidthLabel", "" + widthVal.getWidth());
+            b = Strings.get("registerWidthLabel", "" + widthValue.getWidth());
         }
 
         // draw boundary, label
@@ -216,13 +213,10 @@ public class Counter extends InstanceFactory {
 
         // draw contents
         if (b == null) {
-            GraphicsUtil.drawText(g, a, bds.getX() + 15, bds.getY() + 4,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+            GraphicsUtil.drawText(g, a, bounds.getX() + 15, bounds.getY() + 4, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
         } else {
-            GraphicsUtil.drawText(g, a, bds.getX() + 15, bds.getY() + 3,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
-            GraphicsUtil.drawText(g, b, bds.getX() + 15, bds.getY() + 15,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+            GraphicsUtil.drawText(g, a, bounds.getX() + 15, bounds.getY() + 3, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+            GraphicsUtil.drawText(g, b, bounds.getX() + 15, bounds.getY() + 15, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
         }
     }
 }

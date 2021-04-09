@@ -24,17 +24,27 @@ public class Led extends InstanceFactory {
 
     public Led() {
         super("LED", Strings.getter("ledComponent"));
-        setAttributes(new Attribute[]{
-                StdAttr.FACING, Io.ATTR_ON_COLOR, Io.ATTR_OFF_COLOR,
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                Io.ATTR_ON_COLOR,
+                Io.ATTR_OFF_COLOR,
                 Io.ATTR_ACTIVE,
-                StdAttr.LABEL, Io.ATTR_LABEL_LOCATION,
-                StdAttr.LABEL_FONT, Io.ATTR_LABEL_COLOR
-        }, new Object[]{
-                Direction.WEST, new Color(240, 0, 0), Color.DARK_GRAY,
+                StdAttr.LABEL,
+                Io.ATTR_LABEL_LOCATION,
+                StdAttr.LABEL_FONT,
+                Io.ATTR_LABEL_COLOR
+            }, new Object[]{
+                Direction.WEST,
+                new Color(240, 0, 0),
+                Color.DARK_GRAY,
                 Boolean.TRUE,
-                "", Io.LABEL_CENTER,
-                StdAttr.DEFAULT_LABEL_FONT, Color.BLACK
-        });
+                "",
+                Io.LABEL_CENTER,
+                StdAttr.DEFAULT_LABEL_FONT,
+                Color.BLACK
+            }
+        );
         setFacingAttribute(StdAttr.FACING);
         setIconName("led.gif");
         setPorts(new Port[]{new Port(0, 0, Port.INPUT, 1)});
@@ -95,8 +105,7 @@ public class Led extends InstanceFactory {
             }
         }
 
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                x, y, hAlign, vAlign);
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, x, y, hAlign, vAlign);
     }
 
     @Override
@@ -115,8 +124,7 @@ public class Led extends InstanceFactory {
         Graphics graphics = painter.getGraphics();
         Bounds bounds = painter.getBounds();
         GraphicsUtil.switchToWidth(graphics, 2);
-        graphics.drawOval(bounds.getX() + 1, bounds.getY() + 1,
-                bounds.getWidth() - 2, bounds.getHeight() - 2);
+        graphics.drawOval(bounds.getX() + 1, bounds.getY() + 1, bounds.getWidth() - 2, bounds.getHeight() - 2);
     }
 
     @Override

@@ -18,33 +18,33 @@ import java.util.List;
 
 public class SetAttributeAction extends Action {
 
-    private StringGetter nameGetter;
-    private Circuit circuit;
-    private List<Component> comps;
-    private List<Attribute<Object>> attrs;
-    private List<Object> values;
-    private List<Object> oldValues;
+    private final StringGetter nameGetter;
+    private final Circuit circuit;
+    private final List<Component> components;
+    private final List<Attribute<Object>> attrs;
+    private final List<Object> values;
+    private final List<Object> oldValues;
     private CircuitTransaction xnReverse;
 
     public SetAttributeAction(Circuit circuit, StringGetter nameGetter) {
         this.nameGetter = nameGetter;
         this.circuit = circuit;
-        this.comps = new ArrayList<>();
+        this.components = new ArrayList<>();
         this.attrs = new ArrayList<>();
         this.values = new ArrayList<>();
         this.oldValues = new ArrayList<>();
     }
 
-    public void set(Component comp, Attribute<?> attr, Object value) {
+    public void set(Component component, Attribute<?> attr, Object value) {
         @SuppressWarnings("unchecked")
-        Attribute<Object> a = (Attribute<Object>) attr;
-        comps.add(comp);
-        attrs.add(a);
+        Attribute<Object> objectAttr = (Attribute<Object>) attr;
+        components.add(component);
+        attrs.add(objectAttr);
         values.add(value);
     }
 
     public boolean isEmpty() {
-        return comps.isEmpty();
+        return components.isEmpty();
     }
 
     @Override
@@ -53,41 +53,41 @@ public class SetAttributeAction extends Action {
     }
 
     @Override
-    public void doIt(Project proj) {
-        CircuitMutation xn = new CircuitMutation(circuit);
-        int len = values.size();
+    public void doIt(Project project) {
+        CircuitMutation mutation = new CircuitMutation(circuit);
+        int size = values.size();
         oldValues.clear();
-        for (int i = 0; i < len; i++) {
-            Component comp = comps.get(i);
+        for (int i = 0; i < size; i++) {
+            Component component = components.get(i);
             Attribute<Object> attr = attrs.get(i);
             Object value = values.get(i);
-            if (circuit.contains(comp)) {
+            if (circuit.contains(component)) {
                 oldValues.add(null);
-                xn.set(comp, attr, value);
+                mutation.set(component, attr, value);
             } else {
-                AttributeSet compAttrs = comp.getAttributeSet();
-                oldValues.add(compAttrs.getValue(attr));
-                compAttrs.setValue(attr, value);
+                AttributeSet componentAttrs = component.getAttributeSet();
+                oldValues.add(componentAttrs.getValue(attr));
+                componentAttrs.setValue(attr, value);
             }
         }
 
-        if (!xn.isEmpty()) {
-            CircuitTransactionResult result = xn.execute();
+        if (!mutation.isEmpty()) {
+            CircuitTransactionResult result = mutation.execute();
             xnReverse = result.getReverseTransaction();
         }
     }
 
     @Override
-    public void undo(Project proj) {
+    public void undo(Project project) {
         if (xnReverse != null) {
             xnReverse.execute();
         }
         for (int i = oldValues.size() - 1; i >= 0; i--) {
-            Component comp = comps.get(i);
+            Component component = components.get(i);
             Attribute<Object> attr = attrs.get(i);
             Object value = oldValues.get(i);
             if (value != null) {
-                comp.getAttributeSet().setValue(attr, value);
+                component.getAttributeSet().setValue(attr, value);
             }
         }
     }

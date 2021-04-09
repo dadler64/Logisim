@@ -11,20 +11,20 @@ import java.util.ArrayList;
 
 public class TableLayout implements LayoutManager2 {
 
-    private int colCount;
-    private ArrayList<Component[]> contents;
-    private int curRow;
-    private int curCol;
-    private Dimension prefs;
-    private int[] prefRow;
-    private int[] prefCol;
+    private final int columnCount;
+    private final ArrayList<Component[]> contents;
+    private int currentRow;
+    private int currentCol;
+    private Dimension preferences;
+    private int[] preferenceRow;
+    private int[] preferenceColumn;
     private double[] rowWeight;
 
-    public TableLayout(int colCount) {
-        this.colCount = colCount;
+    public TableLayout(int columnCount) {
+        this.columnCount = columnCount;
         this.contents = new ArrayList<>();
-        this.curRow = 0;
-        this.curCol = 0;
+        this.currentRow = 0;
+        this.currentCol = 0;
     }
 
     public void setRowWeight(int rowIndex, double weight) {
@@ -45,76 +45,75 @@ public class TableLayout implements LayoutManager2 {
     }
 
     public void addLayoutComponent(String name, Component comp) {
-        while (curRow >= contents.size()) {
-            contents.add(new Component[colCount]);
+        while (currentRow >= contents.size()) {
+            contents.add(new Component[columnCount]);
         }
-        Component[] rowContents = contents.get(curRow);
-        rowContents[curCol] = comp;
-        ++curCol;
-        if (curCol == colCount) {
-            ++curRow;
-            curCol = 0;
+        Component[] rowContents = contents.get(currentRow);
+        rowContents[currentCol] = comp;
+        ++currentCol;
+        if (currentCol == columnCount) {
+            ++currentRow;
+            currentCol = 0;
         }
-        prefs = null;
+        preferences = null;
     }
 
     public void addLayoutComponent(Component comp, Object constraints) {
         if (constraints instanceof TableConstraints) {
             TableConstraints con = (TableConstraints) constraints;
             if (con.getRow() >= 0) {
-                curRow = con.getRow();
+                currentRow = con.getRow();
             }
             if (con.getCol() >= 0) {
-                curCol = con.getCol();
+                currentCol = con.getCol();
             }
         }
         addLayoutComponent("", comp);
     }
 
-    public void removeLayoutComponent(Component comp) {
-        for (int i = 0, n = contents.size(); i < n; i++) {
-            Component[] row = contents.get(i);
-            for (int j = 0; j < row.length; j++) {
-                if (row[j] == comp) {
-                    row[j] = null;
+    public void removeLayoutComponent(Component component) {
+        for (Component[] comp : contents) {
+            for (int j = 0; j < comp.length; j++) {
+                if (comp[j] == component) {
+                    comp[j] = null;
                     return;
                 }
             }
         }
-        prefs = null;
+        preferences = null;
     }
 
     public Dimension preferredLayoutSize(Container parent) {
-        if (prefs == null) {
-            int[] prefCol = new int[colCount];
-            int[] prefRow = new int[contents.size()];
+        if (preferences == null) {
+            int[] preferenceColumn = new int[columnCount];
+            int[] preferenceRow = new int[contents.size()];
             int height = 0;
-            for (int i = 0; i < prefRow.length; i++) {
+            for (int i = 0; i < preferenceRow.length; i++) {
                 Component[] row = contents.get(i);
                 int rowHeight = 0;
                 for (int j = 0; j < row.length; j++) {
                     if (row[j] != null) {
-                        Dimension dim = row[j].getPreferredSize();
-                        if (dim.height > rowHeight) {
-                            rowHeight = dim.height;
+                        Dimension dimension = row[j].getPreferredSize();
+                        if (dimension.height > rowHeight) {
+                            rowHeight = dimension.height;
                         }
-                        if (dim.width > prefCol[j]) {
-                            prefCol[j] = dim.width;
+                        if (dimension.width > preferenceColumn[j]) {
+                            preferenceColumn[j] = dimension.width;
                         }
                     }
                 }
-                prefRow[i] = rowHeight;
+                preferenceRow[i] = rowHeight;
                 height += rowHeight;
             }
             int width = 0;
-            for (int i = 0; i < prefCol.length; i++) {
-                width += prefCol[i];
+            for (int i : preferenceColumn) {
+                width += i;
             }
-            this.prefs = new Dimension(width, height);
-            this.prefRow = prefRow;
-            this.prefCol = prefCol;
+            this.preferences = new Dimension(width, height);
+            this.preferenceRow = preferenceRow;
+            this.preferenceColumn = preferenceColumn;
         }
-        return new Dimension(prefs);
+        return new Dimension(preferences);
     }
 
     public Dimension minimumLayoutSize(Container parent) {
@@ -135,8 +134,8 @@ public class TableLayout implements LayoutManager2 {
 
     public void layoutContainer(Container parent) {
         Dimension pref = preferredLayoutSize(parent);
-        int[] prefRow = this.prefRow;
-        int[] prefCol = this.prefCol;
+        int[] preferenceRow = this.preferenceRow;
+        int[] preferenceColumn = this.preferenceColumn;
         Dimension size = parent.getSize();
 
         double y0;
@@ -166,11 +165,11 @@ public class TableLayout implements LayoutManager2 {
             for (int j = 0; j < row.length; j++) {
                 Component comp = row[j];
                 if (comp != null) {
-                    row[j].setBounds(x, yRound, prefCol[j], prefRow[i]);
+                    row[j].setBounds(x, yRound, preferenceColumn[j], preferenceRow[i]);
                 }
-                x += prefCol[j];
+                x += preferenceColumn[j];
             }
-            y += prefRow[i];
+            y += preferenceRow[i];
             if (rowWeightTotal > 0 && i < rowWeight.length) {
                 y += yRemaining * rowWeight[i] / rowWeightTotal;
             }
@@ -181,7 +180,7 @@ public class TableLayout implements LayoutManager2 {
     }
 
     public void invalidateLayout(Container parent) {
-        prefs = null;
+        preferences = null;
     }
 
 }

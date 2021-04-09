@@ -11,9 +11,9 @@ import java.util.List;
 
 public class OutputExpressions {
 
-    private AnalyzerModel model;
-    private HashMap<String, OutputData> outputData = new HashMap<>();
-    private ArrayList<OutputExpressionsListener> listeners = new ArrayList<>();
+    private final AnalyzerModel model;
+    private final HashMap<String, OutputData> outputData = new HashMap<>();
+    private final ArrayList<OutputExpressionsListener> listeners = new ArrayList<>();
     private boolean updatingTable = false;
 
     public OutputExpressions(AnalyzerModel model) {
@@ -35,7 +35,7 @@ public class OutputExpressions {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     assignments.put(table.getInputHeader(j),
-                            TruthTable.isInputSet(i, j, columns));
+                        TruthTable.isInputSet(i, j, columns));
                 }
                 entries[i] = expression.evaluate(assignments) ? Entry.ONE : Entry.ZERO;
             }
@@ -50,7 +50,7 @@ public class OutputExpressions {
         for (int i = 0; i < a.length; i++) {
             if (a[i] != b[i]) {
                 boolean bothDefined = (a[i] == Entry.ZERO || a[i] == Entry.ONE)
-                        && (b[i] == Entry.ZERO || b[i] == Entry.ONE);
+                    && (b[i] == Entry.ZERO || b[i] == Entry.ONE);
                 if (bothDefined) {
                     return false;
                 }
@@ -428,6 +428,7 @@ public class OutputExpressions {
             invalidate(output, false);
         }
 
-        public void structureChanged(TruthTableEvent event) { }
+        public void structureChanged(TruthTableEvent event) {
+        }
     }
 }

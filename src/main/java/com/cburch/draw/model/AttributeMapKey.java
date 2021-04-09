@@ -8,8 +8,8 @@ import java.util.Objects;
 
 public class AttributeMapKey {
 
-    private Attribute<?> attribute;
-    private CanvasObject object;
+    private final Attribute<?> attribute;
+    private final CanvasObject object;
 
     public AttributeMapKey(Attribute<?> attribute, CanvasObject object) {
         this.attribute = attribute;

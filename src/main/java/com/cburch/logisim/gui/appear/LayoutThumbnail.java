@@ -34,7 +34,7 @@ public class LayoutThumbnail extends JComponent {
     }
 
     public void setCircuit(CircuitState circuitState,
-            Collection<Instance> ports) {
+        Collection<Instance> ports) {
         this.circuitState = circuitState;
         this.ports = ports;
         repaint();
@@ -60,7 +60,7 @@ public class LayoutThumbnail extends JComponent {
             gCopy.translate(-bds.getX(), -bds.getY());
 
             ComponentDrawContext context = new ComponentDrawContext(this, circuit,
-                    circuitState, g, gCopy);
+                circuitState, g, gCopy);
             context.setShowState(false);
             context.setShowColor(false);
             circuit.draw(context, Collections.emptySet());

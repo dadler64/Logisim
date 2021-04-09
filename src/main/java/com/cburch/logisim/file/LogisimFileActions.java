@@ -58,7 +58,7 @@ public class LogisimFileActions {
 
     private static class AddCircuit extends Action {
 
-        private Circuit circuit;
+        private final Circuit circuit;
 
         AddCircuit(Circuit circuit) {
             this.circuit = circuit;
@@ -82,7 +82,7 @@ public class LogisimFileActions {
 
     private static class RemoveCircuit extends Action {
 
-        private Circuit circuit;
+        private final Circuit circuit;
         private int index;
 
         RemoveCircuit(Circuit circuit) {
@@ -108,9 +108,9 @@ public class LogisimFileActions {
 
     private static class MoveCircuit extends Action {
 
-        private AddTool tool;
+        private final AddTool tool;
         private int fromIndex;
-        private int toIndex;
+        private final int toIndex;
 
         MoveCircuit(AddTool tool, int toIndex) {
             this.tool = tool;
@@ -136,7 +136,7 @@ public class LogisimFileActions {
         @Override
         public boolean shouldAppendTo(Action other) {
             return other instanceof MoveCircuit
-                    && ((MoveCircuit) other).tool == this.tool;
+                && ((MoveCircuit) other).tool == this.tool;
         }
 
         @Override
@@ -149,7 +149,7 @@ public class LogisimFileActions {
 
     private static class LoadLibraries extends Action {
 
-        private Library[] libs;
+        private final Library[] libs;
 
         LoadLibraries(Library[] libs) {
             this.libs = libs;
@@ -181,7 +181,7 @@ public class LogisimFileActions {
 
     private static class UnloadLibraries extends Action {
 
-        private Library[] libs;
+        private final Library[] libs;
 
         UnloadLibraries(Library[] libs) {
             this.libs = libs;
@@ -214,7 +214,7 @@ public class LogisimFileActions {
     private static class SetMainCircuit extends Action {
 
         private Circuit oldval;
-        private Circuit newval;
+        private final Circuit newval;
 
         SetMainCircuit(Circuit circuit) {
             newval = circuit;
@@ -239,9 +239,9 @@ public class LogisimFileActions {
 
     private static class RevertAttributeValue {
 
-        private AttributeSet attrs;
-        private Attribute<Object> attr;
-        private Object value;
+        private final AttributeSet attrs;
+        private final Attribute<Object> attr;
+        private final Object value;
 
         RevertAttributeValue(AttributeSet attrs, Attribute<Object> attr, Object value) {
             this.attrs = attrs;
@@ -254,7 +254,7 @@ public class LogisimFileActions {
 
         private Options oldOpts;
         private ArrayList<Library> libraries = null;
-        private ArrayList<RevertAttributeValue> attrValues;
+        private final ArrayList<RevertAttributeValue> attrValues;
 
         RevertDefaults() {
             libraries = null;

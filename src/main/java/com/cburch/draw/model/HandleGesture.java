@@ -7,10 +7,10 @@ import java.awt.event.InputEvent;
 
 public class HandleGesture {
 
-    private Handle handle;
-    private int deltaX;
-    private int deltaY;
-    private int modifiersEx;
+    private final Handle handle;
+    private final int deltaX;
+    private final int deltaY;
+    private final int modifiersEx;
     private Handle resultingHandle;
 
     public HandleGesture(Handle handle, int deltaX, int deltaY, int modifiersEx) {
@@ -23,7 +23,7 @@ public class HandleGesture {
     @Override
     public String toString() {
         return "HandleGesture[" + deltaX + "," + deltaY + ":" + handle.getObject() + "/" + handle.getX() + "," + handle.getY()
-                + "]";
+            + "]";
     }
 
     public Handle getHandle() {

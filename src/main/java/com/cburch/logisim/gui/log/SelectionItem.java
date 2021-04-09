@@ -16,10 +16,10 @@ import com.cburch.logisim.instance.StdAttr;
 
 class SelectionItem implements AttributeListener, CircuitListener {
 
-    private Model model;
-    private Component[] path;
-    private Component comp;
-    private Object option;
+    private final Model model;
+    private final Component[] path;
+    private final Component component;
+    private final Object option;
     private int radix = 2;
     private String shortDescriptor;
     private String longDescriptor;
@@ -27,16 +27,16 @@ class SelectionItem implements AttributeListener, CircuitListener {
     public SelectionItem(Model model, Component[] path, Component comp, Object option) {
         this.model = model;
         this.path = path;
-        this.comp = comp;
+        this.component = comp;
         this.option = option;
         computeDescriptors();
 
         if (path != null) {
             model.getCircuitState().getCircuit().addCircuitListener(this);
-            for (int i = 0; i < path.length; i++) {
-                path[i].getAttributeSet().addAttributeListener(this);
-                SubcircuitFactory circFact = (SubcircuitFactory) path[i].getFactory();
-                circFact.getSubcircuit().addCircuitListener(this);
+            for (Component component : path) {
+                component.getAttributeSet().addAttributeListener(this);
+                SubcircuitFactory subcircuitFactory = (SubcircuitFactory) component.getFactory();
+                subcircuitFactory.getSubcircuit().addCircuitListener(this);
             }
         }
         comp.getAttributeSet().addAttributeListener(this);
@@ -45,13 +45,12 @@ class SelectionItem implements AttributeListener, CircuitListener {
     private boolean computeDescriptors() {
         boolean changed = false;
 
-        Loggable log = (Loggable) comp.getFeature(Loggable.class);
+        Loggable log = (Loggable) component.getFeature(Loggable.class);
         String newShort = log.getLogName(option);
         if (newShort == null || newShort.equals("")) {
-            newShort = comp.getFactory().getDisplayName()
-                    + comp.getLocation().toString();
+            newShort = component.getFactory().getDisplayName() + component.getLocation().toString();
             if (option != null) {
-                newShort += "." + option.toString();
+                newShort += "." + option;
             }
         }
         if (!newShort.equals(shortDescriptor)) {
@@ -88,7 +87,7 @@ class SelectionItem implements AttributeListener, CircuitListener {
     }
 
     public Component getComponent() {
-        return comp;
+        return component;
     }
 
     public Object getOption() {
@@ -114,13 +113,13 @@ class SelectionItem implements AttributeListener, CircuitListener {
     }
 
     public Value fetchValue(CircuitState root) {
-        CircuitState cur = root;
-        for (int i = 0; i < path.length; i++) {
-            SubcircuitFactory circFact = (SubcircuitFactory) path[i].getFactory();
-            cur = circFact.getSubstate(cur, path[i]);
+        CircuitState circuitState = root;
+        for (Component value : path) {
+            SubcircuitFactory subcircuitFactory = (SubcircuitFactory) value.getFactory();
+            circuitState = subcircuitFactory.getSubstate(circuitState, value);
         }
-        Loggable log = (Loggable) comp.getFeature(Loggable.class);
-        return log == null ? Value.NIL : log.getLogValue(cur, option);
+        Loggable log = (Loggable) component.getFeature(Loggable.class);
+        return log == null ? Value.NIL : log.getLogValue(circuitState, option);
     }
 
     public void attributeListChanged(AttributeEvent e) {
@@ -135,25 +134,25 @@ class SelectionItem implements AttributeListener, CircuitListener {
     public void circuitChanged(CircuitEvent event) {
         int action = event.getAction();
         if (action == CircuitEvent.ACTION_CLEAR
-                || action == CircuitEvent.ACTION_REMOVE) {
-            Circuit circ = event.getCircuit();
-            Component circComp = null;
-            if (circ == model.getCircuitState().getCircuit()) {
-                circComp = path != null && path.length > 0 ? path[0] : comp;
+            || action == CircuitEvent.ACTION_REMOVE) {
+            Circuit circuit = event.getCircuit();
+            Component component = null;
+            if (circuit == model.getCircuitState().getCircuit()) {
+                component = path != null && path.length > 0 ? path[0] : this.component;
             } else if (path != null) {
                 for (int i = 0; i < path.length; i++) {
                     SubcircuitFactory circFact = (SubcircuitFactory) path[i].getFactory();
-                    if (circ == circFact.getSubcircuit()) {
-                        circComp = i + 1 < path.length ? path[i + 1] : comp;
+                    if (circuit == circFact.getSubcircuit()) {
+                        component = i + 1 < path.length ? path[i + 1] : this.component;
                     }
                 }
             }
-            if (circComp == null) {
+            if (component == null) {
                 return;
             }
 
             if (action == CircuitEvent.ACTION_REMOVE
-                    && event.getData() != circComp) {
+                && event.getData() != component) {
                 return;
             }
 

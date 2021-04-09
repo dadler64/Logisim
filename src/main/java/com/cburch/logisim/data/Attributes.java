@@ -33,7 +33,7 @@ public class Attributes {
     }
 
     public static Attribute<?> forOption(String name,
-            Object[] vals) {
+        Object[] vals) {
         return forOption(name, getter(name), vals);
     }
 
@@ -46,7 +46,7 @@ public class Attributes {
     }
 
     public static Attribute<Integer> forIntegerRange(String name,
-            int start, int end) {
+        int start, int end) {
         return forIntegerRange(name, getter(name), start, end);
     }
 
@@ -90,7 +90,7 @@ public class Attributes {
     }
 
     public static <V> Attribute<V> forOption(String name, StringGetter disp,
-            V[] vals) {
+        V[] vals) {
         return new OptionAttribute<>(name, disp, vals);
     }
 
@@ -103,7 +103,7 @@ public class Attributes {
     }
 
     public static Attribute<Integer> forIntegerRange(String name, StringGetter disp,
-            int start, int end) {
+        int start, int end) {
         return new IntegerRangeAttribute(name, disp, start, end);
     }
 
@@ -141,7 +141,7 @@ public class Attributes {
 
     private static class ConstantGetter implements StringGetter {
 
-        private String str;
+        private final String str;
 
         public ConstantGetter(String str) {
             this.str = str;
@@ -170,7 +170,7 @@ public class Attributes {
     }
 
     private static class OptionComboRenderer<V>
-            extends BasicComboBoxRenderer {
+        extends BasicComboBoxRenderer {
 
         Attribute<V> attr;
 
@@ -180,10 +180,10 @@ public class Attributes {
 
         @Override
         public Component getListCellRendererComponent(JList list,
-                Object value, int index, boolean isSelected,
-                boolean cellHasFocus) {
+            Object value, int index, boolean isSelected,
+            boolean cellHasFocus) {
             Component ret = super.getListCellRendererComponent(list,
-                    value, index, isSelected, cellHasFocus);
+                value, index, isSelected, cellHasFocus);
             if (ret instanceof JLabel) {
                 @SuppressWarnings("unchecked")
                 V val = (V) value;
@@ -195,10 +195,10 @@ public class Attributes {
 
     private static class OptionAttribute<V> extends Attribute<V> {
 
-        private V[] vals;
+        private final V[] vals;
 
         private OptionAttribute(String name, StringGetter disp,
-                V[] vals) {
+            V[] vals) {
             super(name, disp);
             this.vals = vals;
         }
@@ -214,9 +214,9 @@ public class Attributes {
 
         @Override
         public V parse(String value) {
-            for (int i = 0; i < vals.length; i++) {
-                if (value.equals(vals[i].toString())) {
-                    return vals[i];
+            for (V val : vals) {
+                if (value.equals(val.toString())) {
+                    return val;
                 }
             }
             throw new NumberFormatException("value not among choices");
@@ -224,7 +224,7 @@ public class Attributes {
 
         @Override
         public java.awt.Component getCellEditor(Object value) {
-            JComboBox combo = new JComboBox(vals);
+            JComboBox<V> combo = new JComboBox<>(vals);
             combo.setRenderer(new OptionComboRenderer<>(this));
             if (value == null) {
                 combo.setSelectedIndex(-1);
@@ -297,7 +297,7 @@ public class Attributes {
 
     private static class BooleanAttribute extends OptionAttribute<Boolean> {
 
-        private static Boolean[] vals = {Boolean.TRUE, Boolean.FALSE};
+        private static final Boolean[] vals = {Boolean.TRUE, Boolean.FALSE};
 
         private BooleanAttribute(String name, StringGetter disp) {
             super(name, disp, vals);
@@ -314,7 +314,7 @@ public class Attributes {
 
         @Override
         public Boolean parse(String value) {
-            Boolean b = Boolean.valueOf(value);
+            boolean b = Boolean.parseBoolean(value);
             return vals[b ? 0 : 1];
         }
     }
@@ -354,7 +354,7 @@ public class Attributes {
                         options[i - start] = i;
                     }
                 }
-                JComboBox combo = new JComboBox(options);
+                JComboBox<Integer> combo = new JComboBox<>(options);
                 if (value == null) {
                     combo.setSelectedIndex(-1);
                 } else {
@@ -367,11 +367,11 @@ public class Attributes {
 
     private static class DirectionAttribute extends OptionAttribute<Direction> {
 
-        private static Direction[] vals = {
-                Direction.NORTH,
-                Direction.SOUTH,
-                Direction.EAST,
-                Direction.WEST,
+        private static final Direction[] vals = {
+            Direction.NORTH,
+            Direction.SOUTH,
+            Direction.EAST,
+            Direction.WEST,
         };
 
         public DirectionAttribute(String name, StringGetter disp) {
@@ -401,15 +401,15 @@ public class Attributes {
                 return "???";
             }
             return f.getFamily()
-                    + " " + FontUtil.toStyleDisplayString(f.getStyle())
-                    + " " + f.getSize();
+                + " " + FontUtil.toStyleDisplayString(f.getStyle())
+                + " " + f.getSize();
         }
 
         @Override
         public String toStandardString(Font f) {
             return f.getFamily()
-                    + " " + FontUtil.toStyleStandardString(f.getStyle())
-                    + " " + f.getSize();
+                + " " + FontUtil.toStyleStandardString(f.getStyle())
+                + " " + f.getSize();
         }
 
         @Override
@@ -424,7 +424,7 @@ public class Attributes {
     }
 
     private static class FontChooser extends JFontChooser
-            implements JInputComponent {
+        implements JInputComponent {
 
         FontChooser(Font initial) {
             super(initial);
@@ -497,7 +497,7 @@ public class Attributes {
     }
 
     private static class ColorChooser extends ColorPicker
-            implements JInputComponent {
+        implements JInputComponent {
 
         ColorChooser(Color initial) {
             if (initial != null) {

@@ -98,12 +98,12 @@ public class Analyze {
             String defaultList;
             if (Pin.FACTORY.isInputPin(pin)) {
                 defaultList = Strings.get("defaultInputLabels");
-                if (defaultList.indexOf(",") < 0) {
+                if (!defaultList.contains(",")) {
                     defaultList = "a,b,c,d,e,f,g,h";
                 }
             } else {
                 defaultList = Strings.get("defaultOutputLabels");
-                if (defaultList.indexOf(",") < 0) {
+                if (!defaultList.contains(",")) {
                     defaultList = "x,y,z,u,v,w,s,t";
                 }
             }
@@ -168,7 +168,7 @@ public class Analyze {
             }
         }
         if (end != null && ret.length() > 0) {
-            ret.append(end.toString());
+            ret.append(end);
         }
         if (ret.length() == 0) {
             return null;
@@ -186,7 +186,7 @@ public class Analyze {
      * arise.
      */
     public static void computeExpression(AnalyzerModel model, Circuit circuit,
-            Map<Instance, String> pinNames) throws AnalyzeException {
+        Map<Instance, String> pinNames) throws AnalyzeException {
         ExpressionMap expressionMap = new ExpressionMap(circuit);
 
         ArrayList<String> inputNames = new ArrayList<>();
@@ -229,13 +229,13 @@ public class Analyze {
         for (int i = 0; i < outputPins.size(); i++) {
             Instance pin = outputPins.get(i);
             model.getOutputExpressions().setExpression(outputNames.get(i),
-                    expressionMap.get(pin.getLocation()));
+                expressionMap.get(pin.getLocation()));
         }
     }
 
     // propagates expressions down wires
     private static void propagateWires(ExpressionMap expressionMap,
-            HashSet<Location> pointsToProcess) throws AnalyzeException {
+        HashSet<Location> pointsToProcess) throws AnalyzeException {
         expressionMap.currentCause = null;
         for (Location p : pointsToProcess) {
             Expression e = expressionMap.get(p);
@@ -262,7 +262,7 @@ public class Analyze {
 
     // computes outputs of affected components
     private static HashSet<Component> getDirtyComponents(Circuit circuit,
-            Set<Location> pointsToProcess) throws AnalyzeException {
+        Set<Location> pointsToProcess) throws AnalyzeException {
         HashSet<Component> dirtyComponents = new HashSet<>();
         for (Location point : pointsToProcess) {
             for (Component comp : circuit.getNonWires(point)) {
@@ -273,10 +273,10 @@ public class Analyze {
     }
 
     private static void propagateComponents(ExpressionMap expressionMap,
-            Collection<Component> components) throws AnalyzeException {
+        Collection<Component> components) throws AnalyzeException {
         for (Component comp : components) {
             ExpressionComputer computer
-                    = (ExpressionComputer) comp.getFeature(ExpressionComputer.class);
+                = (ExpressionComputer) comp.getFeature(ExpressionComputer.class);
             if (computer != null) {
                 try {
                     expressionMap.currentCause = comp;
@@ -298,7 +298,7 @@ public class Analyze {
      * expression map are self-referential; if so, return it.
      */
     private static Expression checkForCircularExpressions(ExpressionMap expressionMap)
-            throws AnalyzeException {
+        throws AnalyzeException {
         for (Location point : expressionMap.dirtyPoints) {
             Expression expr = expressionMap.get(point);
             if (expr.isCircular()) {
@@ -312,7 +312,7 @@ public class Analyze {
      * Returns a truth table corresponding to the circuit.
      */
     public static void computeTable(AnalyzerModel model, Project proj,
-            Circuit circuit, Map<Instance, String> pinLabels) {
+        Circuit circuit, Map<Instance, String> pinLabels) {
         ArrayList<Instance> inputPins = new ArrayList<>();
         ArrayList<String> inputNames = new ArrayList<>();
         ArrayList<Instance> outputPins = new ArrayList<>();
@@ -385,9 +385,9 @@ public class Analyze {
 
     private static class ExpressionMap extends HashMap<Location, Expression> {
 
-        private Circuit circuit;
-        private Set<Location> dirtyPoints = new HashSet<>();
-        private Map<Location, Component> causes = new HashMap<>();
+        private final Circuit circuit;
+        private final Set<Location> dirtyPoints = new HashSet<>();
+        private final Map<Location, Component> causes = new HashMap<>();
         private Component currentCause = null;
 
         ExpressionMap(Circuit circuit) {

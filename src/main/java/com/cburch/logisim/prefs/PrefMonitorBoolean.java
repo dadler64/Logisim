@@ -8,7 +8,7 @@ import java.util.prefs.Preferences;
 
 class PrefMonitorBoolean extends AbstractPrefMonitor<Boolean> {
 
-    private boolean defaultValue;
+    private final boolean defaultValue;
     private boolean value;
 
     PrefMonitorBoolean(String name, boolean defaultValue) {

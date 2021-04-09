@@ -8,19 +8,19 @@ import com.cburch.logisim.util.GraphicsUtil;
 
 class SplitterParameters {
 
-    private int dxEnd0; // location of split end 0 relative to origin
-    private int dyEnd0;
-    private int ddxEnd; // distance from split end i to split end (i + 1)
-    private int ddyEnd;
-    private int dxEndSpine; // distance from split end to spine
-    private int dyEndSpine;
-    private int dxSpine0; // distance from origin to far end of spine
-    private int dySpine0;
-    private int dxSpine1; // distance from origin to near end of spine
-    private int dySpine1;
-    private int textAngle; // angle to rotate text
-    private int halign; // justification of text
-    private int valign;
+    private final int dxEnd0; // location of split end 0 relative to origin
+    private final int dyEnd0;
+    private final int ddxEnd; // distance from split end i to split end (i + 1)
+    private final int ddyEnd;
+    private final int dxEndSpine; // distance from split end to spine
+    private final int dyEndSpine;
+    private final int dxSpine0; // distance from origin to far end of spine
+    private final int dySpine0;
+    private final int dxSpine1; // distance from origin to near end of spine
+    private final int dySpine1;
+    private final int textAngle; // angle to rotate text
+    private final int hAlign; // justification of text
+    private final int vAlign;
 
     SplitterParameters(SplitterAttributes attrs) {
 
@@ -52,8 +52,8 @@ class SplitterParameters {
             dxSpine1 = m * justify * offs;
             dySpine1 = -m * offs;
             textAngle = 90;
-            halign = m > 0 ? GraphicsUtil.H_RIGHT : GraphicsUtil.H_LEFT;
-            valign = m * justify <= 0 ? GraphicsUtil.V_BASELINE : GraphicsUtil.V_TOP;
+            hAlign = m > 0 ? GraphicsUtil.H_RIGHT : GraphicsUtil.H_LEFT;
+            vAlign = m * justify <= 0 ? GraphicsUtil.V_BASELINE : GraphicsUtil.V_TOP;
         } else { // > or <
             int m = facing == Direction.WEST ? -1 : 1;
             dxEnd0 = m * width;
@@ -67,8 +67,8 @@ class SplitterParameters {
             dxSpine1 = m * offs;
             dySpine1 = m * justify * offs;
             textAngle = 0;
-            halign = m > 0 ? GraphicsUtil.H_LEFT : GraphicsUtil.H_RIGHT;
-            valign = m * justify < 0 ? GraphicsUtil.V_TOP : GraphicsUtil.V_BASELINE;
+            hAlign = m > 0 ? GraphicsUtil.H_LEFT : GraphicsUtil.H_RIGHT;
+            vAlign = m * justify < 0 ? GraphicsUtil.V_TOP : GraphicsUtil.V_BASELINE;
         }
     }
 
@@ -117,10 +117,10 @@ class SplitterParameters {
     }
 
     public int getTextHorzAlign() {
-        return halign;
+        return hAlign;
     }
 
     public int getTextVertAlign() {
-        return valign;
+        return vAlign;
     }
 }

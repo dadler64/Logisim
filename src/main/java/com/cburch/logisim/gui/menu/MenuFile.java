@@ -18,38 +18,38 @@ import javax.swing.KeyStroke;
 
 class MenuFile extends Menu implements ActionListener {
 
-    private LogisimMenuBar menubar;
-    private JMenuItem newi = new JMenuItem();
-    private JMenuItem open = new JMenuItem();
-    private OpenRecent openRecent;
-    private JMenuItem close = new JMenuItem();
-    private JMenuItem save = new JMenuItem();
-    private JMenuItem saveAs = new JMenuItem();
-    private MenuItemImpl print = new MenuItemImpl(this, LogisimMenuBar.PRINT);
-    private MenuItemImpl exportImage = new MenuItemImpl(this, LogisimMenuBar.EXPORT_IMAGE);
-    private JMenuItem prefs = new JMenuItem();
-    private JMenuItem quit = new JMenuItem();
+    private final LogisimMenuBar menubar;
+    private final JMenuItem newi = new JMenuItem();
+    private final JMenuItem open = new JMenuItem();
+    private final OpenRecent openRecent;
+    private final JMenuItem close = new JMenuItem();
+    private final JMenuItem save = new JMenuItem();
+    private final JMenuItem saveAs = new JMenuItem();
+    private final MenuItemImpl print = new MenuItemImpl(this, LogisimMenuBar.PRINT);
+    private final MenuItemImpl exportImage = new MenuItemImpl(this, LogisimMenuBar.EXPORT_IMAGE);
+    private final JMenuItem prefs = new JMenuItem();
+    private final JMenuItem quit = new JMenuItem();
 
     public MenuFile(LogisimMenuBar menubar) {
         this.menubar = menubar;
         openRecent = new OpenRecent(menubar);
 
-        int menuMask = getToolkit().getMenuShortcutKeyMask();
+        int menuMask = getToolkit().getMenuShortcutKeyMaskEx();
 
         newi.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_N, menuMask));
+            KeyEvent.VK_N, menuMask));
         open.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_O, menuMask));
+            KeyEvent.VK_O, menuMask));
         close.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_W, menuMask | InputEvent.SHIFT_MASK));
+            KeyEvent.VK_W, menuMask | InputEvent.SHIFT_DOWN_MASK));
         save.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, menuMask));
+            KeyEvent.VK_S, menuMask));
         saveAs.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, menuMask | InputEvent.SHIFT_MASK));
+            KeyEvent.VK_S, menuMask | InputEvent.SHIFT_DOWN_MASK));
         print.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_P, menuMask));
+            KeyEvent.VK_P, menuMask));
         quit.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_Q, menuMask));
+            KeyEvent.VK_Q, menuMask));
 
         add(newi);
         add(open);
@@ -70,7 +70,7 @@ class MenuFile extends Menu implements ActionListener {
             add(quit);
         }
 
-        Project proj = menubar.getProject();
+        Project proj = menubar.getMenuProject();
         newi.addActionListener(this);
         open.addActionListener(this);
         if (proj == null) {
@@ -110,7 +110,7 @@ class MenuFile extends Menu implements ActionListener {
 
     public void actionPerformed(ActionEvent event) {
         Object eventSource = event.getSource();
-        Project project = menubar.getProject();
+        Project project = menubar.getMenuProject();
         if (eventSource == newi) {
             ProjectActions.doNew(project);
         } else if (eventSource == open) {

@@ -22,20 +22,20 @@ public class ComponentDrawContext {
     private static final int PIN_OFFS = 2;
     private static final int PIN_RAD = 4;
 
-    private java.awt.Component dest;
-    private Circuit circuit;
-    private CircuitState circuitState;
-    private Graphics base;
+    private final java.awt.Component dest;
+    private final Circuit circuit;
+    private final CircuitState circuitState;
+    private final Graphics base;
+    private final boolean printView;
+    private final InstancePainter instancePainter;
     private Graphics g;
     private boolean showState;
     private boolean showColor;
-    private boolean printView;
     private WireSet highlightedWires;
-    private InstancePainter instancePainter;
 
     public ComponentDrawContext(java.awt.Component dest,
-            Circuit circuit, CircuitState circuitState,
-            Graphics base, Graphics g, boolean printView) {
+        Circuit circuit, CircuitState circuitState,
+        Graphics base, Graphics g, boolean printView) {
         this.dest = dest;
         this.circuit = circuit;
         this.circuitState = circuitState;
@@ -49,8 +49,8 @@ public class ComponentDrawContext {
     }
 
     public ComponentDrawContext(java.awt.Component dest,
-            Circuit circuit, CircuitState circuitState,
-            Graphics base, Graphics g) {
+        Circuit circuit, CircuitState circuitState,
+        Graphics base, Graphics g) {
         this(dest, circuit, circuitState, base, g, false);
     }
 
@@ -118,7 +118,7 @@ public class ComponentDrawContext {
         g.setColor(Color.BLACK);
         Bounds bds = comp.getBounds();
         g.drawRect(bds.getX(), bds.getY(),
-                bds.getWidth(), bds.getHeight());
+            bds.getWidth(), bds.getHeight());
         GraphicsUtil.switchToWidth(g, 1);
     }
 
@@ -129,11 +129,11 @@ public class ComponentDrawContext {
     public void drawRectangle(Component comp, String label) {
         Bounds bds = comp.getBounds(g);
         drawRectangle(bds.getX(), bds.getY(), bds.getWidth(),
-                bds.getHeight(), label);
+            bds.getHeight(), label);
     }
 
     public void drawRectangle(int x, int y,
-            int width, int height, String label) {
+        int width, int height, String label) {
         GraphicsUtil.switchToWidth(g, 2);
         g.drawRect(x, y, width, height);
         if (label != null && !label.equals("")) {
@@ -141,23 +141,23 @@ public class ComponentDrawContext {
             int lwid = fm.stringWidth(label);
             if (height > 20) { // centered at top edge
                 g.drawString(label, x + (width - lwid) / 2,
-                        y + 2 + fm.getAscent());
+                    y + 2 + fm.getAscent());
             } else { // centered overall
                 g.drawString(label, x + (width - lwid) / 2,
-                        y + (height + fm.getAscent()) / 2 - 1);
+                    y + (height + fm.getAscent()) / 2 - 1);
             }
         }
     }
 
     public void drawRectangle(ComponentFactory source, int x, int y,
-            AttributeSet attrs, String label) {
+        AttributeSet attrs, String label) {
         Bounds bds = source.getOffsetBounds(attrs);
         drawRectangle(source, x + bds.getX(), y + bds.getY(), bds.getWidth(),
-                bds.getHeight(), label);
+            bds.getHeight(), label);
     }
 
     public void drawRectangle(ComponentFactory source, int x, int y,
-            int width, int height, String label) {
+        int width, int height, String label) {
         GraphicsUtil.switchToWidth(g, 2);
         g.drawRect(x + 1, y + 1, width - 1, height - 1);
         if (label != null && !label.equals("")) {
@@ -165,10 +165,10 @@ public class ComponentDrawContext {
             int lwid = fm.stringWidth(label);
             if (height > 20) { // centered at top edge
                 g.drawString(label, x + (width - lwid) / 2,
-                        y + 2 + fm.getAscent());
+                    y + 2 + fm.getAscent());
             } else { // centered overall
                 g.drawString(label, x + (width - lwid) / 2,
-                        y + (height + fm.getAscent()) / 2 - 1);
+                    y + (height + fm.getAscent()) / 2 - 1);
             }
         }
     }
@@ -179,7 +179,7 @@ public class ComponentDrawContext {
     }
 
     public void drawPin(Component comp, int i,
-            String label, Direction dir) {
+        String label, Direction dir) {
         Color curColor = g.getColor();
         if (i < 0 || i >= comp.getEnds().size()) {
             return;
@@ -198,16 +198,16 @@ public class ComponentDrawContext {
         g.setColor(curColor);
         if (dir == Direction.EAST) {
             GraphicsUtil.drawText(g, label, x + 3, y,
-                    GraphicsUtil.H_LEFT, GraphicsUtil.V_CENTER);
+                GraphicsUtil.H_LEFT, GraphicsUtil.V_CENTER);
         } else if (dir == Direction.WEST) {
             GraphicsUtil.drawText(g, label, x - 3, y,
-                    GraphicsUtil.H_RIGHT, GraphicsUtil.V_CENTER);
+                GraphicsUtil.H_RIGHT, GraphicsUtil.V_CENTER);
         } else if (dir == Direction.SOUTH) {
             GraphicsUtil.drawText(g, label, x, y - 3,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
         } else if (dir == Direction.NORTH) {
             GraphicsUtil.drawText(g, label, x, y + 3,
-                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+                GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
         }
     }
 
@@ -241,7 +241,7 @@ public class ComponentDrawContext {
     }
 
     public void drawClock(Component comp, int i,
-            Direction dir) {
+        Direction dir) {
         Color curColor = g.getColor();
         g.setColor(Color.BLACK);
         GraphicsUtil.switchToWidth(g, 2);

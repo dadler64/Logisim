@@ -70,9 +70,8 @@ class SvgCreator {
         Location end0 = curve.getEnd0();
         Location end1 = curve.getEnd1();
         Location control = curve.getControl();
-        element.setAttribute("d", "M" + end0.getX() + "," + end0.getY()
-                + " Q" + control.getX() + "," + control.getY()
-                + " " + end1.getX() + "," + end1.getY());
+        element.setAttribute("d", "M" + end0.getX() + "," + end0.getY() + " Q" + control.getX() + ","
+            + control.getY() + " " + end1.getX() + "," + end1.getY());
         populateFill(element, curve);
         return element;
     }

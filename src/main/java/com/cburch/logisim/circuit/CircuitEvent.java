@@ -14,9 +14,9 @@ public class CircuitEvent {
     public final static int ACTION_CLEAR = 5; // entire circuit cleared
     public final static int TRANSACTION_DONE = 6;
 
-    private int action;
-    private Circuit circuit;
-    private Object data;
+    private final int action;
+    private final Circuit circuit;
+    private final Object data;
 
     CircuitEvent(int action, Circuit circuit, Object data) {
         this.action = action;

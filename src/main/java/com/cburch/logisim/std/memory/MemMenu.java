@@ -21,92 +21,92 @@ import javax.swing.JPopupMenu;
 
 class MemMenu implements ActionListener, MenuExtender {
 
-    private Mem factory;
-    private Instance instance;
-    private Project proj;
+    private final Mem factory;
+    private final Instance instance;
+    private Project project;
     private Frame frame;
-    private CircuitState circState;
-    private JMenuItem edit;
-    private JMenuItem clear;
-    private JMenuItem load;
-    private JMenuItem save;
+    private CircuitState circuitState;
+    private JMenuItem editItem;
+    private JMenuItem clearItem;
+    private JMenuItem loadItem;
+    private JMenuItem saveItem;
 
     MemMenu(Mem factory, Instance instance) {
         this.factory = factory;
         this.instance = instance;
     }
 
-    public void configureMenu(JPopupMenu menu, Project proj) {
-        this.proj = proj;
-        this.frame = proj.getFrame();
-        this.circState = proj.getCircuitState();
+    public void configureMenu(JPopupMenu menu, Project project) {
+        this.project = project;
+        this.frame = project.getFrame();
+        this.circuitState = project.getCircuitState();
 
         Object attrs = instance.getAttributeSet();
         if (attrs instanceof RomAttributes) {
-            ((RomAttributes) attrs).setProject(proj);
+            ((RomAttributes) attrs).setProject(project);
         }
 
-        boolean enabled = circState != null;
-        edit = createItem(enabled, Strings.get("ramEditMenuItem"));
-        clear = createItem(enabled, Strings.get("ramClearMenuItem"));
-        load = createItem(enabled, Strings.get("ramLoadMenuItem"));
-        save = createItem(enabled, Strings.get("ramSaveMenuItem"));
+        boolean enabled = circuitState != null;
+        editItem = createItem(enabled, Strings.get("ramEditMenuItem"));
+        clearItem = createItem(enabled, Strings.get("ramClearMenuItem"));
+        loadItem = createItem(enabled, Strings.get("ramLoadMenuItem"));
+        saveItem = createItem(enabled, Strings.get("ramSaveMenuItem"));
 
         menu.addSeparator();
-        menu.add(edit);
-        menu.add(clear);
-        menu.add(load);
-        menu.add(save);
+        menu.add(editItem);
+        menu.add(clearItem);
+        menu.add(loadItem);
+        menu.add(saveItem);
     }
 
     private JMenuItem createItem(boolean enabled, String label) {
-        JMenuItem ret = new JMenuItem(label);
-        ret.setEnabled(enabled);
-        ret.addActionListener(this);
-        return ret;
+        JMenuItem menuItem = new JMenuItem(label);
+        menuItem.setEnabled(enabled);
+        menuItem.addActionListener(this);
+        return menuItem;
     }
 
     public void actionPerformed(ActionEvent evt) {
-        Object src = evt.getSource();
-        if (src == edit) {
+        Object source = evt.getSource();
+        if (source == editItem) {
             doEdit();
-        } else if (src == clear) {
+        } else if (source == clearItem) {
             doClear();
-        } else if (src == load) {
+        } else if (source == loadItem) {
             doLoad();
-        } else if (src == save) {
+        } else if (source == saveItem) {
             doSave();
         }
     }
 
     private void doEdit() {
-        MemState s = factory.getState(instance, circState);
-        if (s == null) {
+        MemState state = factory.getState(instance, circuitState);
+        if (state == null) {
             return;
         }
-        HexFrame frame = factory.getHexFrame(proj, instance, circState);
+        HexFrame frame = factory.getHexFrame(project, instance, circuitState);
         frame.setVisible(true);
         frame.toFront();
     }
 
     private void doClear() {
-        MemState s = factory.getState(instance, circState);
-        boolean isAllZero = s.getContents().isClear();
+        MemState state = factory.getState(instance, circuitState);
+        boolean isAllZero = state.getContents().isClear();
         if (isAllZero) {
             return;
         }
 
         int choice = JOptionPane.showConfirmDialog(frame,
-                Strings.get("ramConfirmClearMsg"),
-                Strings.get("ramConfirmClearTitle"),
-                JOptionPane.YES_NO_OPTION);
+            Strings.get("ramConfirmClearMsg"),
+            Strings.get("ramConfirmClearTitle"),
+            JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
-            s.getContents().clear();
+            state.getContents().clear();
         }
     }
 
     private void doLoad() {
-        JFileChooser chooser = proj.createChooser();
+        JFileChooser chooser = project.createChooser();
         File oldSelected = factory.getCurrentImage(instance);
         if (oldSelected != null) {
             chooser.setSelectedFile(oldSelected);
@@ -116,18 +116,20 @@ class MemMenu implements ActionListener, MenuExtender {
         if (choice == JFileChooser.APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
             try {
-                factory.loadImage(circState.getInstanceState(instance), f);
+                factory.loadImage(circuitState.getInstanceState(instance), f);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(frame, e.getMessage(),
-                        Strings.get("ramLoadErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                    e.getMessage(),
+                    Strings.get("ramLoadErrorTitle"),
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void doSave() {
-        MemState s = factory.getState(instance, circState);
+        MemState state = factory.getState(instance, circuitState);
 
-        JFileChooser chooser = proj.createChooser();
+        JFileChooser chooser = project.createChooser();
         File oldSelected = factory.getCurrentImage(instance);
         if (oldSelected != null) {
             chooser.setSelectedFile(oldSelected);
@@ -137,11 +139,13 @@ class MemMenu implements ActionListener, MenuExtender {
         if (choice == JFileChooser.APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
             try {
-                HexFile.save(f, s.getContents());
+                HexFile.save(f, state.getContents());
                 factory.setCurrentImage(instance, f);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(frame, e.getMessage(),
-                        Strings.get("ramSaveErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                    e.getMessage(),
+                    Strings.get("ramSaveErrorTitle"),
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
     }

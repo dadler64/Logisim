@@ -11,8 +11,8 @@ class TickCounter implements SimulatorListener {
 
     private static final int QUEUE_LENGTH = 1000;
 
-    private long[] queueTimes;
-    private double[] queueRates;
+    private final long[] queueTimes;
+    private final double[] queueRates;
     private int queueStart;
     private int queueSize;
     private double tickFrequency;
@@ -135,7 +135,7 @@ class TickCounter implements SimulatorListener {
 
                 if (min >= 1000.0) {
                     return Strings.get("tickRateKHz",
-                            roundString(rate / 1000.0, min / 1000.0));
+                        roundString(rate / 1000.0, min / 1000.0));
                 } else {
                     return Strings.get("tickRateHz", roundString(rate, min));
                 }

@@ -20,7 +20,7 @@ import java.util.Set;
 
 class PortManager {
 
-    private CircuitAppearance appearance;
+    private final CircuitAppearance appearance;
     private boolean doingUpdate;
 
     PortManager(CircuitAppearance appearance) {
@@ -29,16 +29,16 @@ class PortManager {
     }
 
     private static Location computeDefaultLocation(CircuitAppearance appear,
-            Instance pin, Map<Instance, AppearancePort> others) {
+        Instance pin, Map<Instance, AppearancePort> others) {
         // Determine which locations are being used in canvas, and look for
         // which instances facing the same way in layout
-        Set<Location> usedLocs = new HashSet<>();
+        Set<Location> usedLocations = new HashSet<>();
         List<Instance> sameWay = new ArrayList<>();
         Direction facing = pin.getAttributeValue(StdAttr.FACING);
         for (Map.Entry<Instance, AppearancePort> entry : others.entrySet()) {
             Instance pin2 = entry.getKey();
-            Location loc = entry.getValue().getLocation();
-            usedLocs.add(loc);
+            Location location = entry.getValue().getLocation();
+            usedLocations.add(location);
             if (pin2.getAttributeValue(StdAttr.FACING) == facing) {
                 sameWay.add(pin2);
             }
@@ -72,13 +72,13 @@ class PortManager {
             Location loc = others.get(neighbor).getLocation();
             do {
                 loc = loc.translate(dx, dy);
-            } while (usedLocs.contains(loc));
+            } while (usedLocations.contains(loc));
             if (loc.getX() >= 0 && loc.getY() >= 0) {
                 return loc;
             }
             do {
                 loc = loc.translate(-dx, -dy);
-            } while (usedLocs.contains(loc));
+            } while (usedLocations.contains(loc));
             return loc;
         }
 
@@ -108,7 +108,7 @@ class PortManager {
         x = (x + 9) / 10 * 10; // round coordinates up to ensure they're on grid
         y = (y + 9) / 10 * 10;
         Location loc = Location.create(x, y);
-        while (usedLocs.contains(loc)) {
+        while (usedLocations.contains(loc)) {
             loc = loc.translate(dx, dy);
         }
         return loc;
@@ -119,7 +119,7 @@ class PortManager {
     }
 
     void updatePorts(Set<Instance> adds, Set<Instance> removes,
-            Map<Instance, Instance> replaces, Collection<Instance> allPins) {
+        Map<Instance, Instance> replaces, Collection<Instance> allPins) {
         if (appearance.isDefaultAppearance()) {
             appearance.recomputePorts();
         } else if (!doingUpdate) {
@@ -135,7 +135,7 @@ class PortManager {
     }
 
     private void performUpdate(Set<Instance> adds, Set<Instance> removes,
-            Map<Instance, Instance> replaces, Collection<Instance> allPins) {
+        Map<Instance, Instance> replaces, Collection<Instance> allPins) {
         // Find the current objects corresponding to pins
         Map<Instance, AppearancePort> oldObjects;
         oldObjects = new HashMap<>();

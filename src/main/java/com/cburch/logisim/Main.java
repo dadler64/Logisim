@@ -27,11 +27,10 @@ public class Main {
 
     public static final LogisimVersion VERSION = LogisimVersion.get(2, 8, 0);
     public static final String VERSION_NAME = VERSION.toString();
-    public static final int COPYRIGHT_YEAR = 2019;
-    public static final Release RELEASE_TYPE = Release.ALPHA;
+    public static final int COPYRIGHT_YEAR = 2021;
+    public static final Release RELEASE_TYPE = Release.RELEASE;
 
     public static void main(String[] args) {
-//        Logger.start(); // Start the logger
 
         Startup startup = Startup.parseArgs(args);
         if (startup == null) {

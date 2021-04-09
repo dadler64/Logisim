@@ -17,14 +17,14 @@ public abstract class AbstractTool extends CanvasTool {
 
     public static AbstractTool[] getTools(DrawingAttributeSet attributes) {
         return new AbstractTool[]{
-                new SelectTool(),
-                new LineTool(attributes),
-                new CurveTool(attributes),
-                new PolyTool(false, attributes),
-                new RectangleTool(attributes),
-                new RoundRectangleTool(attributes),
-                new OvalTool(attributes),
-                new PolyTool(true, attributes),
+            new SelectTool(),
+            new LineTool(attributes),
+            new CurveTool(attributes),
+            new PolyTool(false, attributes),
+            new RectangleTool(attributes),
+            new RoundRectangleTool(attributes),
+            new OvalTool(attributes),
+            new PolyTool(true, attributes),
         };
     }
 

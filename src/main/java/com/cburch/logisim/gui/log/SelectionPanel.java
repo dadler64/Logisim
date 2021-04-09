@@ -23,14 +23,14 @@ import javax.swing.tree.TreePath;
 
 class SelectionPanel extends LogPanel {
 
-    private Listener listener = new Listener();
-    private ComponentSelector selector;
-    private JButton addToolButton;
-    private JButton changeBaseButton;
-    private JButton moveUpButton;
-    private JButton moveDownButton;
-    private JButton removeButton;
-    private SelectionList list;
+    private final Listener listener = new Listener();
+    private final ComponentSelector selector;
+    private final JButton addToolButton;
+    private final JButton changeBaseButton;
+    private final JButton moveUpButton;
+    private final JButton moveDownButton;
+    private final JButton removeButton;
+    private final SelectionList list;
 
     public SelectionPanel(LogFrame window) {
         super(window);
@@ -64,11 +64,11 @@ class SelectionPanel extends LogPanel {
         GridBagConstraints constraints = new GridBagConstraints();
         setLayout(layout);
         JScrollPane explorerPane = new JScrollPane(selector,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         JScrollPane listPane = new JScrollPane(list,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
@@ -119,8 +119,8 @@ class SelectionPanel extends LogPanel {
     }
 
     private class Listener extends MouseAdapter
-            implements ActionListener, TreeSelectionListener,
-            ListSelectionListener {
+        implements ActionListener, TreeSelectionListener,
+        ListSelectionListener {
 
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
@@ -157,8 +157,9 @@ class SelectionPanel extends LogPanel {
                 doMove(1);
             } else if (source.equals(removeButton)) {
                 Selection selection = getSelection();
-                @SuppressWarnings("deprecation")
-                Object[] objectsToRemove = list.getSelectedValues();
+//                @SuppressWarnings("deprecation")
+//                Object[] objectsToRemove = list.getSelectedValues();
+                Object[] objectsToRemove = list.getSelectedValuesList().toArray();
                 boolean changed = false;
                 for (Object object : objectsToRemove) {
                     int index = selection.indexOf((SelectionItem) object);

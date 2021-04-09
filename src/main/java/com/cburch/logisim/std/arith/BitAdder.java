@@ -25,18 +25,18 @@ import java.awt.Graphics;
 public class BitAdder extends InstanceFactory {
 
     static final Attribute<Integer> NUM_INPUTS
-            = Attributes.forIntegerRange("inputs", Strings.getter("gateInputsAttr"), 1, 32);
+        = Attributes.forIntegerRange("inputs", Strings.getter("gateInputsAttr"), 1, 32);
 
     public BitAdder() {
         super("BitAdder", Strings.getter("bitAdderComponent"));
         setAttributes(new Attribute[]{
-                StdAttr.WIDTH, NUM_INPUTS
+            StdAttr.WIDTH, NUM_INPUTS
         }, new Object[]{
-                BitWidth.create(8), 1
+            BitWidth.create(8), 1
         });
         setKeyConfigurator(JoinedConfigurator.create(
-                new IntegerConfigurator(NUM_INPUTS, 1, 32, 0),
-                new BitWidthConfigurator(StdAttr.WIDTH)));
+            new IntegerConfigurator(NUM_INPUTS, 1, 32, 0),
+            new BitWidthConfigurator(StdAttr.WIDTH)));
         setIconName("bitadder.gif");
     }
 

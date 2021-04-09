@@ -23,25 +23,25 @@ import java.util.Collections;
 import java.util.List;
 
 class AppearanceToolbarModel extends AbstractToolbarModel
-        implements PropertyChangeListener {
+    implements PropertyChangeListener {
 
-    private Canvas canvas;
-    private List<ToolbarItem> items;
+    private final Canvas canvas;
+    private final List<ToolbarItem> items;
 
     public AppearanceToolbarModel(AbstractTool selectTool, Canvas canvas,
-            DrawingAttributeSet attrs) {
+        DrawingAttributeSet attrs) {
         this.canvas = canvas;
 
         AbstractTool[] tools = {
-                selectTool,
-                new TextTool(attrs),
-                new LineTool(attrs),
-                new CurveTool(attrs),
-                new PolyTool(false, attrs),
-                new RectangleTool(attrs),
-                new RoundRectangleTool(attrs),
-                new OvalTool(attrs),
-                new PolyTool(true, attrs),
+            selectTool,
+            new TextTool(attrs),
+            new LineTool(attrs),
+            new CurveTool(attrs),
+            new PolyTool(false, attrs),
+            new RectangleTool(attrs),
+            new RoundRectangleTool(attrs),
+            new OvalTool(attrs),
+            new PolyTool(true, attrs),
         };
 
         ArrayList<ToolbarItem> rawItems = new ArrayList<>();

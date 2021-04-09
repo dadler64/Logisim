@@ -10,7 +10,7 @@ import java.awt.Graphics;
 
 public class ToolbarSeparator implements ToolbarItem {
 
-    private int size;
+    private final int size;
 
     public ToolbarSeparator(int size) {
         this.size = size;

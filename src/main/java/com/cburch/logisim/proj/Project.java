@@ -31,21 +31,21 @@ import javax.swing.JFileChooser;
 public class Project {
 
     private static final int MAX_UNDO_SIZE = 64;
-    private Simulator simulator = new Simulator();
+    private final Simulator simulator = new Simulator();
+    private final HashMap<Circuit, CircuitState> stateMap = new HashMap<>();
+    private final LinkedList<ActionData> undoLog = new LinkedList<>();
+    private final EventSourceWeakSupport<ProjectListener> projectListeners = new EventSourceWeakSupport<>();
+    private final EventSourceWeakSupport<LibraryListener> fileListeners = new EventSourceWeakSupport<>();
+    private final EventSourceWeakSupport<CircuitListener> circuitListeners = new EventSourceWeakSupport<>();
+    private final MyListener myListener = new MyListener();
     private LogisimFile file;
     private CircuitState circuitState;
-    private HashMap<Circuit, CircuitState> stateMap = new HashMap<>();
     private Frame frame = null;
     private OptionsFrame optionsFrame = null;
     private LogFrame logFrame = null;
     private Tool tool = null;
-    private LinkedList<ActionData> undoLog = new LinkedList<>();
     private int undoMods = 0;
-    private EventSourceWeakSupport<ProjectListener> projectListeners = new EventSourceWeakSupport<>();
-    private EventSourceWeakSupport<LibraryListener> fileListeners = new EventSourceWeakSupport<>();
-    private EventSourceWeakSupport<CircuitListener> circuitListeners = new EventSourceWeakSupport<>();
     private Dependencies depends;
-    private MyListener myListener = new MyListener();
     private boolean startupScreen = false;
 
     public Project(LogisimFile file) {
@@ -135,11 +135,11 @@ public class Project {
     }
 
     public void setCurrentCircuit(Circuit circuit) {
-        CircuitState circState = stateMap.get(circuit);
-        if (circState == null) {
-            circState = new CircuitState(this, circuit);
+        CircuitState circuitState = stateMap.get(circuit);
+        if (circuitState == null) {
+            circuitState = new CircuitState(this, circuit);
         }
-        setCircuitState(circState);
+        setCircuitState(circuitState);
     }
 
     public CircuitState getCircuitState() {
@@ -316,8 +316,8 @@ public class Project {
     }
 
     private void fireEvent(ProjectEvent event) {
-        for (ProjectListener l : projectListeners) {
-            l.projectChanged(event);
+        for (ProjectListener listener : projectListeners) {
+            listener.projectChanged(event);
         }
     }
 

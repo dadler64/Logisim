@@ -32,27 +32,27 @@ import java.util.List;
 
 class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
 
+    private final InstanceFactory factory;
+    private final Instance instance;
+    private final Location location;
+    private final AttributeSet attrs;
     private EventSourceWeakSupport<ComponentListener> listeners;
-    private InstanceFactory factory;
-    private Instance instance;
-    private Location loc;
     private Bounds bounds;
     private List<Port> portList;
     private EndData[] endArray;
     private List<EndData> endList;
     private boolean hasToolTips;
     private HashSet<Attribute<BitWidth>> widthAttrs;
-    private AttributeSet attrs;
     private boolean attrListenRequested;
     private InstanceTextField textField;
 
-    InstanceComponent(InstanceFactory factory, Location loc,
-            AttributeSet attrs) {
+    InstanceComponent(InstanceFactory factory, Location location,
+        AttributeSet attrs) {
         this.listeners = null;
         this.factory = factory;
         this.instance = new Instance(this);
-        this.loc = loc;
-        this.bounds = factory.getOffsetBounds(attrs).translate(loc.getX(), loc.getY());
+        this.location = location;
+        this.bounds = factory.getOffsetBounds(attrs).translate(location.getX(), location.getY());
         this.portList = factory.getPorts();
         this.endArray = null;
         this.hasToolTips = false;
@@ -83,7 +83,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
         for (int i = 0; pit.hasNext() || i < esOldLength; i++) {
             Port p = pit.hasNext() ? pit.next() : null;
             EndData oldEnd = i < esOldLength ? esOld[i] : null;
-            EndData newEnd = p == null ? null : p.toEnd(loc, attrs);
+            EndData newEnd = p == null ? null : p.toEnd(location, attrs);
             if (oldEnd == null || !oldEnd.equals(newEnd)) {
                 if (newEnd != null) {
                     es[i] = newEnd;
@@ -153,7 +153,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
     }
 
     private void fireEndsChanged(ArrayList<EndData> oldEnds,
-            ArrayList<EndData> newEnds) {
+        ArrayList<EndData> newEnds) {
         EventSourceWeakSupport<ComponentListener> ls = listeners;
         if (ls != null) {
             ComponentEvent e = null;
@@ -200,8 +200,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
                 return this;
             }
         } else if (key == TextEditable.class) {
-            InstanceTextField field = textField;
-            return field;
+            return textField;
         }
         return null;
     }
@@ -210,7 +209,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
     // location/extent methods
     //
     public Location getLocation() {
-        return loc;
+        return location;
     }
 
     public Bounds getBounds() {
@@ -226,8 +225,8 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
         return ret;
     }
 
-    public boolean contains(Location pt) {
-        Location translated = pt.translate(-loc.getX(), -loc.getY());
+    public boolean contains(Location point) {
+        Location translated = point.translate(-location.getX(), -location.getY());
         InstanceFactory factory = instance.getFactory();
         return factory.contains(translated, instance.getAttributeSet());
     }
@@ -254,8 +253,8 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
 
     public boolean endsAt(Location pt) {
         EndData[] ends = endArray;
-        for (int i = 0; i < ends.length; i++) {
-            if (ends[i].getLocation().equals(pt)) {
+        for (EndData end : ends) {
+            if (end.getLocation().equals(pt)) {
                 return true;
             }
         }
@@ -339,8 +338,8 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
     }
 
     void recomputeBounds() {
-        Location p = loc;
-        bounds = factory.getOffsetBounds(attrs).translate(p.getX(), p.getY());
+        Location point = location;
+        bounds = factory.getOffsetBounds(attrs).translate(point.getX(), point.getY());
     }
 
     void addAttributeListener(Instance instance) {
@@ -353,7 +352,7 @@ class InstanceComponent implements Component, AttributeListener, ToolTipMaker {
     }
 
     void setTextField(Attribute<String> labelAttr, Attribute<Font> fontAttr,
-            int x, int y, int halign, int valign) {
+        int x, int y, int halign, int valign) {
         InstanceTextField field = textField;
         if (field == null) {
             field = new InstanceTextField(this);

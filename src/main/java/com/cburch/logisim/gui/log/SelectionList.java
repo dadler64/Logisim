@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
-class SelectionList extends JList {
+class SelectionList extends JList<Object> {
 
     private Selection selection;
 
@@ -40,8 +40,24 @@ class SelectionList extends JList {
         repaint();
     }
 
-    private class Model extends AbstractListModel
-            implements ModelListener {
+    private static class MyCellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public java.awt.Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+            boolean hasFocus) {
+            java.awt.Component component = super.getListCellRendererComponent(list, value, index, isSelected, hasFocus);
+            if (component instanceof JLabel && value instanceof SelectionItem) {
+                JLabel label = (JLabel) component;
+                SelectionItem item = (SelectionItem) value;
+                Component comp = item.getComponent();
+                label.setIcon(new ComponentIcon(comp));
+                label.setText(item + " - " + item.getRadix());
+            }
+            return component;
+        }
+    }
+
+    private class Model extends AbstractListModel<Object> implements ModelListener {
 
         public int getSize() {
             return selection == null ? 0 : selection.size();
@@ -59,24 +75,6 @@ class SelectionList extends JList {
         }
 
         public void filePropertyChanged(ModelEvent event) {
-        }
-    }
-
-    private class MyCellRenderer extends DefaultListCellRenderer {
-
-        @Override
-        public java.awt.Component getListCellRendererComponent(JList list,
-                Object value, int index, boolean isSelected, boolean hasFocus) {
-            java.awt.Component ret = super.getListCellRendererComponent(list,
-                    value, index, isSelected, hasFocus);
-            if (ret instanceof JLabel && value instanceof SelectionItem) {
-                JLabel label = (JLabel) ret;
-                SelectionItem item = (SelectionItem) value;
-                Component comp = item.getComponent();
-                label.setIcon(new ComponentIcon(comp));
-                label.setText(item.toString() + " - " + item.getRadix());
-            }
-            return ret;
         }
     }
 }

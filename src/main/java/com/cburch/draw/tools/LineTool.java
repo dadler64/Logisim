@@ -25,7 +25,7 @@ import javax.swing.Icon;
 
 public class LineTool extends AbstractTool {
 
-    private DrawingAttributeSet attributeSet;
+    private final DrawingAttributeSet attributeSet;
     private boolean isActive;
     private Location mouseStart;
     private Location mouseEnd;

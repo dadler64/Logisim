@@ -24,7 +24,7 @@ public class PainterShaped {
     private static final GeneralPath SHIELD_NARROW;
     private static final GeneralPath SHIELD_MEDIUM;
     private static final GeneralPath SHIELD_WIDE;
-    private static HashMap<Integer, int[]> INPUT_LENGTHS = new HashMap<>();
+    private static final HashMap<Integer, int[]> INPUT_LENGTHS = new HashMap<>();
 
     static {
         PATH_NARROW = new GeneralPath();
@@ -149,7 +149,7 @@ public class PainterShaped {
     }
 
     private static void paintShield(Graphics g, int xlate,
-            int width, int height) {
+        int width, int height) {
         GraphicsUtil.switchToWidth(g, 2);
         g.translate(xlate, 0);
         ((Graphics2D) g).draw(computeShield(width, height));
@@ -191,10 +191,10 @@ public class PainterShaped {
             int dx = Math.min(20, wingHeight / 4);
 
             GeneralPath path = new GeneralPath();
-            path.moveTo(-width, -height / 2);
-            path.quadTo(-width + dx, -(width + height) / 4, -width, -width / 2);
+            path.moveTo(-width, -height / 2.0);
+            path.quadTo(-width + dx, -(width + height) / 4.0, -width, -width / 2.0);
             path.append(base, true);
-            path.quadTo(-width + dx, (width + height) / 4, -width, height / 2);
+            path.quadTo(-width + dx, (width + height) / 4.0, -width, height / 2.0);
             return path;
         }
     }
@@ -223,17 +223,17 @@ public class PainterShaped {
             Color baseColor = g.getColor();
             GraphicsUtil.switchToWidth(g, 3);
             for (int i = 0; i < inputs; i++) {
-                Location offs = factory.getInputOffset(attrs, i);
-                Location src = loc.translate(offs.getX(), offs.getY());
-                int len = lengths[i];
-                if (len != 0 && (!printView || painter.isPortConnected(i + 1))) {
+                Location offset = factory.getInputOffset(attrs, i);
+                Location src = loc.translate(offset.getX(), offset.getY());
+                int length = lengths[i];
+                if (length != 0 && (!printView || painter.isPortConnected(i + 1))) {
                     if (painter.getShowState()) {
                         Value val = painter.getPort(i + 1);
                         g.setColor(val.getColor());
                     } else {
                         g.setColor(baseColor);
                     }
-                    Location dst = src.translate(facing, len);
+                    Location dst = src.translate(facing, length);
                     g.drawLine(src.getX(), src.getY(), dst.getX(), dst.getY());
                 }
                 if (((negated >> i) & 1) == 1) {

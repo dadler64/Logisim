@@ -36,13 +36,20 @@ public class Keyboard extends InstanceFactory {
     private static final char FORM_FEED = '\u000c'; // control-L
 
     private static final Attribute<Integer> ATTR_BUFFER
-            = Attributes.forIntegerRange("buflen",
-            Strings.getter("keybBufferLengthAttr"), 1, 256);
+        = Attributes.forIntegerRange("buflen",
+        Strings.getter("keybBufferLengthAttr"), 1, 256);
 
     public Keyboard() {
         super("Keyboard", Strings.getter("keyboardComponent"));
-        setAttributes(new Attribute[]{ATTR_BUFFER, StdAttr.EDGE_TRIGGER},
-                new Object[]{32, StdAttr.TRIG_RISING});
+        setAttributes(
+            new Attribute[]{
+                ATTR_BUFFER,
+                StdAttr.EDGE_TRIGGER
+            }, new Object[]{
+                32,
+                StdAttr.TRIG_RISING
+            }
+        );
         setOffsetBounds(Bounds.create(0, -15, WIDTH, HEIGHT));
         setIconName("keyboard.gif");
         setInstancePoker(Poker.class);
@@ -83,18 +90,18 @@ public class Keyboard extends InstanceFactory {
 
     public static void addToBuffer(InstanceState state, char[] newChars) {
         KeyboardData keyboardData = getKeyboardState(state);
-        for (int i = 0; i < newChars.length; i++) {
-            keyboardData.insert(newChars[i]);
+        for (char newChar : newChars) {
+            keyboardData.insert(newChar);
         }
     }
 
     @Override
-    public void propagate(InstanceState circState) {
-        Object trigger = circState.getAttributeValue(StdAttr.EDGE_TRIGGER);
-        KeyboardData state = getKeyboardState(circState);
-        Value clear = circState.getPort(CLR);
-        Value clock = circState.getPort(CK);
-        Value enable = circState.getPort(RE);
+    public void propagate(InstanceState circuitState) {
+        Object trigger = circuitState.getAttributeValue(StdAttr.EDGE_TRIGGER);
+        KeyboardData state = getKeyboardState(circuitState);
+        Value clear = circuitState.getPort(CLR);
+        Value clock = circuitState.getPort(CK);
+        Value enable = circuitState.getPort(RE);
         char c;
 
         synchronized (state) {
@@ -116,8 +123,8 @@ public class Keyboard extends InstanceFactory {
             c = state.getChar(0);
         }
         Value out = Value.createKnown(BitWidth.create(7), c & 0x7F);
-        circState.setPort(OUT, out, DELAY0);
-        circState.setPort(AVL, c != '\0' ? Value.TRUE : Value.FALSE, DELAY1);
+        circuitState.setPort(OUT, out, DELAY0);
+        circuitState.setPort(AVL, c != '\0' ? Value.TRUE : Value.FALSE, DELAY1);
     }
 
     @Override
@@ -133,8 +140,8 @@ public class Keyboard extends InstanceFactory {
 
         if (showState) {
             String str;
-            int dispStart;
-            int dispEnd;
+            int displayStart;
+            int displayEnd;
             ArrayList<Integer> specials = new ArrayList<>();
             FontMetrics fm = null;
             KeyboardData state = getKeyboardState(painter);
@@ -148,13 +155,13 @@ public class Keyboard extends InstanceFactory {
                     fm = g.getFontMetrics(DEFAULT_FONT);
                     state.updateDisplay(fm);
                 }
-                dispStart = state.getDisplayStart();
-                dispEnd = state.getDisplayEnd();
+                displayStart = state.getDisplayStart();
+                displayEnd = state.getDisplayEnd();
             }
 
             if (str.length() > 0) {
                 Bounds bds = painter.getBounds();
-                drawBuffer(g, fm, str, dispStart, dispEnd, specials, bds);
+                drawBuffer(g, fm, str, displayStart, displayEnd, specials, bds);
             }
         } else {
             Bounds bds = painter.getBounds();
@@ -184,48 +191,46 @@ public class Keyboard extends InstanceFactory {
         }
     }
 
-    private void drawBuffer(Graphics g, FontMetrics fm, String str,
-            int dispStart, int dispEnd, ArrayList<Integer> specials, Bounds bds) {
-        int x = bds.getX();
-        int y = bds.getY();
+    private void drawBuffer(Graphics g, FontMetrics fm, String str, int displayStart, int displayEnd,
+        ArrayList<Integer> specials, Bounds bounds) {
+        int x = bounds.getX();
+        int y = bounds.getY();
 
         g.setFont(DEFAULT_FONT);
         if (fm == null) {
             fm = g.getFontMetrics();
         }
-        int asc = fm.getAscent();
+        int ascent = fm.getAscent();
         int x0 = x + 8;
-        int ys = y + (HEIGHT + asc) / 2;
+        int ys = y + (HEIGHT + ascent) / 2;
         int dotsWidth = fm.stringWidth("m");
         int xs;
-        if (dispStart > 0) {
+        if (displayStart > 0) {
             g.drawString(str.substring(0, 1), x0, ys);
             xs = x0 + fm.stringWidth(str.charAt(0) + "m");
-            drawDots(g, xs - dotsWidth, ys, dotsWidth, asc);
-            String sub = str.substring(dispStart, dispEnd);
+            drawDots(g, xs - dotsWidth, ys, dotsWidth, ascent);
+            String sub = str.substring(displayStart, displayEnd);
             g.drawString(sub, xs, ys);
-            if (dispEnd < str.length()) {
-                drawDots(g, xs + fm.stringWidth(sub), ys, dotsWidth, asc);
+            if (displayEnd < str.length()) {
+                drawDots(g, xs + fm.stringWidth(sub), ys, dotsWidth, ascent);
             }
-        } else if (dispEnd < str.length()) {
-            String sub = str.substring(dispStart, dispEnd);
+        } else if (displayEnd < str.length()) {
+            String sub = str.substring(displayStart, displayEnd);
             xs = x0;
             g.drawString(sub, xs, ys);
-            drawDots(g, xs + fm.stringWidth(sub), ys, dotsWidth, asc);
+            drawDots(g, xs + fm.stringWidth(sub), ys, dotsWidth, ascent);
         } else {
             xs = x0;
             g.drawString(str, xs, ys);
         }
 
         if (specials.size() > 0) {
-            drawSpecials(specials, x0, xs, ys, asc, g, fm,
-                    str, dispStart, dispEnd);
+            drawSpecials(specials, x0, xs, ys, ascent, g, fm, str, displayStart, displayEnd);
         }
     }
 
-    private void drawSpecials(ArrayList<Integer> specials, int x0, int xs, int ys,
-            int asc, Graphics g, FontMetrics fm,
-            String str, int dispStart, int dispEnd) {
+    private void drawSpecials(ArrayList<Integer> specials, int x0, int xs, int ys, int ascent, Graphics g, FontMetrics fm,
+        String str, int displayStart, int displayEnd) {
         int[] px = new int[3];
         int[] py = new int[3];
         for (Integer special : specials) {
@@ -236,9 +241,9 @@ public class Keyboard extends InstanceFactory {
             if (pos == 0) {
                 w0 = x0;
                 w1 = x0 + fm.stringWidth(str.substring(0, 1));
-            } else if (pos >= dispStart && pos < dispEnd) {
-                w0 = xs + fm.stringWidth(str.substring(dispStart, pos));
-                w1 = xs + fm.stringWidth(str.substring(dispStart, pos + 1));
+            } else if (pos >= displayStart && pos < displayEnd) {
+                w0 = xs + fm.stringWidth(str.substring(displayStart, pos));
+                w1 = xs + fm.stringWidth(str.substring(displayStart, pos + 1));
             } else {
                 continue; // this character is not in current view
             }
@@ -247,7 +252,7 @@ public class Keyboard extends InstanceFactory {
 
             int key = code >> 16;
             if (key == '\b') {
-                int y1 = ys - asc / 2;
+                int y1 = ys - ascent / 2;
                 g.drawLine(w0, y1, w1, y1);
                 px[0] = w0 + 3;
                 py[0] = y1 - 3;
@@ -259,7 +264,7 @@ public class Keyboard extends InstanceFactory {
             } else if (key == '\n') {
                 int y1 = ys - 3;
                 px[0] = w1;
-                py[0] = ys - asc;
+                py[0] = ys - ascent;
                 px[1] = w1;
                 py[1] = y1;
                 px[2] = w0;
@@ -273,7 +278,7 @@ public class Keyboard extends InstanceFactory {
                 py[2] = y1 + 3;
                 g.drawPolyline(px, py, 3);
             } else if (key == FORM_FEED) {
-                g.drawRect(w0, ys - asc, w1 - w0, asc);
+                g.drawRect(w0, ys - ascent, w1 - w0, ascent);
             }
         }
     }
@@ -320,8 +325,7 @@ public class Keyboard extends InstanceFactory {
             char ch = e.getKeyChar();
             boolean changed = false;
             if (ch != KeyEvent.CHAR_UNDEFINED) {
-                if (!Character.isISOControl(ch) || ch == '\b' || ch == '\n'
-                        || ch == FORM_FEED) {
+                if (!Character.isISOControl(ch) || ch == '\b' || ch == '\n' || ch == FORM_FEED) {
                     synchronized (data) {
                         changed = data.insert(ch);
                     }
@@ -341,21 +345,21 @@ public class Keyboard extends InstanceFactory {
 
             String str;
             int cursor;
-            int dispStart;
+            int displayStart;
             synchronized (data) {
                 str = data.toString();
                 cursor = data.getCursorPosition();
                 if (!data.isDisplayValid()) {
                     data.updateDisplay(fm);
                 }
-                dispStart = data.getDisplayStart();
+                displayStart = data.getDisplayStart();
             }
 
             int asc = fm.getAscent();
             int x = bds.getX() + 8;
-            if (dispStart > 0) {
+            if (displayStart > 0) {
                 x += fm.stringWidth(str.charAt(0) + "m");
-                x += fm.stringWidth(str.substring(dispStart, cursor));
+                x += fm.stringWidth(str.substring(displayStart, cursor));
             } else if (cursor >= str.length()) {
                 x += fm.stringWidth(str);
             } else {

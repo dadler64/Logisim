@@ -6,10 +6,10 @@ package com.cburch.logisim;
 public class LogisimVersion {
 
     private static final int FINAL_REVISION = Integer.MAX_VALUE / 4;
-    private int major;
-    private int minor;
-    private int release;
-    private int revision;
+    private final int major;
+    private final int minor;
+    private final int release;
+    private final int revision;
     private String repr;
 
     private LogisimVersion(int major, int minor, int release, int revision) {
@@ -65,7 +65,7 @@ public class LogisimVersion {
         if (other instanceof LogisimVersion) {
             LogisimVersion o = (LogisimVersion) other;
             return this.major == o.major && this.minor == o.minor
-                    && this.release == o.release && this.revision == o.revision;
+                && this.release == o.release && this.revision == o.revision;
         } else {
             return false;
         }

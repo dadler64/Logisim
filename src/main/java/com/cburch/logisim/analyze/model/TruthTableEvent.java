@@ -6,7 +6,7 @@ package com.cburch.logisim.analyze.model;
 
 public class TruthTableEvent {
 
-    private TruthTable source;
+    private final TruthTable source;
     private int column;
     private Object data;
 

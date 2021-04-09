@@ -20,25 +20,25 @@ import java.util.Enumeration;
 import javax.swing.tree.TreeNode;
 
 class SimulationTreeCircuitNode extends SimulationTreeNode
-        implements CircuitListener, AttributeListener, Comparator<Component> {
+    implements CircuitListener, AttributeListener, Comparator<Component> {
 
-    private SimulationTreeModel model;
-    private SimulationTreeCircuitNode parent;
-    private CircuitState circuitState;
-    private Component subcircComp;
+    private final SimulationTreeModel model;
+    private final SimulationTreeCircuitNode parent;
+    private final CircuitState circuitState;
+    private final Component subcircuitComp;
     private ArrayList<TreeNode> children;
 
     public SimulationTreeCircuitNode(SimulationTreeModel model,
-            SimulationTreeCircuitNode parent, CircuitState circuitState,
-            Component subcircComp) {
+        SimulationTreeCircuitNode parent, CircuitState circuitState,
+        Component subcircuitComp) {
         this.model = model;
         this.parent = parent;
         this.circuitState = circuitState;
-        this.subcircComp = subcircComp;
+        this.subcircuitComp = subcircuitComp;
         this.children = new ArrayList<>();
         circuitState.getCircuit().addCircuitListener(this);
-        if (subcircComp != null) {
-            subcircComp.getAttributeSet().addAttributeListener(this);
+        if (subcircuitComp != null) {
+            subcircuitComp.getAttributeSet().addAttributeListener(this);
         } else {
             circuitState.getCircuit().getStaticAttributes().addAttributeListener(this);
         }
@@ -61,15 +61,15 @@ class SimulationTreeCircuitNode extends SimulationTreeNode
 
     @Override
     public String toString() {
-        if (subcircComp != null) {
-            String label = subcircComp.getAttributeSet().getValue(StdAttr.LABEL);
+        if (subcircuitComp != null) {
+            String label = subcircuitComp.getAttributeSet().getValue(StdAttr.LABEL);
             if (label != null && !label.equals("")) {
                 return label;
             }
         }
         String ret = circuitState.getCircuit().getName();
-        if (subcircComp != null) {
-            ret += subcircComp.getLocation();
+        if (subcircuitComp != null) {
+            ret += subcircuitComp.getLocation();
         }
         return ret;
     }
@@ -136,21 +136,21 @@ class SimulationTreeCircuitNode extends SimulationTreeNode
         }
         newChildren.sort(new CompareByName());
         subcircs.sort(this);
-        for (Component comp : subcircs) {
-            SubcircuitFactory factory = (SubcircuitFactory) comp.getFactory();
-            CircuitState state = factory.getSubstate(circuitState, comp);
+        for (Component component : subcircs) {
+            SubcircuitFactory factory = (SubcircuitFactory) component.getFactory();
+            CircuitState state = factory.getSubstate(circuitState, component);
             SimulationTreeCircuitNode toAdd = null;
-            for (TreeNode o : children) {
-                if (o instanceof SimulationTreeCircuitNode) {
-                    SimulationTreeCircuitNode n = (SimulationTreeCircuitNode) o;
-                    if (n.circuitState == state) {
-                        toAdd = n;
+            for (TreeNode child : children) {
+                if (child instanceof SimulationTreeCircuitNode) {
+                    SimulationTreeCircuitNode node = (SimulationTreeCircuitNode) child;
+                    if (node.circuitState == state) {
+                        toAdd = node;
                         break;
                     }
                 }
             }
             if (toAdd == null) {
-                toAdd = new SimulationTreeCircuitNode(model, this, state, comp);
+                toAdd = new SimulationTreeCircuitNode(model, this, state, component);
             }
             newChildren.add(toAdd);
         }

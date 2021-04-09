@@ -11,41 +11,41 @@ import com.cburch.logisim.util.UnmodifiableList;
 import java.util.List;
 
 class ProjectToolbarModel extends AbstractToolbarModel
-        implements MenuListener.EnabledListener {
+    implements MenuListener.EnabledListener {
 
-    private Frame frame;
-    private LogisimToolbarItem itemAdd;
-    private LogisimToolbarItem itemUp;
-    private LogisimToolbarItem itemDown;
-    private LogisimToolbarItem itemDelete;
-    private LogisimToolbarItem itemLayout;
-    private LogisimToolbarItem itemAppearance;
-    private List<ToolbarItem> items;
+    private final Frame frame;
+    private final LogisimToolbarItem itemAdd;
+    private final LogisimToolbarItem itemUp;
+    private final LogisimToolbarItem itemDown;
+    private final LogisimToolbarItem itemDelete;
+    private final LogisimToolbarItem itemLayout;
+    private final LogisimToolbarItem itemAppearance;
+    private final List<ToolbarItem> items;
 
     public ProjectToolbarModel(Frame frame, MenuListener menu) {
         this.frame = frame;
 
         itemAdd = new LogisimToolbarItem(menu, "projadd.gif", LogisimMenuBar.ADD_CIRCUIT,
-                Strings.getter("projectAddCircuitTip"));
+            Strings.getter("projectAddCircuitTip"));
         itemUp = new LogisimToolbarItem(menu, "projup.gif", LogisimMenuBar.MOVE_CIRCUIT_UP,
-                Strings.getter("projectMoveCircuitUpTip"));
+            Strings.getter("projectMoveCircuitUpTip"));
         itemDown = new LogisimToolbarItem(menu, "projdown.gif", LogisimMenuBar.MOVE_CIRCUIT_DOWN,
-                Strings.getter("projectMoveCircuitDownTip"));
+            Strings.getter("projectMoveCircuitDownTip"));
         itemDelete = new LogisimToolbarItem(menu, "projdel.gif", LogisimMenuBar.REMOVE_CIRCUIT,
-                Strings.getter("projectRemoveCircuitTip"));
+            Strings.getter("projectRemoveCircuitTip"));
         itemLayout = new LogisimToolbarItem(menu, "projlayo.gif", LogisimMenuBar.EDIT_LAYOUT,
-                Strings.getter("projectEditLayoutTip"));
+            Strings.getter("projectEditLayoutTip"));
         itemAppearance = new LogisimToolbarItem(menu, "projapp.gif", LogisimMenuBar.EDIT_APPEARANCE,
-                Strings.getter("projectEditAppearanceTip"));
+            Strings.getter("projectEditAppearanceTip"));
 
         items = UnmodifiableList.create(new ToolbarItem[]{
-                itemAdd,
-                itemUp,
-                itemDown,
-                itemDelete,
-                new ToolbarSeparator(4),
-                itemLayout,
-                itemAppearance,
+            itemAdd,
+            itemUp,
+            itemDown,
+            itemDelete,
+            new ToolbarSeparator(4),
+            itemLayout,
+            itemAppearance,
         });
 
         menu.addEnabledListener(this);

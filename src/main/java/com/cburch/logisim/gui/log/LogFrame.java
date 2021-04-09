@@ -33,15 +33,15 @@ import javax.swing.JTabbedPane;
 
 public class LogFrame extends LFrame {
 
-    private Project project;
+    private final Project project;
+    private final Map<CircuitState, Model> modelMap = new HashMap<>();
+    private final MyListener myListener = new MyListener();
+    private final WindowMenuManager windowManager;
+    private final LogPanel[] panels;
+    private final JTabbedPane tabbedPane;
+    private final JButton close = new JButton();
     private Simulator curSimulator = null;
     private Model curModel;
-    private Map<CircuitState, Model> modelMap = new HashMap<>();
-    private MyListener myListener = new MyListener();
-    private WindowMenuManager windowManager;
-    private LogPanel[] panels;
-    private JTabbedPane tabbedPane;
-    private JButton close = new JButton();
 
     public LogFrame(Project project) {
         this.project = project;
@@ -53,13 +53,12 @@ public class LogFrame extends LFrame {
         setSimulator(project.getSimulator(), project.getCircuitState());
 
         panels = new LogPanel[]{
-                new SelectionPanel(this),
-                new ScrollPanel(this),
-                new FilePanel(this),
+            new SelectionPanel(this),
+            new ScrollPanel(this),
+            new FilePanel(this),
         };
         tabbedPane = new JTabbedPane();
-        for (int index = 0; index < panels.length; index++) {
-            LogPanel panel = panels[index];
+        for (LogPanel panel : panels) {
             tabbedPane.addTab(panel.getTitle(), null, panel, panel.getToolTipText());
         }
 
@@ -80,7 +79,7 @@ public class LogFrame extends LFrame {
     private static String computeTitle(Model data, Project proj) {
         String name = data == null ? "???" : data.getCircuitState().getCircuit().getName();
         return StringUtil.format(Strings.get("logFrameTitle"), name,
-                proj.getLogisimFile().getDisplayName());
+            proj.getLogisimFile().getDisplayName());
     }
 
     public Project getProject() {
@@ -128,8 +127,8 @@ public class LogFrame extends LFrame {
         }
         setTitle(computeTitle(curModel, project));
         if (panels != null) {
-            for (int i = 0; i < panels.length; i++) {
-                panels[i].modelChanged(oldModel, curModel);
+            for (LogPanel panel : panels) {
+                panel.modelChanged(oldModel, curModel);
             }
         }
     }
@@ -149,7 +148,7 @@ public class LogFrame extends LFrame {
     // TODO should automatically repaint icons when component attr change
     // TODO ? moving a component using Select tool removes it from selection
     private class WindowMenuManager extends WindowMenuItemManager
-            implements LocaleListener, ProjectListener, LibraryListener {
+        implements LocaleListener, ProjectListener, LibraryListener {
 
         WindowMenuManager() {
             super(Strings.get("logFrameMenuItem"), false);
@@ -181,14 +180,14 @@ public class LogFrame extends LFrame {
     }
 
     private class MyListener
-            implements ActionListener, ProjectListener, LibraryListener,
-            SimulatorListener, LocaleListener {
+        implements ActionListener, ProjectListener, LibraryListener,
+        SimulatorListener, LocaleListener {
 
         public void actionPerformed(ActionEvent event) {
             Object src = event.getSource();
             if (src == close) {
                 WindowEvent e = new WindowEvent(LogFrame.this,
-                        WindowEvent.WINDOW_CLOSING);
+                    WindowEvent.WINDOW_CLOSING);
                 LogFrame.this.processWindowEvent(e);
             }
         }
@@ -197,7 +196,7 @@ public class LogFrame extends LFrame {
             int action = event.getAction();
             if (action == ProjectEvent.ACTION_SET_STATE) {
                 setSimulator(event.getProject().getSimulator(),
-                        event.getProject().getCircuitState());
+                    event.getProject().getCircuitState());
             } else if (action == ProjectEvent.ACTION_SET_FILE) {
                 setTitle(computeTitle(curModel, project));
             }

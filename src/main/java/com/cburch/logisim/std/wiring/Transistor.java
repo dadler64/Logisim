@@ -24,7 +24,6 @@ import com.cburch.logisim.instance.InstanceState;
 import com.cburch.logisim.instance.Port;
 import com.cburch.logisim.instance.StdAttr;
 import com.cburch.logisim.tools.WireRepair;
-import com.cburch.logisim.tools.WireRepairData;
 import com.cburch.logisim.tools.key.BitWidthConfigurator;
 import com.cburch.logisim.util.GraphicsUtil;
 import com.cburch.logisim.util.Icons;
@@ -35,12 +34,11 @@ import javax.swing.Icon;
 public class Transistor extends InstanceFactory {
 
     static final AttributeOption TYPE_P
-            = new AttributeOption("p", Strings.getter("transistorTypeP"));
+        = new AttributeOption("p", Strings.getter("transistorTypeP"));
     static final AttributeOption TYPE_N
-            = new AttributeOption("n", Strings.getter("transistorTypeN"));
+        = new AttributeOption("n", Strings.getter("transistorTypeN"));
     static final Attribute<AttributeOption> ATTR_TYPE
-            = Attributes.forOption("type", Strings.getter("transistorTypeAttr"),
-            new AttributeOption[]{TYPE_P, TYPE_N});
+        = Attributes.forOption("type", Strings.getter("transistorTypeAttr"), new AttributeOption[]{TYPE_P, TYPE_N});
 
     static final int OUTPUT = 0;
     static final int INPUT = 1;
@@ -52,10 +50,18 @@ public class Transistor extends InstanceFactory {
     public Transistor() {
         super("Transistor", Strings.getter("transistorComponent"));
         setAttributes(
-                new Attribute[]{ATTR_TYPE, StdAttr.FACING,
-                        Wiring.ATTR_GATE, StdAttr.WIDTH},
-                new Object[]{TYPE_P, Direction.EAST,
-                        Wiring.GATE_TOP_LEFT, BitWidth.ONE});
+            new Attribute[]{
+                ATTR_TYPE,
+                StdAttr.FACING,
+                Wiring.ATTR_GATE,
+                StdAttr.WIDTH
+            }, new Object[]{
+                TYPE_P,
+                Direction.EAST,
+                Wiring.GATE_TOP_LEFT,
+                BitWidth.ONE
+            }
+        );
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
     }
@@ -92,9 +98,8 @@ public class Transistor extends InstanceFactory {
             dx = 1;
         }
 
-        Object powerLoc = instance.getAttributeValue(Wiring.ATTR_GATE);
-        boolean flip = (facing == Direction.SOUTH || facing == Direction.WEST)
-                == (powerLoc == Wiring.GATE_TOP_LEFT);
+        Object powerLocation = instance.getAttributeValue(Wiring.ATTR_GATE);
+        boolean flip = (facing == Direction.SOUTH || facing == Direction.WEST) == (powerLocation == Wiring.GATE_TOP_LEFT);
 
         Port[] ports = new Port[3];
         ports[OUTPUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
@@ -110,11 +115,7 @@ public class Transistor extends InstanceFactory {
     @Override
     public Object getInstanceFeature(final Instance instance, Object key) {
         if (key == WireRepair.class) {
-            return new WireRepair() {
-                public boolean shouldRepairWire(WireRepairData data) {
-                    return true;
-                }
-            };
+            return (WireRepair) data -> true;
         }
         return super.getInstanceFeature(instance, key);
     }
@@ -122,8 +123,8 @@ public class Transistor extends InstanceFactory {
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
         Direction facing = attributes.getValue(StdAttr.FACING);
-        Object gateLoc = attributes.getValue(Wiring.ATTR_GATE);
-        int delta = gateLoc == Wiring.GATE_TOP_LEFT ? -20 : 0;
+        Object gateLocation = attributes.getValue(Wiring.ATTR_GATE);
+        int delta = gateLocation == Wiring.GATE_TOP_LEFT ? -20 : 0;
         if (facing == Direction.NORTH) {
             return Bounds.create(delta, 0, 20, 40);
         } else if (facing == Direction.SOUTH) {
@@ -155,20 +156,19 @@ public class Transistor extends InstanceFactory {
         BitWidth width = state.getAttributeValue(StdAttr.WIDTH);
         Value gate = state.getPort(GATE);
         Value input = state.getPort(INPUT);
-        Value desired = state.getAttributeValue(ATTR_TYPE) == TYPE_P
-                ? Value.FALSE : Value.TRUE;
+        Value desired = state.getAttributeValue(ATTR_TYPE) == TYPE_P ? Value.FALSE : Value.TRUE;
 
         if (!gate.isFullyDefined()) {
             if (input.isFullyDefined()) {
                 return Value.createError(width);
             } else {
-                Value[] v = input.getAll();
-                for (int i = 0; i < v.length; i++) {
-                    if (v[i] != Value.UNKNOWN) {
-                        v[i] = Value.ERROR;
+                Value[] values = input.getAll();
+                for (int i = 0; i < values.length; i++) {
+                    if (values[i] != Value.UNKNOWN) {
+                        values[i] = Value.ERROR;
                     }
                 }
-                return Value.create(v);
+                return Value.create(values);
             }
         } else if (gate != desired) {
             return Value.createUnknown(width);
@@ -197,25 +197,21 @@ public class Transistor extends InstanceFactory {
 
     private void drawInstance(InstancePainter painter, boolean isGhost) {
         Object type = painter.getAttributeValue(ATTR_TYPE);
-        Object powerLoc = painter.getAttributeValue(Wiring.ATTR_GATE);
+        Object powerLocation = painter.getAttributeValue(Wiring.ATTR_GATE);
         Direction from = painter.getAttributeValue(StdAttr.FACING);
         Direction facing = painter.getAttributeValue(StdAttr.FACING);
-        boolean flip = (facing == Direction.SOUTH || facing == Direction.WEST)
-                == (powerLoc == Wiring.GATE_TOP_LEFT);
+        boolean flip = (facing == Direction.SOUTH || facing == Direction.WEST) == (powerLocation == Wiring.GATE_TOP_LEFT);
 
         int degrees = Direction.EAST.toDegrees() - from.toDegrees();
         double radians = Math.toRadians((degrees + 360) % 360);
         int m = flip ? 1 : -1;
 
         Graphics2D g = (Graphics2D) painter.getGraphics();
-        Location loc = painter.getLocation();
-        g.translate(loc.getX(), loc.getY());
+        Location location = painter.getLocation();
+        g.translate(location.getX(), location.getY());
         g.rotate(radians);
 
-        Color gate;
-        Color input;
-        Color output;
-        Color platform;
+        Color gate, input, output, platform;
         if (!isGhost && painter.getShowState()) {
             gate = painter.getPort(GATE).getColor();
             input = painter.getPort(INPUT).getColor();
@@ -261,6 +257,6 @@ public class Transistor extends InstanceFactory {
         g.drawLine(-21, 0, -18, m * 3);
 
         g.rotate(-radians);
-        g.translate(-loc.getX(), -loc.getY());
+        g.translate(-location.getX(), -location.getY());
     }
 }

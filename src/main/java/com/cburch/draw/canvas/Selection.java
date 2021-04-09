@@ -23,11 +23,11 @@ public class Selection {
     private static final String TRANSLATING = "translating";
     private static final String HIDDEN = "hidden";
 
-    private ArrayList<SelectionListener> listeners;
-    private HashSet<CanvasObject> selected;
-    private Set<CanvasObject> selectedView;
-    private HashMap<CanvasObject, String> suppressed;
-    private Set<CanvasObject> suppressedView;
+    private final ArrayList<SelectionListener> listeners;
+    private final HashSet<CanvasObject> selected;
+    private final Set<CanvasObject> selectedView;
+    private final HashMap<CanvasObject, String> suppressed;
+    private final Set<CanvasObject> suppressedView;
     private Handle selectedHandle;
     private HandleGesture currentHandleGesture;
     private int moveDx;

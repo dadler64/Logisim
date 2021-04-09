@@ -37,8 +37,13 @@ class GrayIncrementer extends InstanceFactory {
          * StdAttr attributes when appropriate: A user can then select several
          * components (even from differing factories) with the same attribute
          * and modify them all at once. */
-        setAttributes(new Attribute[]{StdAttr.WIDTH},
-                new Object[]{BitWidth.create(4)});
+        setAttributes(
+            new Attribute[]{
+                StdAttr.WIDTH
+            }, new Object[]{
+                BitWidth.create(4)
+            }
+        );
 
         /* The "offset bounds" is the location of the bounding rectangle
          * relative to the mouse location. Here, we're choosing the component to
@@ -55,8 +60,8 @@ class GrayIncrementer extends InstanceFactory {
          * The bit width can be a constant (like 1) or an attribute (as here).
          */
         setPorts(new Port[]{
-                new Port(-30, 0, Port.INPUT, StdAttr.WIDTH),
-                new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH),
+            new Port(-30, 0, Port.INPUT, StdAttr.WIDTH),
+            new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH),
         });
     }
 

@@ -12,12 +12,12 @@ import java.util.HashSet;
 
 public class ModelTranslateAction extends ModelAction {
 
-    private HashSet<CanvasObject> moved;
-    private int dx;
-    private int dy;
+    private final HashSet<CanvasObject> moved;
+    private final int dx;
+    private final int dy;
 
     public ModelTranslateAction(CanvasModel model,
-            Collection<CanvasObject> moved, int dx, int dy) {
+        Collection<CanvasObject> moved, int dx, int dy) {
         super(model);
         this.moved = new HashSet<>(moved);
         this.dx = dx;

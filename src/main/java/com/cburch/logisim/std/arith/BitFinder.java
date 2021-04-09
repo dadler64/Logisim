@@ -23,23 +23,23 @@ import java.awt.Graphics;
 public class BitFinder extends InstanceFactory {
 
     static final AttributeOption LOW_ONE
-            = new AttributeOption("low1", Strings.getter("bitFinderLowOption", "1"));
+        = new AttributeOption("low1", Strings.getter("bitFinderLowOption", "1"));
     static final AttributeOption HIGH_ONE
-            = new AttributeOption("high1", Strings.getter("bitFinderHighOption", "1"));
+        = new AttributeOption("high1", Strings.getter("bitFinderHighOption", "1"));
     static final AttributeOption LOW_ZERO
-            = new AttributeOption("low0", Strings.getter("bitFinderLowOption", "0"));
+        = new AttributeOption("low0", Strings.getter("bitFinderLowOption", "0"));
     static final AttributeOption HIGH_ZERO
-            = new AttributeOption("high0", Strings.getter("bitFinderHighOption", "0"));
+        = new AttributeOption("high0", Strings.getter("bitFinderHighOption", "0"));
     static final Attribute<AttributeOption> TYPE
-            = Attributes.forOption("type", Strings.getter("bitFinderTypeAttr"),
-            new AttributeOption[]{LOW_ONE, HIGH_ONE, LOW_ZERO, HIGH_ZERO});
+        = Attributes.forOption("type", Strings.getter("bitFinderTypeAttr"),
+        new AttributeOption[]{LOW_ONE, HIGH_ONE, LOW_ZERO, HIGH_ZERO});
 
     public BitFinder() {
         super("BitFinder", Strings.getter("bitFinderComponent"));
         setAttributes(new Attribute[]{
-                StdAttr.WIDTH, TYPE
+            StdAttr.WIDTH, TYPE
         }, new Object[]{
-                BitWidth.create(8), LOW_ONE
+            BitWidth.create(8), LOW_ONE
         });
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setIconName("bitfindr.gif");

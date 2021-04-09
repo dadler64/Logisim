@@ -20,9 +20,9 @@ import java.util.Set;
 
 public class FileStatistics {
 
-    private List<Count> counts;
-    private Count totalWithout;
-    private Count totalWith;
+    private final List<Count> counts;
+    private final Count totalWithout;
+    private final Count totalWith;
 
     private FileStatistics(List<Count> counts, Count totalWithout, Count totalWith) {
         this.counts = Collections.unmodifiableList(counts);
@@ -40,7 +40,7 @@ public class FileStatistics {
     }
 
     private static Map<ComponentFactory, Count> doRecursiveCount(Circuit circuit, Set<Circuit> circuits,
-            Map<Circuit, Map<ComponentFactory, Count>> countMap) {
+        Map<Circuit, Map<ComponentFactory, Count>> countMap) {
         if (countMap.containsKey(circuit)) {
             return countMap.get(circuit);
         }
@@ -85,8 +85,8 @@ public class FileStatistics {
         return counts;
     }
 
-    private static void doUniqueCounts(Map<ComponentFactory, Count> counts,
-            Map<Circuit, Map<ComponentFactory, Count>> circuitCounts) {
+    private static void doUniqueCounts(Map<ComponentFactory, Count> counts, Map<Circuit,
+        Map<ComponentFactory, Count>> circuitCounts) {
         for (Count count : counts.values()) {
             ComponentFactory factory = count.getFactory();
             int unique = 0;
@@ -100,8 +100,7 @@ public class FileStatistics {
         }
     }
 
-    private static List<Count> sortCounts(Map<ComponentFactory, Count> counts,
-            LogisimFile file) {
+    private static List<Count> sortCounts(Map<ComponentFactory, Count> counts, LogisimFile file) {
         List<Count> returnCounts = new ArrayList<>();
         for (AddTool tool : file.getTools()) {
             ComponentFactory factory = tool.getFactory();
@@ -158,7 +157,7 @@ public class FileStatistics {
     public static class Count {
 
         private Library library;
-        private ComponentFactory factory;
+        private final ComponentFactory factory;
         private int simpleCount;
         private int uniqueCount;
         private int recursiveCount;

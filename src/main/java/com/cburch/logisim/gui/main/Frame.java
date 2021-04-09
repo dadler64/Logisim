@@ -69,24 +69,24 @@ public class Frame extends LFrame implements LocaleListener {
     public static final String VIEW_SIMULATION = "simulation";
 
     private static final double[] ZOOM_OPTIONS = {25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400};
-    private Project project;
-    private MyProjectListener myProjectListener = new MyProjectListener();
-    private MenuListener menuListener;
-    private Toolbar toolbar;
-    private HorizontalSplitPane leftRegion;
-    private VerticalSplitPane mainRegion;
-    private JPanel mainPanelSuper;
-    private CardPanel mainPanel;
-    private CardPanel explorerPane;
-    private Toolbox toolbox;
-    private AttrTable attributeTable;
-    private ZoomControl zoom;
+    private final Project project;
+    private final MyProjectListener myProjectListener = new MyProjectListener();
+    private final MenuListener menuListener;
+    private final Toolbar toolbar;
+    private final HorizontalSplitPane leftRegion;
+    private final VerticalSplitPane mainRegion;
+    private final JPanel mainPanelSuper;
+    private final CardPanel mainPanel;
+    private final CardPanel explorerPane;
+    private final Toolbox toolbox;
+    private final AttrTable attributeTable;
+    private final ZoomControl zoom;
     // for the Layout view
-    private LayoutToolbarModel layoutToolbarModel;
-    private Canvas layoutCanvas;
-    private ZoomModel layoutZoomModel;
-    private LayoutEditHandler layoutEditHandler;
-    private AttrTableSelectionModel attributeTableSelectionModel;
+    private final LayoutToolbarModel layoutToolbarModel;
+    private final Canvas layoutCanvas;
+    private final ZoomModel layoutZoomModel;
+    private final LayoutEditHandler layoutEditHandler;
+    private final AttrTableSelectionModel attributeTableSelectionModel;
     // for the Appearance view
     private AppearanceView appearance;
 
@@ -211,10 +211,8 @@ public class Frame extends LFrame implements LocaleListener {
                         int size = inter.width * inter.height;
                         if (size > gcBestSize) {
                             gcBestSize = size;
-                            int x2 = Math.max(gcBounds.x, Math.min(inter.x,
-                                    inter.x + inter.width - 50));
-                            int y2 = Math.max(gcBounds.y, Math.min(inter.y,
-                                    inter.y + inter.height - 50));
+                            int x2 = Math.max(gcBounds.x, Math.min(inter.x, inter.x + inter.width - 50));
+                            int y2 = Math.max(gcBounds.y, Math.min(inter.y, inter.y + inter.height - 50));
                             gcBestPoint = new Point(x2, y2);
                         }
                     }
@@ -363,7 +361,7 @@ public class Frame extends LFrame implements LocaleListener {
         String name = project.getLogisimFile().getName();
         if (circuit != null) {
             str = StringUtil.format(Strings.get("titleCircFileKnown"),
-                    circuit.getName(), name);
+                circuit.getName(), name);
         } else {
             str = StringUtil.format(Strings.get("titleFileKnown"), name);
         }
@@ -404,7 +402,7 @@ public class Frame extends LFrame implements LocaleListener {
         if (newAttributes == null) {
             AttrTableModel oldModel = attributeTable.getAttrTableModel();
             boolean same = oldModel instanceof AttrTableToolModel
-                    && ((AttrTableToolModel) oldModel).getTool() == oldTool;
+                && ((AttrTableToolModel) oldModel).getTool() == oldTool;
             if (!force && !same && !(oldModel instanceof AttrTableCircuitModel)) {
                 return;
             }
@@ -462,7 +460,7 @@ public class Frame extends LFrame implements LocaleListener {
     // returns true if user is OK with proceeding
     public boolean confirmClose(String title) {
         String message = StringUtil.format(Strings.get("confirmDiscardMessage"),
-                project.getLogisimFile().getName());
+            project.getLogisimFile().getName());
 
         if (!project.isFileDirty()) {
             return true;
@@ -470,8 +468,8 @@ public class Frame extends LFrame implements LocaleListener {
         toFront();
         String[] options = {Strings.get("saveOption"), Strings.get("discardOption"), Strings.get("cancelOption")};
         int result = JOptionPane.showOptionDialog(this,
-                message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                options, options[0]);
+            message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+            options, options[0]);
         boolean ret;
         if (result == 0) {
             ret = ProjectActions.doSave(project);
@@ -485,8 +483,8 @@ public class Frame extends LFrame implements LocaleListener {
     }
 
     class MyProjectListener
-            implements ProjectListener, LibraryListener, CircuitListener,
-            PropertyChangeListener, ChangeListener {
+        implements ProjectListener, LibraryListener, CircuitListener,
+        PropertyChangeListener, ChangeListener {
 
         public void projectChanged(ProjectEvent event) {
             int action = event.getAction();
@@ -534,7 +532,8 @@ public class Frame extends LFrame implements LocaleListener {
             getRootPane().putClientProperty("windowModified", isDirty);
         }
 
-        public void attributeListChanged() { }
+        public void attributeListChanged() {
+        }
 
         public void propertyChange(PropertyChangeEvent event) {
             if (AppPreferences.TOOLBAR_PLACEMENT.isSource(event)) {

@@ -16,9 +16,9 @@ class LogThread extends Thread implements ModelListener {
     // file will be closed after waiting this many milliseconds between writes
     private static final int IDLE_UNTIL_CLOSE = 10000;
 
-    private Model model;
+    private final Model model;
+    private final Object lock = new Object();
     private boolean canceled = false;
-    private Object lock = new Object();
     private PrintWriter writer = null;
     private boolean headerDirty = true;
     private long lastWrite = 0;
@@ -44,6 +44,7 @@ class LogThread extends Thread implements ModelListener {
             try {
                 Thread.sleep(FLUSH_FREQUENCY);
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         synchronized (lock) {
@@ -103,8 +104,7 @@ class LogThread extends Thread implements ModelListener {
     }
 
     private boolean isFileEnabled() {
-        return !canceled && model.isSelected() && model.isFileEnabled()
-                && model.getFile() != null;
+        return !canceled && model.isSelected() && model.isFileEnabled() && model.getFile() != null;
     }
 
     // Should hold lock and have verified that isFileEnabled() before
@@ -118,17 +118,17 @@ class LogThread extends Thread implements ModelListener {
                 return;
             }
         }
-        Selection sel = model.getSelection();
+        Selection selection = model.getSelection();
         if (headerDirty) {
             if (model.getFileHeader()) {
                 StringBuilder buf = new StringBuilder();
-                for (int i = 0; i < sel.size(); i++) {
+                for (int i = 0; i < selection.size(); i++) {
                     if (i > 0) {
                         buf.append("\t");
                     }
-                    buf.append(sel.get(i).toString());
+                    buf.append(selection.get(i).toString());
                 }
-                writer.println(buf.toString());
+                writer.println(buf);
             }
             headerDirty = false;
         }
@@ -138,11 +138,11 @@ class LogThread extends Thread implements ModelListener {
                 buf.append("\t");
             }
             if (values[i] != null) {
-                int radix = sel.get(i).getRadix();
+                int radix = selection.get(i).getRadix();
                 buf.append(values[i].toDisplayString(radix));
             }
         }
-        writer.println(buf.toString());
+        writer.println(buf);
         lastWrite = System.currentTimeMillis();
     }
 }

@@ -14,7 +14,7 @@ import javax.swing.Icon;
 
 public class RoundRectangleTool extends RectangularTool {
 
-    private DrawingAttributeSet attributeSet;
+    private final DrawingAttributeSet attributeSet;
 
     public RoundRectangleTool(DrawingAttributeSet attributeSet) {
         this.attributeSet = attributeSet;

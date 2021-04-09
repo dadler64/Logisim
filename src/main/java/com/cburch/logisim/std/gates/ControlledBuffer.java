@@ -33,36 +33,58 @@ import javax.swing.Icon;
 class ControlledBuffer extends InstanceFactory {
 
     private static final AttributeOption RIGHT_HANDED
-            = new AttributeOption("right", Strings.getter("controlledRightHanded"));
+        = new AttributeOption("right", Strings.getter("controlledRightHanded"));
     private static final AttributeOption LEFT_HANDED
-            = new AttributeOption("left", Strings.getter("controlledLeftHanded"));
+        = new AttributeOption("left", Strings.getter("controlledLeftHanded"));
     private static final Attribute<AttributeOption> ATTR_CONTROL
-            = Attributes.forOption("control", Strings.getter("controlledControlOption"),
-            new AttributeOption[]{RIGHT_HANDED, LEFT_HANDED});
+        = Attributes.forOption("control", Strings.getter("controlledControlOption"),
+        new AttributeOption[]{RIGHT_HANDED, LEFT_HANDED});
     private static final Icon ICON_BUFFER = Icons.getIcon("controlledBuffer.gif");
     private static final Icon ICON_INVERTER = Icons.getIcon("controlledInverter.gif");
     public static ComponentFactory FACTORY_BUFFER = new ControlledBuffer(false);
     public static ComponentFactory FACTORY_INVERTER = new ControlledBuffer(true);
-    private boolean isInverter;
+    private final boolean isInverter;
 
     private ControlledBuffer(boolean isInverter) {
-        super(isInverter ? "Controlled Inverter" : "Controlled Buffer",
-                isInverter ? Strings.getter("controlledInverterComponent")
-                        : Strings.getter("controlledBufferComponent"));
+        super(isInverter ? "Controlled Inverter" : "Controlled Buffer", isInverter ? Strings.getter(
+            "controlledInverterComponent") : Strings.getter("controlledBufferComponent"));
         this.isInverter = isInverter;
         if (isInverter) {
-            setAttributes(new Attribute[]{StdAttr.FACING, StdAttr.WIDTH,
-                            NotGate.ATTR_SIZE, ATTR_CONTROL,
-                            StdAttr.LABEL, StdAttr.LABEL_FONT},
-                    new Object[]{Direction.EAST, BitWidth.ONE,
-                            NotGate.SIZE_WIDE, RIGHT_HANDED,
-                            "", StdAttr.DEFAULT_LABEL_FONT});
+            setAttributes(
+                new Attribute[]{
+                    StdAttr.FACING,
+                    StdAttr.WIDTH,
+                    NotGate.ATTR_SIZE,
+                    ATTR_CONTROL,
+                    StdAttr.LABEL,
+                    StdAttr.LABEL_FONT
+                },
+                new Object[]{
+                    Direction.EAST,
+                    BitWidth.ONE,
+                    NotGate.SIZE_WIDE,
+                    RIGHT_HANDED,
+                    "",
+                    StdAttr.DEFAULT_LABEL_FONT
+                }
+            );
         } else {
-            setAttributes(new Attribute[]{
-                            StdAttr.FACING, StdAttr.WIDTH, ATTR_CONTROL,
-                            StdAttr.LABEL, StdAttr.LABEL_FONT},
-                    new Object[]{Direction.EAST, BitWidth.ONE, RIGHT_HANDED,
-                            "", StdAttr.DEFAULT_LABEL_FONT});
+            setAttributes(
+                new Attribute[]{
+                    StdAttr.FACING,
+                    StdAttr.WIDTH,
+                    ATTR_CONTROL,
+                    StdAttr.LABEL,
+                    StdAttr.LABEL_FONT
+                },
+                new Object[]{
+                    Direction.EAST,
+                    BitWidth.ONE,
+                    RIGHT_HANDED,
+                    "",
+                    StdAttr.DEFAULT_LABEL_FONT
+                }
+            );
         }
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
@@ -71,8 +93,7 @@ class ControlledBuffer extends InstanceFactory {
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
         int w = 20;
-        if (isInverter &&
-                !NotGate.SIZE_NARROW.equals(attributes.getValue(NotGate.ATTR_SIZE))) {
+        if (isInverter && !NotGate.SIZE_NARROW.equals(attributes.getValue(NotGate.ATTR_SIZE))) {
             w = 30;
         }
         Direction facing = attributes.getValue(StdAttr.FACING);
@@ -234,7 +255,7 @@ class ControlledBuffer extends InstanceFactory {
             if (control == Value.UNKNOWN || control == Value.NIL) {
                 AttributeSet opts = state.getProject().getOptions().getAttributeSet();
                 if (opts.getValue(Options.ATTR_GATE_UNDEFINED)
-                        .equals(Options.GATE_UNDEFINED_ERROR)) {
+                    .equals(Options.GATE_UNDEFINED_ERROR)) {
                     out = Value.createError(width);
                 } else {
                     out = Value.createUnknown(width);

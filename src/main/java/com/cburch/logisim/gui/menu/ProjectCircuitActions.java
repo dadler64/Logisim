@@ -45,8 +45,7 @@ public class ProjectCircuitActions {
         }
     }
 
-    private static String promptForCircuitName(JFrame frame,
-            Library lib, String initialValue) {
+    private static String promptForCircuitName(JFrame frame, Library lib, String initialValue) {
         JLabel label = new JLabel(Strings.get("circuitNamePrompt"));
         final JTextField field = new JTextField(15);
         field.setText(initialValue);
@@ -70,7 +69,7 @@ public class ProjectCircuitActions {
         gb.setConstraints(strut, gc);
         panel.add(strut);
         JOptionPane pane = new JOptionPane(panel, JOptionPane.QUESTION_MESSAGE,
-                JOptionPane.OK_CANCEL_OPTION);
+            JOptionPane.OK_CANCEL_OPTION);
         pane.setInitialValue(field);
         JDialog dlog = pane.createDialog(frame, Strings.get("circuitNameDialogTitle"));
         dlog.addWindowFocusListener(new WindowFocusListener() {
@@ -88,8 +87,7 @@ public class ProjectCircuitActions {
             dlog.setVisible(true);
             field.requestFocusInWindow();
             Object action = pane.getValue();
-            if (action == null || !(action instanceof Integer)
-                    || (Integer) action != JOptionPane.OK_OPTION) {
+            if (action == null || !(action instanceof Integer) || (Integer) action != JOptionPane.OK_OPTION) {
                 return null;
             }
 
@@ -125,14 +123,14 @@ public class ProjectCircuitActions {
     public static void doRemoveCircuit(Project proj, Circuit circuit) {
         if (proj.getLogisimFile().getTools().size() == 1) {
             JOptionPane.showMessageDialog(proj.getFrame(),
-                    Strings.get("circuitRemoveLastError"),
-                    Strings.get("circuitRemoveErrorTitle"),
-                    JOptionPane.ERROR_MESSAGE);
+                Strings.get("circuitRemoveLastError"),
+                Strings.get("circuitRemoveErrorTitle"),
+                JOptionPane.ERROR_MESSAGE);
         } else if (!proj.getDependencies().canRemove(circuit)) {
             JOptionPane.showMessageDialog(proj.getFrame(),
-                    Strings.get("circuitRemoveUsedError"),
-                    Strings.get("circuitRemoveErrorTitle"),
-                    JOptionPane.ERROR_MESSAGE);
+                Strings.get("circuitRemoveUsedError"),
+                Strings.get("circuitRemoveErrorTitle"),
+                JOptionPane.ERROR_MESSAGE);
         } else {
             proj.doAction(LogisimFileActions.removeCircuit(circuit));
         }
@@ -160,13 +158,11 @@ public class ProjectCircuitActions {
             }
         }
         if (inputNames.size() > AnalyzerModel.MAX_INPUTS) {
-            analyzeError(proj, StringUtil.format(Strings.get("analyzeTooManyInputsError"),
-                    "" + AnalyzerModel.MAX_INPUTS));
+            analyzeError(proj, StringUtil.format(Strings.get("analyzeTooManyInputsError"), "" + AnalyzerModel.MAX_INPUTS));
             return;
         }
         if (outputNames.size() > AnalyzerModel.MAX_OUTPUTS) {
-            analyzeError(proj, StringUtil.format(Strings.get("analyzeTooManyOutputsError"),
-                    "" + AnalyzerModel.MAX_OUTPUTS));
+            analyzeError(proj, StringUtil.format(Strings.get("analyzeTooManyOutputsError"), "" + AnalyzerModel.MAX_OUTPUTS));
             return;
         }
 
@@ -178,8 +174,8 @@ public class ProjectCircuitActions {
     }
 
     private static void configureAnalyzer(Project proj, Circuit circuit,
-            Analyzer analyzer, Map<Instance, String> pinNames,
-            ArrayList<String> inputNames, ArrayList<String> outputNames) {
+        Analyzer analyzer, Map<Instance, String> pinNames,
+        ArrayList<String> inputNames, ArrayList<String> outputNames) {
         analyzer.getModel().setVariables(inputNames, outputNames);
 
         // If there are no inputs, we stop with that tab selected
@@ -201,8 +197,8 @@ public class ProjectCircuitActions {
             return;
         } catch (AnalyzeException ex) {
             JOptionPane.showMessageDialog(proj.getFrame(), ex.getMessage(),
-                    Strings.get("analyzeNoExpressionTitle"),
-                    JOptionPane.INFORMATION_MESSAGE);
+                Strings.get("analyzeNoExpressionTitle"),
+                JOptionPane.INFORMATION_MESSAGE);
         }
 
         // As a backup measure, we compute a truth table.
@@ -212,8 +208,7 @@ public class ProjectCircuitActions {
 
     private static void analyzeError(Project proj, String message) {
         JOptionPane.showMessageDialog(proj.getFrame(), message,
-                Strings.get("analyzeErrorTitle"),
-                JOptionPane.ERROR_MESSAGE);
-        return;
+            Strings.get("analyzeErrorTitle"),
+            JOptionPane.ERROR_MESSAGE);
     }
 }

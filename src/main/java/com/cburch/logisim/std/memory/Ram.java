@@ -31,27 +31,27 @@ import java.awt.event.WindowEvent;
 public class Ram extends Mem {
 
     static final AttributeOption BUS_COMBINED
-            = new AttributeOption("combined", Strings.getter("ramBusSynchCombined"));
+        = new AttributeOption("combined", Strings.getter("ramBusSynchCombined"));
     static final AttributeOption BUS_ASYNCH
-            = new AttributeOption("asynch", Strings.getter("ramBusAsynchCombined"));
+        = new AttributeOption("asynch", Strings.getter("ramBusAsynchCombined"));
     static final AttributeOption BUS_SEPARATE
-            = new AttributeOption("separate", Strings.getter("ramBusSeparate"));
+        = new AttributeOption("separate", Strings.getter("ramBusSeparate"));
 
-    static final Attribute<AttributeOption> ATTR_BUS = Attributes.forOption("bus",
-            Strings.getter("ramBusAttr"),
-            new AttributeOption[]{BUS_COMBINED, BUS_ASYNCH, BUS_SEPARATE});
+    static final Attribute<AttributeOption> ATTR_BUS
+        = Attributes.forOption("bus", Strings.getter("ramBusAttr"), new AttributeOption[]{BUS_COMBINED, BUS_ASYNCH,
+        BUS_SEPARATE});
     private static final int OE = MEM_INPUTS + 0;
     private static final int CLR = MEM_INPUTS + 1;
     private static final int CLK = MEM_INPUTS + 2;
     private static final int WE = MEM_INPUTS + 3;
     private static final int DIN = MEM_INPUTS + 4;
-    private static Attribute<?>[] ATTRIBUTES = {
-            Mem.ADDR_ATTR, Mem.DATA_ATTR, ATTR_BUS
+    private static final Attribute<?>[] ATTRIBUTES = {
+        Mem.ADDR_ATTR, Mem.DATA_ATTR, ATTR_BUS
     };
-    private static Object[] DEFAULTS = {
-            BitWidth.create(8), BitWidth.create(8), BUS_COMBINED
+    private static final Object[] DEFAULTS = {
+        BitWidth.create(8), BitWidth.create(8), BUS_COMBINED
     };
-    private static Object[][] logOptions = new Object[9][];
+    private static final Object[][] logOptions = new Object[9][];
 
     public Ram() {
         super("RAM", Strings.getter("ramComponent"), 3);
@@ -117,12 +117,12 @@ public class Ram extends Mem {
 
     @Override
     MemState getState(InstanceState state) {
-        BitWidth addrBits = state.getAttributeValue(ADDR_ATTR);
+        BitWidth addressBits = state.getAttributeValue(ADDR_ATTR);
         BitWidth dataBits = state.getAttributeValue(DATA_ATTR);
 
         RamState myState = (RamState) state.getData();
         if (myState == null) {
-            MemContents contents = MemContents.create(addrBits.getWidth(), dataBits.getWidth());
+            MemContents contents = MemContents.create(addressBits.getWidth(), dataBits.getWidth());
             Instance instance = state.getInstance();
             myState = new RamState(instance, contents, new MemListener(instance));
             state.setData(myState);
@@ -134,12 +134,12 @@ public class Ram extends Mem {
 
     @Override
     MemState getState(Instance instance, CircuitState state) {
-        BitWidth addrBits = instance.getAttributeValue(ADDR_ATTR);
+        BitWidth addressBits = instance.getAttributeValue(ADDR_ATTR);
         BitWidth dataBits = instance.getAttributeValue(DATA_ATTR);
 
         RamState myState = (RamState) instance.getData(state);
         if (myState == null) {
-            MemContents contents = MemContents.create(addrBits.getWidth(), dataBits.getWidth());
+            MemContents contents = MemContents.create(addressBits.getWidth(), dataBits.getWidth());
             myState = new RamState(instance, contents, new MemListener(instance));
             instance.setData(state, myState);
         } else {
@@ -149,22 +149,22 @@ public class Ram extends Mem {
     }
 
     @Override
-    HexFrame getHexFrame(Project proj, Instance instance, CircuitState circState) {
-        RamState state = (RamState) getState(instance, circState);
-        return state.getHexFrame(proj);
+    HexFrame getHexFrame(Project project, Instance instance, CircuitState circuitState) {
+        RamState state = (RamState) getState(instance, circuitState);
+        return state.getHexFrame(project);
     }
 
     @Override
     public void propagate(InstanceState state) {
         RamState myState = (RamState) getState(state);
         BitWidth dataBits = state.getAttributeValue(DATA_ATTR);
-        Object busVal = state.getAttributeValue(ATTR_BUS);
-        boolean asynch = busVal != null && busVal.equals(BUS_ASYNCH);
-        boolean separate = busVal != null && busVal.equals(BUS_SEPARATE);
+        Object busValue = state.getAttributeValue(ATTR_BUS);
+        boolean isAsynch = busValue != null && busValue.equals(BUS_ASYNCH);
+        boolean isSeparate = busValue != null && busValue.equals(BUS_SEPARATE);
 
-        Value addrValue = state.getPort(ADDR);
+        Value addressValue = state.getPort(ADDR);
         boolean chipSelect = state.getPort(CS) != Value.FALSE;
-        boolean triggered = asynch || myState.setClock(state.getPort(CLK), StdAttr.TRIG_RISING);
+        boolean isTriggered = isAsynch || myState.setClock(state.getPort(CLK), StdAttr.TRIG_RISING);
         boolean outputEnabled = state.getPort(OE) != Value.FALSE;
         boolean shouldClear = state.getPort(CLR) == Value.TRUE;
 
@@ -178,31 +178,31 @@ public class Ram extends Mem {
             return;
         }
 
-        int addr = addrValue.toIntValue();
-        if (!addrValue.isFullyDefined() || addr < 0) {
+        int address = addressValue.toIntValue();
+        if (!addressValue.isFullyDefined() || address < 0) {
             return;
         }
-        if (addr != myState.getCurrent()) {
-            myState.setCurrent(addr);
-            myState.scrollToShow(addr);
+        if (address != myState.getCurrent()) {
+            myState.setCurrent(address);
+            myState.scrollToShow(address);
         }
 
-        if (!shouldClear && triggered) {
+        if (!shouldClear && isTriggered) {
             boolean shouldStore;
-            if (separate) {
+            if (isSeparate) {
                 shouldStore = state.getPort(WE) != Value.FALSE;
             } else {
                 shouldStore = !outputEnabled;
             }
             if (shouldStore) {
-                Value dataValue = state.getPort(separate ? DIN : DATA);
-                myState.getContents().set(addr, dataValue.toIntValue());
+                Value dataValue = state.getPort(isSeparate ? DIN : DATA);
+                myState.getContents().set(address, dataValue.toIntValue());
             }
         }
 
         if (outputEnabled) {
-            int val = myState.getContents().get(addr);
-            state.setPort(DATA, Value.createKnown(dataBits, val), DELAY);
+            int value = myState.getContents().get(address);
+            state.setPort(DATA, Value.createKnown(dataBits, value), DELAY);
         } else {
             state.setPort(DATA, Value.createUnknown(dataBits), DELAY);
         }
@@ -211,28 +211,27 @@ public class Ram extends Mem {
     @Override
     public void paintInstance(InstancePainter painter) {
         super.paintInstance(painter);
-        Object busVal = painter.getAttributeValue(ATTR_BUS);
-        boolean asynch = busVal != null && busVal.equals(BUS_ASYNCH);
-        boolean separate = busVal != null && busVal.equals(BUS_SEPARATE);
+        Object busValue = painter.getAttributeValue(ATTR_BUS);
+        boolean isAsynch = busValue != null && busValue.equals(BUS_ASYNCH);
+        boolean isSeparate = busValue != null && busValue.equals(BUS_SEPARATE);
 
-        if (!asynch) {
+        if (!isAsynch) {
             painter.drawClock(CLK, Direction.NORTH);
         }
         painter.drawPort(OE, Strings.get("ramOELabel"), Direction.SOUTH);
         painter.drawPort(CLR, Strings.get("ramClrLabel"), Direction.SOUTH);
 
-        if (separate) {
+        if (isSeparate) {
             painter.drawPort(WE, Strings.get("ramWELabel"), Direction.SOUTH);
             painter.getGraphics().setColor(Color.BLACK);
             painter.drawPort(DIN, Strings.get("ramDataLabel"), Direction.EAST);
         }
     }
 
-    private static class RamState extends MemState
-            implements InstanceData, AttributeListener {
+    private static class RamState extends MemState implements InstanceData, AttributeListener {
 
+        private final MemListener listener;
         private Instance parent;
-        private MemListener listener;
         private HexFrame hexFrame = null;
         private ClockState clockState;
 
@@ -262,17 +261,17 @@ public class Ram extends Mem {
 
         @Override
         public RamState clone() {
-            RamState ret = (RamState) super.clone();
-            ret.parent = null;
-            ret.clockState = this.clockState.clone();
-            ret.getContents().addHexModelListener(listener);
-            return ret;
+            RamState state = (RamState) super.clone();
+            state.parent = null;
+            state.clockState = this.clockState.clone();
+            state.getContents().addHexModelListener(listener);
+            return state;
         }
 
         // Retrieves a HexFrame for editing within a separate window
-        public HexFrame getHexFrame(Project proj) {
+        public HexFrame getHexFrame(Project project) {
             if (hexFrame == null) {
-                hexFrame = new HexFrame(proj, getContents());
+                hexFrame = new HexFrame(project, getContents());
                 hexFrame.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
@@ -295,9 +294,9 @@ public class Ram extends Mem {
 
         public void attributeValueChanged(AttributeEvent e) {
             AttributeSet attrs = e.getSource();
-            BitWidth addrBits = attrs.getValue(Mem.ADDR_ATTR);
+            BitWidth addressBits = attrs.getValue(Mem.ADDR_ATTR);
             BitWidth dataBits = attrs.getValue(Mem.DATA_ATTR);
-            getContents().setDimensions(addrBits.getWidth(), dataBits.getWidth());
+            getContents().setDimensions(addressBits.getWidth(), dataBits.getWidth());
         }
     }
 
@@ -305,29 +304,29 @@ public class Ram extends Mem {
 
         @Override
         public Object[] getLogOptions(InstanceState state) {
-            int addrBits = state.getAttributeValue(ADDR_ATTR).getWidth();
-            if (addrBits >= logOptions.length) {
-                addrBits = logOptions.length - 1;
+            int addressBits = state.getAttributeValue(ADDR_ATTR).getWidth();
+            if (addressBits >= logOptions.length) {
+                addressBits = logOptions.length - 1;
             }
             synchronized (logOptions) {
-                Object[] ret = logOptions[addrBits];
-                if (ret == null) {
-                    ret = new Object[1 << addrBits];
-                    logOptions[addrBits] = ret;
-                    for (int i = 0; i < ret.length; i++) {
-                        ret[i] = i;
+                Object[] options = logOptions[addressBits];
+                if (options == null) {
+                    options = new Object[1 << addressBits];
+                    logOptions[addressBits] = options;
+                    for (int i = 0; i < options.length; i++) {
+                        options[i] = i;
                     }
                 }
-                return ret;
+                return options;
             }
         }
 
         @Override
         public String getLogName(InstanceState state, Object option) {
             if (option instanceof Integer) {
-                String disp = Strings.get("ramComponent");
+                String display = Strings.get("ramComponent");
                 Location loc = state.getInstance().getLocation();
-                return disp + loc + "[" + option + "]";
+                return display + loc + "[" + option + "]";
             } else {
                 return null;
             }
@@ -336,10 +335,9 @@ public class Ram extends Mem {
         @Override
         public Value getLogValue(InstanceState state, Object option) {
             if (option instanceof Integer) {
-                MemState s = (MemState) state.getData();
-                int addr = (Integer) option;
-                return Value.createKnown(BitWidth.create(s.getDataBits()),
-                        s.getContents().get(addr));
+                MemState memState = (MemState) state.getData();
+                int address = (Integer) option;
+                return Value.createKnown(BitWidth.create(memState.getDataBits()), memState.getContents().get(address));
             } else {
                 return Value.NIL;
             }

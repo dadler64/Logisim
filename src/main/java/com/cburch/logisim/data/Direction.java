@@ -8,18 +8,18 @@ import com.cburch.logisim.util.StringGetter;
 public class Direction implements AttributeOptionInterface {
 
     public static final Direction EAST = new Direction("east", Strings.getter("directionEastOption"),
-            Strings.getter("directionEastVertical"), 0);
+        Strings.getter("directionEastVertical"), 0);
     public static final Direction WEST = new Direction("west", Strings.getter("directionWestOption"),
-            Strings.getter("directionWestVertical"), 1);
+        Strings.getter("directionWestVertical"), 1);
     public static final Direction NORTH = new Direction("north", Strings.getter("directionNorthOption"),
-            Strings.getter("directionNorthVertical"), 2);
+        Strings.getter("directionNorthVertical"), 2);
     public static final Direction SOUTH = new Direction("south", Strings.getter("directionSouthOption"),
-            Strings.getter("directionSouthVertical"), 3);
+        Strings.getter("directionSouthVertical"), 3);
     public static final Direction[] cardinals = {NORTH, EAST, SOUTH, WEST};
-    private String name;
-    private StringGetter disp;
-    private StringGetter vert;
-    private int id;
+    private final String name;
+    private final StringGetter disp;
+    private final StringGetter vert;
+    private final int id;
 
     private Direction(String name, StringGetter disp, StringGetter vert, int id) {
         this.name = name;

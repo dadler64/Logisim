@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
 
 public class Poly extends FillableCanvasObject {
 
-    private boolean closed;
+    private final boolean closed;
     // "handles" should be immutable - create a new array and change using
     // setHandles rather than changing contents
     private Handle[] handles;
@@ -124,7 +124,7 @@ public class Poly extends FillableCanvasObject {
             }
             int width = getStrokeWidth();
             PolyUtil.ClosestResult result = PolyUtil.getClosestPoint(location,
-                    closed, handles);
+                closed, handles);
             assert result != null;
             return result.getDistanceSq() < (width * width) / 4.0;
         }
@@ -304,7 +304,7 @@ public class Poly extends FillableCanvasObject {
         Handle[] handles = this.handles;
         if (previous == null) {
             PolyUtil.ClosestResult result = PolyUtil.getClosestPoint(location,
-                    closed, handles);
+                closed, handles);
             previous = result != null ? result.getPreviousHandle() : null;
         }
         Handle[] is = new Handle[handles.length + 1];

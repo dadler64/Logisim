@@ -16,8 +16,8 @@ import javax.swing.SwingConstants;
 
 public class CanvasPane extends JScrollPane {
 
-    private CanvasPaneContents contents;
-    private Listener listener;
+    private final CanvasPaneContents contents;
+    private final Listener listener;
     private ZoomModel zoomModel;
 
     public CanvasPane(CanvasPaneContents contents) {
@@ -57,9 +57,9 @@ public class CanvasPane extends JScrollPane {
     }
 
     public int supportScrollableBlockIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+        int orientation, int direction) {
         int unit = supportScrollableUnitIncrement(visibleRect, orientation,
-                direction);
+            direction);
         if (direction == SwingConstants.VERTICAL) {
             return visibleRect.height / unit * unit;
         } else {
@@ -68,7 +68,7 @@ public class CanvasPane extends JScrollPane {
     }
 
     public int supportScrollableUnitIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+        int orientation, int direction) {
         double zoom = getZoomFactor();
         return (int) Math.round(10 * zoom);
     }

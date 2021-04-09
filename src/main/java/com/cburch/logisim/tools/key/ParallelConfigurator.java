@@ -24,30 +24,30 @@ public class ParallelConfigurator implements KeyConfigurator, Cloneable {
 
     @Override
     public ParallelConfigurator clone() {
-        ParallelConfigurator ret;
+        ParallelConfigurator configurator;
         try {
-            ret = (ParallelConfigurator) super.clone();
+            configurator = (ParallelConfigurator) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return null;
         }
         int len = this.handlers.length;
-        ret.handlers = new KeyConfigurator[len];
+        configurator.handlers = new KeyConfigurator[len];
         for (int i = 0; i < len; i++) {
-            ret.handlers[i] = this.handlers[i].clone();
+            configurator.handlers[i] = this.handlers[i].clone();
         }
-        return ret;
+        return configurator;
     }
 
     public KeyConfigurationResult keyEventReceived(KeyConfigurationEvent event) {
-        KeyConfigurator[] hs = handlers;
+        KeyConfigurator[] handlers = this.handlers;
         if (event.isConsumed()) {
             return null;
         }
         KeyConfigurationResult first = null;
         HashMap<Attribute<?>, Object> map = null;
-        for (int i = 0; i < hs.length; i++) {
-            KeyConfigurationResult result = hs[i].keyEventReceived(event);
+        for (KeyConfigurator handler : handlers) {
+            KeyConfigurationResult result = handler.keyEventReceived(event);
             if (result != null) {
                 if (first == null) {
                     first = result;

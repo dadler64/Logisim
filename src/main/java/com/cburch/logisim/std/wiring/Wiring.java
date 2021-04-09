@@ -20,29 +20,29 @@ public class Wiring extends Library {
     static final AttributeOption GATE_TOP_LEFT = new AttributeOption("tl", Strings.getter("wiringGateTopLeftOption"));
     static final AttributeOption GATE_BOTTOM_RIGHT = new AttributeOption("br", Strings.getter("wiringGateBottomRightOption"));
     static final Attribute<AttributeOption> ATTR_GATE = Attributes.forOption("gate", Strings.getter("wiringGateAttr"),
-            new AttributeOption[]{GATE_TOP_LEFT, GATE_BOTTOM_RIGHT});
+        new AttributeOption[]{GATE_TOP_LEFT, GATE_BOTTOM_RIGHT});
 
     private static final Tool[] ADD_TOOLS = {
-            new AddTool(SplitterFactory.instance),
-            new AddTool(Pin.FACTORY),
-            new AddTool(Probe.FACTORY),
-            new AddTool(Tunnel.FACTORY),
-            new AddTool(PullResistor.FACTORY),
-            new AddTool(Clock.FACTORY),
-            new AddTool(Constant.FACTORY),
+        new AddTool(SplitterFactory.instance),
+        new AddTool(Pin.FACTORY),
+        new AddTool(Probe.FACTORY),
+        new AddTool(Tunnel.FACTORY),
+        new AddTool(PullResistor.FACTORY),
+        new AddTool(Clock.FACTORY),
+        new AddTool(Constant.FACTORY),
     };
 
     private static final FactoryDescription[] DESCRIPTIONS = {
-            new FactoryDescription("Power", Strings.getter("powerComponent"), "power.gif",
-                    "Power"),
-            new FactoryDescription("Ground", Strings.getter("groundComponent"), "ground.gif",
-                    "Ground"),
-            new FactoryDescription("Transistor", Strings.getter("transistorComponent"),
-                    "trans0.gif", "Transistor"),
-            new FactoryDescription("Transmission Gate", Strings.getter("transmissionGateComponent"),
-                    "transmis.gif", "TransmissionGate"),
-            new FactoryDescription("Bit Extender", Strings.getter("extenderComponent"),
-                    "extender.gif", "BitExtender"),
+        new FactoryDescription("Power", Strings.getter("powerComponent"), "power.gif",
+            "Power"),
+        new FactoryDescription("Ground", Strings.getter("groundComponent"), "ground.gif",
+            "Ground"),
+        new FactoryDescription("Transistor", Strings.getter("transistorComponent"),
+            "trans0.gif", "Transistor"),
+        new FactoryDescription("Transmission Gate", Strings.getter("transmissionGateComponent"),
+            "transmis.gif", "TransmissionGate"),
+        new FactoryDescription("Bit Extender", Strings.getter("extenderComponent"),
+            "extender.gif", "BitExtender"),
     };
 
     private List<Tool> tools = null;
@@ -63,10 +63,10 @@ public class Wiring extends Library {
     @Override
     public List<Tool> getTools() {
         if (tools == null) {
-            List<Tool> ret = new ArrayList<>(ADD_TOOLS.length + DESCRIPTIONS.length);
-            Collections.addAll(ret, ADD_TOOLS);
-            ret.addAll(FactoryDescription.getTools(Wiring.class, DESCRIPTIONS));
-            tools = ret;
+            List<Tool> tools = new ArrayList<>(ADD_TOOLS.length + DESCRIPTIONS.length);
+            Collections.addAll(tools, ADD_TOOLS);
+            tools.addAll(FactoryDescription.getTools(Wiring.class, DESCRIPTIONS));
+            this.tools = tools;
         }
         return tools;
     }

@@ -23,30 +23,34 @@ import java.awt.event.MouseEvent;
 
 public class Joystick extends InstanceFactory {
 
-    static final Attribute<BitWidth> ATTR_WIDTH = Attributes.forBitWidth("bits",
-            Strings.getter("ioBitWidthAttr"), 2, 5);
+    static final Attribute<BitWidth> ATTR_WIDTH = Attributes.forBitWidth("bits", Strings.getter("ioBitWidthAttr"), 2, 5);
 
     public Joystick() {
         super("Joystick", Strings.getter("joystickComponent"));
-        setAttributes(new Attribute[]{ATTR_WIDTH, Io.ATTR_COLOR},
-                new Object[]{BitWidth.create(4), Color.RED});
+        setAttributes(
+            new Attribute[]{
+                ATTR_WIDTH,
+                Io.ATTR_COLOR
+            }, new Object[]{
+                BitWidth.create(4),
+                Color.RED
+            }
+        );
         setKeyConfigurator(new BitWidthConfigurator(ATTR_WIDTH, 2, 5));
         setOffsetBounds(Bounds.create(-30, -10, 30, 30));
         setIconName("joystick.gif");
         setPorts(new Port[]{
-                new Port(0, 0, Port.OUTPUT, ATTR_WIDTH),
-                new Port(0, 10, Port.OUTPUT, ATTR_WIDTH),
+            new Port(0, 0, Port.OUTPUT, ATTR_WIDTH),
+            new Port(0, 10, Port.OUTPUT, ATTR_WIDTH),
         });
         setInstancePoker(Poker.class);
     }
 
-    private static void drawBall(Graphics g, int x, int y, Color c,
-            boolean inColor) {
+    private static void drawBall(Graphics g, int x, int y, Color color, boolean inColor) {
         if (inColor) {
-            g.setColor(c == null ? Color.RED : c);
+            g.setColor(color == null ? Color.RED : color);
         } else {
-            int hue = c == null ? 128
-                    : (c.getRed() + c.getGreen() + c.getBlue()) / 3;
+            int hue = color == null ? 128 : (color.getRed() + color.getGreen() + color.getBlue()) / 3;
             g.setColor(new Color(hue, hue, hue));
         }
         GraphicsUtil.switchToWidth(g, 1);
@@ -100,8 +104,7 @@ public class Joystick extends InstanceFactory {
         Graphics g = painter.getGraphics();
         g.drawRoundRect(x - 30, y - 10, 30, 30, 8, 8);
         g.drawRoundRect(x - 28, y - 8, 26, 26, 4, 4);
-        drawBall(g, x - 15, y + 5, painter.getAttributeValue(Io.ATTR_COLOR),
-                painter.shouldDrawColor());
+        drawBall(g, x - 15, y + 5, painter.getAttributeValue(Io.ATTR_COLOR), painter.shouldDrawColor());
         painter.drawPorts();
     }
 

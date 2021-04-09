@@ -73,18 +73,7 @@ public class InputEventUtil {
             list.add(BUTTON3);
         }
 
-        Iterator<String> iterator = list.iterator();
-        if (iterator.hasNext()) {
-            StringBuilder ret = new StringBuilder();
-            ret.append(iterator.next());
-            while (iterator.hasNext()) {
-                ret.append(" ");
-                ret.append(iterator.next());
-            }
-            return ret.toString();
-        } else {
-            return "";
-        }
+        return buildString(list.iterator());
     }
 
     public static int fromDisplayString(String input) {
@@ -136,18 +125,7 @@ public class InputEventUtil {
             return "";
         }
 
-        Iterator<String> iterator = list.iterator();
-        if (iterator.hasNext()) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(iterator.next());
-            while (iterator.hasNext()) {
-                builder.append(" ");
-                builder.append(iterator.next());
-            }
-            return builder.toString();
-        } else {
-            return "";
-        }
+        return buildString(list.iterator());
     }
 
     public static String toKeyDisplayString(int mods) {
@@ -165,7 +143,10 @@ public class InputEventUtil {
             list.add(Strings.get("shiftMod"));
         }
 
-        Iterator<String> iterator = list.iterator();
+        return buildString(list.iterator());
+    }
+
+    private static String buildString(Iterator<String> iterator) {
         if (iterator.hasNext()) {
             StringBuilder builder = new StringBuilder();
             builder.append(iterator.next());

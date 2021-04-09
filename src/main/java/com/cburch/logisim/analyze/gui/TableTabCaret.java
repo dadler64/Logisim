@@ -27,10 +27,10 @@ import javax.swing.KeyStroke;
 
 class TableTabCaret {
 
-    private static Color SELECT_COLOR = new Color(192, 192, 255);
+    private static final Color SELECT_COLOR = new Color(192, 192, 255);
 
-    private Listener listener = new Listener();
-    private TableTab table;
+    private final Listener listener = new Listener();
+    private final TableTab table;
     private int cursorRow;
     private int cursorCol;
     private int markRow;
@@ -107,8 +107,7 @@ class TableTabCaret {
             col = cols - 1;
         }
 
-        if (row == cursorRow && col == cursorCol
-                && (keepMark || (row == markRow && col == markCol))) {
+        if (row == cursorRow && col == cursorCol && (keepMark || (row == markRow && col == markCol))) {
             // nothing is changing, so do nothing
         } else if (!keepMark && markRow == cursorRow && markCol == cursorCol) {
             int oldRow = cursorRow;
@@ -152,15 +151,15 @@ class TableTabCaret {
         if (row >= 0) {
             int x0 = table.getX(0);
             int x1 = table.getX(table.getColumnCount() - 1)
-                    + table.getCellWidth();
+                + table.getCellWidth();
             table.repaint(x0 - 2, table.getY(row) - 2,
-                    (x1 - x0) + 4, table.getCellHeight() + 4);
+                (x1 - x0) + 4, table.getCellHeight() + 4);
         }
     }
 
     void paintBackground(Graphics g) {
         if (cursorRow >= 0 && cursorCol >= 0
-                && (cursorRow != markRow || cursorCol != markCol)) {
+            && (cursorRow != markRow || cursorCol != markCol)) {
             g.setColor(SELECT_COLOR);
 
             int r0 = cursorRow;
@@ -199,7 +198,7 @@ class TableTabCaret {
     }
 
     private class Listener implements MouseListener, MouseMotionListener,
-            KeyListener, FocusListener, TruthTableListener {
+        KeyListener, FocusListener, TruthTableListener {
 
         public void mouseClicked(MouseEvent e) {
         }
@@ -208,7 +207,7 @@ class TableTabCaret {
             table.requestFocus();
             int row = table.getRow(e);
             int col = table.getColumn(e);
-            setCursor(row, col, (e.getModifiers() & InputEvent.SHIFT_MASK) != 0);
+            setCursor(row, col, (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0);
         }
 
         public void mouseReleased(MouseEvent e) {
@@ -231,8 +230,8 @@ class TableTabCaret {
         }
 
         public void keyTyped(KeyEvent e) {
-            int mask = e.getModifiers();
-            if ((mask & ~InputEvent.SHIFT_MASK) != 0) {
+            int mask = e.getModifiersEx();
+            if ((mask & ~InputEvent.SHIFT_DOWN_MASK) != 0) {
                 return;
             }
 
@@ -267,11 +266,11 @@ class TableTabCaret {
                     break;
                 case '\n':
                     setCursor(cursorRow + 1, table.getTruthTable().getInputColumnCount(),
-                            (mask & InputEvent.SHIFT_MASK) != 0);
+                        (mask & InputEvent.SHIFT_DOWN_MASK) != 0);
                     break;
                 case '\u0008':
                 case '\u007f':
-                    setCursor(cursorRow, cursorCol - 1, (mask & InputEvent.SHIFT_MASK) != 0);
+                    setCursor(cursorRow, cursorCol - 1, (mask & InputEvent.SHIFT_DOWN_MASK) != 0);
                     break;
                 default:
             }
@@ -299,7 +298,7 @@ class TableTabCaret {
             int inputs = model.getInputColumnCount();
             int outputs = model.getOutputColumnCount();
             int cols = inputs + outputs;
-            boolean shift = (e.getModifiers() & InputEvent.SHIFT_MASK) != 0;
+            boolean shift = (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0;
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP:
                     setCursor(cursorRow - 1, cursorCol, shift);

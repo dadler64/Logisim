@@ -26,9 +26,9 @@ class SelectionAttributes extends AbstractAttributeSet {
 
     private static final Attribute<?>[] EMPTY_ATTRIBUTES = new Attribute<?>[0];
     private static final Object[] EMPTY_VALUES = new Object[0];
-    private Canvas canvas;
-    private Selection selection;
-    private Listener listener;
+    private final Canvas canvas;
+    private final Selection selection;
+    private final Listener listener;
     private boolean listening;
     private Set<Component> selected;
     private Attribute<?>[] attrs;
@@ -121,7 +121,7 @@ class SelectionAttributes extends AbstractAttributeSet {
     }
 
     private static boolean isSame(LinkedHashMap<Attribute<Object>, Object> attrMap,
-            Attribute<?>[] oldAttrs, Object[] oldValues) {
+        Attribute<?>[] oldAttrs, Object[] oldValues) {
         if (oldAttrs.length != attrMap.size()) {
             return false;
         } else {
@@ -236,7 +236,7 @@ class SelectionAttributes extends AbstractAttributeSet {
                     Object oldVal = oldValues[i];
                     Object newVal = newValues[i];
                     boolean sameVals = oldVal == null ? newVal == null
-                            : oldVal.equals(newVal);
+                        : oldVal.equals(newVal);
                     if (!sameVals) {
                         @SuppressWarnings("unchecked")
                         Attribute<Object> attr = (Attribute<Object>) oldAttrs[i];

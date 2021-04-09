@@ -80,7 +80,7 @@ public class SplitterFactory extends AbstractComponentFactory {
         Bounds bds = Bounds.create(0, 0, 1, 1);
         bds = bds.add(xEnd0, yEnd0);
         bds = bds.add(xEnd0 + (fanout - 1) * parms.getEndToEndDeltaX(),
-                yEnd0 + (fanout - 1) * parms.getEndToEndDeltaY());
+            yEnd0 + (fanout - 1) * parms.getEndToEndDeltaY());
         return bds;
     }
 
@@ -89,7 +89,7 @@ public class SplitterFactory extends AbstractComponentFactory {
     //
     @Override
     public void drawGhost(ComponentDrawContext context,
-            Color color, int x, int y, AttributeSet attributes) {
+        Color color, int x, int y, AttributeSet attributes) {
         SplitterAttributes attrs = (SplitterAttributes) attributes;
         context.getGraphics().setColor(color);
         Location loc = Location.create(x, y);
@@ -102,7 +102,7 @@ public class SplitterFactory extends AbstractComponentFactory {
 
     @Override
     public void paintIcon(ComponentDrawContext c,
-            int x, int y, AttributeSet attributes) {
+        int x, int y, AttributeSet attributes) {
         Graphics g = c.getGraphics();
         if (toolIcon != null) {
             toolIcon.paintIcon(c.getDestination(), g, x + 2, y + 2);
@@ -115,12 +115,12 @@ public class SplitterFactory extends AbstractComponentFactory {
             return StdAttr.FACING;
         } else if (key == KeyConfigurator.class) {
             KeyConfigurator altConfig = ParallelConfigurator.create(
-                    new BitWidthConfigurator(SplitterAttributes.ATTR_WIDTH),
-                    new IntegerConfigurator(SplitterAttributes.ATTR_FANOUT,
-                            1, 32, InputEvent.ALT_DOWN_MASK));
+                new BitWidthConfigurator(SplitterAttributes.ATTR_WIDTH),
+                new IntegerConfigurator(SplitterAttributes.ATTR_FANOUT,
+                    1, 32, InputEvent.ALT_DOWN_MASK));
             return JoinedConfigurator.create(
-                    new IntegerConfigurator(SplitterAttributes.ATTR_FANOUT, 1, 32, 0),
-                    altConfig);
+                new IntegerConfigurator(SplitterAttributes.ATTR_FANOUT, 1, 32, 0),
+                altConfig);
         }
         return super.getFeature(key, attributeSet);
     }

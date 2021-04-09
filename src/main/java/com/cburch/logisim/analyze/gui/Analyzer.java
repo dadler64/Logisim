@@ -25,6 +25,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Circuit analyzer gui
+ */
 public class Analyzer extends LFrame {
 
     // used by circuit analysis to select the relevant tab automatically.
@@ -33,16 +36,16 @@ public class Analyzer extends LFrame {
     public static final int TABLE_TAB = 2;
     public static final int EXPRESSION_TAB = 3;
     public static final int MINIMIZED_TAB = 4;
-    private MyListener myListener = new MyListener();
-    private EditListener editListener = new EditListener();
-    private AnalyzerModel model = new AnalyzerModel();
+    private final MyListener myListener = new MyListener();
+    private final EditListener editListener = new EditListener();
+    private final AnalyzerModel model = new AnalyzerModel();
+    private final VariableTab inputsPanel;
+    private final VariableTab outputsPanel;
+    private final TableTab truthTablePanel;
+    private final ExpressionTab expressionPanel;
+    private final MinimizedTab minimizedPanel;
+    private final BuildCircuitButton buildCircuit;
     private JTabbedPane tabbedPane = new JTabbedPane();
-    private VariableTab inputsPanel;
-    private VariableTab outputsPanel;
-    private TableTab truthTablePanel;
-    private ExpressionTab expressionPanel;
-    private MinimizedTab minimizedPanel;
-    private BuildCircuitButton buildCircuit;
 
     Analyzer() {
         inputsPanel = new VariableTab(model.getInputs());
@@ -62,14 +65,14 @@ public class Analyzer extends LFrame {
         addTab(MINIMIZED_TAB, minimizedPanel);
 
         Container contents = getContentPane();
-        JPanel vertStrut = new JPanel(null);
-        vertStrut.setPreferredSize(new Dimension(0, 300));
-        JPanel horzStrut = new JPanel(null);
-        horzStrut.setPreferredSize(new Dimension(450, 0));
+        JPanel verticalStrut = new JPanel(null);
+        verticalStrut.setPreferredSize(new Dimension(0, 300));
+        JPanel horizontalStrut = new JPanel(null);
+        horizontalStrut.setPreferredSize(new Dimension(450, 0));
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(buildCircuit);
-        contents.add(vertStrut, BorderLayout.WEST);
-        contents.add(horzStrut, BorderLayout.NORTH);
+        contents.add(verticalStrut, BorderLayout.WEST);
+        contents.add(horizontalStrut, BorderLayout.NORTH);
         contents.add(tabbedPane, BorderLayout.CENTER);
         contents.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -95,8 +98,8 @@ public class Analyzer extends LFrame {
 
     private void addTab(int index, final JComponent comp) {
         final JScrollPane pane = new JScrollPane(comp,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         if (comp instanceof TableTab) {
             pane.setVerticalScrollBar(((TableTab) comp).getVerticalScrollBar());
         }
@@ -166,16 +169,16 @@ public class Analyzer extends LFrame {
             enableItems(menubar);
         }
 
-        public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            Component c = tabbedPane.getSelectedComponent();
-            if (c instanceof JScrollPane) {
-                c = ((JScrollPane) c).getViewport().getView();
+        public void actionPerformed(ActionEvent event) {
+            Object src = event.getSource();
+            Component component = tabbedPane.getSelectedComponent();
+            if (component instanceof JScrollPane) {
+                component = ((JScrollPane) component).getViewport().getView();
             }
-            if (!(c instanceof TabInterface)) {
+            if (!(component instanceof TabInterface)) {
                 return;
             }
-            TabInterface tab = (TabInterface) c;
+            TabInterface tab = (TabInterface) component;
             if (src == LogisimMenuBar.CUT) {
                 tab.copy();
                 tab.delete();

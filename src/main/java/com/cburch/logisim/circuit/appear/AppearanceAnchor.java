@@ -21,9 +21,8 @@ import org.w3c.dom.Element;
 public class AppearanceAnchor extends AppearanceElement {
 
     public static final Attribute<Direction> FACING
-            = Attributes.forDirection("facing", Strings.getter("appearanceFacingAttr"));
-    static final List<Attribute<?>> ATTRIBUTES
-            = UnmodifiableList.create(new Attribute<?>[]{FACING});
+        = Attributes.forDirection("facing", Strings.getter("appearanceFacingAttr"));
+    static final List<Attribute<?>> ATTRIBUTES = UnmodifiableList.create(new Attribute<?>[]{FACING});
 
     private static final int RADIUS = 3;
     private static final int INDICATOR_LENGTH = 8;
@@ -125,10 +124,10 @@ public class AppearanceAnchor extends AppearanceElement {
             Location end = center.translate(facing, RADIUS + INDICATOR_LENGTH);
             if (facing == Direction.EAST || facing == Direction.WEST) {
                 return Math.abs(location.getY() - center.getY()) < 2
-                        && (location.getX() < center.getX()) != (location.getX() < end.getX());
+                    && (location.getX() < center.getX()) != (location.getX() < end.getX());
             } else {
                 return Math.abs(location.getX() - center.getX()) < 2
-                        && (location.getY() < center.getY()) != (location.getY() < end.getY());
+                    && (location.getY() < center.getY()) != (location.getY() < end.getY());
             }
         }
     }
@@ -138,6 +137,6 @@ public class AppearanceAnchor extends AppearanceElement {
         Location c = getLocation();
         Location end = c.translate(facing, RADIUS + INDICATOR_LENGTH);
         return UnmodifiableList.create(new Handle[]{new Handle(this, c),
-                new Handle(this, end)});
+            new Handle(this, end)});
     }
 }

@@ -19,22 +19,22 @@ import java.util.Map;
 
 class SelectionAction extends Action {
 
-    private StringGetter displayName;
-    private AppearanceCanvas canvas;
-    private CanvasModel canvasModel;
-    private Map<CanvasObject, Integer> toRemove;
-    private Collection<CanvasObject> toAdd;
-    private Collection<CanvasObject> oldSelection;
-    private Collection<CanvasObject> newSelection;
-    private Location anchorNewLocation;
-    private Direction anchorNewFacing;
+    private final StringGetter displayName;
+    private final AppearanceCanvas canvas;
+    private final CanvasModel canvasModel;
+    private final Map<CanvasObject, Integer> toRemove;
+    private final Collection<CanvasObject> toAdd;
+    private final Collection<CanvasObject> oldSelection;
+    private final Collection<CanvasObject> newSelection;
+    private final Location anchorNewLocation;
+    private final Direction anchorNewFacing;
     private Location anchorOldLocation;
     private Direction anchorOldFacing;
 
     public SelectionAction(AppearanceCanvas canvas, StringGetter displayName,
-            Collection<CanvasObject> toRemove, Collection<CanvasObject> toAdd,
-            Collection<CanvasObject> newSelection, Location anchorLocation,
-            Direction anchorFacing) {
+        Collection<CanvasObject> toRemove, Collection<CanvasObject> toAdd,
+        Collection<CanvasObject> newSelection, Location anchorLocation,
+        Direction anchorFacing) {
         this.canvas = canvas;
         this.canvasModel = canvas.getModel();
         this.displayName = displayName;
@@ -67,7 +67,7 @@ class SelectionAction extends Action {
         if (anchor != null && anchorNewLocation != null) {
             anchorOldLocation = anchor.getLocation();
             anchor.translate(anchorNewLocation.getX() - anchorOldLocation.getX(),
-                    anchorNewLocation.getY() - anchorOldLocation.getY());
+                anchorNewLocation.getY() - anchorOldLocation.getY());
         }
         if (anchor != null && anchorNewFacing != null) {
             anchorOldFacing = anchor.getFacing();
@@ -91,7 +91,7 @@ class SelectionAction extends Action {
         AppearanceAnchor anchor = findAnchor(canvasModel);
         if (anchor != null && anchorOldLocation != null) {
             anchor.translate(anchorOldLocation.getX() - anchorNewLocation.getX(),
-                    anchorOldLocation.getY() - anchorNewLocation.getY());
+                anchorOldLocation.getY() - anchorNewLocation.getY());
         }
         if (anchor != null && anchorOldFacing != null) {
             anchor.setValue(AppearanceAnchor.FACING, anchorOldFacing);

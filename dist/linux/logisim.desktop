@@ -1,0 +1,9 @@
+[Desktop Entry]
+Comment=COMMENT
+Terminal=TERMINAL
+Name=NAME
+Exec=java -jar /opt/logisim/JAR_FILE
+Type=Application
+Icon=NAME.png
+MimeType=application/java;application/java-vm;application/java-archive
+StartupWMClass=MAIN_CLASS

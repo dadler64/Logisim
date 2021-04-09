@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.tools;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.comp.ComponentFactory;
 import com.cburch.logisim.util.Icons;
 import com.cburch.logisim.util.StringGetter;
@@ -21,12 +22,12 @@ import javax.swing.Icon;
  */
 public class FactoryDescription {
 
-    private String name;
-    private StringGetter displayName;
+    private final String name;
+    private final StringGetter displayName;
+    private final String factoryClassName;
     private String iconName;
     private boolean iconLoadAttempted;
     private Icon icon;
-    private String factoryClassName;
     private boolean factoryLoadAttempted;
     private ComponentFactory factory;
     private StringGetter toolTip;
@@ -79,14 +80,12 @@ public class FactoryDescription {
 
     public Icon getIcon() {
         Icon icon = this.icon;
-        if (icon != null || iconLoadAttempted) {
-            return icon;
-        } else {
+        if (icon == null && !iconLoadAttempted) {
             icon = Icons.getIcon(iconName);
             this.icon = icon;
             iconLoadAttempted = true;
-            return icon;
         }
+        return icon;
     }
 
     public ComponentFactory getFactory(Class<? extends Library> libraryClass) {
@@ -126,7 +125,7 @@ public class FactoryDescription {
                     message = message + ": " + name;
                 }
             }
-            System.err.println("error while " + message); //OK
+            Logger.errorln("error while " + message); //OK
             this.factory = null;
             factoryLoadAttempted = true;
             return null;

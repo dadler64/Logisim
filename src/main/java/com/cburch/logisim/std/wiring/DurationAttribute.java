@@ -10,8 +10,8 @@ import javax.swing.JTextField;
 
 public class DurationAttribute extends Attribute<Integer> {
 
-    private int min;
-    private int max;
+    private final int min;
+    private final int max;
 
     public DurationAttribute(String name, StringGetter disp, int min, int max) {
         super(name, disp);
@@ -22,7 +22,7 @@ public class DurationAttribute extends Attribute<Integer> {
     @Override
     public Integer parse(String value) {
         try {
-            Integer ret = Integer.valueOf(value);
+            int ret = Integer.parseInt(value);
             if (ret < min) {
                 throw new NumberFormatException(StringUtil.format(Strings.get("durationSmallMessage"), "" + min));
             } else if (ret > max) {
@@ -39,8 +39,7 @@ public class DurationAttribute extends Attribute<Integer> {
         if (value.equals(1)) {
             return Strings.get("clockDurationOneValue");
         } else {
-            return StringUtil.format(Strings.get("clockDurationValue"),
-                    value.toString());
+            return StringUtil.format(Strings.get("clockDurationValue"), value.toString());
         }
     }
 

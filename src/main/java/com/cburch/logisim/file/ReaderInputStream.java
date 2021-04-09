@@ -109,7 +109,7 @@ public class ReaderInputStream extends InputStream {
      */
     @Override
     public synchronized int read(byte[] bytes, int offset, int length)
-            throws IOException {
+        throws IOException {
         if (in == null) {
             throw new IOException("Stream Closed");
         }

@@ -35,12 +35,12 @@ import org.xml.sax.SAXException;
 
 public class LogisimFile extends Library implements LibraryEventSource {
 
-    private EventSourceWeakSupport<LibraryListener> listeners = new EventSourceWeakSupport<>();
+    private final EventSourceWeakSupport<LibraryListener> listeners = new EventSourceWeakSupport<>();
+    private final LinkedList<String> messages = new LinkedList<>();
+    private final Options options = new Options();
+    private final LinkedList<AddTool> tools = new LinkedList<>();
+    private final LinkedList<Library> libraries = new LinkedList<>();
     private Loader loader;
-    private LinkedList<String> messages = new LinkedList<>();
-    private Options options = new Options();
-    private LinkedList<AddTool> tools = new LinkedList<>();
-    private LinkedList<Library> libraries = new LinkedList<>();
     private Circuit main = null;
     private String name;
     private boolean isDirty = false;
@@ -105,18 +105,18 @@ public class LogisimFile extends Library implements LibraryEventSource {
     }
 
     public static LogisimFile load(InputStream in, Loader loader)
-            throws IOException {
+        throws IOException {
         try {
             return loadSub(in, loader);
         } catch (SAXException e) {
             loader.showError(StringUtil.format(
-                    Strings.get("xmlFormatError"), e.toString()));
+                Strings.get("xmlFormatError"), e.toString()));
             return null;
         }
     }
 
     private static LogisimFile loadSub(InputStream in, Loader loader)
-            throws IOException, SAXException {
+        throws IOException, SAXException {
         // fetch first line and then reset
         BufferedInputStream inBuffered = new BufferedInputStream(in);
         String firstLine = getFirstLine(inBuffered);
@@ -136,7 +136,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
     }
 
     private static String getFirstLine(BufferedInputStream in)
-            throws IOException {
+        throws IOException {
         byte[] first = new byte[512];
         in.mark(first.length - 1);
         in.read(first);
@@ -354,7 +354,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
             for (Component comp : circuit.getNonWires()) {
                 if (factories.contains(comp.getFactory())) {
                     return StringUtil.format(Strings.get("unloadUsedError"),
-                            circuit.getName());
+                        circuit.getName());
                 }
             }
         }
@@ -400,7 +400,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
             reader.connect(writer);
         } catch (IOException e) {
             newloader.showError(StringUtil.format(
-                    Strings.get("fileDuplicateError"), e.toString()));
+                Strings.get("fileDuplicateError"), e.toString()));
             return null;
         }
         new WritingThread(writer, this).start();
@@ -408,7 +408,7 @@ public class LogisimFile extends Library implements LibraryEventSource {
             return LogisimFile.load(reader, newloader);
         } catch (IOException e) {
             newloader.showError(StringUtil.format(
-                    Strings.get("fileDuplicateError"), e.toString()));
+                Strings.get("fileDuplicateError"), e.toString()));
             return null;
         }
     }
@@ -448,13 +448,13 @@ public class LogisimFile extends Library implements LibraryEventSource {
                 file.write(out, file.loader);
             } catch (IOException e) {
                 file.loader.showError(StringUtil.format(
-                        Strings.get("fileDuplicateError"), e.toString()));
+                    Strings.get("fileDuplicateError"), e.toString()));
             }
             try {
                 out.close();
             } catch (IOException e) {
                 file.loader.showError(StringUtil.format(
-                        Strings.get("fileDuplicateError"), e.toString()));
+                    Strings.get("fileDuplicateError"), e.toString()));
             }
         }
     }

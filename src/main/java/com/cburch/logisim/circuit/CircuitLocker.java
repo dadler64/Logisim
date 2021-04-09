@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.circuit;
 
+import com.adlerd.logger.Logger;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,10 +15,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class CircuitLocker {
 
-    private static AtomicInteger NEXT_SERIAL_NUMBER = new AtomicInteger(0);
+    private static final AtomicInteger NEXT_SERIAL_NUMBER = new AtomicInteger(0);
 
-    private int serialNumber;
-    private ReadWriteLock circuitLock;
+    private final int serialNumber;
+    private final ReadWriteLock circuitLock;
     private transient Thread mutatingThread;
     private CircuitMutatorImpl mutatingMutator;
 
@@ -29,7 +30,7 @@ class CircuitLocker {
     }
 
     static Map<Circuit, Lock> acquireLocks(CircuitTransaction xn,
-            CircuitMutatorImpl mutator) {
+        CircuitMutatorImpl mutator) {
         Map<Circuit, Integer> requests = xn.getAccessedCircuits();
         Map<Circuit, Lock> circuitLocks = new HashMap<>();
         // Acquire locks in serial-number order to avoid deadlock
@@ -39,14 +40,15 @@ class CircuitLocker {
             for (Circuit circ : lockOrder) {
                 Integer access = requests.get(circ);
                 CircuitLocker locker = circ.getLocker();
-                if (access == CircuitTransaction.READ_ONLY) {
+                if (access.equals(CircuitTransaction.READ_ONLY)) {
                     Lock lock = locker.circuitLock.readLock();
                     lock.lock();
                     circuitLocks.put(circ, lock);
-                } else if (access == CircuitTransaction.READ_WRITE) {
+                } else if (access.equals(CircuitTransaction.READ_WRITE)) {
                     Thread curThread = Thread.currentThread();
                     if (locker.mutatingThread == curThread) {
                         // nothing to do - thread already has lock
+                        Logger.debugln("Nothing to do... Thread already has lock");
                     } else {
                         Lock lock = locker.circuitLock.writeLock();
                         lock.lock();
@@ -69,9 +71,9 @@ class CircuitLocker {
     static void releaseLocks(Map<Circuit, Lock> locks) {
         Thread curThread = Thread.currentThread();
         for (Map.Entry<Circuit, Lock> entry : locks.entrySet()) {
-            Circuit circ = entry.getKey();
+            Circuit circuit = entry.getKey();
             Lock lock = entry.getValue();
-            CircuitLocker locker = circ.getLocker();
+            CircuitLocker locker = circuit.getLocker();
             if (locker.mutatingThread == curThread) {
                 locker.mutatingThread = null;
                 locker.mutatingMutator = null;

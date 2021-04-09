@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public abstract class AbstractCanvasObject
-        implements AttributeSet, CanvasObject, Cloneable {
+    implements AttributeSet, CanvasObject, Cloneable {
 
     private static final int OVERLAP_TRIES = 50;
     private static final int GENERATE_RANDOM_TRIES = 20;

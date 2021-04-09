@@ -9,7 +9,7 @@ import com.cburch.logisim.util.WindowMenuItemManager;
 import javax.swing.JFrame;
 
 public class AnalyzerManager extends WindowMenuItemManager
-        implements LocaleListener {
+    implements LocaleListener {
 
     private static Analyzer analysisWindow = null;
     private static AnalyzerManager analysisManager = null;

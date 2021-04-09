@@ -30,8 +30,15 @@ public class Ground extends InstanceFactory {
     public Ground() {
         super("Ground", Strings.getter("groundComponent"));
         setIconName("ground.gif");
-        setAttributes(new Attribute[]{StdAttr.FACING, StdAttr.WIDTH},
-                new Object[]{Direction.SOUTH, BitWidth.ONE});
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                StdAttr.WIDTH
+            }, new Object[]{
+                Direction.SOUTH,
+                BitWidth.ONE
+            }
+        );
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setPorts(new Port[]{new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH)});
@@ -52,7 +59,7 @@ public class Ground extends InstanceFactory {
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
         return Bounds.create(0, -8, 14, 16)
-                .rotate(Direction.EAST, attributes.getValue(StdAttr.FACING), 0, 0);
+            .rotate(Direction.EAST, attributes.getValue(StdAttr.FACING), 0, 0);
     }
 
     @Override
@@ -74,8 +81,8 @@ public class Ground extends InstanceFactory {
 
     private void drawInstance(InstancePainter painter, boolean isGhost) {
         Graphics2D g = (Graphics2D) painter.getGraphics().create();
-        Location loc = painter.getLocation();
-        g.translate(loc.getX(), loc.getY());
+        Location location = painter.getLocation();
+        g.translate(location.getX(), location.getY());
 
         Direction from = painter.getAttributeValue(StdAttr.FACING);
         int degrees = Direction.EAST.toDegrees() - from.toDegrees();

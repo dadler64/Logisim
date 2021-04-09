@@ -141,7 +141,7 @@ public class SvgReader {
         String fontStyle = element.getAttribute("font-style");
         String fontWeight = element.getAttribute("font-weight");
         String fontSize = element.getAttribute("font-size");
-        int styleFlags = 0;
+        int styleFlags = Font.PLAIN;
         if (fontStyle.equals("italic")) {
             styleFlags |= Font.ITALIC;
         }
@@ -220,7 +220,7 @@ public class SvgReader {
 
         if (type == 1) {
             if (tokens.size() == 8 && tokens.get(0).equals("M")
-                    && tokens.get(3).toUpperCase().equals("Q")) {
+                && tokens.get(3).equalsIgnoreCase("Q")) {
                 int x0 = Integer.parseInt(tokens.get(1));
                 int y0 = Integer.parseInt(tokens.get(2));
                 int x1 = Integer.parseInt(tokens.get(4));

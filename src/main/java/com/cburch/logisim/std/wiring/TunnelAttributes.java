@@ -13,11 +13,12 @@ import com.cburch.logisim.instance.StdAttr;
 import java.awt.Font;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 class TunnelAttributes extends AbstractAttributeSet {
 
     private static final List<Attribute<?>> ATTRIBUTES
-            = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, StdAttr.LABEL, StdAttr.LABEL_FONT);
+        = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, StdAttr.LABEL, StdAttr.LABEL_FONT);
 
     private Direction facing;
     private BitWidth width;
@@ -71,8 +72,8 @@ class TunnelAttributes extends AbstractAttributeSet {
     }
 
     boolean setOffsetBounds(Bounds value) {
-        Bounds old = offsetBounds;
-        boolean same = old == null ? value == null : old.equals(value);
+        Bounds oldBounds = offsetBounds;
+        boolean same = Objects.equals(oldBounds, value);
         if (!same) {
             offsetBounds = value;
         }
@@ -129,33 +130,33 @@ class TunnelAttributes extends AbstractAttributeSet {
         Direction facing = this.facing;
         int x;
         int y;
-        int halign;
-        int valign;
+        int hAlign;
+        int vAlign;
         int margin = Tunnel.ARROW_MARGIN;
         if (facing == Direction.NORTH) {
             x = 0;
             y = margin;
-            halign = TextField.H_CENTER;
-            valign = TextField.V_TOP;
+            hAlign = TextField.H_CENTER;
+            vAlign = TextField.V_TOP;
         } else if (facing == Direction.SOUTH) {
             x = 0;
             y = -margin;
-            halign = TextField.H_CENTER;
-            valign = TextField.V_BOTTOM;
+            hAlign = TextField.H_CENTER;
+            vAlign = TextField.V_BOTTOM;
         } else if (facing == Direction.EAST) {
             x = -margin;
             y = 0;
-            halign = TextField.H_RIGHT;
-            valign = TextField.V_CENTER_OVERALL;
+            hAlign = TextField.H_RIGHT;
+            vAlign = TextField.V_CENTER_OVERALL;
         } else {
             x = margin;
             y = 0;
-            halign = TextField.H_LEFT;
-            valign = TextField.V_CENTER_OVERALL;
+            hAlign = TextField.H_LEFT;
+            vAlign = TextField.V_CENTER_OVERALL;
         }
         labelX = x;
         labelY = y;
-        labelHAlign = halign;
-        labelVAlign = valign;
+        labelHAlign = hAlign;
+        labelVAlign = vAlign;
     }
 }

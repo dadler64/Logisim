@@ -12,8 +12,8 @@ import javax.swing.JPopupMenu;
 
 public abstract class EditPopup extends JPopupMenu {
 
-    private Listener listener;
-    private Map<LogisimMenuItem, JMenuItem> items;
+    private final Listener listener;
+    private final Map<LogisimMenuItem, JMenuItem> items;
 
     public EditPopup() {
         this(false);

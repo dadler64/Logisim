@@ -19,10 +19,10 @@ import javax.swing.JSpinner;
 
 public class ZoomControl extends JPanel {
 
+    private final JSpinner spinner;
+    private final GridIcon grid;
     private ZoomModel model;
-    private JSpinner spinner;
     private SpinnerModel spinnerModel;
-    private GridIcon grid;
 
     public ZoomControl(ZoomModel model) {
         super(new BorderLayout());
@@ -60,7 +60,7 @@ public class ZoomControl extends JPanel {
     }
 
     private class SpinnerModel extends AbstractSpinnerModel
-            implements PropertyChangeListener {
+        implements PropertyChangeListener {
 
         public Object getNextValue() {
             double zoom = model.getZoomFactor();
@@ -123,7 +123,7 @@ public class ZoomControl extends JPanel {
     }
 
     private class GridIcon extends JComponent
-            implements MouseListener, PropertyChangeListener {
+        implements MouseListener, PropertyChangeListener {
 
         boolean state = true;
 

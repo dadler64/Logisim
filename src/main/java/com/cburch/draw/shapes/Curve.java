@@ -114,7 +114,7 @@ public class Curve extends FillableCanvasObject {
                 threshold = stroke / 2;
             }
             if (LineUtil.distanceSquared(nearestPoint[0], nearestPoint[1], locations[0], locations[1])
-                    < threshold * threshold) {
+                < threshold * threshold) {
                 return true;
             }
         }
@@ -145,13 +145,13 @@ public class Curve extends FillableCanvasObject {
     private Handle[] getHandleArray(HandleGesture gesture) {
         if (gesture == null) {
             return new Handle[]{new Handle(this, p0), new Handle(this, p1),
-                    new Handle(this, p2)};
+                new Handle(this, p2)};
         } else {
             Handle gestureHandle = gesture.getHandle();
             int gx = gestureHandle.getX() + gesture.getDeltaX();
             int gy = gestureHandle.getY() + gesture.getDeltaY();
             Handle[] handles = {new Handle(this, p0), new Handle(this, p1),
-                    new Handle(this, p2)};
+                new Handle(this, p2)};
             if (gestureHandle.isAt(p0)) {
                 if (gesture.isShiftDown()) {
                     Location point = LineUtil.snapTo8Cardinals(p2, gx, gy);
@@ -177,7 +177,7 @@ public class Curve extends FillableCanvasObject {
                     double deltaX = x1 - x0;
                     double deltaY = y1 - y0;
                     double[] p = LineUtil.nearestPointInfinite(gx, gy,
-                            midPointX, midPointY, midPointX - deltaY, midPointY + deltaX);
+                        midPointX, midPointY, midPointX - deltaY, midPointY + deltaX);
                     gx = (int) Math.round(p[0]);
                     gy = (int) Math.round(p[1]);
                 }
@@ -234,6 +234,6 @@ public class Curve extends FillableCanvasObject {
     private QuadCurve2D getCurve(HandleGesture gesture) {
         Handle[] handles = getHandleArray(gesture);
         return new QuadCurve2D.Double(handles[0].getX(), handles[0].getY(), handles[1].getX(), handles[1].getY(),
-                handles[2].getX(), handles[2].getY());
+            handles[2].getX(), handles[2].getY());
     }
 }

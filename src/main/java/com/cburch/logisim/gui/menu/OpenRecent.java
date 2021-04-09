@@ -21,8 +21,8 @@ import javax.swing.JMenuItem;
 class OpenRecent extends JMenu implements PropertyChangeListener {
 
     private static final int MAX_ITEM_LENGTH = 50;
-    private LogisimMenuBar menubar;
-    private List<RecentItem> recentItems;
+    private final LogisimMenuBar menubar;
+    private final List<RecentItem> recentItems;
 
     OpenRecent(LogisimMenuBar menubar) {
         this.menubar = menubar;
@@ -92,7 +92,7 @@ class OpenRecent extends JMenu implements PropertyChangeListener {
 
     private class RecentItem extends JMenuItem implements ActionListener {
 
-        private File file;
+        private final File file;
 
         RecentItem(File file) {
             super(getFileText(file));
@@ -102,7 +102,7 @@ class OpenRecent extends JMenu implements PropertyChangeListener {
         }
 
         public void actionPerformed(ActionEvent event) {
-            Project proj = menubar.getProject();
+            Project proj = menubar.getMenuProject();
             Component par = proj == null ? null : proj.getFrame().getCanvas();
             ProjectActions.doOpen(par, proj, file);
         }

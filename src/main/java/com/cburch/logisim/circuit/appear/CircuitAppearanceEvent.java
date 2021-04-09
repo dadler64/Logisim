@@ -12,8 +12,8 @@ public class CircuitAppearanceEvent {
     public static final int PORTS = 4;
     public static final int ALL_TYPES = 7;
 
-    private Circuit circuit;
-    private int affects;
+    private final Circuit circuit;
+    private final int affects;
 
     CircuitAppearanceEvent(Circuit circuit, int affects) {
         this.circuit = circuit;

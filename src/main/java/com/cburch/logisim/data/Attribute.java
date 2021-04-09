@@ -9,12 +9,12 @@ import javax.swing.JTextField;
 
 public abstract class Attribute<V> {
 
-    private String name;
-    private StringGetter disp;
+    private final String name;
+    private final StringGetter display;
 
-    public Attribute(String name, StringGetter disp) {
+    public Attribute(String name, StringGetter display) {
         this.name = name;
-        this.disp = disp;
+        this.display = display;
     }
 
     @Override
@@ -27,7 +27,7 @@ public abstract class Attribute<V> {
     }
 
     public String getDisplayName() {
-        return disp.get();
+        return display.get();
     }
 
     public java.awt.Component getCellEditor(Window source, V value) {

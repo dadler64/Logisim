@@ -31,8 +31,7 @@ public class Divider extends InstanceFactory {
 
     public Divider() {
         super("Divider", Strings.getter("dividerComponent"));
-        setAttributes(new Attribute[]{StdAttr.WIDTH},
-                new Object[]{BitWidth.create(8)});
+        setAttributes(new Attribute[]{StdAttr.WIDTH}, new Object[]{BitWidth.create(8)});
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
         setIconName("divider.gif");
@@ -57,8 +56,7 @@ public class Divider extends InstanceFactory {
             upper = Value.createKnown(width, 0);
         }
         if (a.isFullyDefined() && b.isFullyDefined() && upper.isFullyDefined()) {
-            long num = ((long) upper.toIntValue() << w)
-                    | ((long) a.toIntValue() & 0xFFFFFFFFL);
+            long num = ((long) upper.toIntValue() << w) | ((long) a.toIntValue() & 0xFFFFFFFFL);
             long den = (long) b.toIntValue() & 0xFFFFFFFFL;
             if (den == 0) {
                 den = 1;
@@ -74,8 +72,7 @@ public class Divider extends InstanceFactory {
                     result++;
                 }
             }
-            return new Value[]{Value.createKnown(width, (int) result),
-                    Value.createKnown(width, (int) rem)};
+            return new Value[]{Value.createKnown(width, (int) result), Value.createKnown(width, (int) rem)};
         } else if (a.isErrorValue() || b.isErrorValue() || upper.isErrorValue()) {
             return new Value[]{Value.createError(width), Value.createError(width)};
         } else {

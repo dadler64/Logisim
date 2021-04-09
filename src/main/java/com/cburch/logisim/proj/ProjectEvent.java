@@ -22,10 +22,10 @@ public class ProjectEvent {
     public static final int UNDO_COMPLETE = 9; // undo has completed
     public static final int REPAINT_REQUEST = 10; // canvas should be repainted
 
-    private int action;
-    private Project proj;
+    private final int action;
+    private final Project proj;
+    private final Object data;
     private Object old_data;
-    private Object data;
 
     ProjectEvent(int action, Project proj, Object old, Object data) {
         this.action = action;

@@ -10,8 +10,7 @@ import java.util.Locale;
 
 class Strings {
 
-    private static LocaleManager source
-            = new LocaleManager("logisim", "start");
+    private static final LocaleManager source = new LocaleManager("logisim", "start");
 
     public static String get(String key) {
         return source.get(key);

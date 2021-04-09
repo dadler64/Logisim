@@ -19,7 +19,7 @@ public class Components extends Library {
      * than components; practically speaking, though, you'll most often want
      * to create AddTools for new components that can be added into the circuit.
      */
-    private List<AddTool> tools;
+    private final List<AddTool> tools;
 
     /**
      * Constructs an instance of this library. This constructor is how
@@ -28,7 +28,7 @@ public class Components extends Library {
      */
     public Components() {
         tools = Arrays.asList(new AddTool(new GrayIncrementer()), new AddTool(new SimpleGrayCounter()),
-                new AddTool(new GrayCounter()));
+            new AddTool(new GrayCounter()));
     }
 
     /**

@@ -17,12 +17,12 @@ import javax.swing.JMenuItem;
 
 class MenuHelp extends JMenu implements ActionListener {
 
-    private LogisimMenuBar menubar;
-    private JMenuItem tutorial = new JMenuItem();
-    private JMenuItem guide = new JMenuItem();
-    private JMenuItem library = new JMenuItem();
-    private JMenuItem about = new JMenuItem();
     private static final String HELP_URL = "https://github.com/dadler64/Logisim/wiki";
+    private final LogisimMenuBar menubar;
+    private final JMenuItem tutorial = new JMenuItem();
+    private final JMenuItem guide = new JMenuItem();
+    private final JMenuItem library = new JMenuItem();
+    private final JMenuItem about = new JMenuItem();
 
     public MenuHelp(LogisimMenuBar menubar) {
         this.menubar = menubar;

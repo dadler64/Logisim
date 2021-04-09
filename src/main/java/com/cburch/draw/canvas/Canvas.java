@@ -17,10 +17,9 @@ public class Canvas extends JComponent {
 
     public static final String TOOL_PROPERTY = "tool";
     public static final String MODEL_PROPERTY = "model";
-
+    private final CanvasListener listener;
     private CanvasModel model;
     private ActionDispatcher dispatcher;
-    private CanvasListener listener;
     private Selection selection;
 
     public Canvas() {

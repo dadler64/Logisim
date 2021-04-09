@@ -14,24 +14,23 @@ import java.util.List;
 
 class FactoryAttributes implements AttributeSet, AttributeListener, Cloneable {
 
-    private Class<? extends Library> descBase;
-    private FactoryDescription desc;
+    private final Class<? extends Library> descriptionBase;
+    private final FactoryDescription description;
+    private final ArrayList<AttributeListener> listeners;
     private ComponentFactory factory;
     private AttributeSet baseAttrs;
-    private ArrayList<AttributeListener> listeners;
 
-    public FactoryAttributes(Class<? extends Library> descBase,
-            FactoryDescription desc) {
-        this.descBase = descBase;
-        this.desc = desc;
+    public FactoryAttributes(Class<? extends Library> descriptionBase, FactoryDescription description) {
+        this.descriptionBase = descriptionBase;
+        this.description = description;
         this.factory = null;
         this.baseAttrs = null;
         this.listeners = new ArrayList<>();
     }
 
     public FactoryAttributes(ComponentFactory factory) {
-        this.descBase = null;
-        this.desc = null;
+        this.descriptionBase = null;
+        this.description = null;
         this.factory = factory;
         this.baseAttrs = null;
         this.listeners = new ArrayList<>();
@@ -44,15 +43,15 @@ class FactoryAttributes implements AttributeSet, AttributeListener, Cloneable {
     AttributeSet getBase() {
         AttributeSet ret = baseAttrs;
         if (ret == null) {
-            ComponentFactory fact = factory;
-            if (fact == null) {
-                fact = desc.getFactory(descBase);
-                factory = fact;
+            ComponentFactory factory = this.factory;
+            if (factory == null) {
+                factory = description.getFactory(descriptionBase);
+                this.factory = factory;
             }
-            if (fact == null) {
+            if (factory == null) {
                 ret = AttributeSets.EMPTY;
             } else {
-                ret = fact.createAttributeSet();
+                ret = factory.createAttributeSet();
                 ret.addAttributeListener(this);
             }
             baseAttrs = ret;
@@ -106,24 +105,22 @@ class FactoryAttributes implements AttributeSet, AttributeListener, Cloneable {
     }
 
     public void attributeListChanged(AttributeEvent baseEvent) {
-        AttributeEvent e = null;
-        for (AttributeListener l : listeners) {
-            if (e == null) {
-                e = new AttributeEvent(this, baseEvent.getAttribute(),
-                        baseEvent.getValue());
+        AttributeEvent event = null;
+        for (AttributeListener listener : listeners) {
+            if (event == null) {
+                event = new AttributeEvent(this, baseEvent.getAttribute(), baseEvent.getValue());
             }
-            l.attributeListChanged(e);
+            listener.attributeListChanged(event);
         }
     }
 
     public void attributeValueChanged(AttributeEvent baseEvent) {
-        AttributeEvent e = null;
-        for (AttributeListener l : listeners) {
-            if (e == null) {
-                e = new AttributeEvent(this, baseEvent.getAttribute(),
-                        baseEvent.getValue());
+        AttributeEvent event = null;
+        for (AttributeListener listener : listeners) {
+            if (event == null) {
+                event = new AttributeEvent(this, baseEvent.getAttribute(), baseEvent.getValue());
             }
-            l.attributeValueChanged(e);
+            listener.attributeValueChanged(event);
         }
     }
 }

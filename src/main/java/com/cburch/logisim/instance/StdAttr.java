@@ -22,9 +22,9 @@ public interface StdAttr {
     AttributeOption TRIG_LOW = new AttributeOption("low", Strings.getter("stdTriggerLow"));
 
     Attribute<AttributeOption> TRIGGER = Attributes.forOption("trigger", Strings.getter("stdTriggerAttr"),
-            new AttributeOption[]{TRIG_RISING, TRIG_FALLING, TRIG_HIGH, TRIG_LOW});
+        new AttributeOption[]{TRIG_RISING, TRIG_FALLING, TRIG_HIGH, TRIG_LOW});
     Attribute<AttributeOption> EDGE_TRIGGER = Attributes.forOption("trigger", Strings.getter("stdTriggerAttr"),
-            new AttributeOption[]{TRIG_RISING, TRIG_FALLING});
+        new AttributeOption[]{TRIG_RISING, TRIG_FALLING});
 
     Attribute<String> LABEL = Attributes.forString("label", Strings.getter("stdLabelAttr"));
 

@@ -52,7 +52,7 @@ public class CounterPoker extends InstancePoker {
         int width = 7 * length + 2; // width of caret rectangle
         int height = 16; // height of caret rectangle
         graphics.drawRect(bounds.getX() + (bounds.getWidth() - width) / 2, bounds.getY() + (bounds.getHeight() - height) / 2,
-                width, height);
+            width, height);
         graphics.setColor(Color.BLACK);
     }
 

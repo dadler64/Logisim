@@ -33,14 +33,14 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
     public static final int WIDTH = 3;
 
     public static final AttributeOption VALUE_HORIZONTAL
-            = new AttributeOption("horz", Strings.getter("wireDirectionHorzOption"));
+        = new AttributeOption("horz", Strings.getter("wireDirectionHorzOption"));
     public static final AttributeOption VALUE_VERTICAL
-            = new AttributeOption("vert", Strings.getter("wireDirectionVertOption"));
+        = new AttributeOption("vert", Strings.getter("wireDirectionVertOption"));
     public static final Attribute<AttributeOption> DIRECTION_ATTRIBUTE
-            = Attributes.forOption("direction", Strings.getter("wireDirectionAttr"),
-            new AttributeOption[]{VALUE_HORIZONTAL, VALUE_VERTICAL});
+        = Attributes.forOption("direction", Strings.getter("wireDirectionAttr"),
+        new AttributeOption[]{VALUE_HORIZONTAL, VALUE_VERTICAL});
     public static final Attribute<Integer> LENGTH_ATTRIBUTE
-            = Attributes.forInteger("length", Strings.getter("wireLengthAttr"));
+        = Attributes.forInteger("length", Strings.getter("wireLengthAttr"));
 
     private static final List<Attribute<?>> ATTRIBUTES = Arrays.asList(DIRECTION_ATTRIBUTE, LENGTH_ATTRIBUTE);
     private static final Cache cache = new Cache();
@@ -123,7 +123,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
         int x0 = start.getX();
         int y0 = start.getY();
         return Bounds.create(x0 - 2, y0 - 2,
-                end.getX() - x0 + 5, end.getY() - y0 + 5);
+            end.getX() - x0 + 5, end.getY() - y0 + 5);
     }
 
     public Bounds getBounds(Graphics g) {
@@ -136,11 +136,11 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
         if (isXEqual) {
             int wx = start.getX();
             return qx >= wx - 2 && qx <= wx + 2
-                    && start.getY() <= qy && qy <= end.getY();
+                && start.getY() <= qy && qy <= end.getY();
         } else {
             int wy = start.getY();
             return qy >= wy - 2 && qy <= wy + 2
-                    && start.getX() <= qx && qx <= end.getX();
+                && start.getX() <= qx && qx <= end.getX();
         }
     }
 
@@ -158,7 +158,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
     public EndData getEnd(int index) {
         Location loc = getEndLocation(index);
         return new EndData(loc, BitWidth.UNKNOWN,
-                EndData.INPUT_OUTPUT);
+            EndData.INPUT_OUTPUT);
     }
 
     public boolean endsAt(Location pt) {
@@ -180,7 +180,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
         int x0 = start.getX();
         int y0 = start.getY();
         dest.repaint(x0 - 5, y0 - 5,
-                end.getX() - x0 + 10, end.getY() - y0 + 10);
+            end.getX() - x0 + 10, end.getY() - y0 + 10);
     }
 
     public void draw(ComponentDrawContext context) {
@@ -190,7 +190,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
         GraphicsUtil.switchToWidth(g, WIDTH);
         g.setColor(state.getValue(start).getColor());
         g.drawLine(start.getX(), start.getY(),
-                end.getX(), end.getY());
+            end.getX(), end.getY());
     }
 
     public Object getFeature(Object key) {
@@ -286,7 +286,7 @@ public final class Wire implements Component, AttributeSet, CustomHandles, Itera
 
     public boolean sharesEnd(Wire other) {
         return this.start.equals(other.start) || this.end.equals(other.start)
-                || this.start.equals(other.end) || this.end.equals(other.end);
+            || this.start.equals(other.end) || this.end.equals(other.end);
     }
 
     public boolean overlaps(Wire other, boolean includeEnds) {

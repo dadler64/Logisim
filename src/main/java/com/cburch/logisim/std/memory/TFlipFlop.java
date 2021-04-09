@@ -8,8 +8,7 @@ import com.cburch.logisim.data.Value;
 public class TFlipFlop extends AbstractFlipFlop {
 
     public TFlipFlop() {
-        super("T Flip-Flop", "tFlipFlop.gif",
-                Strings.getter("tFlipFlopComponent"), 1, false);
+        super("T Flip-Flop", "tFlipFlop.gif", Strings.getter("tFlipFlopComponent"), 1, false);
     }
 
     @Override
@@ -18,14 +17,14 @@ public class TFlipFlop extends AbstractFlipFlop {
     }
 
     @Override
-    protected Value computeValue(Value[] inputs, Value curValue) {
-        if (curValue == Value.UNKNOWN) {
-            curValue = Value.FALSE;
+    protected Value computeValue(Value[] inputs, Value currentValue) {
+        if (currentValue == Value.UNKNOWN) {
+            currentValue = Value.FALSE;
         }
         if (inputs[0] == Value.TRUE) {
-            return curValue.not();
+            return currentValue.not();
         } else {
-            return curValue;
+            return currentValue;
         }
     }
 }

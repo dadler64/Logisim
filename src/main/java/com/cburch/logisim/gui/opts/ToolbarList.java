@@ -21,10 +21,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
-class ToolbarList extends JList {
+class ToolbarList extends JList<Object> {
 
-    private ToolbarData base;
-    private Model model;
+    private final ToolbarData base;
+    private final Model model;
 
     public ToolbarList(ToolbarData base) {
         this.base = base;
@@ -45,7 +45,7 @@ class ToolbarList extends JList {
 
     private static class ToolIcon implements Icon {
 
-        private Tool tool;
+        private final Tool tool;
 
         ToolIcon(Tool tool) {
             this.tool = tool;
@@ -70,21 +70,21 @@ class ToolbarList extends JList {
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value,
-                int index, boolean isSelected, boolean cellHasFocus) {
+            int index, boolean isSelected, boolean cellHasFocus) {
             Component ret;
             Icon icon;
             if (value instanceof Tool) {
                 Tool t = (Tool) value;
                 ret = super.getListCellRendererComponent(list, t.getDisplayName(),
-                        index, isSelected, cellHasFocus);
+                    index, isSelected, cellHasFocus);
                 icon = new ToolIcon(t);
             } else if (value == null) {
                 ret = super.getListCellRendererComponent(list, "---",
-                        index, isSelected, cellHasFocus);
+                    index, isSelected, cellHasFocus);
                 icon = null;
             } else {
                 ret = super.getListCellRendererComponent(list, value.toString(),
-                        index, isSelected, cellHasFocus);
+                    index, isSelected, cellHasFocus);
                 icon = null;
             }
             if (ret instanceof JLabel) {
@@ -94,8 +94,8 @@ class ToolbarList extends JList {
         }
     }
 
-    private class Model extends AbstractListModel
-            implements ToolbarListener, AttributeListener, PropertyChangeListener {
+    private class Model extends AbstractListModel<Object> implements ToolbarListener, AttributeListener,
+        PropertyChangeListener {
 
         public int getSize() {
             return base.size();

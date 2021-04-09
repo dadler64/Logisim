@@ -24,8 +24,7 @@ import java.awt.Graphics;
 
 public class Random extends InstanceFactory {
 
-    private static final Attribute<Integer> ATTR_SEED
-            = Attributes.forInteger("seed", Strings.getter("randomSeedAttr"));
+    private static final Attribute<Integer> ATTR_SEED = Attributes.forInteger("seed", Strings.getter("randomSeedAttr"));
 
     private static final int OUT = 0;
     private static final int CK = 1;
@@ -34,37 +33,44 @@ public class Random extends InstanceFactory {
 
     public Random() {
         super("Random", Strings.getter("randomComponent"));
-        setAttributes(new Attribute[]{
-                StdAttr.WIDTH, ATTR_SEED, StdAttr.EDGE_TRIGGER,
-                StdAttr.LABEL, StdAttr.LABEL_FONT
-        }, new Object[]{
-                BitWidth.create(8), 0, StdAttr.TRIG_RISING,
-                "", StdAttr.DEFAULT_LABEL_FONT
-        });
+        setAttributes(
+            new Attribute[]{
+                StdAttr.WIDTH,
+                ATTR_SEED,
+                StdAttr.EDGE_TRIGGER,
+                StdAttr.LABEL,
+                StdAttr.LABEL_FONT
+            }, new Object[]{
+                BitWidth.create(8),
+                0,
+                StdAttr.TRIG_RISING,
+                "",
+                StdAttr.DEFAULT_LABEL_FONT
+            }
+        );
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
 
         setOffsetBounds(Bounds.create(-30, -20, 30, 40));
         setIconName("random.gif");
         setInstanceLogger(Logger.class);
 
-        Port[] ps = new Port[4];
-        ps[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
-        ps[CK] = new Port(-30, -10, Port.INPUT, 1);
-        ps[NXT] = new Port(-30, 10, Port.INPUT, 1);
-        ps[RST] = new Port(-20, 20, Port.INPUT, 1);
-        ps[OUT].setToolTip(Strings.getter("randomQTip"));
-        ps[CK].setToolTip(Strings.getter("randomClockTip"));
-        ps[NXT].setToolTip(Strings.getter("randomNextTip"));
-        ps[RST].setToolTip(Strings.getter("randomResetTip"));
-        setPorts(ps);
+        Port[] ports = new Port[4];
+        ports[OUT] = new Port(0, 0, Port.OUTPUT, StdAttr.WIDTH);
+        ports[CK] = new Port(-30, -10, Port.INPUT, 1);
+        ports[NXT] = new Port(-30, 10, Port.INPUT, 1);
+        ports[RST] = new Port(-20, 20, Port.INPUT, 1);
+        ports[OUT].setToolTip(Strings.getter("randomQTip"));
+        ports[CK].setToolTip(Strings.getter("randomClockTip"));
+        ports[NXT].setToolTip(Strings.getter("randomNextTip"));
+        ports[RST].setToolTip(Strings.getter("randomResetTip"));
+        setPorts(ports);
     }
 
     @Override
     protected void configureNewInstance(Instance instance) {
-        Bounds bds = instance.getBounds();
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                bds.getX() + bds.getWidth() / 2, bds.getY() - 3,
-                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+        Bounds bounds = instance.getBounds();
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, bounds.getX() + bounds.getWidth() / 2, bounds.getY() - 3,
+            GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
     }
 
     @Override
@@ -91,10 +97,10 @@ public class Random extends InstanceFactory {
     @Override
     public void paintInstance(InstancePainter painter) {
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds();
+        Bounds bounds = painter.getBounds();
         StateData state = (StateData) painter.getData();
-        BitWidth widthVal = painter.getAttributeValue(StdAttr.WIDTH);
-        int width = widthVal == null ? 8 : widthVal.getWidth();
+        BitWidth widthValue = painter.getAttributeValue(StdAttr.WIDTH);
+        int width = widthValue == null ? 8 : widthValue.getWidth();
 
         // draw boundary, label
         painter.drawBounds();
@@ -108,20 +114,16 @@ public class Random extends InstanceFactory {
 
         // draw contents
         if (painter.getShowState()) {
-            int val = state == null ? 0 : state.value;
-            String str = StringUtil.toHexString(width, val);
+            int value = state == null ? 0 : state.value;
+            String str = StringUtil.toHexString(width, value);
             if (str.length() <= 4) {
-                GraphicsUtil.drawText(g, str,
-                        bds.getX() + 15, bds.getY() + 4,
-                        GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+                GraphicsUtil.drawText(g, str, bounds.getX() + 15, bounds.getY() + 4, GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
             } else {
                 int split = str.length() - 4;
-                GraphicsUtil.drawText(g, str.substring(0, split),
-                        bds.getX() + 15, bds.getY() + 3,
-                        GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
-                GraphicsUtil.drawText(g, str.substring(split),
-                        bds.getX() + 15, bds.getY() + 15,
-                        GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+                GraphicsUtil.drawText(g, str.substring(0, split), bounds.getX() + 15, bounds.getY() + 3,
+                    GraphicsUtil.H_CENTER, GraphicsUtil.V_TOP);
+                GraphicsUtil.drawText(g, str.substring(split), bounds.getX() + 15, bounds.getY() + 15, GraphicsUtil.H_CENTER,
+                    GraphicsUtil.V_TOP);
             }
         }
     }
@@ -132,8 +134,8 @@ public class Random extends InstanceFactory {
         private final static long addend = 0xBL;
         private final static long mask = (1L << 48) - 1;
 
-        private long initSeed;
-        private long curSeed;
+        private long initialSeed;
+        private long currentSeed;
         private int value;
 
         public StateData(Object seed) {
@@ -147,20 +149,20 @@ public class Random extends InstanceFactory {
                 // the StateData's creation. It seems more likely that what
                 // would be intended was starting a new sequence entirely...
                 start = (System.currentTimeMillis() ^ multiplier) & mask;
-                if (start == initSeed) {
+                if (start == initialSeed) {
                     start = (start + multiplier) & mask;
                 }
             }
-            this.initSeed = start;
-            this.curSeed = start;
+            this.initialSeed = start;
+            this.currentSeed = start;
             this.value = (int) start;
         }
 
         void step() {
-            long v = curSeed;
-            v = (v * multiplier + addend) & mask;
-            curSeed = v;
-            value = (int) (v >> 12);
+            long value = currentSeed;
+            value = (value * multiplier + addend) & mask;
+            currentSeed = value;
+            this.value = (int) (value >> 12);
         }
     }
 
@@ -168,8 +170,8 @@ public class Random extends InstanceFactory {
 
         @Override
         public String getLogName(InstanceState state, Object option) {
-            String ret = state.getAttributeValue(StdAttr.LABEL);
-            return ret != null && !ret.equals("") ? ret : null;
+            String name = state.getAttributeValue(StdAttr.LABEL);
+            return name != null && !name.equals("") ? name : null;
         }
 
         @Override

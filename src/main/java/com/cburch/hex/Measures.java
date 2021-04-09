@@ -10,7 +10,7 @@ import java.awt.Graphics;
 
 class Measures {
 
-    private HexEditor hex;
+    private final HexEditor hex;
     private int headerChars;
     private int cellChars;
     private int headerWidth;
@@ -144,7 +144,7 @@ class Measures {
             }
         }
         int lineWidth = headerWidth + columns * cellWidth
-                + ((columns / 4) - 1) * spacerWidth;
+            + ((columns / 4) - 1) * spacerWidth;
         int newBase = headerWidth + Math.max(0, (width - lineWidth) / 2);
         if (baseX != newBase) {
             baseX = newBase;

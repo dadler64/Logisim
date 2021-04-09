@@ -14,9 +14,9 @@ class KeyboardData implements InstanceData, Cloneable {
     private String str;
     private int bufferLength;
     private int cursorPos;
-    private boolean dispValid;
-    private int dispStart;
-    private int dispEnd;
+    private boolean displayValid;
+    private int displayStart;
+    private int displayEnd;
 
     public KeyboardData(int capacity) {
         lastClock = Value.UNKNOWN;
@@ -42,15 +42,15 @@ class KeyboardData implements InstanceData, Cloneable {
     }
 
     public boolean isDisplayValid() {
-        return dispValid;
+        return displayValid;
     }
 
     public int getDisplayStart() {
-        return dispStart;
+        return displayStart;
     }
 
     public int getDisplayEnd() {
-        return dispEnd;
+        return displayEnd;
     }
 
     public int getCursorPosition() {
@@ -74,7 +74,7 @@ class KeyboardData implements InstanceData, Cloneable {
                 }
                 buffer = newBuf;
                 str = null;
-                dispValid = false;
+                displayValid = false;
             }
         }
     }
@@ -116,9 +116,9 @@ class KeyboardData implements InstanceData, Cloneable {
         bufferLength = 0;
         cursorPos = 0;
         str = "";
-        dispValid = false;
-        dispStart = 0;
-        dispEnd = 0;
+        displayValid = false;
+        displayStart = 0;
+        displayEnd = 0;
     }
 
     public char dequeue() {
@@ -128,8 +128,8 @@ class KeyboardData implements InstanceData, Cloneable {
             return '\0';
         }
         char ret = buf[0];
-        for (int i = 1; i < len; i++) {
-            buf[i - 1] = buf[i];
+        if (len - 1 >= 0) {
+            System.arraycopy(buf, 1, buf, 0, len - 1);
         }
         bufferLength = len - 1;
         int pos = cursorPos;
@@ -137,7 +137,7 @@ class KeyboardData implements InstanceData, Cloneable {
             cursorPos = pos - 1;
         }
         str = null;
-        dispValid = false;
+        displayValid = false;
         return ret;
     }
 
@@ -148,14 +148,14 @@ class KeyboardData implements InstanceData, Cloneable {
             return false;
         }
         int pos = cursorPos;
-        for (int i = len; i > pos; i--) {
-            buf[i] = buf[i - 1];
+        if (len - pos >= 0) {
+            System.arraycopy(buf, pos, buf, pos + 1, len - pos);
         }
         buf[pos] = value;
         bufferLength = len + 1;
         cursorPos = pos + 1;
         str = null;
-        dispValid = false;
+        displayValid = false;
         return true;
     }
 
@@ -166,12 +166,12 @@ class KeyboardData implements InstanceData, Cloneable {
         if (pos >= len) {
             return false;
         }
-        for (int i = pos + 1; i < len; i++) {
-            buf[i - 1] = buf[i];
+        if (len - (pos + 1) >= 0) {
+            System.arraycopy(buf, pos + 1, buf, pos + 1 - 1, len - (pos + 1));
         }
         bufferLength = len - 1;
         str = null;
-        dispValid = false;
+        displayValid = false;
         return true;
     }
 
@@ -183,7 +183,7 @@ class KeyboardData implements InstanceData, Cloneable {
             return false;
         }
         cursorPos = newPos;
-        dispValid = false;
+        displayValid = false;
         return true;
     }
 
@@ -197,17 +197,17 @@ class KeyboardData implements InstanceData, Cloneable {
             return false;
         }
         cursorPos = value;
-        dispValid = false;
+        displayValid = false;
         return true;
     }
 
     public void updateDisplay(FontMetrics fm) {
-        if (dispValid) {
+        if (displayValid) {
             return;
         }
-        int pos = cursorPos;
-        int i0 = dispStart;
-        int i1 = dispEnd;
+        int cursorPos = this.cursorPos;
+        int i0 = displayStart;
+        int i1 = displayEnd;
         String str = toString();
         int len = str.length();
         int max = Keyboard.WIDTH - 8 - 4;
@@ -218,29 +218,28 @@ class KeyboardData implements InstanceData, Cloneable {
             // grow to include end of string if possible
             int w0 = fm.stringWidth(str.charAt(0) + "m");
             int w1 = fm.stringWidth("m");
-            int w = i0 == 0 ? fm.stringWidth(str)
-                    : w0 + fm.stringWidth(str.substring(i0));
+            int w = i0 == 0 ? fm.stringWidth(str) : w0 + fm.stringWidth(str.substring(i0));
             if (w <= max) {
                 i1 = len;
             }
 
             // rearrange start/end so as to include cursor
-            if (pos <= i0) {
-                if (pos < i0) {
-                    i1 += pos - i0;
-                    i0 = pos;
+            if (cursorPos <= i0) {
+                if (cursorPos < i0) {
+                    i1 += cursorPos - i0;
+                    i0 = cursorPos;
                 }
-                if (pos == i0 && i0 > 0) {
+                if (cursorPos == i0 && i0 > 0) {
                     i0--;
                     i1--;
                 }
             }
-            if (pos >= i1) {
-                if (pos > i1) {
-                    i0 += pos - i1;
-                    i1 = pos;
+            if (cursorPos >= i1) {
+                if (cursorPos > i1) {
+                    i0 += cursorPos - i1;
+                    i1 = cursorPos;
                 }
-                if (pos == i1 && i1 < len) {
+                if (cursorPos == i1 && i1 < len) {
                     i0++;
                     i1++;
                 }
@@ -258,7 +257,7 @@ class KeyboardData implements InstanceData, Cloneable {
                     i0--;
                 }
             } else { // should shrink
-                if (pos < (i0 + i1) / 2) {
+                if (cursorPos < (i0 + i1) / 2) {
                     i1--;
                     while (!fits(fm, str, w0, w1, i0, i1, max)) {
                         i1--;
@@ -275,13 +274,12 @@ class KeyboardData implements InstanceData, Cloneable {
                 i0 = 0;
             }
         }
-        dispStart = i0;
-        dispEnd = i1;
-        dispValid = true;
+        displayStart = i0;
+        displayEnd = i1;
+        displayValid = true;
     }
 
-    private boolean fits(FontMetrics fm, String str, int w0, int w1,
-            int i0, int i1, int max) {
+    private boolean fits(FontMetrics fm, String str, int w0, int w1, int i0, int i1, int max) {
         if (i0 >= i1) {
             return true;
         }

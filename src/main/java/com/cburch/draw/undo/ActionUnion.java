@@ -5,8 +5,8 @@ package com.cburch.draw.undo;
 
 class ActionUnion extends Action {
 
-    private Action first;
-    private Action second;
+    private final Action first;
+    private final Action second;
 
     ActionUnion(Action first, Action second) {
         this.first = first;

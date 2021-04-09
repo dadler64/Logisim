@@ -13,18 +13,18 @@ import javax.swing.JPanel;
 
 class ExperimentalOptions extends OptionsPanel {
 
-    private JLabel accelRestart = new JLabel();
-    private PrefOptionList accel;
+    private final JLabel accelRestart = new JLabel();
+    private final PrefOptionList accel;
 
     public ExperimentalOptions(PreferencesFrame window) {
         super(window);
 
         accel = new PrefOptionList(AppPreferences.GRAPHICS_ACCELERATION,
-                Strings.getter("accelLabel"), new PrefOption[]{
-                new PrefOption(AppPreferences.ACCELERATION_DEFAULT, Strings.getter("accelDefault")),
-                new PrefOption(AppPreferences.ACCELERATION_NONE, Strings.getter("accelNone")),
-                new PrefOption(AppPreferences.ACCELERATION_OPENGL, Strings.getter("accelOpenGL")),
-                new PrefOption(AppPreferences.ACCELERATION_D3D, Strings.getter("accelD3D")),
+            Strings.getter("accelLabel"), new PrefOption[]{
+            new PrefOption(AppPreferences.ACCELERATION_DEFAULT, Strings.getter("accelDefault")),
+            new PrefOption(AppPreferences.ACCELERATION_NONE, Strings.getter("accelNone")),
+            new PrefOption(AppPreferences.ACCELERATION_OPENGL, Strings.getter("accelOpenGL")),
+            new PrefOption(AppPreferences.ACCELERATION_D3D, Strings.getter("accelD3D")),
         });
 
         JPanel accelPanel = new JPanel(new BorderLayout());

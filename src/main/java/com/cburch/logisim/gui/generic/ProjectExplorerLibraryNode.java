@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProjectExplorerLibraryNode extends ProjectExplorerModel.Node<Library>
-        implements LibraryListener {
+public class ProjectExplorerLibraryNode extends ProjectExplorerModel.Node<Library> implements LibraryListener {
 
     private LogisimFile file;
 
@@ -54,7 +53,7 @@ public class ProjectExplorerLibraryNode extends ProjectExplorerModel.Node<Librar
     }
 
     private <T> void buildChildren(ProjectExplorerModel.Node<T> factory, List<? extends T> items,
-            int startIndex) {
+        int startIndex) {
         // go through previously built children
         Map<T, ProjectExplorerModel.Node<T>> nodeMap = new HashMap<>();
         List<ProjectExplorerModel.Node<T>> nodeList = new ArrayList<>();

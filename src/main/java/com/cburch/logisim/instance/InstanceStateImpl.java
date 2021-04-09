@@ -46,8 +46,8 @@ class InstanceStateImpl implements InstanceState {
 
     public InstanceFactory getFactory() {
         if (component instanceof InstanceComponent) {
-            InstanceComponent comp = (InstanceComponent) component;
-            return (InstanceFactory) comp.getFactory();
+            InstanceComponent component = (InstanceComponent) this.component;
+            return (InstanceFactory) component.getFactory();
         } else {
             return null;
         }
@@ -67,9 +67,9 @@ class InstanceStateImpl implements InstanceState {
     }
 
     public boolean isPortConnected(int index) {
-        Circuit circ = circuitState.getCircuit();
-        Location loc = component.getEnd(index).getLocation();
-        return circ.isConnected(loc, component);
+        Circuit circuit = circuitState.getCircuit();
+        Location location = component.getEnd(index).getLocation();
+        return circuit.isConnected(location, component);
     }
 
     public void setPort(int portIndex, Value value, int delay) {
@@ -78,8 +78,7 @@ class InstanceStateImpl implements InstanceState {
     }
 
     public InstanceData getData() {
-        InstanceData ret = (InstanceData) circuitState.getData(component);
-        return ret;
+        return (InstanceData) circuitState.getData(component);
     }
 
     public void setData(InstanceData value) {

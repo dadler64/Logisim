@@ -65,8 +65,7 @@ import javax.swing.event.MouseInputListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-public class Canvas extends JPanel
-        implements LocaleListener, CanvasPaneContents {
+public class Canvas extends JPanel implements LocaleListener, CanvasPaneContents {
 
     public static final Color HALO_COLOR = new Color(192, 255, 255);
     // don't bother to update the size if it hasn't changed more than this
@@ -75,26 +74,26 @@ public class Canvas extends JPanel
     // pixels shown in canvas beyond outermost boundaries
     private static final int THRESH_SIZE_UPDATE = 10;
     private static final int BUTTONS_MASK = InputEvent.BUTTON1_DOWN_MASK
-            | InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK;
+        | InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK;
     private static final Color DEFAULT_ERROR_COLOR = new Color(192, 0, 0);
 
     private static final Color TICK_RATE_COLOR = new Color(0, 0, 92, 92);
     private static final Font TICK_RATE_FONT = new Font("serif", Font.BOLD, 12);
-    private Project proj;
+    private final Project proj;
+    private final Selection selection;
+    private final MyListener myListener = new MyListener();
+    private final MyViewport viewport = new MyViewport();
+    private final MyProjectListener myProjectListener = new MyProjectListener();
+    private final TickCounter tickCounter;
+    private final CanvasPaintThread paintThread;
+    private final CanvasPainter painter;
+    private final Object repaintLock = new Object(); // for waitForRepaintDone
     private Tool drag_tool;
-    private Selection selection;
     private MouseMappings mappings;
     private CanvasPane canvasPane;
     private Bounds oldPreferredSize;
-    private MyListener myListener = new MyListener();
-    private MyViewport viewport = new MyViewport();
-    private MyProjectListener myProjectListener = new MyProjectListener();
-    private TickCounter tickCounter;
-    private CanvasPaintThread paintThread;
-    private CanvasPainter painter;
     private boolean paintDirty = false; // only for within paintComponent
     private boolean inPaint = false; // only for within paintComponent
-    private Object repaintLock = new Object(); // for waitForRepaintDone
 
     public Canvas(Project proj) {
         this.proj = proj;
@@ -269,8 +268,8 @@ public class Canvas extends JPanel
         if (!immediate) {
             Bounds old = oldPreferredSize;
             if (old != null
-                    && Math.abs(old.getWidth() - dim.width) < THRESH_SIZE_UPDATE
-                    && Math.abs(old.getHeight() - dim.height) < THRESH_SIZE_UPDATE) {
+                && Math.abs(old.getWidth() - dim.width) < THRESH_SIZE_UPDATE
+                && Math.abs(old.getHeight() - dim.height) < THRESH_SIZE_UPDATE) {
                 return;
             }
         }
@@ -338,13 +337,13 @@ public class Canvas extends JPanel
             viewable = viewableBase;
         } else {
             viewable = new Rectangle((int) (viewableBase.x / zoom),
-                    (int) (viewableBase.y / zoom),
-                    (int) (viewableBase.width / zoom),
-                    (int) (viewableBase.height / zoom));
+                (int) (viewableBase.y / zoom),
+                (int) (viewableBase.width / zoom),
+                (int) (viewableBase.height / zoom));
         }
 
         viewport.setWidthMessage(Strings.get("canvasWidthError")
-                + (exceptions.size() == 1 ? "" : " (" + exceptions.size() + ")"));
+            + (exceptions.size() == 1 ? "" : " (" + exceptions.size() + ")"));
         for (WidthIncompatibilityData ex : exceptions) {
             // See whether any of the points are on the canvas.
             boolean isWithin = false;
@@ -353,7 +352,7 @@ public class Canvas extends JPanel
                 int x = p.getX();
                 int y = p.getY();
                 if (x >= viewable.x && x < viewable.x + viewable.width
-                        && y >= viewable.y && y < viewable.y + viewable.height) {
+                    && y >= viewable.y && y < viewable.y + viewable.height) {
                     isWithin = true;
                     break;
                 }
@@ -504,7 +503,7 @@ public class Canvas extends JPanel
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+        int orientation, int direction) {
         return canvasPane.supportScrollableBlockIncrement(visibleRect, orientation, direction);
     }
 
@@ -517,7 +516,7 @@ public class Canvas extends JPanel
     }
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+        int orientation, int direction) {
         return canvasPane.supportScrollableUnitIncrement(visibleRect, orientation, direction);
     }
 
@@ -526,8 +525,8 @@ public class Canvas extends JPanel
     }
 
     private class MyListener
-            implements MouseInputListener, KeyListener, PopupMenuListener,
-            PropertyChangeListener {
+        implements MouseInputListener, KeyListener, PopupMenuListener,
+        PropertyChangeListener {
 
         boolean menu_on = false;
 
@@ -660,7 +659,7 @@ public class Canvas extends JPanel
 
         public void propertyChange(PropertyChangeEvent event) {
             if (AppPreferences.GATE_SHAPE.isSource(event)
-                    || AppPreferences.SHOW_TICK_RATE.isSource(event)) {
+                || AppPreferences.SHOW_TICK_RATE.isSource(event)) {
                 paintThread.requestRepaint();
             } else if (AppPreferences.COMPONENT_TIPS.isSource(event)) {
                 boolean showTips = AppPreferences.COMPONENT_TIPS.getBoolean();
@@ -670,8 +669,8 @@ public class Canvas extends JPanel
     }
 
     private class MyProjectListener
-            implements ProjectListener, LibraryListener, CircuitListener,
-            AttributeListener, SimulatorListener, Selection.Listener {
+        implements ProjectListener, LibraryListener, CircuitListener,
+        AttributeListener, SimulatorListener, Selection.Listener {
 
         public void projectChanged(ProjectEvent event) {
             int act = event.getAction();
@@ -714,8 +713,8 @@ public class Canvas extends JPanel
             }
 
             if (act != ProjectEvent.ACTION_SELECTION
-                    && act != ProjectEvent.ACTION_START
-                    && act != ProjectEvent.UNDO_START) {
+                && act != ProjectEvent.ACTION_START
+                && act != ProjectEvent.UNDO_START) {
                 completeAction();
             }
         }
@@ -737,7 +736,7 @@ public class Canvas extends JPanel
 
                 if (proj.getTool() == event.getData()) {
                     Tool next = findTool(proj.getLogisimFile().getOptions()
-                            .getToolbarData().getContents());
+                        .getToolbarData().getContents());
                     if (next == null) {
                         for (Library lib : proj.getLogisimFile().getLibraries()) {
                             next = findTool(lib.getTools());
@@ -962,35 +961,35 @@ public class Canvas extends JPanel
             GraphicsUtil.switchToWidth(g, 3);
             if (isNorth) {
                 GraphicsUtil.drawArrow(g, sz.width / 2, 20,
-                        sz.width / 2, 2, 10, 30);
+                    sz.width / 2, 2, 10, 30);
             }
             if (isSouth) {
                 GraphicsUtil.drawArrow(g, sz.width / 2, sz.height - 20,
-                        sz.width / 2, sz.height - 2, 10, 30);
+                    sz.width / 2, sz.height - 2, 10, 30);
             }
             if (isEast) {
                 GraphicsUtil.drawArrow(g, sz.width - 20, sz.height / 2,
-                        sz.width - 2, sz.height / 2, 10, 30);
+                    sz.width - 2, sz.height / 2, 10, 30);
             }
             if (isWest) {
                 GraphicsUtil.drawArrow(g, 20, sz.height / 2,
-                        2, sz.height / 2, 10, 30);
+                    2, sz.height / 2, 10, 30);
             }
             if (isNortheast) {
                 GraphicsUtil.drawArrow(g, sz.width - 14, 14,
-                        sz.width - 2, 2, 10, 30);
+                    sz.width - 2, 2, 10, 30);
             }
             if (isNorthwest) {
                 GraphicsUtil.drawArrow(g, 14, 14,
-                        2, 2, 10, 30);
+                    2, 2, 10, 30);
             }
             if (isSoutheast) {
                 GraphicsUtil.drawArrow(g, sz.width - 14, sz.height - 14,
-                        sz.width - 2, sz.height - 2, 10, 30);
+                    sz.width - 2, sz.height - 2, 10, 30);
             }
             if (isSouthwest) {
                 GraphicsUtil.drawArrow(g, 14, sz.height - 14,
-                        2, sz.height - 2, 10, 30);
+                    2, sz.height - 2, 10, 30);
             }
 
             if (AppPreferences.SHOW_TICK_RATE.getBoolean()) {

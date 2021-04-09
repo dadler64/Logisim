@@ -23,20 +23,29 @@ import java.util.ListIterator;
 
 public class DrawingAttributeSet implements AttributeSet, Cloneable {
 
-    private static final List<Attribute<?>> ATTRIBUTES_ALL
-            = UnmodifiableList.create(new Attribute<?>[]{
-            DrawAttr.FONT, DrawAttr.ALIGNMENT,
+    private static final List<Attribute<?>> ATTRIBUTES_ALL = UnmodifiableList.create(
+        new Attribute<?>[]{
+            DrawAttr.FONT,
+            DrawAttr.ALIGNMENT,
             DrawAttr.PAINT_TYPE,
-            DrawAttr.STROKE_WIDTH, DrawAttr.STROKE_COLOR,
-            DrawAttr.FILL_COLOR, DrawAttr.TEXT_DEFAULT_FILL,
-            DrawAttr.CORNER_RADIUS});
-    private static final List<Object> DEFAULTS_ALL
-            = Arrays.asList(DrawAttr.DEFAULT_FONT, DrawAttr.ALIGN_CENTER,
-            DrawAttr.PAINT_STROKE,
-            1, Color.BLACK,
-            Color.WHITE, Color.BLACK, 10);
+            DrawAttr.STROKE_WIDTH,
+            DrawAttr.STROKE_COLOR,
+            DrawAttr.FILL_COLOR,
+            DrawAttr.TEXT_DEFAULT_FILL,
+            DrawAttr.CORNER_RADIUS
+        }
+    );
+    private static final List<Object> DEFAULTS_ALL = Arrays.asList(
+        DrawAttr.DEFAULT_FONT,
+        DrawAttr.ALIGN_CENTER,
+        DrawAttr.PAINT_STROKE,
+        1,
+        Color.BLACK,
+        Color.WHITE,
+        Color.BLACK, 10
+    );
+    private final List<Attribute<?>> attributes;
     private EventSourceWeakSupport<AttributeListener> listeners;
-    private List<Attribute<?>> attributes;
     private List<Object> values;
 
     public DrawingAttributeSet() {
@@ -155,9 +164,9 @@ public class DrawingAttributeSet implements AttributeSet, Cloneable {
     }
 
     private class Restriction extends AbstractAttributeSet
-            implements AttributeListener {
+        implements AttributeListener {
 
-        private AbstractTool tool;
+        private final AbstractTool tool;
         private List<Attribute<?>> selectedAttributes;
         private List<Attribute<?>> selectedView;
 

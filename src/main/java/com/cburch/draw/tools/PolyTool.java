@@ -28,10 +28,10 @@ public class PolyTool extends AbstractTool {
     // how close we need to be to the start point to count as "closing the loop"
     private static final int CLOSE_TOLERANCE = 2;
 
-    private boolean isClosed; // whether we are drawing polygons or polylines
-    private DrawingAttributeSet attributeSet;
+    private final boolean isClosed; // whether we are drawing polygons or polylines
+    private final DrawingAttributeSet attributeSet;
+    private final ArrayList<Location> locations;
     private boolean isActive;
-    private ArrayList<Location> locations;
     private boolean isMouseDown;
     private int lastMouseX;
     private int lastMouseY;

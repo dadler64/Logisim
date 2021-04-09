@@ -65,7 +65,7 @@ class WireFactory extends AbstractComponentFactory {
     //
     @Override
     public void drawGhost(ComponentDrawContext context,
-            Color color, int x, int y, AttributeSet attributes) {
+        Color color, int x, int y, AttributeSet attributes) {
         Graphics g = context.getGraphics();
         Object dir = attributes.getValue(Wire.DIRECTION_ATTRIBUTE);
         int len = attributes.getValue(Wire.LENGTH_ATTRIBUTE);

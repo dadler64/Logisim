@@ -19,11 +19,11 @@ class GateFunctions {
     }
 
     static Value computeAnd(Value[] inputs, int numInputs) {
-        Value ret = inputs[0];
+        Value input = inputs[0];
         for (int i = 1; i < numInputs; i++) {
-            ret = ret.and(inputs[i]);
+            input = input.and(inputs[i]);
         }
-        return ret;
+        return input;
     }
 
     static Value computeOddParity(Value[] inputs, int numInputs) {

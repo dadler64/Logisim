@@ -10,10 +10,10 @@ import java.util.NoSuchElementException;
 
 public class VariableList {
 
-    private ArrayList<VariableListListener> listeners = new ArrayList<>();
-    private int maxSize;
-    private ArrayList<String> data;
-    private List<String> dataView;
+    private final ArrayList<VariableListListener> listeners = new ArrayList<>();
+    private final int maxSize;
+    private final ArrayList<String> data;
+    private final List<String> dataView;
 
     public VariableList(int maxSize) {
         this.maxSize = maxSize;
@@ -123,11 +123,11 @@ public class VariableList {
         int newIndex = index + delta;
         if (newIndex < 0) {
             throw new IllegalArgumentException("cannot move index " + index
-                    + " by " + delta);
+                + " by " + delta);
         }
         if (newIndex > data.size() - 1) {
             throw new IllegalArgumentException("cannot move index " + index
-                    + " by " + delta + ": size " + data.size());
+                + " by " + delta + ": size " + data.size());
         }
         if (index == newIndex) {
             return;

@@ -10,10 +10,9 @@ import com.cburch.logisim.util.StringUtil;
 
 class NegateAttribute extends Attribute<Boolean> {
 
-    private static Attribute<Boolean> BOOLEAN_ATTR = Attributes.forBoolean("negateDummy");
-
+    private static final Attribute<Boolean> BOOLEAN_ATTR = Attributes.forBoolean("negateDummy");
+    private final Direction side;
     int index;
-    private Direction side;
 
     public NegateAttribute(int index, Direction side) {
         super("negate" + index, null);
@@ -24,8 +23,8 @@ class NegateAttribute extends Attribute<Boolean> {
     @Override
     public boolean equals(Object other) {
         if (other instanceof NegateAttribute) {
-            NegateAttribute o = (NegateAttribute) other;
-            return this.index == o.index && this.side == o.side;
+            NegateAttribute attribute = (NegateAttribute) other;
+            return this.index == attribute.index && this.side == attribute.side;
         } else {
             return false;
         }

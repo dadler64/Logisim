@@ -10,8 +10,8 @@ public class UndoLogEvent extends EventObject {
     public static final int ACTION_DONE = 0;
     public static final int ACTION_UNDONE = 1;
 
-    private int action;
-    private Action actionObject;
+    private final int action;
+    private final Action actionObject;
 
     public UndoLogEvent(UndoLog source, int action, Action actionObject) {
         super(source);

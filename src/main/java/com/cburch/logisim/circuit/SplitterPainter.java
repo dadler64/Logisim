@@ -19,7 +19,7 @@ class SplitterPainter {
     private static final int SPINE_DOT = Wire.WIDTH + 4;
 
     static void drawLines(ComponentDrawContext context,
-            SplitterAttributes attrs, Location origin) {
+        SplitterAttributes attrs, Location origin) {
         boolean showState = context.getShowState();
         CircuitState state = showState ? context.getCircuitState() : null;
         if (state == null) {
@@ -93,7 +93,7 @@ class SplitterPainter {
     }
 
     static void drawLabels(ComponentDrawContext context,
-            SplitterAttributes attrs, Location origin) {
+        SplitterAttributes attrs, Location origin) {
         // compute labels
         String[] ends = new String[attrs.fanout + 1];
         int curEnd = -1;
@@ -159,7 +159,7 @@ class SplitterPainter {
     }
 
     static void drawLegacy(ComponentDrawContext context, SplitterAttributes attrs,
-            Location origin) {
+        Location origin) {
         Graphics g = context.getGraphics();
         CircuitState state = context.getCircuitState();
         Direction facing = attrs.facing;
@@ -195,7 +195,7 @@ class SplitterPainter {
             } else {
                 g.setColor(Color.BLACK);
                 g.fillOval(x0 - SPINE_DOT / 2, ySpine - SPINE_DOT / 2,
-                        SPINE_DOT, SPINE_DOT);
+                    SPINE_DOT, SPINE_DOT);
             }
         } else {
             int xSpine = (x0 + x1) / 2;
@@ -219,7 +219,7 @@ class SplitterPainter {
             } else {
                 g.setColor(Color.BLACK);
                 g.fillOval(xSpine - SPINE_DOT / 2, y0 - SPINE_DOT / 2,
-                        SPINE_DOT, SPINE_DOT);
+                    SPINE_DOT, SPINE_DOT);
             }
         }
         GraphicsUtil.switchToWidth(g, 1);

@@ -9,8 +9,8 @@ package com.cburch.logisim.util;
  */
 public class Cache {
 
-    private int mask;
-    private Object[] data;
+    private final int mask;
+    private final Object[] data;
 
     public Cache() {
         this(8);

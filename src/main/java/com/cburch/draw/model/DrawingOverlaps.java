@@ -14,8 +14,8 @@ import java.util.Set;
 
 class DrawingOverlaps {
 
-    private Map<CanvasObject, List<CanvasObject>> map;
-    private Set<CanvasObject> untested;
+    private final Map<CanvasObject, List<CanvasObject>> map;
+    private final Set<CanvasObject> untested;
 
     public DrawingOverlaps() {
         map = new HashMap<>();

@@ -30,16 +30,16 @@ import javax.swing.event.ListSelectionListener;
 
 class VariableTab extends AnalyzerTab implements TabInterface {
 
-    private VariableList data;
-    private MyListener myListener = new MyListener();
-    private JList list = new JList();
-    private JTextField field = new JTextField();
-    private JButton remove = new JButton();
-    private JButton moveUp = new JButton();
-    private JButton moveDown = new JButton();
-    private JButton add = new JButton();
-    private JButton rename = new JButton();
-    private JLabel error = new JLabel(" ");
+    private final VariableList data;
+    private final MyListener myListener = new MyListener();
+    private final JList<Object> list = new JList<>();
+    private final JTextField field = new JTextField();
+    private final JButton remove = new JButton();
+    private final JButton moveUp = new JButton();
+    private final JButton moveDown = new JButton();
+    private final JButton add = new JButton();
+    private final JButton rename = new JButton();
+    private final JLabel error = new JLabel(" ");
 
     VariableTab(VariableList data) {
         this.data = data;
@@ -56,8 +56,8 @@ class VariableTab extends AnalyzerTab implements TabInterface {
         field.getDocument().addDocumentListener(myListener);
 
         JScrollPane listPane = new JScrollPane(list,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         listPane.setPreferredSize(new Dimension(100, 100));
 
         JPanel topPanel = new JPanel(new GridLayout(3, 1));
@@ -173,8 +173,7 @@ class VariableTab extends AnalyzerTab implements TabInterface {
         }
         if (ok || !errorShown) {
             if (data.size() >= data.getMaximumSize()) {
-                error.setText(StringUtil.format(Strings.get("variableMaximumError"),
-                        "" + data.getMaximumSize()));
+                error.setText(StringUtil.format(Strings.get("variableMaximumError"), "" + data.getMaximumSize()));
             } else {
                 error.setText(" ");
             }
@@ -202,10 +201,9 @@ class VariableTab extends AnalyzerTab implements TabInterface {
         field.selectAll();
     }
 
-    private static class VariableListModel extends AbstractListModel
-            implements VariableListListener {
+    private static class VariableListModel extends AbstractListModel<Object> implements VariableListListener {
 
-        private VariableList list;
+        private final VariableList list;
         private String[] listCopy;
 
         public VariableListModel(VariableList list) {
@@ -254,13 +252,12 @@ class VariableTab extends AnalyzerTab implements TabInterface {
                 case VariableListEvent.REPLACE:
                     index = (Integer) event.getData();
                     fireContentsChanged(this, index, index);
-                    return;
             }
         }
     }
 
     private class MyListener
-            implements ActionListener, DocumentListener, ListSelectionListener {
+        implements ActionListener, DocumentListener, ListSelectionListener {
 
         public void actionPerformed(ActionEvent event) {
             Object src = event.getSource();

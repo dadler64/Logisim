@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ToolAttributeAction extends Action {
 
-    private KeyConfigurationResult config;
+    private final KeyConfigurationResult config;
     private Map<Attribute<?>, Object> oldValues;
 
     private ToolAttributeAction(KeyConfigurationResult config) {

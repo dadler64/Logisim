@@ -17,26 +17,26 @@ class GateAttributes extends AbstractAttributeSet {
 
     static final int MAX_INPUTS = 32;
     public static final Attribute<Integer> ATTR_INPUTS
-            = Attributes.forIntegerRange("inputs", Strings.getter("gateInputsAttr"), 2, MAX_INPUTS);
+        = Attributes.forIntegerRange("inputs", Strings.getter("gateInputsAttr"), 2, MAX_INPUTS);
     static final int DELAY = 1;
     static final AttributeOption SIZE_NARROW = new AttributeOption(30, Strings.getter("gateSizeNarrowOpt"));
     static final AttributeOption SIZE_MEDIUM = new AttributeOption(50, Strings.getter("gateSizeNormalOpt"));
     static final AttributeOption SIZE_WIDE = new AttributeOption(70, Strings.getter("gateSizeWideOpt"));
     public static final Attribute<AttributeOption> ATTR_SIZE
-            = Attributes.forOption("size", Strings.getter("gateSizeAttr"),
-            new AttributeOption[]{SIZE_NARROW, SIZE_MEDIUM, SIZE_WIDE});
+        = Attributes.forOption("size", Strings.getter("gateSizeAttr"),
+        new AttributeOption[]{SIZE_NARROW, SIZE_MEDIUM, SIZE_WIDE});
     static final AttributeOption XOR_ONE = new AttributeOption("1", Strings.getter("xorBehaviorOne"));
     static final AttributeOption XOR_ODD = new AttributeOption("odd", Strings.getter("xorBehaviorOdd"));
     public static final Attribute<AttributeOption> ATTRIBUTE_XOR
-            = Attributes.forOption("xor", Strings.getter("xorBehaviorAttr"),
-            new AttributeOption[]{XOR_ONE, XOR_ODD});
+        = Attributes.forOption("xor", Strings.getter("xorBehaviorAttr"),
+        new AttributeOption[]{XOR_ONE, XOR_ODD});
 
     static final AttributeOption OUTPUT_01 = new AttributeOption("01", Strings.getter("gateOutput01"));
     static final AttributeOption OUTPUT_0Z = new AttributeOption("0Z", Strings.getter("gateOutput0Z"));
     static final AttributeOption OUTPUT_Z1 = new AttributeOption("Z1", Strings.getter("gateOutputZ1"));
     public static final Attribute<AttributeOption> ATTRIBUTE_OUTPUT
-            = Attributes.forOption("out", Strings.getter("gateOutputAttr"),
-            new AttributeOption[]{OUTPUT_01, OUTPUT_0Z, OUTPUT_Z1});
+        = Attributes.forOption("out", Strings.getter("gateOutputAttr"),
+        new AttributeOption[]{OUTPUT_01, OUTPUT_0Z, OUTPUT_Z1});
 
 
     Direction facing = Direction.EAST;

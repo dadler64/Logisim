@@ -11,9 +11,9 @@ public class ConcurrentHashQueue<E> {
 
     private static final int DONE_MARKER = Integer.MIN_VALUE / 2;
 
-    private ConcurrentHashMap<E, Boolean> members;
-    private ConcurrentLinkedQueue<E> queue;
-    private AtomicInteger removeCount;
+    private final ConcurrentHashMap<E, Boolean> members;
+    private final ConcurrentLinkedQueue<E> queue;
+    private final AtomicInteger removeCount;
 
     public ConcurrentHashQueue() {
         members = new ConcurrentHashMap<>();

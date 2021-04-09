@@ -19,26 +19,26 @@ class CircuitChange {
     static final int REPLACE = 5;
     static final int SET = 6;
     static final int SET_FOR_CIRCUIT = 7;
-    private Circuit circuit;
-    private int type;
-    private Component comp;
+    private final Circuit circuit;
+    private final int type;
+    private final Component comp;
+    private final Attribute<?> attr;
+    private final Object oldValue;
+    private final Object newValue;
     private Collection<? extends Component> comps;
-    private Attribute<?> attr;
-    private Object oldValue;
-    private Object newValue;
 
     private CircuitChange(Circuit circuit, int type, Component comp) {
         this(circuit, type, comp, null, null, null);
     }
 
     private CircuitChange(Circuit circuit, int type,
-            Collection<? extends Component> comps) {
+        Collection<? extends Component> comps) {
         this(circuit, type, null, null, null, null);
         this.comps = comps;
     }
 
     private CircuitChange(Circuit circuit, int type, Component comp,
-            Attribute<?> attr, Object oldValue, Object newValue) {
+        Attribute<?> attr, Object oldValue, Object newValue) {
         this.circuit = circuit;
         this.type = type;
         this.comp = comp;
@@ -48,7 +48,7 @@ class CircuitChange {
     }
 
     public static CircuitChange clear(Circuit circuit,
-            Collection<Component> oldComponents) {
+        Collection<Component> oldComponents) {
         return new CircuitChange(circuit, CLEAR, oldComponents);
     }
 
@@ -57,7 +57,7 @@ class CircuitChange {
     }
 
     public static CircuitChange addAll(Circuit circuit,
-            Collection<? extends Component> comps) {
+        Collection<? extends Component> comps) {
         return new CircuitChange(circuit, ADD_ALL, comps);
     }
 
@@ -66,34 +66,34 @@ class CircuitChange {
     }
 
     public static CircuitChange removeAll(Circuit circuit,
-            Collection<? extends Component> comps) {
+        Collection<? extends Component> comps) {
         return new CircuitChange(circuit, REMOVE_ALL, comps);
     }
 
     public static CircuitChange replace(Circuit circuit,
-            ReplacementMap replMap) {
+        ReplacementMap replMap) {
         return new CircuitChange(circuit, REPLACE, null, null, null, replMap);
     }
 
     public static CircuitChange set(Circuit circuit, Component comp,
-            Attribute<?> attr, Object value) {
+        Attribute<?> attr, Object value) {
         return new CircuitChange(circuit, SET, comp, attr, null, value);
     }
 
     public static CircuitChange set(Circuit circuit, Component comp,
-            Attribute<?> attr, Object oldValue, Object newValue) {
+        Attribute<?> attr, Object oldValue, Object newValue) {
         return new CircuitChange(circuit, SET, comp, attr, oldValue, newValue);
     }
 
     public static CircuitChange setForCircuit(Circuit circuit,
-            Attribute<?> attr, Object v) {
+        Attribute<?> attr, Object v) {
         return new CircuitChange(circuit, SET_FOR_CIRCUIT, null, attr, null, v);
     }
 
     public static CircuitChange setForCircuit(Circuit circuit,
-            Attribute<?> attr, Object oldValue, Object newValue) {
+        Attribute<?> attr, Object oldValue, Object newValue) {
         return new CircuitChange(circuit, SET_FOR_CIRCUIT, null, attr, oldValue,
-                newValue);
+            newValue);
     }
 
     public Circuit getCircuit() {
@@ -138,7 +138,7 @@ class CircuitChange {
                 return CircuitChange.setForCircuit(circuit, attr, newValue, oldValue);
             case REPLACE:
                 return CircuitChange.replace(circuit,
-                        ((ReplacementMap) newValue).getInverseMap());
+                    ((ReplacementMap) newValue).getInverseMap());
             default:
                 throw new IllegalArgumentException("unknown change type " + type);
         }
@@ -214,7 +214,7 @@ class CircuitChange {
                 return false;
             case SET:
                 return comp.getFactory() instanceof Pin
-                        && (attr == StdAttr.WIDTH || attr == Pin.ATTR_TYPE);
+                    && (attr == StdAttr.WIDTH || attr == Pin.ATTR_TYPE);
             default:
                 return false;
         }

@@ -14,12 +14,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
-public abstract class AttributeSetTableModel
-        implements AttrTableModel, AttributeListener {
+public abstract class AttributeSetTableModel implements AttrTableModel, AttributeListener {
 
-    private ArrayList<AttrTableModelListener> listeners;
+    private final ArrayList<AttrTableModelListener> listeners;
+    private final HashMap<Attribute<?>, AttrRow> rowMap;
     private AttributeSet attributes;
-    private HashMap<Attribute<?>, AttrRow> rowMap;
     private ArrayList<AttrRow> rows;
 
     public AttributeSetTableModel(AttributeSet attributes) {
@@ -99,7 +98,7 @@ public abstract class AttributeSetTableModel
     }
 
     protected abstract void setValueRequested(Attribute<Object> attribute, Object value)
-            throws AttrTableSetException;
+        throws AttrTableSetException;
 
     //
     // AttributeListener methods
@@ -154,7 +153,7 @@ public abstract class AttributeSetTableModel
 
     private class AttrRow implements AttrTableModelRow {
 
-        private Attribute<Object> attribute;
+        private final Attribute<Object> attribute;
 
         private AttrRow(Attribute<?> attribute) {
             @SuppressWarnings("unchecked")

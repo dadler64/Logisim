@@ -8,8 +8,7 @@ import com.cburch.logisim.util.StringGetter;
 
 class Strings {
 
-    private static LocaleManager source
-            = new LocaleManager("logisim", "menu");
+    private static final LocaleManager source = new LocaleManager("logisim", "menu");
 
     public static String get(String key) {
         return source.get(key);

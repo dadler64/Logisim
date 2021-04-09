@@ -15,11 +15,11 @@ import javax.swing.SwingConstants;
 
 public class HexEditor extends JComponent implements Scrollable {
 
+    private final Listener listener;
+    private final Measures measures;
+    private final Caret caret;
+    private final Highlighter highlighter;
     private HexModel model;
-    private Listener listener;
-    private Measures measures;
-    private Caret caret;
-    private Highlighter highlighter;
 
     public HexEditor(HexModel model) {
         this.model = model;
@@ -255,7 +255,7 @@ public class HexEditor extends JComponent implements Scrollable {
 
         public void bytesChanged(HexModel source, long start, long numBytes, int[] oldValues) {
             repaint(0, measures.toY(start),
-                    getWidth(), measures.toY(start + numBytes) + measures.getCellHeight());
+                getWidth(), measures.toY(start + numBytes) + measures.getCellHeight());
         }
     }
 }

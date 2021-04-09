@@ -10,7 +10,7 @@ import javax.swing.JRadioButtonMenuItem;
 
 class WindowMenuItem extends JRadioButtonMenuItem {
 
-    private WindowMenuItemManager manager;
+    private final WindowMenuItemManager manager;
 
     WindowMenuItem(WindowMenuItemManager manager) {
         this.manager = manager;

@@ -9,7 +9,7 @@ import javax.swing.JCheckBoxMenuItem;
 
 class MenuItemCheckImpl extends JCheckBoxMenuItem implements MenuItem {
 
-    private MenuItemHelper helper;
+    private final MenuItemHelper helper;
 
     public MenuItemCheckImpl(Menu menu, LogisimMenuItem menuItem) {
         helper = new MenuItemHelper(this, menu, menuItem);

@@ -42,12 +42,12 @@ import javax.swing.table.TableModel;
 public class AttrTable extends JPanel implements LocaleListener {
 
     private static final AttrTableModel NULL_ATTR_MODEL = new NullAttrModel();
-    private Window parent;
+    private final Window parent;
+    private final JLabel title;
+    private final JTable table;
+    private final TableModelAdapter tableModel;
+    private final CellEditor editor = new CellEditor();
     private boolean titleEnabled;
-    private JLabel title;
-    private JTable table;
-    private TableModelAdapter tableModel;
-    private CellEditor editor = new CellEditor();
 
     public AttrTable(Window parent) {
         super(new BorderLayout());
@@ -191,7 +191,7 @@ public class AttrTable extends JPanel implements LocaleListener {
     }
 
     private class TableModelAdapter
-            implements TableModel, AttrTableModelListener {
+        implements TableModel, AttrTableModelListener {
 
         Window parent;
         LinkedList<TableModelListener> listeners;
@@ -264,14 +264,14 @@ public class AttrTable extends JPanel implements LocaleListener {
         }
 
         public void setValueAt(Object value, int rowIndex,
-                int columnIndex) {
+            int columnIndex) {
             if (columnIndex > 0) {
                 try {
                     attrModel.getRow(rowIndex).setValue(value);
                 } catch (AttrTableSetException e) {
                     JOptionPane.showMessageDialog(parent, e.getMessage(),
-                            Strings.get("attributeChangeInvalidTitle"),
-                            JOptionPane.WARNING_MESSAGE);
+                        Strings.get("attributeChangeInvalidTitle"),
+                        JOptionPane.WARNING_MESSAGE);
                 }
             }
         }
@@ -307,7 +307,7 @@ public class AttrTable extends JPanel implements LocaleListener {
             int row = e.getRowIndex();
             TableCellEditor ed = table.getCellEditor();
             if (row >= 0 && ed instanceof CellEditor
-                    && attrModel.getRow(row) == ((CellEditor) ed).currentRow) {
+                && attrModel.getRow(row) == ((CellEditor) ed).currentRow) {
                 ed.cancelCellEditing();
             }
             fireTableChanged();
@@ -315,7 +315,7 @@ public class AttrTable extends JPanel implements LocaleListener {
     }
 
     private class CellEditor
-            implements TableCellEditor, FocusListener, ActionListener {
+        implements TableCellEditor, FocusListener, ActionListener {
 
         LinkedList<CellEditorListener> listeners = new LinkedList<>();
         AttrTableModelRow currentRow;
@@ -389,7 +389,7 @@ public class AttrTable extends JPanel implements LocaleListener {
         }
 
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int rowIndex, int columnIndex) {
+            boolean isSelected, int rowIndex, int columnIndex) {
             AttrTableModel attrModel = tableModel.attrModel;
             AttrTableModelRow row = attrModel.getRow(rowIndex);
 
@@ -419,8 +419,8 @@ public class AttrTable extends JPanel implements LocaleListener {
                         row.setValue(retval);
                     } catch (AttrTableSetException e) {
                         JOptionPane.showMessageDialog(parent, e.getMessage(),
-                                Strings.get("attributeChangeInvalidTitle"),
-                                JOptionPane.WARNING_MESSAGE);
+                            Strings.get("attributeChangeInvalidTitle"),
+                            JOptionPane.WARNING_MESSAGE);
                     }
                     editor = new JLabel(row.getValue());
                 } else {

@@ -27,25 +27,34 @@ public class BitExtender extends InstanceFactory {
 
     public static final BitExtender FACTORY = new BitExtender();
     private static final Attribute<BitWidth> ATTR_IN_WIDTH = Attributes
-            .forBitWidth("in_width", Strings.getter("extenderInAttr"));
+        .forBitWidth("in_width", Strings.getter("extenderInAttr"));
     private static final Attribute<BitWidth> ATTR_OUT_WIDTH = Attributes
-            .forBitWidth("out_width", Strings.getter("extenderOutAttr"));
+        .forBitWidth("out_width", Strings.getter("extenderOutAttr"));
     private static final Attribute<AttributeOption> ATTR_TYPE = Attributes.forOption("type", Strings.getter("extenderTypeAttr"),
-            new AttributeOption[]{
-                    new AttributeOption("zero", "zero", Strings.getter("extenderZeroType")),
-                    new AttributeOption("one", "one", Strings.getter("extenderOneType")),
-                    new AttributeOption("sign", "sign", Strings.getter("extenderSignType")),
-                    new AttributeOption("input", "input", Strings.getter("extenderInputType")),
-            });
+        new AttributeOption[]{
+            new AttributeOption("zero", "zero", Strings.getter("extenderZeroType")),
+            new AttributeOption("one", "one", Strings.getter("extenderOneType")),
+            new AttributeOption("sign", "sign", Strings.getter("extenderSignType")),
+            new AttributeOption("input", "input", Strings.getter("extenderInputType")),
+        });
 
     public BitExtender() {
         super("Bit Extender", Strings.getter("extenderComponent"));
         setIconName("extender.gif");
-        setAttributes(new Attribute[]{ATTR_IN_WIDTH, ATTR_OUT_WIDTH, ATTR_TYPE},
-                new Object[]{BitWidth.create(8), BitWidth.create(16), ATTR_TYPE.parse("zero")});
+        setAttributes(
+            new Attribute[]{
+                ATTR_IN_WIDTH,
+                ATTR_OUT_WIDTH,
+                ATTR_TYPE
+            }, new Object[]{
+                BitWidth.create(8),
+                BitWidth.create(16),
+                ATTR_TYPE.parse("zero")
+            }
+        );
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(JoinedConfigurator.create(new BitWidthConfigurator(ATTR_OUT_WIDTH),
-                new BitWidthConfigurator(ATTR_IN_WIDTH, 1, Value.MAX_WIDTH, 0)));
+            new BitWidthConfigurator(ATTR_IN_WIDTH, 1, Value.MAX_WIDTH, 0)));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
     }
 
@@ -81,14 +90,12 @@ public class BitExtender extends InstanceFactory {
                 break;
         }
         String mainLabel = Strings.get("extenderMainLabel");
-        Bounds bds = painter.getBounds();
-        int x = bds.getX() + bds.getWidth() / 2;
-        int y0 = bds.getY() + (bds.getHeight() / 2 + ascent) / 2;
-        int y1 = bds.getY() + (3 * bds.getHeight() / 2 + ascent) / 2;
-        GraphicsUtil.drawText(graphics, label, x, y0,
-                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
-        GraphicsUtil.drawText(graphics, mainLabel, x, y1,
-                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+        Bounds bounds = painter.getBounds();
+        int x = bounds.getX() + bounds.getWidth() / 2;
+        int y0 = bounds.getY() + (bounds.getHeight() / 2 + ascent) / 2;
+        int y1 = bounds.getY() + (3 * bounds.getHeight() / 2 + ascent) / 2;
+        GraphicsUtil.drawText(graphics, label, x, y0, GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+        GraphicsUtil.drawText(graphics, mainLabel, x, y1, GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
 
         BitWidth w0 = painter.getAttributeValue(ATTR_OUT_WIDTH);
         BitWidth w1 = painter.getAttributeValue(ATTR_IN_WIDTH);
@@ -112,20 +119,18 @@ public class BitExtender extends InstanceFactory {
     protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
         if (attribute == ATTR_TYPE) {
             configurePorts(instance);
-            instance.fireInvalidated();
-        } else {
-            instance.fireInvalidated();
         }
+        instance.fireInvalidated();
     }
 
     private void configurePorts(Instance instance) {
-        Port p0 = new Port(0, 0, Port.OUTPUT, ATTR_OUT_WIDTH);
-        Port p1 = new Port(-40, 0, Port.INPUT, ATTR_IN_WIDTH);
+        Port port0 = new Port(0, 0, Port.OUTPUT, ATTR_OUT_WIDTH);
+        Port port1 = new Port(-40, 0, Port.INPUT, ATTR_IN_WIDTH);
         String type = getType(instance.getAttributeSet());
         if (type.equals("input")) {
-            instance.setPorts(new Port[]{p0, p1, new Port(-20, -20, Port.INPUT, 1)});
+            instance.setPorts(new Port[]{port0, port1, new Port(-20, -20, Port.INPUT, 1)});
         } else {
-            instance.setPorts(new Port[]{p0, p1});
+            instance.setPorts(new Port[]{port0, port1});
         }
     }
 
@@ -135,18 +140,27 @@ public class BitExtender extends InstanceFactory {
         BitWidth wout = state.getAttributeValue(ATTR_OUT_WIDTH);
         String type = getType(state.getAttributeSet());
         Value extend;
-        if (type.equals("one")) {
-            extend = Value.TRUE;
-        } else if (type.equals("sign")) {
-            int win = in.getWidth();
-            extend = win > 0 ? in.get(win - 1) : Value.ERROR;
-        } else if (type.equals("input")) {
-            extend = state.getPort(2);
-            if (extend.getWidth() != 1) {
-                extend = Value.ERROR;
+        switch (type) {
+            case "one": {
+                extend = Value.TRUE;
+                break;
             }
-        } else {
-            extend = Value.FALSE;
+            case "sign": {
+                int win = in.getWidth();
+                extend = win > 0 ? in.get(win - 1) : Value.ERROR;
+                break;
+            }
+            case "input": {
+                extend = state.getPort(2);
+                if (extend.getWidth() != 1) {
+                    extend = Value.ERROR;
+                }
+                break;
+            }
+            default: {
+                extend = Value.FALSE;
+                break;
+            }
         }
 
         Value out = in.extendWidth(wout.getWidth(), extend);

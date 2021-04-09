@@ -29,9 +29,9 @@ import javax.swing.JTextField;
 
 class BuildCircuitButton extends JButton {
 
-    private MyListener myListener = new MyListener();
-    private JFrame parent;
-    private AnalyzerModel model;
+    private final MyListener myListener = new MyListener();
+    private final JFrame parent;
+    private final AnalyzerModel model;
 
     BuildCircuitButton(JFrame parent, AnalyzerModel model) {
         this.parent = parent;
@@ -44,24 +44,23 @@ class BuildCircuitButton extends JButton {
     }
 
     private void performAction(Project dest, String name, boolean replace,
-            final boolean twoInputs, final boolean useNands) {
+        final boolean twoInputs, final boolean useNands) {
         if (replace) {
             final Circuit circuit = dest.getLogisimFile().getCircuit(name);
             if (circuit == null) {
                 JOptionPane.showMessageDialog(parent,
-                        "Internal error prevents replacing circuit.",
-                        "Internal Error", JOptionPane.ERROR_MESSAGE);
+                    "Internal error prevents replacing circuit.",
+                    "Internal Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             CircuitMutation xn = CircuitBuilder.build(circuit, model, twoInputs,
-                    useNands);
+                useNands);
             dest.doAction(xn.toAction(Strings.getter("replaceCircuitAction")));
         } else {
             // add the circuit
             Circuit circuit = new Circuit(name);
-            CircuitMutation xn = CircuitBuilder.build(circuit, model, twoInputs,
-                    useNands);
+            CircuitMutation xn = CircuitBuilder.build(circuit, model, twoInputs, useNands);
             xn.execute();
             dest.doAction(LogisimFileActions.addCircuit(circuit));
             dest.setCurrentCircuit(circuit);
@@ -84,12 +83,12 @@ class BuildCircuitButton extends JButton {
 
     private class DialogPanel extends JPanel {
 
-        private JLabel projectLabel = new JLabel();
-        private JComboBox project;
-        private JLabel nameLabel = new JLabel();
-        private JTextField name = new JTextField(10);
-        private JCheckBox twoInputs = new JCheckBox();
-        private JCheckBox nands = new JCheckBox();
+        private final JLabel projectLabel = new JLabel();
+        private final JComboBox<Object> project;
+        private final JLabel nameLabel = new JLabel();
+        private final JTextField name = new JTextField(10);
+        private final JCheckBox twoInputs = new JCheckBox();
+        private final JCheckBox nands = new JCheckBox();
 
         DialogPanel() {
             List<Project> projects = Projects.getOpenProjects();
@@ -102,7 +101,7 @@ class BuildCircuitButton extends JButton {
                     initialSelection = options[i];
                 }
             }
-            project = new JComboBox(options);
+            project = new JComboBox<>(options);
             if (options.length == 1) {
                 project.setSelectedItem(options[0]);
                 project.setEnabled(false);
@@ -171,44 +170,44 @@ class BuildCircuitButton extends JButton {
             boolean useNands = false;
             boolean replace = false;
 
-            boolean ok = false;
-            while (!ok) {
-                DialogPanel dlog = new DialogPanel();
+            boolean isOkay = false;
+            while (!isOkay) {
+                DialogPanel dialog = new DialogPanel();
                 int action = JOptionPane.showConfirmDialog(parent,
-                        dlog, Strings.get("buildDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
+                    dialog, Strings.get("buildDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
                 if (action != JOptionPane.OK_OPTION) {
                     return;
                 }
 
-                ProjectItem projectItem = (ProjectItem) dlog.project.getSelectedItem();
+                ProjectItem projectItem = (ProjectItem) dialog.project.getSelectedItem();
                 if (projectItem == null) {
                     JOptionPane.showMessageDialog(parent, Strings.get("buildNeedProjectError"),
-                            Strings.get("buildDialogErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                        Strings.get("buildDialogErrorTitle"), JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 dest = projectItem.project;
 
-                name = dlog.name.getText().trim();
+                name = dialog.name.getText().trim();
                 if (name.equals("")) {
                     JOptionPane.showMessageDialog(parent, Strings.get("buildNeedCircuitError"),
-                            Strings.get("buildDialogErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                        Strings.get("buildDialogErrorTitle"), JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
 
                 if (dest.getLogisimFile().getCircuit(name) != null) {
                     int choice = JOptionPane.showConfirmDialog(parent,
-                            StringUtil.format(Strings.get("buildConfirmReplaceMessage"), name),
-                            Strings.get("buildConfirmReplaceTitle"), JOptionPane.YES_NO_OPTION);
+                        StringUtil.format(Strings.get("buildConfirmReplaceMessage"), name),
+                        Strings.get("buildConfirmReplaceTitle"), JOptionPane.YES_NO_OPTION);
                     if (choice != JOptionPane.YES_OPTION) {
                         continue;
                     }
                     replace = true;
                 }
 
-                twoInputs = dlog.twoInputs.isSelected();
-                useNands = dlog.nands.isSelected();
-                ok = true;
+                twoInputs = dialog.twoInputs.isSelected();
+                useNands = dialog.nands.isSelected();
+                isOkay = true;
             }
 
             performAction(dest, name, replace, twoInputs, useNands);

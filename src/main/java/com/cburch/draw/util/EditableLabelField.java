@@ -3,8 +3,11 @@
 
 package com.cburch.draw.util;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import javax.swing.BorderFactory;
+import javax.swing.JTextField;
 
 public class EditableLabelField extends JTextField {
 
@@ -15,7 +18,7 @@ public class EditableLabelField extends JTextField {
         setBackground(new Color(255, 255, 255, 128));
         setOpaque(false);
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK),
-                BorderFactory.createEmptyBorder(1, 1, 1, 1)));
+            BorderFactory.createEmptyBorder(1, 1, 1, 1)));
     }
 
     @Override

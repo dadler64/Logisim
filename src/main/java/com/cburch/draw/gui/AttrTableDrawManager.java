@@ -4,6 +4,7 @@
 package com.cburch.draw.gui;
 
 import com.cburch.draw.canvas.Canvas;
+import com.cburch.draw.canvas.CanvasTool;
 import com.cburch.draw.tools.AbstractTool;
 import com.cburch.draw.tools.DrawingAttributeSet;
 import com.cburch.draw.tools.SelectTool;
@@ -13,10 +14,10 @@ import java.beans.PropertyChangeListener;
 
 public class AttrTableDrawManager implements PropertyChangeListener {
 
-    private Canvas canvas;
-    private AttrTable table;
-    private AttrTableSelectionModel selectionModel;
-    private AttrTableToolModel toolModel;
+    private final Canvas canvas;
+    private final AttrTable table;
+    private final AttrTableSelectionModel selectionModel;
+    private final AttrTableToolModel toolModel;
 
     public AttrTableDrawManager(Canvas canvas, AttrTable table, DrawingAttributeSet attributes) {
         this.canvas = canvas;
@@ -43,7 +44,7 @@ public class AttrTableDrawManager implements PropertyChangeListener {
     }
 
     private void updateToolAttributes() {
-        Object tool = canvas.getTool();
+        CanvasTool tool = canvas.getTool();
         if (tool instanceof SelectTool) {
             table.setAttrTableModel(selectionModel);
         } else if (tool instanceof AbstractTool) {

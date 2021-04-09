@@ -100,7 +100,7 @@ public class TtyInterface {
                     System.exit(-1);
                 }
             } catch (IOException e) {
-                System.err.println(Strings.get("loadIoError") + ": " + e.toString()); //OK
+                System.err.println(Strings.get("loadIoError") + ": " + e); //OK
                 System.exit(-1);
             }
         }
@@ -119,26 +119,25 @@ public class TtyInterface {
                 maxName = nameLength;
             }
         }
-        String fmt = "%" + countDigits(total.getUniqueCount()) + "d\t"
-                + "%" + countDigits(total.getRecursiveCount()) + "d\t";
+        String fmt = "%" + countDigits(total.getUniqueCount()) + "d\t%" + countDigits(total.getRecursiveCount()) + "d\t";
         String fmtNormal = fmt + "%-" + maxName + "s\t%s\n";
         for (FileStatistics.Count count : stats.getCounts()) {
             Library lib = count.getLibrary();
             String libName = lib == null ? "-" : lib.getDisplayName();
             System.out.printf(fmtNormal, //OK
-                    count.getUniqueCount(),
-                    count.getRecursiveCount(),
-                    count.getFactory().getDisplayName(), libName);
+                count.getUniqueCount(),
+                count.getRecursiveCount(),
+                count.getFactory().getDisplayName(), libName);
         }
         FileStatistics.Count totalWithout = stats.getTotalWithoutSubcircuits();
         System.out.printf(fmt + "%s\n", //OK
-                totalWithout.getUniqueCount(),
-                totalWithout.getRecursiveCount(),
-                Strings.get("statsTotalWithout"));
+            totalWithout.getUniqueCount(),
+            totalWithout.getRecursiveCount(),
+            Strings.get("statsTotalWithout"));
         System.out.printf(fmt + "%s\n", //OK
-                total.getUniqueCount(),
-                total.getRecursiveCount(),
-                Strings.get("statsTotalWith"));
+            total.getUniqueCount(),
+            total.getRecursiveCount(),
+            Strings.get("statsTotalWith"));
     }
 
     private static int countDigits(int num) {
@@ -152,7 +151,7 @@ public class TtyInterface {
     }
 
     private static boolean loadRam(CircuitState circState, File loadFile)
-            throws IOException {
+        throws IOException {
         if (loadFile == null) {
             return false;
         }
@@ -173,30 +172,28 @@ public class TtyInterface {
         return found;
     }
 
-    private static boolean prepareForTty(CircuitState circState,
-            ArrayList<InstanceState> keybStates) {
+    private static boolean prepareForTty(CircuitState circuitState, ArrayList<InstanceState> keyboardStates) {
         boolean found = false;
-        for (Component comp : circState.getCircuit().getNonWires()) {
+        for (Component comp : circuitState.getCircuit().getNonWires()) {
             Object factory = comp.getFactory();
             if (factory instanceof Tty) {
                 Tty ttyFactory = (Tty) factory;
-                InstanceState ttyState = circState.getInstanceState(comp);
+                InstanceState ttyState = circuitState.getInstanceState(comp);
                 ttyFactory.sendToStdout(ttyState);
                 found = true;
             } else if (factory instanceof Keyboard) {
-                keybStates.add(circState.getInstanceState(comp));
+                keyboardStates.add(circuitState.getInstanceState(comp));
                 found = true;
             }
         }
 
-        for (CircuitState sub : circState.getSubstates()) {
-            found |= prepareForTty(sub, keybStates);
+        for (CircuitState sub : circuitState.getSubstates()) {
+            found |= prepareForTty(sub, keyboardStates);
         }
         return found;
     }
 
-    private static int runSimulation(CircuitState circState,
-            ArrayList<Instance> outputPins, Instance haltPin, int format) {
+    private static int runSimulation(CircuitState circuitState, ArrayList<Instance> outputPins, Instance haltPin, int format) {
         boolean showTable = (format & FORMAT_TABLE) != 0;
         boolean showSpeed = (format & FORMAT_SPEED) != 0;
         boolean showTty = (format & FORMAT_TTY) != 0;
@@ -206,7 +203,7 @@ public class TtyInterface {
         StdinThread stdinThread = null;
         if (showTty) {
             keyboardStates = new ArrayList<>();
-            boolean ttyFound = prepareForTty(circState, keyboardStates);
+            boolean ttyFound = prepareForTty(circuitState, keyboardStates);
             if (!ttyFound) {
                 System.err.println(Strings.get("ttyNoTtyError")); //OK
                 System.exit(-1);
@@ -224,11 +221,11 @@ public class TtyInterface {
         long start = System.currentTimeMillis();
         boolean halted = false;
         ArrayList<Value> prevOutputs = null;
-        Propagator prop = circState.getPropagator();
+        Propagator prop = circuitState.getPropagator();
         while (true) {
             ArrayList<Value> curOutputs = new ArrayList<>();
             for (Instance pin : outputPins) {
-                InstanceState pinState = circState.getInstanceState(pin);
+                InstanceState pinState = circuitState.getInstanceState(pin);
                 Value val = Pin.FACTORY.getValue(pinState);
                 if (pin == haltPin) {
                     halted |= val.equals(Value.TRUE);
@@ -279,7 +276,7 @@ public class TtyInterface {
     }
 
     private static void displayTableRow(ArrayList<Value> prevOutputs,
-            ArrayList<Value> curOutputs) {
+        ArrayList<Value> curOutputs) {
         boolean shouldPrint = false;
         if (prevOutputs == null) {
             shouldPrint = true;
@@ -320,8 +317,7 @@ public class TtyInterface {
         }
         hertz = (int) (hertz / precision) * precision;
         String hertzStr = hertz == (int) hertz ? "" + (int) hertz : "" + hertz;
-        System.out.println(StringUtil.format(Strings.get("ttySpeedMsg"), //OK
-                hertzStr, "" + tickCount, "" + elapse));
+        System.out.println(StringUtil.format(Strings.get("ttySpeedMsg"), hertzStr, "" + tickCount, "" + elapse)); //OK
     }
 
     // It's possible to avoid using the separate thread using System.in.available(),
@@ -329,7 +325,7 @@ public class TtyInterface {
     // is not interactively echoed until System.in.read() is invoked.
     private static class StdinThread extends Thread {
 
-        private LinkedList<char[]> queue; // of char[]
+        private final LinkedList<char[]> queue; // of char[]
 
         public StdinThread() {
             queue = new LinkedList<>();
@@ -360,6 +356,8 @@ public class TtyInterface {
                         }
                     }
                 } catch (IOException e) {
+                    System.err.println("ERROR: TtyInterface.class");
+                    e.printStackTrace();
                 }
             }
         }

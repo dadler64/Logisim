@@ -12,9 +12,9 @@ import java.util.Map;
 
 public class AppearanceEditPopup extends EditPopup implements EditHandler.Listener {
 
-    private AppearanceCanvas canvas;
-    private EditHandler handler;
-    private Map<LogisimMenuItem, Boolean> enabled;
+    private final AppearanceCanvas canvas;
+    private final EditHandler handler;
+    private final Map<LogisimMenuItem, Boolean> enabled;
 
     public AppearanceEditPopup(AppearanceCanvas canvas) {
         super(true);
@@ -27,7 +27,7 @@ public class AppearanceEditPopup extends EditPopup implements EditHandler.Listen
     }
 
     public void enableChanged(EditHandler handler, LogisimMenuItem action,
-            boolean value) {
+        boolean value) {
         enabled.put(action, value);
     }
 

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 public class WidthIncompatibilityData {
 
-    private ArrayList<Location> points;
-    private ArrayList<BitWidth> widths;
+    private final ArrayList<Location> points;
+    private final ArrayList<BitWidth> widths;
 
     public WidthIncompatibilityData() {
         points = new ArrayList<>();

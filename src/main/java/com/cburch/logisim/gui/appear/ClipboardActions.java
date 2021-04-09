@@ -16,12 +16,12 @@ import java.util.Map;
 
 public class ClipboardActions extends Action {
 
-    private boolean remove;
-    private AppearanceCanvas canvas;
-    private CanvasModel canvasModel;
+    private final boolean remove;
+    private final AppearanceCanvas canvas;
+    private final CanvasModel canvasModel;
+    private final Map<CanvasObject, Integer> affected;
+    private final ClipboardContents newClipboard;
     private ClipboardContents oldClipboard;
-    private Map<CanvasObject, Integer> affected;
-    private ClipboardContents newClipboard;
 
     private ClipboardActions(boolean remove, AppearanceCanvas canvas) {
         this.remove = remove;

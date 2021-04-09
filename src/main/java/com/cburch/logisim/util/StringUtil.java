@@ -12,16 +12,15 @@ public class StringUtil {
         return Character.toTitleCase(a.charAt(0)) + a.substring(1);
     }
 
-    public static String format(String fmt, String a1) {
-        return format(fmt, a1, null, null);
+    public static String format(String format, String a1) {
+        return format(format, a1, null, null);
     }
 
-    public static String format(String fmt, String a1, String a2) {
-        return format(fmt, a1, a2, null);
+    public static String format(String format, String a1, String a2) {
+        return format(format, a1, a2, null);
     }
 
-    public static String format(String fmt, String a1, String a2,
-            String a3) {
+    public static String format(String format, String a1, String a2, String a3) {
         StringBuilder ret = new StringBuilder();
         if (a1 == null) {
             a1 = "(null)";
@@ -33,13 +32,13 @@ public class StringUtil {
             a3 = "(null)";
         }
         int arg = 0;
-        int pos = 0;
-        int next = fmt.indexOf('%');
+        int position = 0;
+        int next = format.indexOf('%');
         while (next >= 0) {
-            ret.append(fmt, pos, next);
-            char c = fmt.charAt(next + 1);
+            ret.append(format, position, next);
+            char c = format.charAt(next + 1);
             if (c == 's') {
-                pos = next + 2;
+                position = next + 2;
                 switch (arg) {
                     case 0:
                         ret.append(a1);
@@ -52,72 +51,60 @@ public class StringUtil {
                 }
                 ++arg;
             } else if (c == '$') {
-                switch (fmt.charAt(next + 2)) {
+                switch (format.charAt(next + 2)) {
                     case '1':
                         ret.append(a1);
-                        pos = next + 3;
+                        position = next + 3;
                         break;
                     case '2':
                         ret.append(a2);
-                        pos = next + 3;
+                        position = next + 3;
                         break;
                     case '3':
                         ret.append(a3);
-                        pos = next + 3;
+                        position = next + 3;
                         break;
                     default:
                         ret.append("%$");
-                        pos = next + 2;
+                        position = next + 2;
                 }
             } else if (c == '%') {
                 ret.append('%');
-                pos = next + 2;
+                position = next + 2;
             } else {
                 ret.append('%');
-                pos = next + 1;
+                position = next + 1;
             }
-            next = fmt.indexOf('%', pos);
+            next = format.indexOf('%', position);
         }
-        ret.append(fmt.substring(pos));
+        ret.append(format.substring(position));
         return ret.toString();
     }
 
     public static StringGetter formatter(final StringGetter base, final String arg) {
-        return new StringGetter() {
-            public String get() {
-                return format(base.get(), arg);
-            }
-        };
+        return () -> format(base.get(), arg);
     }
 
     public static StringGetter formatter(final StringGetter base, final StringGetter arg) {
-        return new StringGetter() {
-            public String get() {
-                return format(base.get(), arg.get());
-            }
-        };
+        return () -> format(base.get(), arg.get());
     }
 
     public static StringGetter constantGetter(final String value) {
-        return new StringGetter() {
-            public String get() {
-                return value;
-            }
-        };
+        return () -> value;
     }
 
     public static String toHexString(int bits, int value) {
         if (bits < 32) {
             value &= (1 << bits) - 1;
         }
-        String ret = Integer.toHexString(value);
-        int len = (bits + 3) / 4;
-        while (ret.length() < len) {
-            ret = "0" + ret;
+        StringBuilder builder = new StringBuilder(Integer.toHexString(value));
+        int length = (bits + 3) / 4;
+        while (builder.length() < length) {
+            builder.insert(0, "0");
         }
-        if (ret.length() > len) {
-            ret = ret.substring(ret.length() - len);
+        if (builder.length() > length) {
+            builder = new StringBuilder(builder.substring(builder.length() - length));
         }
-        return ret;
+        return builder.toString();
     }
 }

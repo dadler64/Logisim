@@ -38,7 +38,7 @@ import javax.swing.JPopupMenu;
 
 public class SubcircuitFactory extends InstanceFactory {
 
-    private Circuit source;
+    private final Circuit source;
 
     public SubcircuitFactory(Circuit source) {
         super("", null);
@@ -257,7 +257,7 @@ public class SubcircuitFactory extends InstanceFactory {
     }
 
     private void drawCircuitLabel(InstancePainter painter, Bounds bds,
-            Direction facing, Direction defaultFacing) {
+        Direction facing, Direction defaultFacing) {
         AttributeSet staticAttrs = source.getStaticAttributes();
         String label = staticAttrs.getValue(CircuitAttributes.CIRCUIT_LABEL_ATTR);
         if (label != null && !label.equals("")) {
@@ -298,7 +298,7 @@ public class SubcircuitFactory extends InstanceFactory {
                     if (c == 'n') {
                         String line = label.substring(0, back);
                         GraphicsUtil.drawText(g, line, x, y,
-                                GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+                            GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
                         y += height;
                         label = label.substring(back + 2);
                         back = label.indexOf('\\');
@@ -310,7 +310,7 @@ public class SubcircuitFactory extends InstanceFactory {
                     }
                 }
                 GraphicsUtil.drawText(g, label, x, y,
-                        GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
+                    GraphicsUtil.H_CENTER, GraphicsUtil.V_BASELINE);
             }
             g.dispose();
         }
@@ -318,7 +318,7 @@ public class SubcircuitFactory extends InstanceFactory {
 
     private class CircuitFeature implements StringGetter, MenuExtender, ActionListener {
 
-        private Instance instance;
+        private final Instance instance;
         private Project proj;
 
         public CircuitFeature(Instance instance) {

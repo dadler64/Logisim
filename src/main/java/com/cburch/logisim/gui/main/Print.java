@@ -27,7 +27,6 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -43,16 +42,16 @@ public class Print {
         Frame frame = proj.getFrame();
         if (list.getModel().getSize() == 0) {
             JOptionPane.showMessageDialog(proj.getFrame(),
-                    Strings.get("printEmptyCircuitsMessage"),
-                    Strings.get("printEmptyCircuitsTitle"),
-                    JOptionPane.YES_NO_OPTION);
+                Strings.get("printEmptyCircuitsMessage"),
+                Strings.get("printEmptyCircuitsTitle"),
+                JOptionPane.YES_NO_OPTION);
             return;
         }
         ParmsPanel parmsPanel = new ParmsPanel(list);
         int action = JOptionPane.showConfirmDialog(frame,
-                parmsPanel, Strings.get("printParmsTitle"),
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
+            parmsPanel, Strings.get("printParmsTitle"),
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
         if (action != JOptionPane.OK_OPTION) {
             return;
         }
@@ -63,27 +62,27 @@ public class Print {
 
         PageFormat format = new PageFormat();
         Printable print = new MyPrintable(proj, circuits,
-                parmsPanel.getHeader(),
-                parmsPanel.getRotateToFit(),
-                parmsPanel.getPrinterView());
+            parmsPanel.getHeader(),
+            parmsPanel.getRotateToFit(),
+            parmsPanel.getPrinterView());
 
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintable(print, format);
-        if (job.printDialog() == false) {
+        if (!job.printDialog()) {
             return;
         }
         try {
             job.print();
         } catch (PrinterException e) {
             JOptionPane.showMessageDialog(proj.getFrame(),
-                    StringUtil.format(Strings.get("printError"), e.toString()),
-                    Strings.get("printErrorTitle"),
-                    JOptionPane.ERROR_MESSAGE);
+                StringUtil.format(Strings.get("printError"), e.toString()),
+                Strings.get("printErrorTitle"),
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private static String format(String header, int index, int max,
-            String circName) {
+        String circuitName) {
         int mark = header.indexOf('%');
         if (mark < 0) {
             return header;
@@ -91,17 +90,17 @@ public class Print {
         StringBuilder ret = new StringBuilder();
         int start = 0;
         for (; mark >= 0 && mark + 1 < header.length();
-                start = mark + 2, mark = header.indexOf('%', start)) {
+            start = mark + 2, mark = header.indexOf('%', start)) {
             ret.append(header, start, mark);
             switch (header.charAt(mark + 1)) {
                 case 'n':
-                    ret.append(circName);
+                    ret.append(circuitName);
                     break;
                 case 'p':
-                    ret.append("" + index);
+                    ret.append(index);
                     break;
                 case 'P':
-                    ret.append("" + max);
+                    ret.append(max);
                     break;
                 case '%':
                     ret.append("%");
@@ -124,7 +123,7 @@ public class Print {
         GridBagLayout gridbag;
         GridBagConstraints gbc;
 
-        ParmsPanel(JList list) {
+        ParmsPanel(CircuitJList list) {
             // set up components
             rotateToFit = new JCheckBox();
             rotateToFit.setSelected(true);
@@ -182,15 +181,15 @@ public class Print {
 
     private static class MyPrintable implements Printable {
 
-        Project proj;
+        Project project;
         List<Circuit> circuits;
         String header;
         boolean rotateToFit;
         boolean printerView;
 
-        MyPrintable(Project proj, List<Circuit> circuits, String header,
-                boolean rotateToFit, boolean printerView) {
-            this.proj = proj;
+        MyPrintable(Project project, List<Circuit> circuits, String header,
+            boolean rotateToFit, boolean printerView) {
+            this.project = project;
             this.circuits = circuits;
             this.header = header;
             this.rotateToFit = rotateToFit;
@@ -202,15 +201,15 @@ public class Print {
                 return Printable.NO_SUCH_PAGE;
             }
 
-            Circuit circ = circuits.get(pageIndex);
-            CircuitState circState = proj.getCircuitState(circ);
+            Circuit circuit = circuits.get(pageIndex);
+            CircuitState circuitState = project.getCircuitState(circuit);
             Graphics g = base.create();
-            Graphics2D g2 = g instanceof Graphics2D ? (Graphics2D) g : null;
+            Graphics2D g2d = g instanceof Graphics2D ? (Graphics2D) g : null;
             FontMetrics fm = g.getFontMetrics();
             String head = (header != null && !header.equals(""))
-                    ? format(header, pageIndex + 1, circuits.size(),
-                    circ.getName())
-                    : null;
+                ? format(header, pageIndex + 1, circuits.size(),
+                circuit.getName())
+                : null;
             int headHeight = (head == null ? 0 : fm.getHeight());
 
             // Compute image size
@@ -219,22 +218,22 @@ public class Print {
 
             // Correct coordinate system for page, including
             // translation and possible rotation.
-            Bounds bds = circ.getBounds(g).expand(4);
+            Bounds bds = circuit.getBounds(g).expand(4);
             double scale = Math.min(imWidth / bds.getWidth(),
-                    (imHeight - headHeight) / bds.getHeight());
-            if (g2 != null) {
-                g2.translate(format.getImageableX(), format.getImageableY());
+                (imHeight - headHeight) / bds.getHeight());
+            if (g2d != null) {
+                g2d.translate(format.getImageableX(), format.getImageableY());
                 if (rotateToFit && scale < 1.0 / 1.1) {
                     double scale2 = Math.min(imHeight / bds.getWidth(),
-                            (imWidth - headHeight) / bds.getHeight());
+                        (imWidth - headHeight) / bds.getHeight());
                     if (scale2 >= scale * 1.1) { // will rotate
                         scale = scale2;
                         if (imHeight > imWidth) { // portrait -> landscape
-                            g2.translate(0, imHeight);
-                            g2.rotate(-Math.PI / 2);
+                            g2d.translate(0, imHeight);
+                            g2d.rotate(-Math.PI / 2);
                         } else { // landscape -> portrait
-                            g2.translate(imWidth, 0);
-                            g2.rotate(Math.PI / 2);
+                            g2d.translate(imWidth, 0);
+                            g2d.rotate(Math.PI / 2);
                         }
                         double t = imHeight;
                         imHeight = imWidth;
@@ -246,39 +245,39 @@ public class Print {
             // Draw the header line if appropriate
             if (head != null) {
                 g.drawString(head,
-                        (int) Math.round((imWidth - fm.stringWidth(head)) / 2),
-                        fm.getAscent());
-                if (g2 != null) {
+                    (int) Math.round((imWidth - fm.stringWidth(head)) / 2),
+                    fm.getAscent());
+                if (g2d != null) {
                     imHeight -= headHeight;
-                    g2.translate(0, headHeight);
+                    g2d.translate(0, headHeight);
                 }
             }
 
             // Now change coordinate system for circuit, including
             // translation and possible scaling
-            if (g2 != null) {
+            if (g2d != null) {
                 if (scale < 1.0) {
-                    g2.scale(scale, scale);
+                    g2d.scale(scale, scale);
                     imWidth /= scale;
                     imHeight /= scale;
                 }
                 double dx = Math.max(0.0, (imWidth - bds.getWidth()) / 2);
-                g2.translate(-bds.getX() + dx, -bds.getY());
+                g2d.translate(-bds.getX() + dx, -bds.getY());
             }
 
             // Ensure that the circuit is eligible to be drawn
             Rectangle clip = g.getClipBounds();
             clip.add(bds.getX(), bds.getY());
             clip.add(bds.getX() + bds.getWidth(),
-                    bds.getY() + bds.getHeight());
+                bds.getY() + bds.getHeight());
             g.setClip(clip);
 
             // And finally draw the circuit onto the page
             ComponentDrawContext context = new ComponentDrawContext(
-                    proj.getFrame().getCanvas(), circ, circState,
-                    base, g, printerView);
+                project.getFrame().getCanvas(), circuit, circuitState,
+                base, g, printerView);
             Collection<Component> noComps = Collections.emptySet();
-            circ.draw(context, noComps);
+            circuit.draw(context, noComps);
             g.dispose();
             return Printable.PAGE_EXISTS;
         }

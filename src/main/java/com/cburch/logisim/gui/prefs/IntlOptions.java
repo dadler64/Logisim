@@ -15,25 +15,25 @@ import javax.swing.JPanel;
 
 class IntlOptions extends OptionsPanel {
 
-    private JLabel localeLabel = new RestrictedLabel();
-    private JComponent locale;
-    private PrefBoolean replAccents;
-    private PrefOptionList gateShape;
+    private final JLabel localeLabel = new RestrictedLabel();
+    private final JComponent locale;
+    private final PrefBoolean replAccents;
+    private final PrefOptionList gateShape;
 
     public IntlOptions(PreferencesFrame window) {
         super(window);
 
         locale = Strings.createLocaleSelector();
         replAccents = new PrefBoolean(AppPreferences.ACCENTS_REPLACE,
-                Strings.getter("intlReplaceAccents"));
+            Strings.getter("intlReplaceAccents"));
         gateShape = new PrefOptionList(AppPreferences.GATE_SHAPE,
-                Strings.getter("intlGateShape"), new PrefOption[]{
-                new PrefOption(AppPreferences.SHAPE_SHAPED,
-                        Strings.getter("shapeShaped")),
-                new PrefOption(AppPreferences.SHAPE_RECTANGULAR,
-                        Strings.getter("shapeRectangular")),
-                new PrefOption(AppPreferences.SHAPE_DIN40700,
-                        Strings.getter("shapeDIN40700"))});
+            Strings.getter("intlGateShape"), new PrefOption[]{
+            new PrefOption(AppPreferences.SHAPE_SHAPED,
+                Strings.getter("shapeShaped")),
+            new PrefOption(AppPreferences.SHAPE_RECTANGULAR,
+                Strings.getter("shapeRectangular")),
+            new PrefOption(AppPreferences.SHAPE_DIN40700,
+                Strings.getter("shapeDIN40700"))});
 
         Box localePanel = new Box(BoxLayout.X_AXIS);
         localePanel.add(Box.createGlue());

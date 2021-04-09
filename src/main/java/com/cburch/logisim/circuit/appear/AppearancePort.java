@@ -98,10 +98,10 @@ public class AppearancePort extends AppearanceElement {
 
         int r = isInput() ? INPUT_RADIUS : OUTPUT_RADIUS;
         return UnmodifiableList.create(new Handle[]{
-                new Handle(this, loc.translate(-r, -r)),
-                new Handle(this, loc.translate(r, -r)),
-                new Handle(this, loc.translate(r, r)),
-                new Handle(this, loc.translate(-r, r))});
+            new Handle(this, loc.translate(-r, -r)),
+            new Handle(this, loc.translate(r, -r)),
+            new Handle(this, loc.translate(r, r)),
+            new Handle(this, loc.translate(-r, r))});
     }
 
     @Override

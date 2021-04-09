@@ -8,8 +8,7 @@ import com.cburch.logisim.data.Value;
 public class SRFlipFlop extends AbstractFlipFlop {
 
     public SRFlipFlop() {
-        super("S-R Flip-Flop", "srFlipFlop.gif",
-                Strings.getter("srFlipFlopComponent"), 2, true);
+        super("S-R Flip-Flop", "srFlipFlop.gif", Strings.getter("srFlipFlopComponent"), 2, true);
     }
 
     @Override
@@ -18,10 +17,10 @@ public class SRFlipFlop extends AbstractFlipFlop {
     }
 
     @Override
-    protected Value computeValue(Value[] inputs, Value curValue) {
+    protected Value computeValue(Value[] inputs, Value currentValue) {
         if (inputs[0] == Value.FALSE) {
             if (inputs[1] == Value.FALSE) {
-                return curValue;
+                return currentValue;
             } else if (inputs[1] == Value.TRUE) {
                 return Value.FALSE;
             }

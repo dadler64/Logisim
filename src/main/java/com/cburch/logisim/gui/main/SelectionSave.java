@@ -4,6 +4,7 @@
 package com.cburch.logisim.gui.main;
 
 import com.cburch.logisim.comp.Component;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -53,9 +54,10 @@ class SelectionSave {
 
     private static HashSet<Component> toSet(Component[] comps) {
         HashSet<Component> ret = new HashSet<>(comps.length);
-        for (Component c : comps) {
-            ret.add(c);
-        }
+//        for (Component c : comps) {
+//            ret.add(c);
+//        }
+        ret.addAll(Arrays.asList(comps));
         return ret;
     }
 
@@ -68,8 +70,7 @@ class SelectionSave {
     }
 
     public boolean isSame(Selection sel) {
-        return isSame(floating, sel.getFloatingComponents())
-                && isSame(anchored, sel.getAnchoredComponents());
+        return isSame(floating, sel.getFloatingComponents()) && isSame(anchored, sel.getAnchoredComponents());
     }
 
     @Override
@@ -77,7 +78,7 @@ class SelectionSave {
         if (other instanceof SelectionSave) {
             SelectionSave o = (SelectionSave) other;
             return isSame(this.floating, o.floating)
-                    && isSame(this.anchored, o.anchored);
+                && isSame(this.anchored, o.anchored);
         } else {
             return false;
         }

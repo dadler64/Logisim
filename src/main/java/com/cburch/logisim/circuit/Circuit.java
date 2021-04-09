@@ -33,17 +33,17 @@ import java.util.WeakHashMap;
 public class Circuit {
 
     private static final PrintStream DEBUG_STREAM = null;
-    CircuitWires wires = new CircuitWires();
-    private MyComponentListener myComponentListener = new MyComponentListener();
-    private EventSourceWeakSupport<CircuitListener> listeners = new EventSourceWeakSupport<>();
-    private HashSet<Component> components = new HashSet<>(); // doesn't include wires
+    private final MyComponentListener myComponentListener = new MyComponentListener();
+    private final EventSourceWeakSupport<CircuitListener> listeners = new EventSourceWeakSupport<>();
     // wires is package-protected for CircuitState and Analyze only.
-    private ArrayList<Component> clocks = new ArrayList<>();
-    private CircuitLocker locker;
-    private WeakHashMap<Component, Circuit> circuitsUsingThis;
-    private CircuitAppearance appearance;
-    private AttributeSet staticAttributes;
-    private SubcircuitFactory subcircuitFactory;
+    private final ArrayList<Component> clocks = new ArrayList<>();
+    private final CircuitLocker locker;
+    private final WeakHashMap<Component, Circuit> circuitsUsingThis;
+    private final CircuitAppearance appearance;
+    private final AttributeSet staticAttributes;
+    private final SubcircuitFactory subcircuitFactory;
+    CircuitWires wires = new CircuitWires();
+    private HashSet<Component> components = new HashSet<>(); // doesn't include wires
 
     public Circuit(String name) {
         appearance = new CircuitAppearance(this);
@@ -436,12 +436,12 @@ public class Circuit {
 
     private class EndChangedTransaction extends CircuitTransaction {
 
-        private Component component;
-        private Map<Location, EndData> toRemove;
-        private Map<Location, EndData> toAdd;
+        private final Component component;
+        private final Map<Location, EndData> toRemove;
+        private final Map<Location, EndData> toAdd;
 
         EndChangedTransaction(Component component, Map<Location, EndData> toRemove,
-                Map<Location, EndData> toAdd) {
+            Map<Location, EndData> toAdd) {
             this.component = component;
             this.toRemove = toRemove;
             this.toAdd = toAdd;

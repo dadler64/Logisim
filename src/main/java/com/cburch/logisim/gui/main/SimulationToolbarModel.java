@@ -14,32 +14,32 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 class SimulationToolbarModel extends AbstractToolbarModel
-        implements ChangeListener {
+    implements ChangeListener {
 
-    private Project project;
-    private LogisimToolbarItem simEnable;
-    private LogisimToolbarItem simStep;
-    private LogisimToolbarItem tickEnable;
-    private LogisimToolbarItem tickStep;
-    private List<ToolbarItem> items;
+    private final Project project;
+    private final LogisimToolbarItem simEnable;
+    private final LogisimToolbarItem simStep;
+    private final LogisimToolbarItem tickEnable;
+    private final LogisimToolbarItem tickStep;
+    private final List<ToolbarItem> items;
 
     public SimulationToolbarModel(Project project, MenuListener menu) {
         this.project = project;
 
         simEnable = new LogisimToolbarItem(menu, "simplay.png", LogisimMenuBar.SIMULATE_ENABLE,
-                Strings.getter("simulateEnableStepsTip"));
+            Strings.getter("simulateEnableStepsTip"));
         simStep = new LogisimToolbarItem(menu, "simstep.png", LogisimMenuBar.SIMULATE_STEP,
-                Strings.getter("simulateStepTip"));
+            Strings.getter("simulateStepTip"));
         tickEnable = new LogisimToolbarItem(menu, "simtplay.png", LogisimMenuBar.TICK_ENABLE,
-                Strings.getter("simulateEnableTicksTip"));
+            Strings.getter("simulateEnableTicksTip"));
         tickStep = new LogisimToolbarItem(menu, "simtstep.png", LogisimMenuBar.TICK_STEP,
-                Strings.getter("simulateTickTip"));
+            Strings.getter("simulateTickTip"));
 
         items = UnmodifiableList.create(new ToolbarItem[]{
-                simEnable,
-                simStep,
-                tickEnable,
-                tickStep,
+            simEnable,
+            simStep,
+            tickEnable,
+            tickStep,
         });
 
         menu.getMenuBar().addEnableListener(this);
@@ -72,10 +72,10 @@ class SimulationToolbarModel extends AbstractToolbarModel
         boolean ticking = sim != null && sim.isTicking();
         simEnable.setIcon(running ? "simstop.png" : "simplay.png");
         simEnable.setToolTip(running ? Strings.getter("simulateDisableStepsTip")
-                : Strings.getter("simulateEnableStepsTip"));
+            : Strings.getter("simulateEnableStepsTip"));
         tickEnable.setIcon(ticking ? "simtstop.png" : "simtplay.png");
         tickEnable.setToolTip(ticking ? Strings.getter("simulateDisableTicksTip")
-                : Strings.getter("simulateEnableTicksTip"));
+            : Strings.getter("simulateEnableTicksTip"));
         fireToolbarAppearanceChanged();
     }
 }

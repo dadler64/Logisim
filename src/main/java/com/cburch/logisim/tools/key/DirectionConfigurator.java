@@ -9,8 +9,8 @@ import java.awt.event.KeyEvent;
 
 public class DirectionConfigurator implements KeyConfigurator, Cloneable {
 
-    private Attribute<Direction> attr;
-    private int modsEx;
+    private final Attribute<Direction> attr;
+    private final int modsEx;
 
     public DirectionConfigurator(Attribute<Direction> attr, int modifiersEx) {
         this.attr = attr;

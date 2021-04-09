@@ -9,7 +9,7 @@ class ValueLog {
 
     private static final int LOG_SIZE = 400;
 
-    private Value[] log;
+    private final Value[] log;
     private short curSize;
     private short firstIndex;
 
@@ -33,7 +33,7 @@ class ValueLog {
 
     public Value getLast() {
         return curSize < LOG_SIZE ? (curSize == 0 ? null : log[curSize - 1])
-                : (firstIndex == 0 ? log[curSize - 1] : log[firstIndex - 1]);
+            : (firstIndex == 0 ? log[curSize - 1] : log[firstIndex - 1]);
     }
 
     public void append(Value val) {

@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 class Selection {
 
-    private CircuitState root;
-    private Model model;
-    private ArrayList<SelectionItem> components;
+    private final CircuitState root;
+    private final Model model;
+    private final ArrayList<SelectionItem> components;
 
     public Selection(CircuitState root, Model model) {
         this.root = root;

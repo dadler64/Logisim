@@ -14,11 +14,10 @@ import com.cburch.logisim.gui.main.Selection.Event;
 import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.tools.SetAttributeAction;
 
-class AttrTableSelectionModel extends AttributeSetTableModel
-        implements Selection.Listener {
+class AttrTableSelectionModel extends AttributeSetTableModel implements Selection.Listener {
 
-    private Project project;
-    private Frame frame;
+    private final Project project;
+    private final Frame frame;
 
     public AttrTableSelectionModel(Project project, Frame frame) {
         super(frame.getCanvas().getSelection().getAttributeSet());
@@ -63,19 +62,18 @@ class AttrTableSelectionModel extends AttributeSetTableModel
         if (variousFound) {
             return Strings.get("selectionVarious", "" + totalCount);
         } else if (factoryCount == 0) {
-            String circName = frame.getCanvas().getCircuit().getName();
-            return Strings.get("circuitAttrTitle", circName);
+            String circuitName = frame.getCanvas().getCircuit().getName();
+            return Strings.get("circuitAttrTitle", circuitName);
         } else if (factoryCount == 1) {
             return Strings.get("selectionOne", factory.getDisplayName());
         } else {
-            return Strings.get("selectionMultiple", factory.getDisplayName(),
-                    "" + factoryCount);
+            return Strings.get("selectionMultiple", factory.getDisplayName(), "" + factoryCount);
         }
     }
 
     @Override
     public void setValueRequested(Attribute<Object> attribute, Object value)
-            throws AttrTableSetException {
+        throws AttrTableSetException {
         Selection selection = frame.getCanvas().getSelection();
         Circuit circuit = frame.getCanvas().getCircuit();
         if (selection.isEmpty() && circuit != null) {
@@ -83,7 +81,7 @@ class AttrTableSelectionModel extends AttributeSetTableModel
             circuitModel.setValueRequested(attribute, value);
         } else {
             SetAttributeAction act = new SetAttributeAction(circuit,
-                    Strings.getter("selectionAttributeAction"));
+                Strings.getter("selectionAttributeAction"));
             for (Component comp : selection.getComponents()) {
                 if (!(comp instanceof Wire)) {
                     act.set(comp, attribute, value);

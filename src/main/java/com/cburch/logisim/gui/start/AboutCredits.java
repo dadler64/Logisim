@@ -34,13 +34,13 @@ class AboutCredits extends JComponent {
      */
     private static final String HENDRIX_PATH = "logisim/hendrix.png";
     private static final int HENDRIX_WIDTH = 50;
-    private Color[] colorBase;
-    private Paint[] paintSteady;
-    private Font[] font;
+    private final Color[] colorBase;
+    private final Paint[] paintSteady;
+    private final Font[] font;
+    private final float fadeStop;
+    private final ArrayList<CreditsLine> lines;
+    private final int initialLines; // number of lines to show in initial freeze
     private int scroll;
-    private float fadeStop;
-    private ArrayList<CreditsLine> lines;
-    private int initialLines; // number of lines to show in initial freeze
     private int initialHeight; // computed in code based on above
     private int linesHeight; // computed in code based on above
 
@@ -55,20 +55,20 @@ class AboutCredits extends JComponent {
         fadeStop = (float) (About.IMAGE_HEIGHT / 4.0);
 
         colorBase = new Color[]{
-                new Color(143, 0, 0),
-                new Color(48, 0, 96),
-                new Color(48, 0, 96),
+            new Color(143, 0, 0),
+            new Color(48, 0, 96),
+            new Color(48, 0, 96),
         };
         font = new Font[]{
-                new Font("Sans Serif", Font.ITALIC, 20),
-                new Font("Sans Serif", Font.BOLD, 24),
-                new Font("Sans Serif", Font.BOLD, 18),
+            new Font("Sans Serif", Font.ITALIC, 20),
+            new Font("Sans Serif", Font.BOLD, 24),
+            new Font("Sans Serif", Font.BOLD, 18),
         };
         paintSteady = new Paint[colorBase.length];
         for (int i = 0; i < colorBase.length; i++) {
             Color hue = colorBase[i];
             paintSteady[i] = new GradientPaint(0.0f, 0.0f, derive(hue, 0),
-                    0.0f, fadeStop, hue);
+                0.0f, fadeStop, hue);
         }
 
         URL url = AboutCredits.class.getClassLoader().getResource(HENDRIX_PATH);
@@ -86,7 +86,7 @@ class AboutCredits extends JComponent {
         linesHeight = 0; // computed in paintComponent
         lines.add(new CreditsLine(1, "www.cburch.com/logisim/"));
         lines.add(new CreditsLine(0, Strings.get("creditsRoleLead"),
-                hendrixLogo, HENDRIX_WIDTH));
+            hendrixLogo, HENDRIX_WIDTH));
         lines.add(new CreditsLine(1, "Carl Burch"));
         lines.add(new CreditsLine(2, "Hendrix College"));
         initialLines = lines.size();
@@ -96,27 +96,27 @@ class AboutCredits extends JComponent {
         lines.add(new CreditsLine(0, Strings.get("creditsRoleGreek")));
         lines.add(new CreditsLine(1, "Thanos Kakarountas"));
         lines.add(
-                new CreditsLine(2, "\u03A4.\u0395.\u0399 \u0399\u03BF\u03BD\u03AF\u03C9\u03BD \u039D\u03AE\u03C3\u03C9\u03BD"));
+            new CreditsLine(2, "\u03A4.\u0395.\u0399 \u0399\u03BF\u03BD\u03AF\u03C9\u03BD \u039D\u03AE\u03C3\u03C9\u03BD"));
         lines.add(new CreditsLine(0, Strings.get("creditsRolePortuguese")));
         lines.add(new CreditsLine(1, "Theldo Cruz Franqueira"));
         lines.add(new CreditsLine(2, "PUC Minas"));
         lines.add(new CreditsLine(0, Strings.get("creditsRoleRussian")));
         lines.add(new CreditsLine(1, "Ilia Lilov"));
         lines.add(new CreditsLine(2,
-                "\u041C\u043E\u0441\u043A\u043E\u0432\u0441\u043A\u0438\u0439 \u0433\u043E\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0439"));
+            "\u041C\u043E\u0441\u043A\u043E\u0432\u0441\u043A\u0438\u0439 \u0433\u043E\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0439"));
         lines.add(new CreditsLine(2,
-                "\u0443\u043D\u0438\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442 \u043F\u0435\u0447\u0430\u0442\u0438"));
+            "\u0443\u043D\u0438\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442 \u043F\u0435\u0447\u0430\u0442\u0438"));
         lines.add(new CreditsLine(0, Strings.get("creditsRoleTesting")));
         lines.add(new CreditsLine(1, "Ilia Lilov"));
         lines.add(new CreditsLine(2,
-                "\u041C\u043E\u0441\u043A\u043E\u0432\u0441\u043A\u0438\u0439 \u0433\u043E\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0439"));
+            "\u041C\u043E\u0441\u043A\u043E\u0432\u0441\u043A\u0438\u0439 \u0433\u043E\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0439"));
         lines.add(new CreditsLine(2,
-                "\u0443\u043D\u0438\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442 \u043F\u0435\u0447\u0430\u0442\u0438"));
+            "\u0443\u043D\u0438\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442 \u043F\u0435\u0447\u0430\u0442\u0438"));
 
         /* If you fork Logisim, feel free to change the above lines, but
          * please do not change these last four lines! */
         lines.add(new CreditsLine(0, Strings.get("creditsRoleOriginal"),
-                hendrixLogo, HENDRIX_WIDTH));
+            hendrixLogo, HENDRIX_WIDTH));
         lines.add(new CreditsLine(1, "Carl Burch"));
         lines.add(new CreditsLine(2, "Hendrix College"));
         lines.add(new CreditsLine(1, "www.cburch.com/logisim/"));
@@ -174,7 +174,7 @@ class AboutCredits extends JComponent {
                 for (int i = 0; i < paint.length; i++) {
                     Color hue = colorBase[i];
                     paint[i] = new GradientPaint(0.0f, 0.0f, derive(hue, a),
-                            0.0f, fadeStop, hue);
+                        0.0f, fadeStop, hue);
                 }
             }
             yPos = initY;
@@ -224,11 +224,11 @@ class AboutCredits extends JComponent {
 
     private static class CreditsLine {
 
+        private final int type;
+        private final String text;
+        private final Image img;
+        private final int imgWidth;
         private int y;
-        private int type;
-        private String text;
-        private Image img;
-        private int imgWidth;
 
         public CreditsLine(int type, String text) {
             this(type, text, null, 0);

@@ -31,26 +31,31 @@ import javax.swing.Icon;
 public class Clock extends InstanceFactory {
 
     public static final Attribute<Integer> ATTR_HIGH
-            = new DurationAttribute("highDuration", Strings.getter("clockHighAttr"),
-            1, Integer.MAX_VALUE);
-
+        = new DurationAttribute("highDuration", Strings.getter("clockHighAttr"), 1, Integer.MAX_VALUE);
     public static final Attribute<Integer> ATTR_LOW
-            = new DurationAttribute("lowDuration", Strings.getter("clockLowAttr"),
-            1, Integer.MAX_VALUE);
-
+        = new DurationAttribute("lowDuration", Strings.getter("clockLowAttr"), 1, Integer.MAX_VALUE);
     public static final Clock FACTORY = new Clock();
-
     private static final Icon toolIcon = Icons.getIcon("clock.gif");
 
     public Clock() {
         super("Clock", Strings.getter("clockComponent"));
-        setAttributes(new Attribute[]{
-                StdAttr.FACING, ATTR_HIGH, ATTR_LOW,
-                StdAttr.LABEL, Pin.ATTR_LABEL_LOC, StdAttr.LABEL_FONT
-        }, new Object[]{
-                Direction.EAST, 1, 1,
-                "", Direction.WEST, StdAttr.DEFAULT_LABEL_FONT
-        });
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                ATTR_HIGH,
+                ATTR_LOW,
+                StdAttr.LABEL,
+                Pin.ATTR_LABEL_LOC,
+                StdAttr.LABEL_FONT
+            }, new Object[]{
+                Direction.EAST,
+                1,
+                1,
+                "",
+                Direction.WEST,
+                StdAttr.DEFAULT_LABEL_FONT
+            }
+        );
         setFacingAttribute(StdAttr.FACING);
         setInstanceLogger(ClockLogger.class);
         setInstancePoker(ClockPoker.class);
@@ -59,23 +64,23 @@ public class Clock extends InstanceFactory {
     //
     // package methods
     //
-    public static boolean tick(CircuitState circState, int ticks, Component comp) {
-        AttributeSet attrs = comp.getAttributeSet();
+    public static boolean tick(CircuitState circuitState, int ticks, Component component) {
+        AttributeSet attrs = component.getAttributeSet();
         int durationHigh = attrs.getValue(ATTR_HIGH);
         int durationLow = attrs.getValue(ATTR_LOW);
-        ClockState state = (ClockState) circState.getData(comp);
+        ClockState state = (ClockState) circuitState.getData(component);
         if (state == null) {
             state = new ClockState();
-            circState.setData(comp, state);
+            circuitState.setData(component, state);
         }
-        boolean curValue = ticks % (durationHigh + durationLow) < durationLow;
+        boolean currentValue = ticks % (durationHigh + durationLow) < durationLow;
         if (state.clicks % 2 == 1) {
-            curValue = !curValue;
+            currentValue = !currentValue;
         }
-        Value desired = (curValue ? Value.FALSE : Value.TRUE);
+        Value desired = (currentValue ? Value.FALSE : Value.TRUE);
         if (!state.sending.equals(desired)) {
             state.sending = desired;
-            Instance.getInstanceFor(comp).fireInvalidated();
+            Instance.getInstanceFor(component).fireInvalidated();
             return true;
         } else {
             return false;
@@ -83,19 +88,19 @@ public class Clock extends InstanceFactory {
     }
 
     private static ClockState getState(InstanceState state) {
-        ClockState ret = (ClockState) state.getData();
-        if (ret == null) {
-            ret = new ClockState();
-            state.setData(ret);
+        ClockState clockState = (ClockState) state.getData();
+        if (clockState == null) {
+            clockState = new ClockState();
+            state.setData(clockState);
         }
-        return ret;
+        return clockState;
     }
 
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
         return Probe.getOffsetBounds(
-                attributes.getValue(StdAttr.FACING),
-                BitWidth.ONE, RadixOption.RADIX_2);
+            attributes.getValue(StdAttr.FACING),
+            BitWidth.ONE, RadixOption.RADIX_2);
     }
 
     //
@@ -109,36 +114,37 @@ public class Clock extends InstanceFactory {
         } else {
             g.drawRect(4, 4, 13, 13);
             g.setColor(Value.FALSE.getColor());
-            g.drawPolyline(new int[]{6, 6, 10, 10, 14, 14},
-                    new int[]{10, 6, 6, 14, 14, 10}, 6);
+            g.drawPolyline(new int[]{6, 6, 10, 10, 14, 14}, new int[]{10, 6, 6, 14, 14, 10}, 6);
         }
 
-        Direction dir = painter.getAttributeValue(StdAttr.FACING);
-        int pinx = 15;
-        int piny = 8;
-        if (dir == Direction.EAST) { // keep defaults
-        } else if (dir == Direction.WEST) {
-            pinx = 3;
-        } else if (dir == Direction.NORTH) {
-            pinx = 8;
-            piny = 3;
-        } else if (dir == Direction.SOUTH) {
-            pinx = 8;
-            piny = 15;
+        Direction direction = painter.getAttributeValue(StdAttr.FACING);
+        int pinX = 15;
+        int pinY = 8;
+        if (direction == Direction.EAST) {
+            // keep defaults
+        } else if (direction == Direction.WEST) {
+            pinX = 3;
+        } else if (direction == Direction.NORTH) {
+            pinX = 8;
+            pinY = 3;
+        } else if (direction == Direction.SOUTH) {
+            pinX = 8;
+            pinY = 15;
         }
         g.setColor(Value.TRUE.getColor());
-        g.fillOval(pinx, piny, 3, 3);
+        g.fillOval(pinX, pinY, 3, 3);
     }
 
     @Override
     public void paintInstance(InstancePainter painter) {
         java.awt.Graphics g = painter.getGraphics();
-        Bounds bds = painter.getInstance().getBounds(); // intentionally with no graphics object - we don't want label included
-        int x = bds.getX();
-        int y = bds.getY();
+        Bounds bounds = painter.getInstance()
+            .getBounds(); // intentionally with no graphics object - we don't want label included
+        int x = bounds.getX();
+        int y = bounds.getY();
         GraphicsUtil.switchToWidth(g, 2);
         g.setColor(Color.BLACK);
-        g.drawRect(x, y, bds.getWidth(), bds.getHeight());
+        g.drawRect(x, y, bounds.getWidth(), bounds.getHeight());
 
         painter.drawLabel();
 
@@ -199,8 +205,8 @@ public class Clock extends InstanceFactory {
     //
     private void configureLabel(Instance instance) {
         Direction facing = instance.getAttributeValue(StdAttr.FACING);
-        Direction labelLoc = instance.getAttributeValue(Pin.ATTR_LABEL_LOC);
-        Probe.configureLabel(instance, labelLoc, facing);
+        Direction labelLocation = instance.getAttributeValue(Pin.ATTR_LABEL_LOC);
+        Probe.configureLabel(instance, labelLocation, facing);
     }
 
     private static class ClockState implements InstanceData, Cloneable {
@@ -253,8 +259,8 @@ public class Clock extends InstanceFactory {
         }
 
         private boolean isInside(InstanceState state, MouseEvent e) {
-            Bounds bds = state.getInstance().getBounds();
-            return bds.contains(e.getX(), e.getY());
+            Bounds bounds = state.getInstance().getBounds();
+            return bounds.contains(e.getX(), e.getY());
         }
     }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 class Assignments {
 
-    private Map<String, Boolean> map = new HashMap<>();
+    private final Map<String, Boolean> map = new HashMap<>();
 
     public Assignments() {
     }

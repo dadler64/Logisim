@@ -11,10 +11,10 @@ public class VariableListEvent {
     public static final int MOVE = 3;
     public static final int REPLACE = 4;
 
-    private VariableList source;
-    private int type;
-    private String variable;
-    private Object data;
+    private final VariableList source;
+    private final int type;
+    private final String variable;
+    private final Object data;
 
     public VariableListEvent(VariableList source, int type, String variable, Object data) {
         this.source = source;

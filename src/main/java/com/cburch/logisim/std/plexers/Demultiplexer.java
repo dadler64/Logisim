@@ -27,16 +27,29 @@ public class Demultiplexer extends InstanceFactory {
 
     public Demultiplexer() {
         super("Demultiplexer", Strings.getter("demultiplexerComponent"));
-        setAttributes(new Attribute[]{
-                StdAttr.FACING, Plexers.ATTR_SELECT_LOC, Plexers.ATTR_SELECT, StdAttr.WIDTH,
-                Plexers.ATTR_TRISTATE, Plexers.ATTR_DISABLED, Plexers.ATTR_ENABLE
-        }, new Object[]{
-                Direction.EAST, Plexers.SELECT_BOTTOM_LEFT, Plexers.DEFAULT_SELECT, BitWidth.ONE,
-                Plexers.DEFAULT_TRISTATE, Plexers.DISABLED_FLOATING, Boolean.TRUE
-        });
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                Plexers.ATTR_SELECT_LOC,
+                Plexers.ATTR_SELECT,
+                StdAttr.WIDTH,
+                Plexers.ATTR_TRISTATE,
+                Plexers.ATTR_DISABLED,
+                Plexers.ATTR_ENABLE
+            }, new Object[]{
+                Direction.EAST,
+                Plexers.SELECT_BOTTOM_LEFT,
+                Plexers.DEFAULT_SELECT,
+                BitWidth.ONE,
+                Plexers.DEFAULT_TRISTATE,
+                Plexers.DISABLED_FLOATING,
+                Boolean.TRUE
+            }
+        );
         setKeyConfigurator(JoinedConfigurator.create(
-                new BitWidthConfigurator(Plexers.ATTR_SELECT, 1, 5, 0),
-                new BitWidthConfigurator(StdAttr.WIDTH)));
+            new BitWidthConfigurator(Plexers.ATTR_SELECT, 1, 5, 0),
+            new BitWidthConfigurator(StdAttr.WIDTH)
+        ));
         setFacingAttribute(StdAttr.FACING);
         setIconName("demultiplexer.gif");
     }
@@ -56,14 +69,13 @@ public class Demultiplexer extends InstanceFactory {
         Direction facing = attributes.getValue(StdAttr.FACING);
         BitWidth select = attributes.getValue(Plexers.ATTR_SELECT);
         int outputs = 1 << select.getWidth();
-        Bounds bds;
+        Bounds bounds;
         if (outputs == 2) {
-            bds = Bounds.create(0, -20, 30, 40);
+            bounds = Bounds.create(0, -20, 30, 40);
         } else {
-            bds = Bounds.create(0, -(outputs / 2) * 10 - 10,
-                    40, outputs * 10 + 20);
+            bounds = Bounds.create(0, -(outputs / 2) * 10 - 10, 40, outputs * 10 + 20);
         }
-        return bds.rotate(Direction.EAST, facing, 0, 0);
+        return bounds.rotate(Direction.EAST, facing, 0, 0);
     }
 
     @Override
@@ -80,8 +92,7 @@ public class Demultiplexer extends InstanceFactory {
 
     @Override
     protected void instanceAttributeChanged(Instance instance, Attribute<?> attribute) {
-        if (attribute == StdAttr.FACING || attribute == Plexers.ATTR_SELECT_LOC
-                || attribute == Plexers.ATTR_SELECT) {
+        if (attribute == StdAttr.FACING || attribute == Plexers.ATTR_SELECT_LOC || attribute == Plexers.ATTR_SELECT) {
             instance.recomputeBounds();
             updatePorts(instance);
         } else if (attribute == StdAttr.WIDTH || attribute == Plexers.ATTR_ENABLE) {
@@ -217,8 +228,7 @@ public class Demultiplexer extends InstanceFactory {
     public void paintGhost(InstancePainter painter) {
         Direction facing = painter.getAttributeValue(StdAttr.FACING);
         BitWidth select = painter.getAttributeValue(Plexers.ATTR_SELECT);
-        Plexers.drawTrapezoid(painter.getGraphics(), painter.getBounds(),
-                facing.reverse(), select.getWidth() == 1 ? 10 : 20);
+        Plexers.drawTrapezoid(painter.getGraphics(), painter.getBounds(), facing.reverse(), select.getWidth() == 1 ? 10 : 20);
     }
 
     @Override
@@ -279,15 +289,14 @@ public class Demultiplexer extends InstanceFactory {
             halign = GraphicsUtil.H_RIGHT;
         }
         g.setColor(Color.GRAY);
-        GraphicsUtil.drawText(g, "0", bds.getX() + x0, bds.getY() + y0,
-                halign, GraphicsUtil.V_BASELINE);
+        GraphicsUtil.drawText(g, "0", bds.getX() + x0, bds.getY() + y0, halign, GraphicsUtil.V_BASELINE);
 
         // draw trapezoid, "DMX" label, and ports
         g.setColor(Color.BLACK);
         Plexers.drawTrapezoid(g, bds, facing.reverse(), select.getWidth() == 1 ? 10 : 20);
         GraphicsUtil.drawCenteredText(g, "DMX",
-                bds.getX() + bds.getWidth() / 2,
-                bds.getY() + bds.getHeight() / 2);
+            bds.getX() + bds.getWidth() / 2,
+            bds.getY() + bds.getHeight() / 2);
         painter.drawPorts();
     }
 }

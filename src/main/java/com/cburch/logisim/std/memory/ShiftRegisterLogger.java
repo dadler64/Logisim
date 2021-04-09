@@ -23,15 +23,14 @@ public class ShiftRegisterLogger extends InstanceLogger {
 
     @Override
     public String getLogName(InstanceState state, Object option) {
-        String inName = state.getAttributeValue(StdAttr.LABEL);
-        if (inName == null || inName.equals("")) {
-            inName = Strings.get("shiftRegisterComponent")
-                    + state.getInstance().getLocation();
+        String name = state.getAttributeValue(StdAttr.LABEL);
+        if (name == null || name.equals("")) {
+            name = Strings.get("shiftRegisterComponent") + state.getInstance().getLocation();
         }
         if (option instanceof Integer) {
-            return inName + "[" + option + "]";
+            return name + "[" + option + "]";
         } else {
-            return inName;
+            return name;
         }
     }
 

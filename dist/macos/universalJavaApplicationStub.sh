@@ -11,14 +11,14 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2020-03-19                                                          #
-# @version   3.0.6                                                               #
+# @date      2021-02-21                                                          #
+# @version   3.2.0                                                               #
 #                                                                                #
 ##################################################################################
 #                                                                                #
 # The MIT License (MIT)                                                          #
 #                                                                                #
-# Copyright (c) 2014-2020 Tobias Fischer                                         #
+# Copyright (c) 2014-2021 Tobias Fischer                                         #
 #                                                                                #
 # Permission is hereby granted, free of charge, to any person obtaining a copy   #
 # of this software and associated documentation files (the "Software"), to deal  #
@@ -166,6 +166,8 @@ if [ $exitcode -eq 0 ]; then
 	JavaFolder="${AppleJavaFolder}"
 	ResourcesFolder="${AppleResourcesFolder}"
 
+	# set expandable variables
+	APP_ROOT="${AppPackageFolder}"
 	APP_PACKAGE="${AppPackageFolder}"
 	JAVAROOT="${AppleJavaFolder}"
 	USER_HOME="$HOME"
@@ -180,7 +182,7 @@ if [ $exitcode -eq 0 ]; then
 		# AppPackageRoot is the standard WorkingDirectory when the script is started
 		WorkingDirectory="${AppPackageRoot}"
 	fi
-	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 	WorkingDirectory=$(eval echo "${WorkingDirectory}")
 
 
@@ -203,7 +205,7 @@ if [ $exitcode -eq 0 ]; then
 	else
 		JVMClassPath=${JVMClassPath_RAW}
 	fi
-	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 	JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	# read the JVM Options in either Array or String style
@@ -213,6 +215,8 @@ if [ $exitcode -eq 0 ]; then
 	else
 		JVMDefaultOptions=${JVMDefaultOptions_RAW}
 	fi
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME (#84)
+	JVMDefaultOptions=$(eval echo "${JVMDefaultOptions}")
 
 	# read StartOnMainThread and add as -XstartOnFirstThread
 	JVMStartOnMainThread=$(plist_get_java ':StartOnMainThread')
@@ -245,7 +249,11 @@ else
 	ResourcesFolder="${OracleResourcesFolder}"
 	WorkingDirectory="${OracleJavaFolder}"
 
+	# set expandable variables
 	APP_ROOT="${AppPackageFolder}"
+	APP_PACKAGE="${AppPackageFolder}"
+	JAVAROOT="${OracleJavaFolder}"
+	USER_HOME="$HOME"
 
 	# read the MainClass name
 	JVMMainClass="$(plist_get ':JVMMainClassName')"
@@ -263,12 +271,12 @@ else
 	JVMClassPath_RAW=$(plist_get ':JVMClassPath')
 	if [[ $JVMClassPath_RAW == *Array* ]] ; then
 		JVMClassPath=.$(plist_get ':JVMClassPath' | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs)
-		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+		# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 		JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	elif [[ ! -z ${JVMClassPath_RAW} ]] ; then
 		JVMClassPath=${JVMClassPath_RAW}
-		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+		# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 		JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	else
@@ -277,8 +285,11 @@ else
 		# Do NOT expand the default 'AppName.app/Contents/Java/*' classpath (#42)
 	fi
 
-	# read the JVM Default Options
+	# read the JVM Default Options by parsing the :JVMDefaultOptions <dict>
+	# and pulling all <string> values starting with a dash (-)
 	JVMDefaultOptions=$(plist_get ':JVMDefaultOptions' | grep -o " \-.*" | tr -d '\n' | xargs)
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME (#99)
+	JVMDefaultOptions=$(eval echo "${JVMDefaultOptions}")
 
 	# read the Main Arguments from JVMArguments key as an array and retain spaces (see #46 for naming details)
 	IFS=$'\t\n'
@@ -314,14 +325,14 @@ fi
 stub_logger "[JavaRequirement] JVM minimum version: ${JVMVersion}"
 stub_logger "[JavaRequirement] JVM maximum version: ${JVMMaxVersion}"
 
-# MainArgs: replace occurences of $APP_ROOT with its content
+# MainArgs: expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 MainArgsArr=()
 for i in "${MainArgs[@]}"
 do
 	MainArgsArr+=("$(eval echo "$i")")
 done
 
-# JVMOptions: replace occurences of $APP_ROOT with its content
+# JVMOptions: expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 JVMOptionsArr=()
 for i in "${JVMOptions[@]}"
 do
@@ -332,11 +343,34 @@ done
 # internationalized messages
 ############################################
 
-LANG=$(defaults read -g AppleLocale)
-stub_logger "[Language] $LANG"
+# supported languages / available translations
+stubLanguages="^(fr|de|zh|es|en)-"
 
-# French localization
-if [[ $LANG == fr* ]] ; then
+# read user preferred languages as defined in macOS System Preferences (#101)
+stub_logger '[LanguageSearch] Checking preferred languages in macOS System Preferences...'
+appleLanguages=($(defaults read -g AppleLanguages | grep '\s"' | tr -d ',' | xargs))
+stub_logger "[LanguageSearch] ... found [${appleLanguages[*]}]"
+
+language=""
+for i in "${appleLanguages[@]}"
+do
+	langValue="${i%-*}"
+    if [[ "$i" =~ $stubLanguages ]]; then
+		stub_logger "[LanguageSearch] ... selected '$i' ('$langValue') as the default language for the launcher stub"
+		language=${langValue}
+        break
+	fi
+done
+if [ -z "${language}" ]; then
+    language="en"
+    stub_logger "[LanguageSearch] ... selected fallback 'en' as the default language for the launcher stub"
+fi
+stub_logger "[Language] $language"
+
+
+case "${language}" in
+# French
+fr)
 	MSG_ERROR_LAUNCHING="ERREUR au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
 	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version de Java demandée est invalide: %s\nVeuillez contacter le développeur de l'application."
@@ -349,9 +383,10 @@ if [[ $LANG == fr* ]] ; then
 	MSG_LATER="Plus tard"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+    ;;
 
-# German localization
-elif [[ $LANG == de* ]] ; then
+# German
+de)
 	MSG_ERROR_LAUNCHING="FEHLER beim Starten von '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="Die 'MainClass' ist nicht spezifiziert!\nDie Java-Anwendung kann nicht gestartet werden!"
 	MSG_JVMVERSION_REQ_INVALID="Die Syntax der angeforderten Java-Version ist ungültig: %s\nBitte kontaktieren Sie den Entwickler der App."
@@ -364,9 +399,10 @@ elif [[ $LANG == de* ]] ; then
 	MSG_LATER="Später"
 	MSG_VISIT_JAVA_DOT_COM="Java von Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java von AdoptOpenJDK"
+    ;;
 
-# Simplifyed Chinese localization
-elif [[ $LANG == zh* ]] ; then
+# Simplified Chinese
+zh)
 	MSG_ERROR_LAUNCHING="无法启动 '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="没有指定 'MainClass'！\nJava程序无法启动!"
 	MSG_JVMVERSION_REQ_INVALID="Java版本参数语法错误: %s\n请联系该应用的开发者。"
@@ -379,9 +415,26 @@ elif [[ $LANG == zh* ]] ; then
 	MSG_LATER="稍后"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+    ;;
 
-# English default localization
-else
+# Spanish
+es)
+	MSG_ERROR_LAUNCHING="ERROR iniciando '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="¡'MainClass' no especificada!\n¡La aplicación Java no puede iniciarse!"
+	MSG_JVMVERSION_REQ_INVALID="La sintaxis de la versión Java requerida no es válida: %s\nPor favor, contacte con el desarrollador de la aplicación."
+	MSG_NO_SUITABLE_JAVA="¡No se encontró una versión de Java adecuada en su sistema!\nEste programa requiere Java %s"
+	MSG_JAVA_VERSION_OR_LATER="o posterior"
+	MSG_JAVA_VERSION_LATEST="(ultima actualización)"
+	MSG_JAVA_VERSION_MAX="superior a %s"
+	MSG_NO_SUITABLE_JAVA_CHECK="Asegúrese de instalar la versión Java requerida."
+	MSG_INSTALL_JAVA="¡Necesita tener JAVA instalado en su Mac!\nVisite java.com para consultar las instrucciones para su instalación..."
+	MSG_LATER="Más tarde"
+	MSG_VISIT_JAVA_DOT_COM="Java de Oracle"
+	MSG_VISIT_ADOPTOPENJDK="Java de AdoptOpenJDK"
+    ;;
+
+# English | default
+en|*)
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' isn't specified!\nJava application cannot be started!"
 	MSG_JVMVERSION_REQ_INVALID="The syntax of the required Java version is invalid: %s\nPlease contact the App developer."
@@ -394,7 +447,8 @@ else
 	MSG_LATER="Later"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
-fi
+    ;;
+esac
 
 
 
@@ -510,20 +564,28 @@ if [ -n "$JAVA_HOME" ] ; then
 	if [[ $JAVA_HOME == /* ]] ; then
 		# if "$JAVA_HOME" starts with a Slash it's an absolute path
 		JAVACMD="$JAVA_HOME/bin/java"
+		stub_logger "[JavaSearch] ... parsing JAVA_HOME as absolute path to the executable '$JAVACMD'"
 	else
 		# otherwise it's a relative path to "$AppPackageFolder"
 		JAVACMD="$AppPackageFolder/$JAVA_HOME/bin/java"
+		stub_logger "[JavaSearch] ... parsing JAVA_HOME as relative path inside the App bundle to the executable '$JAVACMD'"
 	fi
 	JAVACMD_version=$(get_comparable_java_version $(get_java_version_from_cmd "${JAVACMD}"))
 else
-	stub_logger "[JavaSearch] ... didn't found JAVA_HOME"
+	stub_logger "[JavaSearch] ... haven't found JAVA_HOME"
 fi
 
 
 # check for any other or a specific Java version
 # also if $JAVA_HOME exists but isn't executable
 if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
-	stub_logger "[JavaSearch] Checking for JavaVirtualMachines on the system ..."
+
+	# add a warning in the syslog if JAVA_HOME is not executable or not found (#100)
+	if [ -n "$JAVA_HOME" ] ; then
+		stub_logger "[JavaSearch] ... but no 'java' executable was found at the JAVA_HOME location!"
+	fi
+
+	stub_logger "[JavaSearch] Searching for JavaVirtualMachines on the system ..."
 	# reset variables
 	JAVACMD=""
 	JAVACMD_version=""
@@ -552,15 +614,41 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 
 	# find installed JavaVirtualMachines (JDK + JRE)
 	allJVMs=()
-	# read JDK's from '/usr/libexec/java_home -V' command
-	while read -r line; do
-		version=$(echo $line | awk -F $',' '{print $1;}')
-		path=$(echo $line | awk -F $'" ' '{print $2;}')
-		path+="/bin/java"
-		allJVMs+=("$version:$path")
-	done < <(/usr/libexec/java_home -V 2>&1 | grep '^[[:space:]]')
-	# unset while loop variables
-	unset version path
+
+	# read JDK's from '/usr/libexec/java_home --xml' command with PlistBuddy and a custom Dict iterator
+	# idea: https://stackoverflow.com/a/14085460/1128689 and https://scriptingosx.com/2018/07/parsing-dscl-output-in-scripts/
+	javaXml=$(/usr/libexec/java_home --xml)
+	javaCounter=$(/usr/libexec/PlistBuddy -c "Print" /dev/stdin <<< $javaXml | grep "Dict" | wc -l | tr -d ' ')
+
+	# iterate over all Dict entries
+	# but only if there are any JVMs at all (#93)
+	if [ "$javaCounter" -gt "0" ] ; then
+		for idx in $(seq 0 $((javaCounter - 1)))
+		do
+			version=$(/usr/libexec/PlistBuddy -c "print :$idx:JVMVersion" /dev/stdin <<< $javaXml)
+			path=$(/usr/libexec/PlistBuddy -c "print :$idx:JVMHomePath" /dev/stdin <<< $javaXml)
+			path+="/bin/java"
+			allJVMs+=("$version:$path")
+		done
+		# unset for loop variables
+		unset version path
+	fi
+
+	# add SDKMAN! java versions (#95)
+	if [ -d ~/.sdkman/candidates/java/ ] ; then
+		for sdkjdk in ~/.sdkman/candidates/java/*/
+		do
+			if [[ ${sdkjdk} =~ /current/$ ]] ; then
+				continue
+			fi
+
+			sdkjdkcmd="${sdkjdk}bin/java"
+			version=$(get_java_version_from_cmd "${sdkjdkcmd}")
+			allJVMs+=("$version:$sdkjdkcmd")
+		done
+		# unset for loop variables
+		unset version
+	fi
 
 	# add Apple JRE if available
 	if [ -x "${apple_jre_plugin}" ] ; then
@@ -580,6 +668,9 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 
 
 	# determine JVMs matching the min/max version requirement
+
+	stub_logger "[JavaSearch] Filtering the result list for JVMs matching the min/max version requirement ..."
+
 	minC=$(get_comparable_java_version ${JVMVersion})
 	maxC=$(get_comparable_java_version ${JVMMaxVersion})
 	matchingJVMs=()
@@ -664,7 +755,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 	# debug output
 	for i in "${matchingJVMs[@]}"
 	do
-		stub_logger "[JavaSearch] ... ... matches all requirements: $i"
+		stub_logger "[JavaSearch] ... matches all requirements: $i"
 	done
 
 
@@ -784,10 +875,10 @@ stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 # - main class
 # - main class arguments
 # - passthrough arguments from Terminal or Drag'n'Drop to Finder icon
-stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptionsArr:+$(printf "'%s' " "${JVMOptionsArr[@]}") }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgsArr:+ $(printf "'%s' " "${MainArgsArr[@]}")}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
+stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" ${JVMSplashFile:+ -splash:\"${ResourcesFolder}/${JVMSplashFile}\"} -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptionsArr:+$(printf "'%s' " "${JVMOptionsArr[@]}") }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgsArr:+ $(printf "'%s' " "${MainArgsArr[@]}")}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
 exec "${JAVACMD}" \
 		-cp "${JVMClassPath}" \
-		-splash:"${ResourcesFolder}/${JVMSplashFile}" \
+		${JVMSplashFile:+ -splash:"${ResourcesFolder}/${JVMSplashFile}"} \
 		-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 		-Xdock:name="${CFBundleName}" \
 		${JVMOptionsArr:+"${JVMOptionsArr[@]}" }\

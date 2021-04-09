@@ -10,12 +10,12 @@ import com.cburch.logisim.tools.Tool;
 
 public class AttrTableToolModel extends AttributeSetTableModel {
 
-    Project proj;
+    Project project;
     Tool tool;
 
-    public AttrTableToolModel(Project proj, Tool tool) {
+    public AttrTableToolModel(Project project, Tool tool) {
         super(tool.getAttributeSet());
-        this.proj = proj;
+        this.project = project;
         this.tool = tool;
     }
 
@@ -30,6 +30,6 @@ public class AttrTableToolModel extends AttributeSetTableModel {
 
     @Override
     public void setValueRequested(Attribute<Object> attribute, Object value) {
-        proj.doAction(ToolAttributeAction.create(tool, attribute, value));
+        project.doAction(ToolAttributeAction.create(tool, attribute, value));
     }
 }

@@ -16,13 +16,12 @@ import java.util.List;
 class ProbeAttributes extends AbstractAttributeSet {
 
     private static final List<Attribute<?>> ATTRIBUTES
-            = Arrays.asList(StdAttr.FACING, RadixOption.ATTRIBUTE,
-            StdAttr.LABEL, Pin.ATTR_LABEL_LOC, StdAttr.LABEL_FONT);
+        = Arrays.asList(StdAttr.FACING, RadixOption.ATTRIBUTE, StdAttr.LABEL, Pin.ATTR_LABEL_LOC, StdAttr.LABEL_FONT);
     public static ProbeAttributes instance = new ProbeAttributes();
     Direction facing = Direction.EAST;
     String label = "";
-    Direction labelloc = Direction.WEST;
-    Font labelfont = StdAttr.DEFAULT_LABEL_FONT;
+    Direction labelLocation = Direction.WEST;
+    Font labelFont = StdAttr.DEFAULT_LABEL_FONT;
     RadixOption radix = RadixOption.RADIX_2;
     BitWidth width = BitWidth.ONE;
 
@@ -49,10 +48,10 @@ class ProbeAttributes extends AbstractAttributeSet {
             return (E) label;
         }
         if (attr == Pin.ATTR_LABEL_LOC) {
-            return (E) labelloc;
+            return (E) labelLocation;
         }
         if (attr == StdAttr.LABEL_FONT) {
-            return (E) labelfont;
+            return (E) labelFont;
         }
         if (attr == RadixOption.ATTRIBUTE) {
             return (E) radix;
@@ -67,9 +66,9 @@ class ProbeAttributes extends AbstractAttributeSet {
         } else if (attr == StdAttr.LABEL) {
             label = (String) value;
         } else if (attr == Pin.ATTR_LABEL_LOC) {
-            labelloc = (Direction) value;
+            labelLocation = (Direction) value;
         } else if (attr == StdAttr.LABEL_FONT) {
-            labelfont = (Font) value;
+            labelFont = (Font) value;
         } else if (attr == RadixOption.ATTRIBUTE) {
             radix = (RadixOption) value;
         } else {

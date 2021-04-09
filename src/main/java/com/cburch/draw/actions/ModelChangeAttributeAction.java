@@ -14,13 +14,13 @@ import java.util.Objects;
 
 public class ModelChangeAttributeAction extends ModelAction {
 
-    private Map<AttributeMapKey, Object> oldValues;
-    private Map<AttributeMapKey, Object> newValues;
+    private final Map<AttributeMapKey, Object> oldValues;
+    private final Map<AttributeMapKey, Object> newValues;
     private Attribute<?> attribute;
 
     public ModelChangeAttributeAction(CanvasModel model,
-            Map<AttributeMapKey, Object> oldValues,
-            Map<AttributeMapKey, Object> newValues) {
+        Map<AttributeMapKey, Object> oldValues,
+        Map<AttributeMapKey, Object> newValues) {
         super(model);
         this.oldValues = oldValues;
         this.newValues = newValues;

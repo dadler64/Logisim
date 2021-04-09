@@ -14,14 +14,14 @@ import javax.swing.tree.TreePath;
 
 public class SimulationTreeModel implements TreeModel {
 
-    private ArrayList<TreeModelListener> listeners;
-    private SimulationTreeCircuitNode root;
+    private final ArrayList<TreeModelListener> listeners;
+    private final SimulationTreeCircuitNode root;
     private CircuitState currentView;
 
     public SimulationTreeModel(CircuitState rootState) {
         this.listeners = new ArrayList<>();
         this.root = new SimulationTreeCircuitNode(this, null,
-                rootState, null);
+            rootState, null);
         this.currentView = null;
     }
 

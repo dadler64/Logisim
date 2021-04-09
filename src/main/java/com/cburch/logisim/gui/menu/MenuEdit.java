@@ -16,48 +16,48 @@ import javax.swing.KeyStroke;
 
 class MenuEdit extends Menu {
 
-    private LogisimMenuBar menubar;
-    private JMenuItem undo = new JMenuItem();
-    private MenuItemImpl cut = new MenuItemImpl(this, LogisimMenuBar.CUT);
-    private MenuItemImpl copy = new MenuItemImpl(this, LogisimMenuBar.COPY);
-    private MenuItemImpl paste = new MenuItemImpl(this, LogisimMenuBar.PASTE);
-    private MenuItemImpl delete = new MenuItemImpl(this, LogisimMenuBar.DELETE);
-    private MenuItemImpl dup = new MenuItemImpl(this, LogisimMenuBar.DUPLICATE);
-    private MenuItemImpl selall = new MenuItemImpl(this, LogisimMenuBar.SELECT_ALL);
-    private MenuItemImpl raise = new MenuItemImpl(this, LogisimMenuBar.RAISE);
-    private MenuItemImpl lower = new MenuItemImpl(this, LogisimMenuBar.LOWER);
-    private MenuItemImpl raiseTop = new MenuItemImpl(this, LogisimMenuBar.RAISE_TOP);
-    private MenuItemImpl lowerBottom = new MenuItemImpl(this, LogisimMenuBar.LOWER_BOTTOM);
-    private MenuItemImpl addCtrl = new MenuItemImpl(this, LogisimMenuBar.ADD_CONTROL);
-    private MenuItemImpl remCtrl = new MenuItemImpl(this, LogisimMenuBar.REMOVE_CONTROL);
-    private MyListener myListener = new MyListener();
+    private final LogisimMenuBar menubar;
+    private final JMenuItem undo = new JMenuItem();
+    private final MenuItemImpl cut = new MenuItemImpl(this, LogisimMenuBar.CUT);
+    private final MenuItemImpl copy = new MenuItemImpl(this, LogisimMenuBar.COPY);
+    private final MenuItemImpl paste = new MenuItemImpl(this, LogisimMenuBar.PASTE);
+    private final MenuItemImpl delete = new MenuItemImpl(this, LogisimMenuBar.DELETE);
+    private final MenuItemImpl dup = new MenuItemImpl(this, LogisimMenuBar.DUPLICATE);
+    private final MenuItemImpl selall = new MenuItemImpl(this, LogisimMenuBar.SELECT_ALL);
+    private final MenuItemImpl raise = new MenuItemImpl(this, LogisimMenuBar.RAISE);
+    private final MenuItemImpl lower = new MenuItemImpl(this, LogisimMenuBar.LOWER);
+    private final MenuItemImpl raiseTop = new MenuItemImpl(this, LogisimMenuBar.RAISE_TOP);
+    private final MenuItemImpl lowerBottom = new MenuItemImpl(this, LogisimMenuBar.LOWER_BOTTOM);
+    private final MenuItemImpl addCtrl = new MenuItemImpl(this, LogisimMenuBar.ADD_CONTROL);
+    private final MenuItemImpl remCtrl = new MenuItemImpl(this, LogisimMenuBar.REMOVE_CONTROL);
+    private final MyListener myListener = new MyListener();
 
     public MenuEdit(LogisimMenuBar menubar) {
         this.menubar = menubar;
 
-        int menuMask = getToolkit().getMenuShortcutKeyMask();
+        int menuMask = getToolkit().getMenuShortcutKeyMaskEx();
         undo.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_Z, menuMask));
+            KeyEvent.VK_Z, menuMask));
         cut.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_X, menuMask));
+            KeyEvent.VK_X, menuMask));
         copy.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_C, menuMask));
+            KeyEvent.VK_C, menuMask));
         paste.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_V, menuMask));
+            KeyEvent.VK_V, menuMask));
         delete.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_DELETE, 0));
+            KeyEvent.VK_DELETE, 0));
         dup.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_D, menuMask));
+            KeyEvent.VK_D, menuMask));
         selall.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_A, menuMask));
+            KeyEvent.VK_A, menuMask));
         raise.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_UP, menuMask));
+            KeyEvent.VK_UP, menuMask));
         lower.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_DOWN, menuMask));
+            KeyEvent.VK_DOWN, menuMask));
         raiseTop.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_UP, menuMask | KeyEvent.SHIFT_DOWN_MASK));
+            KeyEvent.VK_UP, menuMask | KeyEvent.SHIFT_DOWN_MASK));
         lowerBottom.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_DOWN, menuMask | KeyEvent.SHIFT_DOWN_MASK));
+            KeyEvent.VK_DOWN, menuMask | KeyEvent.SHIFT_DOWN_MASK));
 
         add(undo);
         addSeparator();
@@ -77,7 +77,7 @@ class MenuEdit extends Menu {
         add(addCtrl);
         add(remCtrl);
 
-        Project proj = menubar.getProject();
+        Project proj = menubar.getMenuProject();
         if (proj != null) {
             proj.addProjectListener(myListener);
             undo.addActionListener(myListener);
@@ -118,39 +118,39 @@ class MenuEdit extends Menu {
 
     @Override
     void computeEnabled() {
-        setEnabled(menubar.getProject() != null
-                || cut.hasListeners()
-                || copy.hasListeners()
-                || paste.hasListeners()
-                || delete.hasListeners()
-                || dup.hasListeners()
-                || selall.hasListeners()
-                || raise.hasListeners()
-                || lower.hasListeners()
-                || raiseTop.hasListeners()
-                || lowerBottom.hasListeners()
-                || addCtrl.hasListeners()
-                || remCtrl.hasListeners());
+        setEnabled(menubar.getMenuProject() != null
+            || cut.hasListeners()
+            || copy.hasListeners()
+            || paste.hasListeners()
+            || delete.hasListeners()
+            || dup.hasListeners()
+            || selall.hasListeners()
+            || raise.hasListeners()
+            || lower.hasListeners()
+            || raiseTop.hasListeners()
+            || lowerBottom.hasListeners()
+            || addCtrl.hasListeners()
+            || remCtrl.hasListeners());
     }
 
     private class MyListener implements ProjectListener, ActionListener {
 
         public void projectChanged(ProjectEvent e) {
-            Project proj = menubar.getProject();
+            Project proj = menubar.getMenuProject();
             Action last = proj == null ? null : proj.getLastAction();
             if (last == null) {
                 undo.setText(Strings.get("editCantUndoItem"));
                 undo.setEnabled(false);
             } else {
                 undo.setText(StringUtil.format(Strings.get("editUndoItem"),
-                        last.getName()));
+                    last.getName()));
                 undo.setEnabled(true);
             }
         }
 
         public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
-            Project proj = menubar.getProject();
+            Project proj = menubar.getMenuProject();
             if (src == undo) {
                 if (proj != null) {
                     proj.undoAction();

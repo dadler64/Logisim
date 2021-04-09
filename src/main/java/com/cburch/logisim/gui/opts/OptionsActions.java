@@ -26,7 +26,7 @@ class OptionsActions {
     }
 
     public static Action setMapping(MouseMappings mm, Integer mods,
-            Tool tool) {
+        Tool tool) {
         return new SetMapping(mm, mods, tool);
     }
 
@@ -36,35 +36,35 @@ class OptionsActions {
 
     private static class SetAction extends Action {
 
-        private AttributeSet attrs;
-        private Attribute<Object> attr;
-        private Object newval;
-        private Object oldval;
+        private final AttributeSet attrs;
+        private final Attribute<Object> attr;
+        private final Object newVal;
+        private Object oldVal;
 
         SetAction(AttributeSet attrs, Attribute<?> attr,
-                Object value) {
+            Object value) {
             @SuppressWarnings("unchecked")
             Attribute<Object> a = (Attribute<Object>) attr;
             this.attrs = attrs;
             this.attr = a;
-            this.newval = value;
+            this.newVal = value;
         }
 
         @Override
         public String getName() {
             return StringUtil.format(Strings.get("setOptionAction"),
-                    attr.getDisplayName());
+                attr.getDisplayName());
         }
 
         @Override
         public void doIt(Project proj) {
-            oldval = attrs.getValue(attr);
-            attrs.setValue(attr, newval);
+            oldVal = attrs.getValue(attr);
+            attrs.setValue(attr, newVal);
         }
 
         @Override
         public void undo(Project proj) {
-            attrs.setValue(attr, oldval);
+            attrs.setValue(attr, oldVal);
         }
     }
 

@@ -11,17 +11,17 @@ import java.util.Collections;
 
 public abstract class ModelAction extends Action {
 
-    private CanvasModel model;
+    private final CanvasModel model;
 
     public ModelAction(CanvasModel model) {
         this.model = model;
     }
 
-    static String getShapesName(Collection<CanvasObject> coll) {
-        if (coll.size() != 1) {
+    static String getShapesName(Collection<CanvasObject> collection) {
+        if (collection.size() != 1) {
             return Strings.get("shapeMultiple");
         } else {
-            CanvasObject shape = coll.iterator().next();
+            CanvasObject shape = collection.iterator().next();
             return shape.getDisplayName();
         }
     }

@@ -14,50 +14,47 @@ import java.util.WeakHashMap;
 
 class RomAttributes extends AbstractAttributeSet {
 
-    private static List<Attribute<?>> ATTRIBUTES = Arrays.asList(Mem.ADDR_ATTR, Mem.DATA_ATTR, Rom.CONTENTS_ATTR);
-
-    private static WeakHashMap<MemContents, RomContentsListener> listenerRegistry
-            = new WeakHashMap<>();
-    private static WeakHashMap<MemContents, HexFrame> windowRegistry
-            = new WeakHashMap<>();
-    private BitWidth addrBits = BitWidth.create(8);
+    private static final List<Attribute<?>> ATTRIBUTES = Arrays.asList(Mem.ADDR_ATTR, Mem.DATA_ATTR, Rom.CONTENTS_ATTR);
+    private static final WeakHashMap<MemContents, RomContentsListener> listenerRegistry = new WeakHashMap<>();
+    private static final WeakHashMap<MemContents, HexFrame> windowRegistry = new WeakHashMap<>();
+    private BitWidth addressBits = BitWidth.create(8);
     private BitWidth dataBits = BitWidth.create(8);
     private MemContents contents;
 
     RomAttributes() {
-        contents = MemContents.create(addrBits.getWidth(), dataBits.getWidth());
+        contents = MemContents.create(addressBits.getWidth(), dataBits.getWidth());
     }
 
-    static void register(MemContents value, Project proj) {
-        if (proj == null || listenerRegistry.containsKey(value)) {
+    static void register(MemContents value, Project project) {
+        if (project == null || listenerRegistry.containsKey(value)) {
             return;
         }
-        RomContentsListener l = new RomContentsListener(proj);
+        RomContentsListener l = new RomContentsListener(project);
         value.addHexModelListener(l);
         listenerRegistry.put(value, l);
     }
 
-    static HexFrame getHexFrame(MemContents value, Project proj) {
+    static HexFrame getHexFrame(MemContents value, Project project) {
         synchronized (windowRegistry) {
-            HexFrame ret = windowRegistry.get(value);
-            if (ret == null) {
-                ret = new HexFrame(proj, value);
-                windowRegistry.put(value, ret);
+            HexFrame frame = windowRegistry.get(value);
+            if (frame == null) {
+                frame = new HexFrame(project, value);
+                windowRegistry.put(value, frame);
             }
-            return ret;
+            return frame;
         }
     }
 
-    void setProject(Project proj) {
-        register(contents, proj);
+    void setProject(Project project) {
+        register(contents, project);
     }
 
     @Override
-    protected void copyInto(AbstractAttributeSet dest) {
-        RomAttributes d = (RomAttributes) dest;
-        d.addrBits = addrBits;
-        d.dataBits = dataBits;
-        d.contents = contents.clone();
+    protected void copyInto(AbstractAttributeSet destination) {
+        RomAttributes romAttributes = (RomAttributes) destination;
+        romAttributes.addressBits = addressBits;
+        romAttributes.dataBits = dataBits;
+        romAttributes.contents = contents.clone();
     }
 
     @Override
@@ -69,7 +66,7 @@ class RomAttributes extends AbstractAttributeSet {
     @SuppressWarnings("unchecked")
     public <V> V getValue(Attribute<V> attr) {
         if (attr == Mem.ADDR_ATTR) {
-            return (V) addrBits;
+            return (V) addressBits;
         }
         if (attr == Mem.DATA_ATTR) {
             return (V) dataBits;
@@ -83,11 +80,11 @@ class RomAttributes extends AbstractAttributeSet {
     @Override
     public <V> void setValue(Attribute<V> attr, V value) {
         if (attr == Mem.ADDR_ATTR) {
-            addrBits = (BitWidth) value;
-            contents.setDimensions(addrBits.getWidth(), dataBits.getWidth());
+            addressBits = (BitWidth) value;
+            contents.setDimensions(addressBits.getWidth(), dataBits.getWidth());
         } else if (attr == Mem.DATA_ATTR) {
             dataBits = (BitWidth) value;
-            contents.setDimensions(addrBits.getWidth(), dataBits.getWidth());
+            contents.setDimensions(addressBits.getWidth(), dataBits.getWidth());
         } else if (attr == Rom.CONTENTS_ATTR) {
             contents = (MemContents) value;
         }

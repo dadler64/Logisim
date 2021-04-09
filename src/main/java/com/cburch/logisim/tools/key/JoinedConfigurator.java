@@ -21,28 +21,28 @@ public class JoinedConfigurator implements KeyConfigurator, Cloneable {
 
     @Override
     public JoinedConfigurator clone() {
-        JoinedConfigurator ret;
+        JoinedConfigurator configurator;
         try {
-            ret = (JoinedConfigurator) super.clone();
+            configurator = (JoinedConfigurator) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return null;
         }
         int len = this.handlers.length;
-        ret.handlers = new KeyConfigurator[len];
+        configurator.handlers = new KeyConfigurator[len];
         for (int i = 0; i < len; i++) {
-            ret.handlers[i] = this.handlers[i].clone();
+            configurator.handlers[i] = this.handlers[i].clone();
         }
-        return ret;
+        return configurator;
     }
 
     public KeyConfigurationResult keyEventReceived(KeyConfigurationEvent event) {
-        KeyConfigurator[] hs = handlers;
+        KeyConfigurator[] handlers = this.handlers;
         if (event.isConsumed()) {
             return null;
         }
-        for (int i = 0; i < hs.length; i++) {
-            KeyConfigurationResult result = hs[i].keyEventReceived(event);
+        for (KeyConfigurator handler : handlers) {
+            KeyConfigurationResult result = handler.keyEventReceived(event);
             if (result != null || event.isConsumed()) {
                 return result;
             }

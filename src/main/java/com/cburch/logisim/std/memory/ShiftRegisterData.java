@@ -11,85 +11,85 @@ import java.util.Arrays;
 class ShiftRegisterData extends ClockState implements InstanceData {
 
     private BitWidth width;
-    private Value[] vs;
-    private int vsPos;
+    private Value[] values;
+    private int valuesPosition;
 
-    public ShiftRegisterData(BitWidth width, int len) {
+    public ShiftRegisterData(BitWidth width, int length) {
         this.width = width;
-        this.vs = new Value[len];
-        Arrays.fill(this.vs, Value.createKnown(width, 0));
-        this.vsPos = 0;
+        this.values = new Value[length];
+        Arrays.fill(this.values, Value.createKnown(width, 0));
+        this.valuesPosition = 0;
     }
 
     @Override
     public ShiftRegisterData clone() {
         ShiftRegisterData ret = (ShiftRegisterData) super.clone();
-        ret.vs = this.vs.clone();
+        ret.values = this.values.clone();
         return ret;
     }
 
     public int getLength() {
-        return vs.length;
+        return values.length;
     }
 
-    public void setDimensions(BitWidth newWidth, int newLength) {
-        Value[] v = vs;
-        BitWidth oldWidth = width;
-        int oldW = oldWidth.getWidth();
-        int newW = newWidth.getWidth();
-        if (v.length != newLength) {
-            Value[] newV = new Value[newLength];
-            int j = vsPos;
-            int copy = Math.min(newLength, v.length);
+    public void setDimensions(BitWidth newBitWidth, int newLength) {
+        Value[] values = this.values;
+        BitWidth oldBitWidth = width;
+        int oldWidth = oldBitWidth.getWidth();
+        int newWidth = newBitWidth.getWidth();
+        if (values.length != newLength) {
+            Value[] newValues = new Value[newLength];
+            int j = valuesPosition;
+            int copy = Math.min(newLength, values.length);
             for (int i = 0; i < copy; i++) {
-                newV[i] = v[j];
+                newValues[i] = values[j];
                 j++;
-                if (j == v.length) {
+                if (j == values.length) {
                     j = 0;
                 }
             }
-            Arrays.fill(newV, copy, newLength, Value.createKnown(newWidth, 0));
-            v = newV;
-            vsPos = 0;
-            vs = newV;
+            Arrays.fill(newValues, copy, newLength, Value.createKnown(newBitWidth, 0));
+            values = newValues;
+            valuesPosition = 0;
+            this.values = newValues;
         }
-        if (oldW != newW) {
-            for (int i = 0; i < v.length; i++) {
-                Value vi = v[i];
-                if (vi.getWidth() != newW) {
-                    v[i] = vi.extendWidth(newW, Value.FALSE);
+        if (oldWidth != newWidth) {
+            for (int i = 0; i < values.length; i++) {
+                Value vi = values[i];
+                if (vi.getWidth() != newWidth) {
+                    values[i] = vi.extendWidth(newWidth, Value.FALSE);
                 }
             }
-            width = newWidth;
+            width = newBitWidth;
         }
     }
 
     public void clear() {
-        Arrays.fill(vs, Value.createKnown(width, 0));
-        vsPos = 0;
+        Arrays.fill(values, Value.createKnown(width, 0));
+        valuesPosition = 0;
     }
 
-    public void push(Value v) {
-        int pos = vsPos;
-        vs[pos] = v;
-        vsPos = pos >= vs.length - 1 ? 0 : pos + 1;
+    public void push(Value value) {
+        int position = valuesPosition;
+        values[position] = value;
+        valuesPosition = position >= values.length - 1 ? 0 : position + 1;
     }
 
     public Value get(int index) {
-        int i = vsPos + index;
-        Value[] v = vs;
+        int i = valuesPosition + index;
+        Value[] v = values;
         if (i >= v.length) {
             i -= v.length;
         }
         return v[i];
     }
 
-    public void set(int index, Value val) {
-        int i = vsPos + index;
-        Value[] v = vs;
-        if (i >= v.length) {
-            i -= v.length;
+    public void set(int index, Value value) {
+        int i = valuesPosition + index;
+        Value[] values = this.values;
+        if (i >= values.length) {
+            i -= values.length;
         }
-        v[i] = val;
+        values[i] = value;
     }
 }

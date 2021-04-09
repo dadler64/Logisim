@@ -46,10 +46,10 @@ public class ProjectExplorer extends JTree implements LocaleListener {
 
     public static final Color MAGNIFYING_INTERIOR = new Color(200, 200, 255, 64);
     private static final String DIRTY_MARKER = "*";
-    private Project proj;
-    private MyListener myListener = new MyListener();
-    private MyCellRenderer renderer = new MyCellRenderer();
-    private DeleteAction deleteAction = new DeleteAction();
+    private final Project proj;
+    private final MyListener myListener = new MyListener();
+    private final MyCellRenderer renderer = new MyCellRenderer();
+    private final DeleteAction deleteAction = new DeleteAction();
     private ProjectExplorerListener listener = null;
     private Tool haloedTool = null;
 
@@ -110,98 +110,7 @@ public class ProjectExplorer extends JTree implements LocaleListener {
         model.fireStructureChanged();
     }
 
-    private class ToolIcon implements Icon {
-
-        Tool tool;
-        Circuit circ = null;
-
-        ToolIcon(Tool tool) {
-            this.tool = tool;
-            if (tool instanceof AddTool) {
-                ComponentFactory fact = ((AddTool) tool).getFactory(false);
-                if (fact instanceof SubcircuitFactory) {
-                    circ = ((SubcircuitFactory) fact).getSubcircuit();
-                }
-            }
-        }
-
-        public int getIconHeight() {
-            return 20;
-        }
-
-        public int getIconWidth() {
-            return 20;
-        }
-
-        public void paintIcon(java.awt.Component c, Graphics g,
-                int x, int y) {
-            // draw halo if appropriate
-            if (tool == haloedTool && AppPreferences.ATTRIBUTE_HALO.getBoolean()) {
-                g.setColor(Canvas.HALO_COLOR);
-                g.fillRoundRect(x, y, 20, 20, 10, 10);
-                g.setColor(Color.BLACK);
-            }
-
-            // draw tool icon
-            Graphics gIcon = g.create();
-            ComponentDrawContext context = new ComponentDrawContext(ProjectExplorer.this, null, null, g, gIcon);
-            tool.paintIcon(context, x, y);
-            gIcon.dispose();
-
-            // draw magnifying glass if appropriate
-            if (circ == proj.getCurrentCircuit()) {
-                int tx = x + 13;
-                int ty = y + 13;
-                int[] xp = {tx - 1, x + 18, x + 20, tx + 1};
-                int[] yp = {ty + 1, y + 20, y + 18, ty - 1};
-                g.setColor(MAGNIFYING_INTERIOR);
-                g.fillOval(x + 5, y + 5, 10, 10);
-                g.setColor(Color.BLACK);
-                g.drawOval(x + 5, y + 5, 10, 10);
-                g.fillPolygon(xp, yp, xp.length);
-            }
-        }
-    }
-
-    private class MyCellRenderer extends DefaultTreeCellRenderer {
-
-        @Override
-        public java.awt.Component getTreeCellRendererComponent(
-                JTree tree, Object value, boolean selected,
-                boolean expanded, boolean leaf, int row,
-                boolean hasFocus) {
-            java.awt.Component ret;
-            ret = super.getTreeCellRendererComponent(tree, value,
-                    selected, expanded, leaf, row, hasFocus);
-
-            if (ret instanceof JComponent) {
-                JComponent comp = (JComponent) ret;
-                comp.setToolTipText(null);
-            }
-            if (value instanceof ProjectExplorerToolNode) {
-                ProjectExplorerToolNode toolNode = (ProjectExplorerToolNode) value;
-                Tool tool = toolNode.getValue();
-                if (ret instanceof JLabel) {
-                    ((JLabel) ret).setText(tool.getDisplayName());
-                    ((JLabel) ret).setIcon(new ToolIcon(tool));
-                    ((JLabel) ret).setToolTipText(tool.getDescription());
-                }
-            } else if (value instanceof ProjectExplorerLibraryNode) {
-                ProjectExplorerLibraryNode libNode = (ProjectExplorerLibraryNode) value;
-                Library lib = libNode.getValue();
-                if (ret instanceof JLabel) {
-                    String text = lib.getDisplayName();
-                    if (lib.isDirty()) {
-                        text += DIRTY_MARKER;
-                    }
-                    ((JLabel) ret).setText(text);
-                }
-            }
-            return ret;
-        }
-    }
-
-    private class MySelectionModel extends DefaultTreeSelectionModel {
+    private static class MySelectionModel extends DefaultTreeSelectionModel {
 
         @Override
         public void addSelectionPath(TreePath path) {
@@ -235,8 +144,8 @@ public class ProjectExplorer extends JTree implements LocaleListener {
 
         private TreePath[] getValidPaths(TreePath[] paths) {
             int count = 0;
-            for (int i = 0; i < paths.length; i++) {
-                if (isPathValid(paths[i])) {
+            for (TreePath path : paths) {
+                if (isPathValid(path)) {
                     ++count;
                 }
             }
@@ -247,9 +156,9 @@ public class ProjectExplorer extends JTree implements LocaleListener {
             } else {
                 TreePath[] ret = new TreePath[count];
                 int j = 0;
-                for (int i = 0; i < paths.length; i++) {
-                    if (isPathValid(paths[i])) {
-                        ret[j++] = paths[i];
+                for (TreePath path : paths) {
+                    if (isPathValid(path)) {
+                        ret[j++] = path;
                     }
                 }
                 return ret;
@@ -265,6 +174,97 @@ public class ProjectExplorer extends JTree implements LocaleListener {
         }
     }
 
+    private class ToolIcon implements Icon {
+
+        Tool tool;
+        Circuit circ = null;
+
+        ToolIcon(Tool tool) {
+            this.tool = tool;
+            if (tool instanceof AddTool) {
+                ComponentFactory fact = ((AddTool) tool).getFactory(false);
+                if (fact instanceof SubcircuitFactory) {
+                    circ = ((SubcircuitFactory) fact).getSubcircuit();
+                }
+            }
+        }
+
+        public int getIconHeight() {
+            return 20;
+        }
+
+        public int getIconWidth() {
+            return 20;
+        }
+
+        public void paintIcon(java.awt.Component c, Graphics g,
+            int x, int y) {
+            // draw halo if appropriate
+            if (tool == haloedTool && AppPreferences.ATTRIBUTE_HALO.getBoolean()) {
+                g.setColor(Canvas.HALO_COLOR);
+                g.fillRoundRect(x, y, 20, 20, 10, 10);
+                g.setColor(Color.BLACK);
+            }
+
+            // draw tool icon
+            Graphics gIcon = g.create();
+            ComponentDrawContext context = new ComponentDrawContext(ProjectExplorer.this, null, null, g, gIcon);
+            tool.paintIcon(context, x, y);
+            gIcon.dispose();
+
+            // draw magnifying glass if appropriate
+            if (circ == proj.getCurrentCircuit()) {
+                int tx = x + 13;
+                int ty = y + 13;
+                int[] xp = {tx - 1, x + 18, x + 20, tx + 1};
+                int[] yp = {ty + 1, y + 20, y + 18, ty - 1};
+                g.setColor(MAGNIFYING_INTERIOR);
+                g.fillOval(x + 5, y + 5, 10, 10);
+                g.setColor(Color.BLACK);
+                g.drawOval(x + 5, y + 5, 10, 10);
+                g.fillPolygon(xp, yp, xp.length);
+            }
+        }
+    }
+
+    private class MyCellRenderer extends DefaultTreeCellRenderer {
+
+        @Override
+        public java.awt.Component getTreeCellRendererComponent(
+            JTree tree, Object value, boolean selected,
+            boolean expanded, boolean leaf, int row,
+            boolean hasFocus) {
+            java.awt.Component ret;
+            ret = super.getTreeCellRendererComponent(tree, value,
+                selected, expanded, leaf, row, hasFocus);
+
+            if (ret instanceof JComponent) {
+                JComponent comp = (JComponent) ret;
+                comp.setToolTipText(null);
+            }
+            if (value instanceof ProjectExplorerToolNode) {
+                ProjectExplorerToolNode toolNode = (ProjectExplorerToolNode) value;
+                Tool tool = toolNode.getValue();
+                if (ret instanceof JLabel) {
+                    ((JLabel) ret).setText(tool.getDisplayName());
+                    ((JLabel) ret).setIcon(new ToolIcon(tool));
+                    ((JLabel) ret).setToolTipText(tool.getDescription());
+                }
+            } else if (value instanceof ProjectExplorerLibraryNode) {
+                ProjectExplorerLibraryNode libNode = (ProjectExplorerLibraryNode) value;
+                Library library = libNode.getValue();
+                if (ret instanceof JLabel) {
+                    String text = library.getDisplayName();
+                    if (library.isDirty()) {
+                        text += DIRTY_MARKER;
+                    }
+                    ((JLabel) ret).setText(text);
+                }
+            }
+            return ret;
+        }
+    }
+
     private class DeleteAction extends AbstractAction {
 
         public void actionPerformed(ActionEvent event) {
@@ -276,9 +276,7 @@ public class ProjectExplorer extends JTree implements LocaleListener {
         }
     }
 
-    private class MyListener
-            implements MouseListener, TreeSelectionListener,
-            ProjectListener, PropertyChangeListener {
+    private class MyListener implements MouseListener, TreeSelectionListener, ProjectListener, PropertyChangeListener {
 
         //
         // MouseListener methods

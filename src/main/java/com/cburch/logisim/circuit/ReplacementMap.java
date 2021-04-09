@@ -13,13 +13,12 @@ import java.util.Map;
 
 public class ReplacementMap {
 
+    private final HashMap<Component, HashSet<Component>> map;
+    private final HashMap<Component, HashSet<Component>> inverse;
     private boolean frozen;
-    private HashMap<Component, HashSet<Component>> map;
-    private HashMap<Component, HashSet<Component>> inverse;
 
     public ReplacementMap(Component oldComp, Component newComp) {
-        this(new HashMap<>(),
-                new HashMap<>());
+        this(new HashMap<>(), new HashMap<>());
         HashSet<Component> oldSet = new HashSet<>(3);
         oldSet.add(oldComp);
         HashSet<Component> newSet = new HashSet<>(3);
@@ -29,12 +28,10 @@ public class ReplacementMap {
     }
 
     public ReplacementMap() {
-        this(new HashMap<>(),
-                new HashMap<>());
+        this(new HashMap<>(), new HashMap<>());
     }
 
-    private ReplacementMap(HashMap<Component, HashSet<Component>> map,
-            HashMap<Component, HashSet<Component>> inverse) {
+    private ReplacementMap(HashMap<Component, HashSet<Component>> map, HashMap<Component, HashSet<Component>> inverse) {
         this.map = map;
         this.inverse = inverse;
     }

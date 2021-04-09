@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.util;
 
+import com.adlerd.logger.Logger;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JMenuBar;
@@ -57,23 +58,24 @@ public class MacCompatibility {
         }
     }
 
-    public static void setFramelessJMenuBar(JMenuBar menubar) {
+    public static void setFramelessJMenuBar(JMenuBar menuBar) {
         try {
-            MRJAdapter.setFramelessJMenuBar(menubar);
+            MRJAdapter.setFramelessJMenuBar(menuBar);
         } catch (Throwable t) {
+            Logger.debugln(t.getMessage());
         }
     }
 
-    public static void setFileCreatorAndType(File dest, String app, String type)
-            throws IOException {
+    public static void setFileCreatorAndType(File destination, String app, String type) throws IOException {
         IOException ioExcept = null;
         try {
             try {
-                MRJAdapter.setFileCreatorAndType(dest, app, type);
+                MRJAdapter.setFileCreatorAndType(destination, app, type);
             } catch (IOException e) {
                 ioExcept = e;
             }
         } catch (Throwable t) {
+            Logger.debugln(t.getMessage());
         }
         if (ioExcept != null) {
             throw ioExcept;

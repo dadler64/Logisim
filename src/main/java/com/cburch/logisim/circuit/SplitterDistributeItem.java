@@ -11,9 +11,9 @@ import javax.swing.JMenuItem;
 
 class SplitterDistributeItem extends JMenuItem implements ActionListener {
 
-    private Project proj;
-    private Splitter splitter;
-    private int order;
+    private final Project proj;
+    private final Splitter splitter;
+    private final int order;
 
     public SplitterDistributeItem(Project proj, Splitter splitter, int order) {
         this.proj = proj;
@@ -24,11 +24,12 @@ class SplitterDistributeItem extends JMenuItem implements ActionListener {
         SplitterAttributes attrs = (SplitterAttributes) splitter.getAttributeSet();
         byte[] actual = attrs.bit_end;
         byte[] desired = SplitterAttributes.computeDistribution(attrs.fanout,
-                actual.length, order);
+            actual.length, order);
         boolean same = actual.length == desired.length;
         for (int i = 0; same && i < desired.length; i++) {
             if (actual[i] != desired[i]) {
                 same = false;
+                break;
             }
         }
         setEnabled(!same);
@@ -46,15 +47,13 @@ class SplitterDistributeItem extends JMenuItem implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         SplitterAttributes attrs = (SplitterAttributes) splitter.getAttributeSet();
         byte[] actual = attrs.bit_end;
-        byte[] desired = SplitterAttributes.computeDistribution(attrs.fanout,
-                actual.length, order);
-        CircuitMutation xn = new CircuitMutation(proj.getCircuitState().getCircuit());
+        byte[] desired = SplitterAttributes.computeDistribution(attrs.fanout, actual.length, order);
+        CircuitMutation mutation = new CircuitMutation(proj.getCircuitState().getCircuit());
         for (int i = 0, n = Math.min(actual.length, desired.length); i < n; i++) {
             if (actual[i] != desired[i]) {
-                xn.set(splitter, attrs.getBitOutAttribute(i),
-                        (int) desired[i]);
+                mutation.set(splitter, attrs.getBitOutAttribute(i), (int) desired[i]);
             }
         }
-        proj.doAction(xn.toAction(toGetter()));
+        proj.doAction(mutation.toAction(toGetter()));
     }
 }

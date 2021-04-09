@@ -34,11 +34,11 @@ class CircuitWires {
 
     final CircuitPoints points = new CircuitPoints();
     // user-given data
-    private HashSet<Wire> wires = new HashSet<>();
-    private HashSet<Splitter> splitters = new HashSet<>();
-    private HashSet<Component> tunnels = new HashSet<>(); // of Components with Tunnel factory
-    private TunnelListener tunnelListener = new TunnelListener();
-    private HashSet<Component> pulls = new HashSet<>(); // of Components with PullResistor factory
+    private final HashSet<Wire> wires = new HashSet<>();
+    private final HashSet<Splitter> splitters = new HashSet<>();
+    private final HashSet<Component> tunnels = new HashSet<>(); // of Components with Tunnel factory
+    private final TunnelListener tunnelListener = new TunnelListener();
+    private final HashSet<Component> pulls = new HashSet<>(); // of Components with PullResistor factory
     // derived data
     private Bounds bounds = Bounds.EMPTY_BOUNDS;
     private BundleMap bundleMap = null;
@@ -115,7 +115,7 @@ class CircuitWires {
 
     Iterator<? extends Component> getComponents() {
         return IteratorUtil.createJoinedIterator(splitters.iterator(),
-                wires.iterator());
+            wires.iterator());
     }
 
     Set<Wire> getWires() {
@@ -740,7 +740,7 @@ class CircuitWires {
             }
         }
         Bounds bds = Bounds.create(xmin, ymin,
-                xmax - xmin + 1, ymax - ymin + 1);
+            xmax - xmin + 1, ymax - ymin + 1);
         bounds = bds;
         return bds;
     }

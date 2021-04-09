@@ -31,16 +31,16 @@ import javax.swing.event.DocumentListener;
 
 class ExpressionTab extends AnalyzerTab implements TabInterface {
 
-    private OutputSelector selector;
-    private ExpressionView prettyView = new ExpressionView();
-    private JTextArea field = new JTextArea(4, 25);
-    private JButton clear = new JButton();
-    private JButton revert = new JButton();
-    private JButton enter = new JButton();
-    private JLabel error = new JLabel();
-    private MyListener myListener = new MyListener();
-    private AnalyzerModel model;
-    private int curExprStringLength = 0;
+    private final OutputSelector selector;
+    private final ExpressionView prettyView = new ExpressionView();
+    private final JTextArea textArea = new JTextArea(4, 25);
+    private final JButton clearButton = new JButton();
+    private final JButton revertButton = new JButton();
+    private final JButton enterButton = new JButton();
+    private final JLabel errorLabel = new JLabel();
+    private final MyListener myListener = new MyListener();
+    private final AnalyzerModel model;
+    private int currentExpressionStringLength = 0;
     private StringGetter errorMessage;
 
     public ExpressionTab(AnalyzerModel model) {
@@ -49,19 +49,19 @@ class ExpressionTab extends AnalyzerTab implements TabInterface {
 
         model.getOutputExpressions().addOutputExpressionsListener(myListener);
         selector.addItemListener(myListener);
-        clear.addActionListener(myListener);
-        revert.addActionListener(myListener);
-        enter.addActionListener(myListener);
-        field.setLineWrap(true);
-        field.setWrapStyleWord(true);
-        field.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), myListener);
-        field.getDocument().addDocumentListener(myListener);
-        field.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        clearButton.addActionListener(myListener);
+        revertButton.addActionListener(myListener);
+        enterButton.addActionListener(myListener);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), myListener);
+        textArea.getDocument().addDocumentListener(myListener);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
 
         JPanel buttons = new JPanel();
-        buttons.add(clear);
-        buttons.add(revert);
-        buttons.add(enter);
+        buttons.add(clearButton);
+        buttons.add(revertButton);
+        buttons.add(enterButton);
 
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gc = new GridBagConstraints();
@@ -78,9 +78,10 @@ class ExpressionTab extends AnalyzerTab implements TabInterface {
         add(prettyView);
         Insets oldInsets = gc.insets;
         gc.insets = new Insets(10, 10, 0, 10);
-        JScrollPane fieldPane = new JScrollPane(field,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane fieldPane = new JScrollPane(textArea,
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );
         gb.setConstraints(fieldPane, gc);
         add(fieldPane);
         gc.insets = oldInsets;
@@ -89,22 +90,22 @@ class ExpressionTab extends AnalyzerTab implements TabInterface {
         gb.setConstraints(buttons, gc);
         add(buttons);
         gc.fill = GridBagConstraints.BOTH;
-        gb.setConstraints(error, gc);
-        add(error);
+        gb.setConstraints(errorLabel, gc);
+        add(errorLabel);
 
         myListener.insertUpdate(null);
-        setError(null);
+        setErrorLabel(null);
     }
 
     @Override
     void localeChanged() {
         selector.localeChanged();
         prettyView.localeChanged();
-        clear.setText(Strings.get("exprClearButton"));
-        revert.setText(Strings.get("exprRevertButton"));
-        enter.setText(Strings.get("exprEnterButton"));
+        clearButton.setText(Strings.get("exprClearButton"));
+        revertButton.setText(Strings.get("exprRevertButton"));
+        enterButton.setText(Strings.get("exprEnterButton"));
         if (errorMessage != null) {
-            error.setText(errorMessage.get());
+            errorLabel.setText(errorMessage.get());
         }
     }
 
@@ -116,92 +117,89 @@ class ExpressionTab extends AnalyzerTab implements TabInterface {
     }
 
     void registerDefaultButtons(DefaultRegistry registry) {
-        registry.registerDefaultButton(field, enter);
+        registry.registerDefaultButton(textArea, enterButton);
     }
 
     String getCurrentVariable() {
         return selector.getSelectedOutput();
     }
 
-    private void setError(StringGetter msg) {
-        if (msg == null) {
+    private void setErrorLabel(StringGetter message) {
+        if (message == null) {
             errorMessage = null;
-            error.setText(" ");
+            errorLabel.setText(" ");
         } else {
-            errorMessage = msg;
-            error.setText(msg.get());
+            errorMessage = message;
+            errorLabel.setText(message.get());
         }
     }
 
     public void copy() {
-        field.requestFocus();
-        field.copy();
+        textArea.requestFocus();
+        textArea.copy();
     }
 
     public void paste() {
-        field.requestFocus();
-        field.paste();
+        textArea.requestFocus();
+        textArea.paste();
     }
 
     public void delete() {
-        field.requestFocus();
-        field.replaceSelection("");
+        textArea.requestFocus();
+        textArea.replaceSelection("");
     }
 
     public void selectAll() {
-        field.requestFocus();
-        field.selectAll();
+        textArea.requestFocus();
+        textArea.selectAll();
     }
 
-    private class MyListener extends AbstractAction
-            implements DocumentListener,
-            OutputExpressionsListener, ItemListener {
+    private class MyListener extends AbstractAction implements DocumentListener, OutputExpressionsListener, ItemListener {
 
-        boolean edited = false;
+        boolean isEdited = false;
 
-        public void actionPerformed(ActionEvent event) {
-            Object src = event.getSource();
-            if (src == clear) {
-                setError(null);
-                field.setText("");
-                field.grabFocus();
-            } else if (src == revert) {
-                setError(null);
-                field.setText(getCurrentString());
-                field.grabFocus();
-            } else if ((src == field || src == enter) && enter.isEnabled()) {
+        public void actionPerformed(ActionEvent e) {
+            Object source = e.getSource();
+            if (source == clearButton) {
+                setErrorLabel(null);
+                textArea.setText("");
+                textArea.grabFocus();
+            } else if (source == revertButton) {
+                setErrorLabel(null);
+                textArea.setText(getCurrentString());
+                textArea.grabFocus();
+            } else if ((source == textArea || source == enterButton) && enterButton.isEnabled()) {
                 try {
-                    String exprString = field.getText();
-                    Expression expr = Parser.parse(field.getText(), model);
-                    setError(null);
-                    model.getOutputExpressions().setExpression(getCurrentVariable(), expr, exprString);
+                    String expressionString = textArea.getText();
+                    Expression expression = Parser.parse(textArea.getText(), model);
+                    setErrorLabel(null);
+                    model.getOutputExpressions().setExpression(getCurrentVariable(), expression, expressionString);
                     insertUpdate(null);
                 } catch (ParserException ex) {
-                    setError(ex.getMessageGetter());
-                    field.setCaretPosition(ex.getOffset());
-                    field.moveCaretPosition(ex.getEndOffset());
+                    setErrorLabel(ex.getMessageGetter());
+                    textArea.setCaretPosition(ex.getOffset());
+                    textArea.moveCaretPosition(ex.getEndOffset());
                 }
-                field.grabFocus();
+                textArea.grabFocus();
             }
         }
 
-        public void insertUpdate(DocumentEvent event) {
-            String curText = field.getText();
-            edited = curText.length() != curExprStringLength
-                    || !curText.equals(getCurrentString());
+        public void insertUpdate(DocumentEvent e) {
+            String curText = textArea.getText();
+            isEdited = curText.length() != currentExpressionStringLength || !curText.equals(getCurrentString());
 
-            boolean enable = (edited && getCurrentVariable() != null);
-            clear.setEnabled(curText.length() > 0);
-            revert.setEnabled(enable);
-            enter.setEnabled(enable);
+            boolean enable = (isEdited && getCurrentVariable() != null);
+            clearButton.setEnabled(curText.length() > 0);
+            revertButton.setEnabled(enable);
+            enterButton.setEnabled(enable);
         }
 
-        public void removeUpdate(DocumentEvent event) {
-            insertUpdate(event);
+        public void removeUpdate(DocumentEvent e) {
+            insertUpdate(e);
         }
 
-        public void changedUpdate(DocumentEvent event) {
-            insertUpdate(event);
+        public void changedUpdate(DocumentEvent e) {
+            insertUpdate(e);
         }
 
         public void expressionChanged(OutputExpressionsEvent event) {
@@ -214,23 +212,22 @@ class ExpressionTab extends AnalyzerTab implements TabInterface {
             }
         }
 
-        public void itemStateChanged(ItemEvent event) {
+        public void itemStateChanged(ItemEvent e) {
             updateTab();
         }
 
         private String getCurrentString() {
             String output = getCurrentVariable();
-            return output == null ? ""
-                    : model.getOutputExpressions().getExpressionString(output);
+            return output == null ? "" : model.getOutputExpressions().getExpressionString(output);
         }
 
         private void currentStringChanged() {
             String output = getCurrentVariable();
-            String exprString = model.getOutputExpressions().getExpressionString(output);
-            curExprStringLength = exprString.length();
-            if (!edited) {
-                setError(null);
-                field.setText(getCurrentString());
+            String expressionString = model.getOutputExpressions().getExpressionString(output);
+            currentExpressionStringLength = expressionString.length();
+            if (!isEdited) {
+                setErrorLabel(null);
+                textArea.setText(getCurrentString());
             } else {
                 insertUpdate(null);
             }

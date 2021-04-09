@@ -177,7 +177,7 @@ abstract class RectangularTool extends AbstractTool {
         if (isActive && currentBounds != null && currentBounds != Bounds.EMPTY_BOUNDS) {
             graphics.setColor(Color.GRAY);
             drawShape(graphics, currentBounds.getX(), currentBounds.getY(), currentBounds.getWidth(),
-                    currentBounds.getHeight());
+                currentBounds.getHeight());
         }
     }
 

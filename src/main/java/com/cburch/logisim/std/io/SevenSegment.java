@@ -21,21 +21,30 @@ public class SevenSegment extends InstanceFactory {
 
     public SevenSegment() {
         super("7-Segment Display", Strings.getter("sevenSegmentComponent"));
-        setAttributes(new Attribute[]{Io.ATTR_ON_COLOR, Io.ATTR_OFF_COLOR,
-                        Io.ATTR_BACKGROUND, Io.ATTR_ACTIVE},
-                new Object[]{new Color(240, 0, 0), DEFAULT_OFF,
-                        Io.DEFAULT_BACKGROUND, Boolean.TRUE});
+        setAttributes(
+            new Attribute[]{
+                Io.ATTR_ON_COLOR,
+                Io.ATTR_OFF_COLOR,
+                Io.ATTR_BACKGROUND,
+                Io.ATTR_ACTIVE
+            }, new Object[]{
+                new Color(240, 0, 0),
+                DEFAULT_OFF,
+                Io.DEFAULT_BACKGROUND,
+                Boolean.TRUE
+            }
+        );
         setOffsetBounds(Bounds.create(-5, 0, 40, 60));
         setIconName("7seg.gif");
         setPorts(new Port[]{
-                new Port(20, 0, Port.INPUT, 1),
-                new Port(30, 0, Port.INPUT, 1),
-                new Port(20, 60, Port.INPUT, 1),
-                new Port(10, 60, Port.INPUT, 1),
-                new Port(0, 60, Port.INPUT, 1),
-                new Port(10, 0, Port.INPUT, 1),
-                new Port(0, 0, Port.INPUT, 1),
-                new Port(30, 60, Port.INPUT, 1),
+            new Port(20, 0, Port.INPUT, 1),
+            new Port(30, 0, Port.INPUT, 1),
+            new Port(20, 60, Port.INPUT, 1),
+            new Port(10, 60, Port.INPUT, 1),
+            new Port(0, 60, Port.INPUT, 1),
+            new Port(10, 0, Port.INPUT, 1),
+            new Port(0, 0, Port.INPUT, 1),
+            new Port(30, 60, Port.INPUT, 1),
         });
     }
 
@@ -78,13 +87,13 @@ public class SevenSegment extends InstanceFactory {
     static void ensureSegments() {
         if (SEGMENTS == null) {
             SEGMENTS = new Bounds[]{
-                    Bounds.create(3, 8, 19, 4),
-                    Bounds.create(23, 10, 4, 19),
-                    Bounds.create(23, 30, 4, 19),
-                    Bounds.create(3, 47, 19, 4),
-                    Bounds.create(-2, 30, 4, 19),
-                    Bounds.create(-2, 10, 4, 19),
-                    Bounds.create(3, 28, 19, 4)
+                Bounds.create(3, 8, 19, 4),
+                Bounds.create(23, 10, 4, 19),
+                Bounds.create(23, 30, 4, 19),
+                Bounds.create(3, 47, 19, 4),
+                Bounds.create(-2, 30, 4, 19),
+                Bounds.create(-2, 10, 4, 19),
+                Bounds.create(3, 28, 19, 4)
             };
         }
     }

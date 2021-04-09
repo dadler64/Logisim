@@ -20,42 +20,42 @@ import java.util.List;
 public class Plexers extends Library {
 
     public static final Attribute<BitWidth> ATTR_SELECT
-            = Attributes.forBitWidth("select", Strings.getter("plexerSelectBitsAttr"), 1, 5);
+        = Attributes.forBitWidth("select", Strings.getter("plexerSelectBitsAttr"), 1, 5);
     public static final Object DEFAULT_SELECT = BitWidth.create(1);
 
     public static final Attribute<Boolean> ATTR_TRISTATE
-            = Attributes.forBoolean("tristate", Strings.getter("plexerThreeStateAttr"));
+        = Attributes.forBoolean("tristate", Strings.getter("plexerThreeStateAttr"));
     public static final Object DEFAULT_TRISTATE = Boolean.FALSE;
 
     public static final AttributeOption DISABLED_FLOATING
-            = new AttributeOption("Z", Strings.getter("plexerDisabledFloating"));
+        = new AttributeOption("Z", Strings.getter("plexerDisabledFloating"));
     public static final AttributeOption DISABLED_ZERO
-            = new AttributeOption("0", Strings.getter("plexerDisabledZero"));
+        = new AttributeOption("0", Strings.getter("plexerDisabledZero"));
     public static final Attribute<AttributeOption> ATTR_DISABLED
-            = Attributes.forOption("disabled", Strings.getter("plexerDisabledAttr"),
-            new AttributeOption[]{DISABLED_FLOATING, DISABLED_ZERO});
+        = Attributes.forOption("disabled", Strings.getter("plexerDisabledAttr"),
+        new AttributeOption[]{DISABLED_FLOATING, DISABLED_ZERO});
 
     public static final Attribute<Boolean> ATTR_ENABLE
-            = Attributes.forBoolean("enable", Strings.getter("plexerEnableAttr"));
+        = Attributes.forBoolean("enable", Strings.getter("plexerEnableAttr"));
     protected static final int DELAY = 3;
     static final AttributeOption SELECT_BOTTOM_LEFT
-            = new AttributeOption("bl", Strings.getter("plexerSelectBottomLeftOption"));
+        = new AttributeOption("bl", Strings.getter("plexerSelectBottomLeftOption"));
     static final AttributeOption SELECT_TOP_RIGHT
-            = new AttributeOption("tr", Strings.getter("plexerSelectTopRightOption"));
+        = new AttributeOption("tr", Strings.getter("plexerSelectTopRightOption"));
     static final Attribute<AttributeOption> ATTR_SELECT_LOC = Attributes.forOption("selloc",
-            Strings.getter("plexerSelectLocAttr"),
-            new AttributeOption[]{SELECT_BOTTOM_LEFT, SELECT_TOP_RIGHT});
-    private static FactoryDescription[] DESCRIPTIONS = {
-            new FactoryDescription("Multiplexer", Strings.getter("multiplexerComponent"),
-                    "multiplexer.gif", "Multiplexer"),
-            new FactoryDescription("Demultiplexer", Strings.getter("demultiplexerComponent"),
-                    "demultiplexer.gif", "Demultiplexer"),
-            new FactoryDescription("Decoder", Strings.getter("decoderComponent"),
-                    "decoder.gif", "Decoder"),
-            new FactoryDescription("Priority Encoder", Strings.getter("priorityEncoderComponent"),
-                    "priencod.gif", "PriorityEncoder"),
-            new FactoryDescription("BitSelector", Strings.getter("bitSelectorComponent"),
-                    "bitSelector.gif", "BitSelector"),
+        Strings.getter("plexerSelectLocAttr"),
+        new AttributeOption[]{SELECT_BOTTOM_LEFT, SELECT_TOP_RIGHT});
+    private static final FactoryDescription[] DESCRIPTIONS = {
+        new FactoryDescription("Multiplexer", Strings.getter("multiplexerComponent"),
+            "multiplexer.gif", "Multiplexer"),
+        new FactoryDescription("Demultiplexer", Strings.getter("demultiplexerComponent"),
+            "demultiplexer.gif", "Demultiplexer"),
+        new FactoryDescription("Decoder", Strings.getter("decoderComponent"),
+            "decoder.gif", "Decoder"),
+        new FactoryDescription("Priority Encoder", Strings.getter("priorityEncoderComponent"),
+            "priencod.gif", "PriorityEncoder"),
+        new FactoryDescription("BitSelector", Strings.getter("bitSelectorComponent"),
+            "bitSelector.gif", "BitSelector"),
     };
 
     private List<Tool> tools = null;
@@ -64,7 +64,7 @@ public class Plexers extends Library {
     }
 
     static void drawTrapezoid(Graphics g, Bounds bds, Direction facing,
-            int facingLean) {
+        int facingLean) {
         int wid = bds.getWidth();
         int ht = bds.getHeight();
         int x0 = bds.getX();

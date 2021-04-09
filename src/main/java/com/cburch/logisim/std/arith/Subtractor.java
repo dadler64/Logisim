@@ -29,8 +29,7 @@ public class Subtractor extends InstanceFactory {
 
     public Subtractor() {
         super("Subtractor", Strings.getter("subtractorComponent"));
-        setAttributes(new Attribute[]{StdAttr.WIDTH},
-                new Object[]{BitWidth.create(8)});
+        setAttributes(new Attribute[]{StdAttr.WIDTH}, new Object[]{BitWidth.create(8)});
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
         setIconName("subtractor.gif");
@@ -57,11 +56,11 @@ public class Subtractor extends InstanceFactory {
         // compute outputs
         Value a = state.getPort(IN0);
         Value b = state.getPort(IN1);
-        Value b_in = state.getPort(B_IN);
-        if (b_in == Value.UNKNOWN || b_in == Value.NIL) {
-            b_in = Value.FALSE;
+        Value bIn = state.getPort(B_IN);
+        if (bIn == Value.UNKNOWN || bIn == Value.NIL) {
+            bIn = Value.FALSE;
         }
-        Value[] outs = Adder.computeSum(data, a, b.not(), b_in.not());
+        Value[] outs = Adder.computeSum(data, a, b.not(), bIn.not());
 
         // propagate them
         int delay = (data.getWidth() + 4) * Adder.PER_DELAY;
@@ -81,9 +80,9 @@ public class Subtractor extends InstanceFactory {
         painter.drawPort(B_IN, "b in", Direction.NORTH);
         painter.drawPort(B_OUT, "b out", Direction.SOUTH);
 
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
         GraphicsUtil.switchToWidth(g, 2);
         g.setColor(Color.BLACK);
         g.drawLine(x - 15, y, x - 5, y);

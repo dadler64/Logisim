@@ -27,7 +27,7 @@ import javax.swing.table.TableColumn;
 public class StatisticsDialog extends JDialog implements ActionListener {
 
     private StatisticsDialog(JFrame parent, String circuitName,
-            StatisticsTableModel model) {
+        StatisticsTableModel model) {
         super(parent, true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle(Strings.get("statsDialogTitle", circuitName));
@@ -35,7 +35,7 @@ public class StatisticsDialog extends JDialog implements ActionListener {
         JTable table = new StatisticsTable();
         TableSorter mySorter = new TableSorter(model, table.getTableHeader());
         Comparator<String> comp = new CompareString("",
-                Strings.get("statsTotalWithout"), Strings.get("statsTotalWith"));
+            Strings.get("statsTotalWithout"), Strings.get("statsTotalWith"));
         mySorter.setColumnComparator(String.class, comp);
         table.setModel(mySorter);
         JScrollPane tablePane = new JScrollPane(table);
@@ -66,7 +66,7 @@ public class StatisticsDialog extends JDialog implements ActionListener {
     public static void show(JFrame parent, LogisimFile file, Circuit circuit) {
         FileStatistics stats = FileStatistics.compute(file, circuit);
         StatisticsDialog dlog = new StatisticsDialog(parent,
-                circuit.getName(), new StatisticsTableModel(stats));
+            circuit.getName(), new StatisticsTableModel(stats));
         dlog.setVisible(true);
     }
 
@@ -76,7 +76,7 @@ public class StatisticsDialog extends JDialog implements ActionListener {
 
     private static class StatisticsTableModel extends AbstractTableModel {
 
-        private FileStatistics stats;
+        private final FileStatistics stats;
 
         StatisticsTableModel(FileStatistics stats) {
             this.stats = stats;
@@ -157,7 +157,7 @@ public class StatisticsDialog extends JDialog implements ActionListener {
 
     private static class CompareString implements Comparator<String> {
 
-        private String[] fixedAtBottom;
+        private final String[] fixedAtBottom;
 
         public CompareString(String... fixedAtBottom) {
             this.fixedAtBottom = fixedAtBottom;

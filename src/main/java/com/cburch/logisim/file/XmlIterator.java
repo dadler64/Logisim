@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 
 public class XmlIterator<E extends Node> implements Iterable<E>, Iterator<E>, Cloneable {
 
-    private NodeList list;
+    private final NodeList list;
     private int index;
 
     public XmlIterator(NodeList nodes) {

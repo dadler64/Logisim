@@ -42,7 +42,7 @@ class AndGate extends AbstractGate {
 
     @Override
     protected Value computeOutput(Value[] inputs, int numInputs,
-            InstanceState state) {
+        InstanceState state) {
         return GateFunctions.computeAnd(inputs, numInputs);
     }
 

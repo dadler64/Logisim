@@ -29,8 +29,7 @@ public class CircuitBuilder {
     private CircuitBuilder() {
     }
 
-    public static CircuitMutation build(Circuit destCirc, AnalyzerModel model,
-            boolean twoInputs, boolean useNands) {
+    public static CircuitMutation build(Circuit destCirc, AnalyzerModel model, boolean twoInputs, boolean useNands) {
         CircuitMutation result = new CircuitMutation(destCirc);
         result.clear();
 
@@ -86,28 +85,25 @@ public class CircuitBuilder {
     //
     // layoutGates
     //
-    private static Layout layoutGates(CircuitDetermination det) {
-        return layoutGatesSub(det);
+    private static Layout layoutGates(CircuitDetermination determination) {
+        return layoutGatesSub(determination);
     }
 
-    private static Layout layoutGatesSub(CircuitDetermination det) {
-        if (det instanceof CircuitDetermination.Input) {
-            CircuitDetermination.Input input = (CircuitDetermination.Input) det;
+    private static Layout layoutGatesSub(CircuitDetermination determination) {
+        if (determination instanceof CircuitDetermination.Input) {
+            CircuitDetermination.Input input = (CircuitDetermination.Input) determination;
             return new Layout(input.getName());
-        } else if (det instanceof CircuitDetermination.Value) {
-            CircuitDetermination.Value value = (CircuitDetermination.Value) det;
+        } else if (determination instanceof CircuitDetermination.Value) {
+            CircuitDetermination.Value value = (CircuitDetermination.Value) determination;
             ComponentFactory factory = Constant.FACTORY;
             AttributeSet attrs = factory.createAttributeSet();
-            attrs.setValue(Constant.ATTRIBUTE_VALUE,
-                    value.getValue());
+            attrs.setValue(Constant.ATTRIBUTE_VALUE, value.getValue());
             Bounds bds = factory.getOffsetBounds(attrs);
-            return new Layout(bds.getWidth(), bds.getHeight(),
-                    -bds.getY(), factory, attrs,
-                    new Layout[0], 0);
+            return new Layout(bds.getWidth(), bds.getHeight(), -bds.getY(), factory, attrs, new Layout[0], 0);
         }
 
         // We know det is a Gate. Determine sublayouts.
-        CircuitDetermination.Gate gate = (CircuitDetermination.Gate) det;
+        CircuitDetermination.Gate gate = (CircuitDetermination.Gate) determination;
         ComponentFactory factory = gate.getFactory();
         ArrayList<CircuitDetermination> inputs = gate.getInputs();
 
@@ -150,25 +146,25 @@ public class CircuitBuilder {
 
                 // ok; create and return the layout.
                 return new Layout(width, height, outputY, factory, attrs,
-                        sub, sub[0].width);
+                    sub, sub[0].width);
             }
         }
 
-        Layout[] sub = new Layout[inputs.size()];
+        Layout[] layouts = new Layout[inputs.size()];
         int subWidth = 0; // maximum width of sublayouts
         int subHeight = 0; // total height of sublayouts
-        for (int i = 0; i < sub.length; i++) {
-            sub[i] = layoutGatesSub(inputs.get(i));
-            if (sub.length % 2 == 0 && i == (sub.length + 1) / 2
-                    && sub[i - 1].height + sub[i].height == 0) {
+        for (int i = 0; i < layouts.length; i++) {
+            layouts[i] = layoutGatesSub(inputs.get(i));
+            if (layouts.length % 2 == 0 && i == (layouts.length + 1) / 2
+                && layouts[i - 1].height + layouts[i].height == 0) {
                 // if there are an even number of inputs, then there is a
                 // 20-tall gap between the middle two inputs. Ensure the two
                 // middle inputs are at least 20 pixels apart.
                 subHeight += 10;
             }
-            sub[i].y = subHeight;
-            subWidth = Math.max(subWidth, sub[i].width);
-            subHeight += sub[i].height + 10;
+            layouts[i].y = subHeight;
+            subWidth = Math.max(subWidth, layouts[i].width);
+            subHeight += layouts[i].height + 10;
         }
         subHeight -= 10;
 
@@ -178,14 +174,14 @@ public class CircuitBuilder {
         } else {
             attrs.setValue(GateAttributes.ATTR_SIZE, GateAttributes.SIZE_NARROW);
 
-            int ins = sub.length;
+            int ins = layouts.length;
             attrs.setValue(GateAttributes.ATTR_INPUTS, ins);
         }
 
         // determine layout's width
         Bounds bds = factory.getOffsetBounds(attrs);
-        int betweenWidth = 40 + 10 * (sub.length / 2 - 1);
-        if (sub.length == 1) {
+        int betweenWidth = 40 + 10 * (layouts.length / 2 - 1);
+        if (layouts.length == 1) {
             betweenWidth = 20;
         }
         if (subWidth == 0) {
@@ -195,14 +191,14 @@ public class CircuitBuilder {
 
         // determine outputY and layout's height.
         int outputY;
-        if (sub.length % 2 == 1) { // odd number - match the middle input
-            int i = (sub.length - 1) / 2;
-            outputY = sub[i].y + sub[i].outputY;
+        if (layouts.length % 2 == 1) { // odd number - match the middle input
+            int i = (layouts.length - 1) / 2;
+            outputY = layouts[i].y + layouts[i].outputY;
         } else { // even number - halfway between middle two inputs
-            int i0 = (sub.length / 2) - 1;
-            int i1 = (sub.length / 2);
-            int o0 = sub[i0].y + sub[i0].outputY;
-            int o1 = sub[i1].y + sub[i1].outputY;
+            int i0 = (layouts.length / 2) - 1;
+            int i1 = (layouts.length / 2);
+            int o0 = layouts[i0].y + layouts[i0].outputY;
+            int o1 = layouts[i1].y + layouts[i1].outputY;
             outputY = roundDown((o0 + o1) / 2);
         }
         int height = subHeight;
@@ -211,8 +207,8 @@ public class CircuitBuilder {
             // we have to shift everything down because otherwise
             // the component will peek over the rectangle's top.
             int dy = minOutputY - outputY;
-            for (int i = 0; i < sub.length; i++) {
-                sub[i].y += dy;
+            for (Layout layout : layouts) {
+                layout.y += dy;
             }
             height += dy;
             outputY += dy;
@@ -223,8 +219,7 @@ public class CircuitBuilder {
         }
 
         // ok; create and return the layout.
-        return new Layout(width, height, outputY, factory, attrs,
-                sub, subWidth);
+        return new Layout(width, height, outputY, factory, attrs, layouts, subWidth);
     }
 
     private static int roundDown(int value) {
@@ -261,9 +256,8 @@ public class CircuitBuilder {
      * @param inputData information about how to reach inputs.
      * @param output a point to which the output should be connected.
      */
-    private static void placeComponents(CircuitMutation circuit,
-            Layout layout, int x, int y, InputData inputData,
-            Location output) {
+    private static void placeComponents(CircuitMutation circuit, Layout layout, int x, int y, InputData inputData,
+        Location output) {
         if (layout.inputName != null) {
             int inputX = inputData.getSpineX(layout.inputName);
             Location input = Location.create(inputX, output.getY());
@@ -273,16 +267,14 @@ public class CircuitBuilder {
         }
 
         Location compOutput = Location.create(x + layout.width, output.getY());
-        Component parent = layout.factory.createComponent(compOutput,
-                layout.attrs);
+        Component parent = layout.factory.createComponent(compOutput, layout.attrs);
         circuit.add(parent);
         if (!compOutput.equals(output)) {
             circuit.add(Wire.create(compOutput, output));
         }
 
         // handle a NOT gate pattern implemented with NAND as a special case
-        if (layout.factory == NandGate.FACTORY && layout.subLayouts.length == 1
-                && layout.subLayouts[0].inputName == null) {
+        if (layout.factory == NandGate.FACTORY && layout.subLayouts.length == 1 && layout.subLayouts[0].inputName == null) {
             Layout sub = layout.subLayouts[0];
 
             Location input0 = parent.getEnd(1).getLocation();
@@ -324,8 +316,7 @@ public class CircuitBuilder {
             int subOutputY = y + sub.y + sub.outputY;
             if (sub.inputName != null) {
                 int destY = subDest.getY();
-                if (i == 0 && destY < subOutputY
-                        || i == layout.subLayouts.length - 1 && destY > subOutputY) {
+                if (i == 0 && destY < subOutputY || i == layout.subLayouts.length - 1 && destY > subOutputY) {
                     subOutputY = destY;
                 }
             }
@@ -469,9 +460,8 @@ public class CircuitBuilder {
         Layout[] subLayouts;
         String inputName; // for references directly to inputs
 
-        Layout(int width, int height, int outputY,
-                ComponentFactory factory, AttributeSet attrs,
-                Layout[] subLayouts, int subX) {
+        Layout(int width, int height, int outputY, ComponentFactory factory, AttributeSet attrs, Layout[] subLayouts,
+            int subX) {
             this.width = width;
             this.height = roundUp(height);
             this.outputY = outputY;

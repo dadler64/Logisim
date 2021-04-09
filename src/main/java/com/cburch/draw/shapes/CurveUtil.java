@@ -64,16 +64,13 @@ public class CurveUtil {
     }
 
     private static double[] computeB(double[] p0, double[] p1, double[] p2) {
-        return new double[]{
-                p0[0] - 2 * p1[0] + p2[0],
-                p0[1] - 2 * p1[1] + p2[1]};
+        return new double[]{p0[0] - 2 * p1[0] + p2[0], p0[1] - 2 * p1[1] + p2[1]};
     }
 
     // returns { t:Number, pos:Point, dist:Number, nor:Point }
     // (costs about 80 multiplications +additions)
     // note: p0 and p2 are endpoints, p1 is control point
-    public static double[] findNearestPoint(double[] q,
-            double[] p0, double[] p1, double[] p2) {
+    public static double[] findNearestPoint(double[] q, double[] p0, double[] p1, double[] p2) {
         double[] A = computeA(p0, p1);
         double[] B = computeB(p0, p1, p2);
 
@@ -125,7 +122,7 @@ public class CurveUtil {
     }
 
     private static void getPos(double[] result, double t,
-            double[] p0, double[] p1, double[] p2) {
+        double[] p0, double[] p1, double[] p2) {
         double a = (1 - t) * (1 - t);
         double b = 2 * t * (1 - t);
         double c = t * t;
@@ -162,9 +159,9 @@ public class CurveUtil {
                 double u = 2 * Math.sqrt(-p / 3);
                 double v = Math.acos(-Math.sqrt(-27 / p3) * q / 2) / 3;
                 return new double[]{
-                        u * Math.cos(v) + offset,
-                        u * Math.cos(v + 2 * Math.PI / 3) + offset,
-                        u * Math.cos(v + 4 * Math.PI / 3) + offset};
+                    u * Math.cos(v) + offset,
+                    u * Math.cos(v + 2 * Math.PI / 3) + offset,
+                    u * Math.cos(v + 4 * Math.PI / 3) + offset};
             } else {
                 // D zero
                 double u;
@@ -173,9 +170,7 @@ public class CurveUtil {
                 } else {
                     u = -Math.pow(q / 2, 1. / 3);
                 }
-                return new double[]{
-                        2 * u + offset,
-                        -u + offset};
+                return new double[]{2 * u + offset, -u + offset};
             }
         } else if (Math.abs(b) > zeroMax) {
             // a = 0, then actually a 2nd degree equation:
@@ -191,8 +186,8 @@ public class CurveUtil {
                 // D positive
                 D = Math.sqrt(D);
                 return new double[]{
-                        (-b - D) / (2 * a),
-                        (-b + D) / (2 * a)};
+                    (-b - D) / (2 * a),
+                    (-b + D) / (2 * a)};
             } else {
                 // D zero
                 return new double[]{-b / (2 * a)};
@@ -227,8 +222,7 @@ public class CurveUtil {
         double d1 = Math.sqrt(dx * dx + dy * dy);
 
         if (d0 < zeroMax || d1 < zeroMax) {
-            return new double[]{(end0[0] + end1[0]) / 2,
-                    (end0[1] + end1[1]) / 2};
+            return new double[]{(end0[0] + end1[0]) / 2, (end0[1] + end1[1]) / 2};
         }
 
         double t = d0 / (d0 + d1);

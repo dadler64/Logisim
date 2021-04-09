@@ -13,19 +13,19 @@ import java.util.List;
 import java.util.Vector;
 import javax.swing.JList;
 
-class CircuitJList extends JList {
+class CircuitJList extends JList<Circuit> {
 
-    public CircuitJList(Project proj, boolean includeEmpty) {
-        LogisimFile file = proj.getLogisimFile();
-        Circuit current = proj.getCurrentCircuit();
+    public CircuitJList(Project project, boolean includeEmpty) {
+        LogisimFile file = project.getLogisimFile();
+        Circuit current = project.getCurrentCircuit();
         Vector<Circuit> options = new Vector<>();
         boolean currentFound = false;
-        for (Circuit circ : file.getCircuits()) {
-            if (!includeEmpty || circ.getBounds() != Bounds.EMPTY_BOUNDS) {
-                if (circ == current) {
+        for (Circuit circuit : file.getCircuits()) {
+            if (!includeEmpty || circuit.getBounds() != Bounds.EMPTY_BOUNDS) {
+                if (circuit == current) {
                     currentFound = true;
                 }
-                options.add(circ);
+                options.add(circuit);
             }
         }
 
@@ -37,15 +37,15 @@ class CircuitJList extends JList {
     }
 
     public List<Circuit> getSelectedCircuits() {
-        Object[] selected = getSelectedValues();
-        if (selected != null && selected.length > 0) {
-            ArrayList<Circuit> ret = new ArrayList<>(selected.length);
-            for (Object sel : selected) {
-                if (sel instanceof Circuit) {
-                    ret.add((Circuit) sel);
+        List<Circuit> selected = getSelectedValuesList();
+        if (selected != null && selected.size() > 0) {
+            ArrayList<Circuit> circuits = new ArrayList<>(selected.size());
+            for (Circuit circuit : selected) {
+                if (circuit != null) {
+                    circuits.add(circuit);
                 }
             }
-            return ret;
+            return circuits;
         } else {
             return Collections.emptyList();
         }

@@ -19,8 +19,7 @@ public class ArraySet<E> extends AbstractSet<E> {
 
     public static void main(String[] args) throws java.io.IOException {
         ArraySet<String> set = new ArraySet<>();
-        java.io.BufferedReader in = new java.io.BufferedReader(
-                new java.io.InputStreamReader(System.in));
+        java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
         while (true) {
             System.out.print(set.size() + ":"); //OK
             for (String str : set) {
@@ -34,6 +33,7 @@ public class ArraySet<E> extends AbstractSet<E> {
             }
             cmd = cmd.trim();
             if (cmd.equals("")) {
+                // Ok
             } else if (cmd.startsWith("+")) {
                 set.add(cmd.substring(1));
             } else if (cmd.startsWith("-")) {
@@ -81,16 +81,16 @@ public class ArraySet<E> extends AbstractSet<E> {
 
     @Override
     public boolean add(Object value) {
-        int n = values.length;
-        for (int i = 0; i < n; i++) {
-            if (values[i].equals(value)) {
+        int length = values.length;
+        for (Object objectValue : values) {
+            if (objectValue.equals(value)) {
                 return false;
             }
         }
 
-        Object[] newValues = new Object[n + 1];
-        System.arraycopy(values, 0, newValues, 0, n);
-        newValues[n] = value;
+        Object[] newValues = new Object[length + 1];
+        System.arraycopy(values, 0, newValues, 0, length);
+        newValues[length] = value;
         values = newValues;
         ++version;
         return true;
@@ -98,8 +98,8 @@ public class ArraySet<E> extends AbstractSet<E> {
 
     @Override
     public boolean contains(Object value) {
-        for (int i = 0, n = values.length; i < n; i++) {
-            if (values[i].equals(value)) {
+        for (Object objectValue : values) {
+            if (objectValue.equals(value)) {
                 return true;
             }
         }
@@ -114,7 +114,7 @@ public class ArraySet<E> extends AbstractSet<E> {
     private class ArrayIterator implements Iterator<E> {
 
         int itVersion = version;
-        int pos = 0; // position of next item to return
+        int position = 0; // position of next item to return
         boolean hasNext = values.length > 0;
         boolean removeOk = false;
 
@@ -129,9 +129,9 @@ public class ArraySet<E> extends AbstractSet<E> {
                 throw new NoSuchElementException();
             } else {
                 @SuppressWarnings("unchecked")
-                E ret = (E) values[pos];
-                ++pos;
-                hasNext = pos < values.length;
+                E ret = (E) values[position];
+                ++position;
+                hasNext = position < values.length;
                 removeOk = true;
                 return ret;
             }
@@ -149,14 +149,14 @@ public class ArraySet<E> extends AbstractSet<E> {
                 removeOk = false;
             } else {
                 Object[] newValues = new Object[values.length - 1];
-                if (pos > 1) {
-                    System.arraycopy(values, 0, newValues, 0, pos - 1);
+                if (position > 1) {
+                    System.arraycopy(values, 0, newValues, 0, position - 1);
                 }
-                if (pos < values.length) {
-                    System.arraycopy(values, pos, newValues, pos - 1, values.length - pos);
+                if (position < values.length) {
+                    System.arraycopy(values, position, newValues, position - 1, values.length - position);
                 }
                 values = newValues;
-                --pos;
+                --position;
                 ++version;
                 itVersion = version;
                 removeOk = false;

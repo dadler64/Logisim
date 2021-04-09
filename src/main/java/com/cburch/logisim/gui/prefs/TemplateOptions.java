@@ -31,12 +31,12 @@ import javax.swing.JTextField;
 
 class TemplateOptions extends OptionsPanel {
 
-    private MyListener myListener = new MyListener();
-    private JRadioButton plain = new JRadioButton();
-    private JRadioButton empty = new JRadioButton();
-    private JRadioButton custom = new JRadioButton();
-    private JTextField templateField = new JTextField(40);
-    private JButton templateButton = new JButton();
+    private final MyListener myListener = new MyListener();
+    private final JRadioButton plain = new JRadioButton();
+    private final JRadioButton empty = new JRadioButton();
+    private final JRadioButton custom = new JRadioButton();
+    private final JTextField templateField = new JTextField(40);
+    private final JButton templateButton = new JButton();
 
     public TemplateOptions(PreferencesFrame window) {
         super(window);
@@ -142,9 +142,9 @@ class TemplateOptions extends OptionsPanel {
                     } catch (LoaderException ex) {
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(getPreferencesFrame(),
-                                StringUtil.format(Strings.get("templateErrorMessage"), ex.toString()),
-                                Strings.get("templateErrorTitle"),
-                                JOptionPane.ERROR_MESSAGE);
+                            StringUtil.format(Strings.get("templateErrorMessage"), ex.toString()),
+                            Strings.get("templateErrorTitle"),
+                            JOptionPane.ERROR_MESSAGE);
                     } finally {
                         try {
                             if (reader != null) {

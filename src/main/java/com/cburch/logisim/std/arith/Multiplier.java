@@ -31,8 +31,7 @@ public class Multiplier extends InstanceFactory {
 
     public Multiplier() {
         super("Multiplier", Strings.getter("multiplierComponent"));
-        setAttributes(new Attribute[]{StdAttr.WIDTH},
-                new Object[]{BitWidth.create(8)});
+        setAttributes(new Attribute[]{StdAttr.WIDTH}, new Object[]{BitWidth.create(8)});
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
         setIconName("multiplier.gif");
@@ -57,23 +56,21 @@ public class Multiplier extends InstanceFactory {
             c_in = Value.createKnown(width, 0);
         }
         if (a.isFullyDefined() && b.isFullyDefined() && c_in.isFullyDefined()) {
-            long sum = (long) a.toIntValue() * (long) b.toIntValue()
-                    + (long) c_in.toIntValue();
-            return new Value[]{Value.createKnown(width, (int) sum),
-                    Value.createKnown(width, (int) (sum >> w))};
+            long sum = (long) a.toIntValue() * (long) b.toIntValue() + (long) c_in.toIntValue();
+            return new Value[]{Value.createKnown(width, (int) sum), Value.createKnown(width, (int) (sum >> w))};
         } else {
-            Value[] avals = a.getAll();
-            int aOk = findUnknown(avals);
-            int aErr = findError(avals);
-            int ax = getKnown(avals);
-            Value[] bvals = b.getAll();
-            int bOk = findUnknown(bvals);
-            int bErr = findError(bvals);
-            int bx = getKnown(bvals);
-            Value[] cvals = c_in.getAll();
-            int cOk = findUnknown(cvals);
-            int cErr = findError(cvals);
-            int cx = getKnown(cvals);
+            Value[] aValues = a.getAll();
+            int aOk = findUnknown(aValues);
+            int aErr = findError(aValues);
+            int ax = getKnown(aValues);
+            Value[] bValues = b.getAll();
+            int bOk = findUnknown(bValues);
+            int bErr = findError(bValues);
+            int bx = getKnown(bValues);
+            Value[] cValues = c_in.getAll();
+            int cOk = findUnknown(cValues);
+            int cErr = findError(cValues);
+            int cx = getKnown(cValues);
 
             int known = Math.min(Math.min(aOk, bOk), cOk);
             int error = Math.min(Math.min(aErr, bErr), cErr);
@@ -90,32 +87,32 @@ public class Multiplier extends InstanceFactory {
                 }
             }
             return new Value[]{Value.create(bits),
-                    error < w ? Value.createError(width) : Value.createUnknown(width)};
+                error < w ? Value.createError(width) : Value.createUnknown(width)};
         }
     }
 
-    private static int findUnknown(Value[] vals) {
-        for (int i = 0; i < vals.length; i++) {
-            if (!vals[i].isFullyDefined()) {
+    private static int findUnknown(Value[] values) {
+        for (int i = 0; i < values.length; i++) {
+            if (!values[i].isFullyDefined()) {
                 return i;
             }
         }
-        return vals.length;
+        return values.length;
     }
 
-    private static int findError(Value[] vals) {
-        for (int i = 0; i < vals.length; i++) {
-            if (vals[i].isErrorValue()) {
+    private static int findError(Value[] values) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].isErrorValue()) {
                 return i;
             }
         }
-        return vals.length;
+        return values.length;
     }
 
-    private static int getKnown(Value[] vals) {
+    private static int getKnown(Value[] values) {
         int ret = 0;
-        for (int i = 0; i < vals.length; i++) {
-            int val = vals[i].toIntValue();
+        for (int i = 0; i < values.length; i++) {
+            int val = values[i].toIntValue();
             if (val < 0) {
                 return ret;
             }
@@ -153,9 +150,9 @@ public class Multiplier extends InstanceFactory {
         painter.drawPort(C_IN, "c in", Direction.NORTH);
         painter.drawPort(C_OUT, "c out", Direction.SOUTH);
 
-        Location loc = painter.getLocation();
-        int x = loc.getX();
-        int y = loc.getY();
+        Location location = painter.getLocation();
+        int x = location.getX();
+        int y = location.getY();
         GraphicsUtil.switchToWidth(g, 2);
         g.setColor(Color.BLACK);
         g.drawLine(x - 15, y - 5, x - 5, y + 5);

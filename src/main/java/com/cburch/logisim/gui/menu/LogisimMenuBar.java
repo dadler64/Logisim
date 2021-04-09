@@ -52,52 +52,51 @@ public class LogisimMenuBar extends JMenuBar {
     public static final LogisimMenuItem SIMULATE_STEP = new LogisimMenuItem("SimulateStep");
     public static final LogisimMenuItem TICK_ENABLE = new LogisimMenuItem("TickEnable");
     public static final LogisimMenuItem TICK_STEP = new LogisimMenuItem("TickStep");
-    private JFrame parent;
-    private MyListener listener;
-    private Project proj;
+    private final JFrame parent;
+    private final MyListener listener;
+    private final Project project;
+    private final HashMap<LogisimMenuItem, MenuItem> menuItems = new HashMap<>();
+    private final ArrayList<ChangeListener> enableListeners;
+    private final MenuFile menuFile;
+    private final MenuEdit menuEdit;
+    private final MenuProject menuProject;
+    private final MenuSimulate menuSimulate;
+    private final MenuHelp menuHelp;
     private SimulateListener simulateListener = null;
-    private HashMap<LogisimMenuItem, MenuItem> menuItems
-            = new HashMap<>();
-    private ArrayList<ChangeListener> enableListeners;
-    private MenuFile file;
-    private MenuEdit edit;
-    private MenuProject project;
-    private MenuSimulate simulate;
-    private MenuHelp help;
 
-    public LogisimMenuBar(JFrame parent, Project proj) {
+    public LogisimMenuBar(JFrame parent, Project project) {
         this.parent = parent;
         this.listener = new MyListener();
-        this.proj = proj;
+        this.project = project;
         this.enableListeners = new ArrayList<>();
 
-        add(file = new MenuFile(this));
-        add(edit = new MenuEdit(this));
-        add(project = new MenuProject(this));
-        add(simulate = new MenuSimulate(this));
+        add(menuFile = new MenuFile(this));
+        add(menuEdit = new MenuEdit(this));
+        add(menuProject = new MenuProject(this));
+        add(menuSimulate = new MenuSimulate(this));
         add(new WindowMenu(parent));
-        add(help = new MenuHelp(this));
+        add(menuHelp = new MenuHelp(this));
 
         LocaleManager.addLocaleListener(listener);
         listener.localeChanged();
     }
 
-    public void setEnabled(LogisimMenuItem which, boolean value) {
-        MenuItem item = menuItems.get(which);
+    public void setEnabled(LogisimMenuItem logisimMenuItem, boolean value) {
+        MenuItem item = menuItems.get(logisimMenuItem);
         if (item != null) {
             item.setEnabled(value);
         }
     }
 
-    public void addActionListener(LogisimMenuItem which, ActionListener l) {
-        MenuItem item = menuItems.get(which);
+    public void addActionListener(LogisimMenuItem logisimMenuItem, ActionListener l) {
+        MenuItem item = menuItems.get(logisimMenuItem);
         if (item != null) {
             item.addActionListener(l);
         }
     }
 
-    public void removeActionListener(LogisimMenuItem which, ActionListener l) {
-        MenuItem item = menuItems.get(which);
+    public void removeActionListener(LogisimMenuItem logisimMenuItem, ActionListener l) {
+        MenuItem item = menuItems.get(logisimMenuItem);
         if (item != null) {
             item.removeActionListener(l);
         }
@@ -112,9 +111,9 @@ public class LogisimMenuBar extends JMenuBar {
     }
 
     void fireEnableChanged() {
-        ChangeEvent e = new ChangeEvent(this);
+        ChangeEvent event = new ChangeEvent(this);
         for (ChangeListener listener : enableListeners) {
-            listener.stateChanged(e);
+            listener.stateChanged(event);
         }
     }
 
@@ -122,47 +121,46 @@ public class LogisimMenuBar extends JMenuBar {
         simulateListener = l;
     }
 
-    public void setCircuitState(Simulator sim, CircuitState state) {
-        simulate.setCurrentState(sim, state);
+    public void setCircuitState(Simulator simulator, CircuitState state) {
+        menuSimulate.setCurrentState(simulator, state);
     }
 
-    public Project getProject() {
-        return proj;
+    public Project getMenuProject() {
+        return project;
     }
 
     JFrame getParentWindow() {
         return parent;
     }
 
-    void registerItem(LogisimMenuItem which, MenuItem item) {
-        menuItems.put(which, item);
+    void registerItem(LogisimMenuItem logisimMenuItem, MenuItem menuItem) {
+        menuItems.put(logisimMenuItem, menuItem);
     }
 
-    void fireStateChanged(Simulator sim, CircuitState state) {
+    void fireStateChanged(Simulator simulator, CircuitState state) {
         if (simulateListener != null) {
-            simulateListener.stateChangeRequested(sim, state);
+            simulateListener.stateChangeRequested(simulator, state);
         }
     }
 
-    public void doAction(LogisimMenuItem which) {
-        MenuItem item = menuItems.get(which);
-        item.actionPerformed(new ActionEvent(item, ActionEvent.ACTION_PERFORMED,
-                which.toString()));
+    public void doAction(LogisimMenuItem logisimMenuItem) {
+        MenuItem menuItem = menuItems.get(logisimMenuItem);
+        menuItem.actionPerformed(new ActionEvent(menuItem, ActionEvent.ACTION_PERFORMED, logisimMenuItem.toString()));
     }
 
-    public boolean isEnabled(LogisimMenuItem item) {
-        MenuItem menuItem = menuItems.get(item);
+    public boolean isEnabled(LogisimMenuItem logisimMenuItem) {
+        MenuItem menuItem = menuItems.get(logisimMenuItem);
         return menuItem != null && menuItem.isEnabled();
     }
 
     private class MyListener implements LocaleListener {
 
         public void localeChanged() {
-            file.localeChanged();
-            edit.localeChanged();
-            project.localeChanged();
-            simulate.localeChanged();
-            help.localeChanged();
+            menuFile.localeChanged();
+            menuEdit.localeChanged();
+            menuProject.localeChanged();
+            menuSimulate.localeChanged();
+            menuHelp.localeChanged();
         }
     }
 }

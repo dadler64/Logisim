@@ -14,8 +14,10 @@ import com.cburch.logisim.gui.generic.AttrTable;
 import com.cburch.logisim.util.HorizontalSplitPane;
 import com.cburch.logisim.util.VerticalSplitPane;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.Collections;
 import javax.swing.JFrame;
+import javax.swing.border.LineBorder;
 
 public class Main {
 
@@ -37,6 +39,7 @@ public class Main {
         Toolbar toolbar = new Toolbar(canvas, attributes);
         canvas.setModel(drawing, new UndoLogDispatcher(new UndoLog()));
         canvas.setTool(toolbar.getDefaultTool());
+        canvas.setBorder(new LineBorder(Color.BLACK));
 
         AttrTable table = new AttrTable(frame);
         AttrTableDrawManager manager = new AttrTableDrawManager(canvas, table, attributes);

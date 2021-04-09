@@ -31,16 +31,16 @@ public class SplashScreen extends JWindow implements ActionListener {
     private static final int PROGRESS_MAX = 3568;
     private static final boolean PRINT_TIMES = false;
     Marker[] markers = new Marker[]{
-            new Marker(377, Strings.get("progressLibraries")),
-            new Marker(990, Strings.get("progressTemplateCreate")),
-            new Marker(1002, Strings.get("progressTemplateOpen")),
-            new Marker(1002, Strings.get("progressTemplateLoad")),
-            new Marker(1470, Strings.get("progressTemplateClose")),
-            new Marker(1478, Strings.get("progressGuiInitialize")),
-            new Marker(2114, Strings.get("progressFileCreate")),
-            new Marker(2114, Strings.get("progressFileLoad")),
-            new Marker(2383, Strings.get("progressProjectCreate")),
-            new Marker(2519, Strings.get("progressFrameCreate")),
+        new Marker(377, Strings.get("progressLibraries")),
+        new Marker(990, Strings.get("progressTemplateCreate")),
+        new Marker(1002, Strings.get("progressTemplateOpen")),
+        new Marker(1002, Strings.get("progressTemplateLoad")),
+        new Marker(1470, Strings.get("progressTemplateClose")),
+        new Marker(1478, Strings.get("progressGuiInitialize")),
+        new Marker(2114, Strings.get("progressFileCreate")),
+        new Marker(2114, Strings.get("progressFileLoad")),
+        new Marker(2383, Strings.get("progressProjectCreate")),
+        new Marker(2519, Strings.get("progressFrameCreate")),
     };
     boolean inClose = false; // for avoiding mutual recursion
     JProgressBar progress = new JProgressBar(0, PROGRESS_MAX);
@@ -66,10 +66,10 @@ public class SplashScreen extends JWindow implements ActionListener {
         contents.add(buttonPanel, BorderLayout.SOUTH);
         contents.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
-        Color bg = imagePanel.getBackground();
-        contents.setBackground(bg);
-        buttonPanel.setBackground(bg);
-        setBackground(bg);
+        Color backgroundColor = imagePanel.getBackground();
+        contents.setBackground(backgroundColor);
+        buttonPanel.setBackground(backgroundColor);
+        setBackground(backgroundColor);
         setContentPane(contents);
     }
 
@@ -84,7 +84,7 @@ public class SplashScreen extends JWindow implements ActionListener {
             });
             if (PRINT_TIMES) {
                 System.err.println((System.currentTimeMillis() - startTime) //OK
-                        + " " + marker.message);
+                    + " " + marker.message);
             }
         } else {
             if (PRINT_TIMES) {
@@ -113,8 +113,7 @@ public class SplashScreen extends JWindow implements ActionListener {
         setVisible(false);
         inClose = false;
         if (PRINT_TIMES) {
-            System.err.println((System.currentTimeMillis() - startTime) //OK
-                    + " closed");
+            System.err.println((System.currentTimeMillis() - startTime) + " closed"); //OK
         }
         markers = null;
     }

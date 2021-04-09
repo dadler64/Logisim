@@ -29,8 +29,7 @@ abstract class FillableCanvasObject extends AbstractCanvasObject {
             FillableCanvasObject that = (FillableCanvasObject) object;
             boolean isSame = this.paintType == that.paintType;
             if (isSame && this.paintType != DrawAttr.PAINT_FILL) {
-                isSame = isSame && this.strokeWidth == that.strokeWidth
-                        && this.strokeColor.equals(that.strokeColor);
+                isSame = isSame && this.strokeWidth == that.strokeWidth && this.strokeColor.equals(that.strokeColor);
             }
             if (isSame && this.paintType != DrawAttr.PAINT_STROKE) {
                 isSame = isSame && this.fillColor.equals(that.fillColor);

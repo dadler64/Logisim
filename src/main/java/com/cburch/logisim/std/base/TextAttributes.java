@@ -15,19 +15,19 @@ import java.util.List;
 class TextAttributes extends AbstractAttributeSet {
 
     private static final List<Attribute<?>> ATTRIBUTES
-            = Arrays.asList(Text.ATTR_TEXT, Text.ATTR_FONT, Text.ATTR_HALIGN, Text.ATTR_VALIGN);
+        = Arrays.asList(Text.ATTR_TEXT, Text.ATTR_FONT, Text.ATTR_HALIGN, Text.ATTR_VALIGN);
 
     private String text;
     private Font font;
-    private AttributeOption halign;
-    private AttributeOption valign;
+    private AttributeOption hAlign;
+    private AttributeOption vAlign;
     private Bounds offsetBounds;
 
     public TextAttributes() {
         text = "";
         font = StdAttr.DEFAULT_LABEL_FONT;
-        halign = Text.ATTR_HALIGN.parse("center");
-        valign = Text.ATTR_VALIGN.parse("base");
+        hAlign = Text.ATTR_HALIGN.parse("center");
+        vAlign = Text.ATTR_VALIGN.parse("base");
         offsetBounds = null;
     }
 
@@ -40,11 +40,11 @@ class TextAttributes extends AbstractAttributeSet {
     }
 
     int getHorizontalAlign() {
-        return (Integer) halign.getValue();
+        return (Integer) hAlign.getValue();
     }
 
     int getVerticalAlign() {
-        return (Integer) valign.getValue();
+        return (Integer) vAlign.getValue();
     }
 
     Bounds getOffsetBounds() {
@@ -80,10 +80,10 @@ class TextAttributes extends AbstractAttributeSet {
             return (V) font;
         }
         if (attr == Text.ATTR_HALIGN) {
-            return (V) halign;
+            return (V) hAlign;
         }
         if (attr == Text.ATTR_VALIGN) {
-            return (V) valign;
+            return (V) vAlign;
         }
         return null;
     }
@@ -95,9 +95,9 @@ class TextAttributes extends AbstractAttributeSet {
         } else if (attr == Text.ATTR_FONT) {
             font = (Font) value;
         } else if (attr == Text.ATTR_HALIGN) {
-            halign = (AttributeOption) value;
+            hAlign = (AttributeOption) value;
         } else if (attr == Text.ATTR_VALIGN) {
-            valign = (AttributeOption) value;
+            vAlign = (AttributeOption) value;
         } else {
             throw new IllegalArgumentException("unknown attribute");
         }

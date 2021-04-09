@@ -3,17 +3,18 @@
 
 package com.cburch.logisim.tools.move;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.circuit.ReplacementMap;
 
 class ConnectorThread extends Thread {
 
-    private static ConnectorThread INSTANCE = new ConnectorThread();
+    private static final ConnectorThread INSTANCE = new ConnectorThread();
 
     static {
         INSTANCE.start();
     }
 
-    private Object lock;
+    private final Object lock;
     private transient boolean overrideRequest;
     private MoveRequest nextRequest;
     private MoveRequest processingRequest;
@@ -24,10 +25,10 @@ class ConnectorThread extends Thread {
         nextRequest = null;
     }
 
-    public static void enqueueRequest(MoveRequest req, boolean priority) {
+    public static void enqueueRequest(MoveRequest request, boolean priority) {
         synchronized (INSTANCE.lock) {
-            if (!req.equals(INSTANCE.processingRequest)) {
-                INSTANCE.nextRequest = req;
+            if (!request.equals(INSTANCE.processingRequest)) {
+                INSTANCE.nextRequest = request;
                 INSTANCE.overrideRequest = priority;
                 INSTANCE.lock.notifyAll();
             }
@@ -45,7 +46,7 @@ class ConnectorThread extends Thread {
     @Override
     public void run() {
         while (true) {
-            MoveRequest req;
+            MoveRequest request;
             boolean wasOverride;
             synchronized (lock) {
                 processingRequest = null;
@@ -53,31 +54,31 @@ class ConnectorThread extends Thread {
                     try {
                         lock.wait();
                     } catch (InterruptedException e) {
+                        Logger.debugln(e.getMessage());
                         Thread.currentThread().interrupt();
                         return;
                     }
                 }
-                req = nextRequest;
+                request = nextRequest;
                 wasOverride = overrideRequest;
                 nextRequest = null;
                 overrideRequest = false;
-                processingRequest = req;
+                processingRequest = request;
             }
 
             try {
-                MoveResult result = Connector.computeWires(req);
+                MoveResult result = Connector.computeWires(request);
                 if (result != null) {
-                    MoveGesture gesture = req.getMoveGesture();
-                    gesture.notifyResult(req, result);
+                    MoveGesture gesture = request.getMoveGesture();
+                    gesture.notifyResult(request, result);
                 }
             } catch (Throwable t) {
-                t.printStackTrace();
+                Logger.debugln(t.getMessage());
+//                t.printStackTrace();
                 if (wasOverride) {
-                    MoveResult result = new MoveResult(req,
-                            new ReplacementMap(),
-                            req.getMoveGesture().getConnections(),
-                            0);
-                    req.getMoveGesture().notifyResult(req, result);
+                    MoveResult result = new MoveResult(request, new ReplacementMap(),
+                        request.getMoveGesture().getConnections(), 0);
+                    request.getMoveGesture().notifyResult(request, result);
                 }
             }
         }

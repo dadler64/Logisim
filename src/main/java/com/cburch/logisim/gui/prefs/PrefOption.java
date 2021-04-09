@@ -8,15 +8,15 @@ import javax.swing.JComboBox;
 
 class PrefOption {
 
-    private Object value;
-    private StringGetter getter;
+    private final Object value;
+    private final StringGetter getter;
 
     PrefOption(String value, StringGetter getter) {
         this.value = value;
         this.getter = getter;
     }
 
-    static void setSelected(JComboBox combo, Object value) {
+    static void setSelected(JComboBox<Object> combo, Object value) {
         for (int i = combo.getItemCount() - 1; i >= 0; i--) {
             PrefOption opt = (PrefOption) combo.getItemAt(i);
             if (opt.getValue().equals(value)) {

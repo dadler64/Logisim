@@ -29,29 +29,29 @@ import java.util.Set;
 public class CircuitState implements InstanceData {
 
     private static int lastId = 0;
+    private final MyCircuitListener myCircuitListener = new MyCircuitListener();
+    private final Project project; // project where circuit lies
+    private final Circuit circuit; // circuit being simulated
+    private final HashMap<Component, Object> componentData = new HashMap<>();
+    private final Map<Location, Value> values = new HashMap<>();
+    private final SmallSet<Location> dirtyPoints = new SmallSet<>();
+    private final int id = lastId++;
     HashMap<Location, SetData> causes = new HashMap<>();
-    private MyCircuitListener myCircuitListener = new MyCircuitListener();
     private Propagator base = null; // base of tree of CircuitStates
-    private Project proj; // project where circuit lies
-    private Circuit circuit; // circuit being simulated
     private CircuitState parentState = null; // parent in tree of CircuitStates
     private Component parentComp = null; // subcircuit component containing this state
     private ArraySet<CircuitState> substates = new ArraySet<>();
     private CircuitWires.State wireData = null;
-    private HashMap<Component, Object> componentData = new HashMap<>();
-    private Map<Location, Value> values = new HashMap<>();
     private SmallSet<Component> dirtyComponents = new SmallSet<>();
-    private SmallSet<Location> dirtyPoints = new SmallSet<>();
-    private int id = lastId++;
 
-    public CircuitState(Project proj, Circuit circuit) {
-        this.proj = proj;
+    public CircuitState(Project project, Circuit circuit) {
+        this.project = project;
         this.circuit = circuit;
         circuit.addCircuitListener(myCircuitListener);
     }
 
     public Project getProject() {
-        return proj;
+        return project;
     }
 
     Component getSubcircuit() {
@@ -64,7 +64,7 @@ public class CircuitState implements InstanceData {
     }
 
     public CircuitState cloneState() {
-        CircuitState ret = new CircuitState(proj, circuit);
+        CircuitState ret = new CircuitState(project, circuit);
         ret.copyFrom(this, new Propagator(ret));
         ret.parentComp = null;
         ret.parentState = null;
@@ -78,7 +78,7 @@ public class CircuitState implements InstanceData {
         HashMap<CircuitState, CircuitState> substateData = new HashMap<>();
         this.substates = new ArraySet<>();
         for (CircuitState oldSub : src.substates) {
-            CircuitState newSub = new CircuitState(src.proj, oldSub.circuit);
+            CircuitState newSub = new CircuitState(src.project, oldSub.circuit);
             newSub.copyFrom(oldSub, base);
             newSub.parentState = this;
             this.substates.add(newSub);
@@ -262,9 +262,9 @@ public class CircuitState implements InstanceData {
                 }
             }
             dirtyComponents.clear();
-            for (Object compObj : toProcess) {
-                if (compObj instanceof Component) {
-                    Component comp = (Component) compObj;
+            for (Object componentObject : toProcess) {
+                if (componentObject instanceof Component) {
+                    Component comp = (Component) componentObject;
                     comp.propagate(this);
                     if (comp.getFactory() instanceof Pin && parentState != null) {
                         // should be propagated in superstate
@@ -293,6 +293,7 @@ public class CircuitState implements InstanceData {
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e2) {
+                        e2.printStackTrace();
                     }
                     if (i == 0) {
                         e.printStackTrace();
@@ -444,33 +445,36 @@ public class CircuitState implements InstanceData {
                         }
                     }
                 } else {
-                    Component comp = (Component) event.getData();
-                    markComponentAsDirty(comp);
+                    Component component = (Component) event.getData();
+                    markComponentAsDirty(component);
                     if (base != null) {
-                        base.checkComponentEnds(CircuitState.this, comp);
+                        base.checkComponentEnds(CircuitState.this, component);
                     }
                 }
             } else if (action == CircuitEvent.ACTION_INVALIDATE) {
-                Component comp = (Component) event.getData();
-                markComponentAsDirty(comp);
-                // TODO detemine if this should really be missing if (base != null) base.checkComponentEnds(CircuitState.this, comp);
+                Component component = (Component) event.getData();
+                markComponentAsDirty(component);
+                // TODO determine if this should really be missing
+                //  if (base != null) {
+                //      base.checkComponentEnds(CircuitState.this, component);
+                //  }
             } else if (action == CircuitEvent.TRANSACTION_DONE) {
                 ReplacementMap map = event.getResult().getReplacementMap(circuit);
                 if (map != null) {
-                    for (Component comp : map.getReplacedComponents()) {
-                        Object compState = componentData.remove(comp);
-                        if (compState != null) {
-                            Class<?> compFactory = comp.getFactory().getClass();
+                    for (Component component : map.getReplacedComponents()) {
+                        Object componentState = componentData.remove(component);
+                        if (componentState != null) {
+                            Class<?> compFactory = component.getFactory().getClass();
                             boolean found = false;
-                            for (Component repl : map.get(comp)) {
+                            for (Component repl : map.get(component)) {
                                 if (repl.getFactory().getClass() == compFactory) {
                                     found = true;
-                                    setData(repl, compState);
+                                    setData(repl, componentState);
                                     break;
                                 }
                             }
-                            if (!found && compState instanceof CircuitState) {
-                                CircuitState sub = (CircuitState) compState;
+                            if (!found && componentState instanceof CircuitState) {
+                                CircuitState sub = (CircuitState) componentState;
                                 sub.parentState = null;
                                 substates.remove(sub);
                             }

@@ -18,16 +18,16 @@ import java.util.List;
 
 public class Builtin extends Library {
 
-    private List<Library> libraries;
+    private final List<Library> libraries;
 
     public Builtin() {
         libraries = Arrays.asList(new Base(),
-                new Gates(),
-                new Wiring(),
-                new Plexers(),
-                new Arithmetic(),
-                new Memory(),
-                new Io());
+            new Gates(),
+            new Wiring(),
+            new Plexers(),
+            new Arithmetic(),
+            new Memory(),
+            new Io());
     }
 
     @Override

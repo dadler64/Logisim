@@ -17,8 +17,8 @@ class RecentProjects implements PreferenceChangeListener {
 
     private static final String BASE_PROPERTY = "recent";
     private static final int MAX_NUM_RECENT = 10;
-    private File[] recentFiles;
-    private long[] recentTimes;
+    private final File[] recentFiles;
+    private final long[] recentTimes;
 
     RecentProjects() {
         recentFiles = new File[MAX_NUM_RECENT];
@@ -30,7 +30,7 @@ class RecentProjects implements PreferenceChangeListener {
 
         // TODO: Fix error with recent files not loading
         for (int index = 0; index < MAX_NUM_RECENT; index++) {
-//            getAndDecode(preferences, index);
+            getAndDecode(preferences, index);
         }
     }
 
@@ -127,8 +127,8 @@ class RecentProjects implements PreferenceChangeListener {
                 long newTime = recentTimes[index];
                 if (!isSame(oldValue, newValue) || oldTime != newTime) {
                     AppPreferences.firePropertyChange(AppPreferences.RECENT_PROJECTS,
-                            new FileTime(oldValue, oldTime),
-                            new FileTime(newValue, newTime));
+                        new FileTime(oldValue, oldTime),
+                        new FileTime(newValue, newTime));
                 }
             }
         }
@@ -142,10 +142,10 @@ class RecentProjects implements PreferenceChangeListener {
             recentTimes[index] = time;
             try {
                 AppPreferences.getPreferences().put(BASE_PROPERTY + index,
-                        "" + time + ";" + file.getCanonicalPath());
+                    "" + time + ";" + file.getCanonicalPath());
                 AppPreferences.firePropertyChange(AppPreferences.RECENT_PROJECTS,
-                        new FileTime(oldFile, oldTime),
-                        new FileTime(file, time));
+                    new FileTime(oldFile, oldTime),
+                    new FileTime(file, time));
             } catch (IOException e) {
                 recentFiles[index] = oldFile;
                 recentTimes[index] = oldTime;
@@ -172,8 +172,8 @@ class RecentProjects implements PreferenceChangeListener {
 
     private static class FileTime {
 
-        private long time;
-        private File file;
+        private final long time;
+        private final File file;
 
         private FileTime(File file, long time) {
             this.time = time;

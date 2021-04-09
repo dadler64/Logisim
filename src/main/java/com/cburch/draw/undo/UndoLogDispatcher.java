@@ -7,7 +7,7 @@ import com.cburch.draw.canvas.ActionDispatcher;
 
 public class UndoLogDispatcher implements ActionDispatcher {
 
-    private UndoLog log;
+    private final UndoLog log;
 
     public UndoLogDispatcher(UndoLog log) {
         this.log = log;

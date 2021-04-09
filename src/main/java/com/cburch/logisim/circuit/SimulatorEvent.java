@@ -5,7 +5,7 @@ package com.cburch.logisim.circuit;
 
 public class SimulatorEvent {
 
-    private Simulator source;
+    private final Simulator source;
 
     public SimulatorEvent(Simulator source) {
         this.source = source;

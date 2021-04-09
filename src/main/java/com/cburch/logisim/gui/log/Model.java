@@ -12,9 +12,9 @@ import javax.swing.JFrame;
 
 class Model {
 
-    private EventSourceWeakSupport<ModelListener> listeners;
-    private Selection selection;
-    private HashMap<SelectionItem, ValueLog> log;
+    private final EventSourceWeakSupport<ModelListener> listeners;
+    private final Selection selection;
+    private final HashMap<SelectionItem, ValueLog> log;
     private boolean fileEnabled = false;
     private File file = null;
     private boolean fileHeader = true;
@@ -48,12 +48,12 @@ class Model {
     }
 
     public ValueLog getValueLog(SelectionItem item) {
-        ValueLog ret = log.get(item);
-        if (ret == null && selection.indexOf(item) >= 0) {
-            ret = new ValueLog();
-            log.put(item, ret);
+        ValueLog valueLog = log.get(item);
+        if (valueLog == null && selection.indexOf(item) >= 0) {
+            valueLog = new ValueLog();
+            log.put(item, valueLog);
         }
-        return ret;
+        return valueLog;
     }
 
     public boolean isFileEnabled() {
@@ -95,22 +95,22 @@ class Model {
 
     public void propagationCompleted() {
         CircuitState circuitState = getCircuitState();
-        Value[] vals = new Value[selection.size()];
+        Value[] values = new Value[selection.size()];
         boolean changed = false;
         for (int i = selection.size() - 1; i >= 0; i--) {
             SelectionItem item = selection.get(i);
-            vals[i] = item.fetchValue(circuitState);
+            values[i] = item.fetchValue(circuitState);
             if (!changed) {
                 Value v = getValueLog(item).getLast();
-                changed = v == null ? vals[i] != null : !v.equals(vals[i]);
+                changed = v == null ? values[i] != null : !v.equals(values[i]);
             }
         }
         if (changed) {
             for (int i = selection.size() - 1; i >= 0; i--) {
                 SelectionItem item = selection.get(i);
-                getValueLog(item).append(vals[i]);
+                getValueLog(item).append(values[i]);
             }
-            fireEntryAdded(new ModelEvent(), vals);
+            fireEntryAdded(new ModelEvent(), values);
         }
     }
 

@@ -42,9 +42,9 @@ abstract class Mem extends InstanceFactory {
     // size. And second, I'd alter the MemContents class's PAGE_SIZE_BITS constant
     // to 14 so that its "page table" isn't quite so big.
     public static final Attribute<BitWidth> ADDR_ATTR = Attributes.forBitWidth(
-            "addrWidth", Strings.getter("ramAddrWidthAttr"), 2, 24);
+        "addrWidth", Strings.getter("ramAddrWidthAttr"), 2, 24);
     public static final Attribute<BitWidth> DATA_ATTR = Attributes.forBitWidth(
-            "dataWidth", Strings.getter("ramDataWidthAttr"));
+        "dataWidth", Strings.getter("ramDataWidthAttr"));
 
     // port-related constants
     static final int DATA = 0;
@@ -55,15 +55,15 @@ abstract class Mem extends InstanceFactory {
     // other constants
     static final int DELAY = 10;
 
-    private WeakHashMap<Instance, File> currentInstanceFiles;
+    private final WeakHashMap<Instance, File> currentInstanceFiles;
 
-    Mem(String name, StringGetter desc, int extraPorts) {
-        super(name, desc);
+    Mem(String name, StringGetter description, int extraPorts) {
+        super(name, description);
         currentInstanceFiles = new WeakHashMap<>();
         setInstancePoker(MemPoker.class);
         setKeyConfigurator(JoinedConfigurator.create(
-                new BitWidthConfigurator(ADDR_ATTR, 2, 24, 0),
-                new BitWidthConfigurator(DATA_ATTR)));
+            new BitWidthConfigurator(ADDR_ATTR, 2, 24, 0),
+            new BitWidthConfigurator(DATA_ATTR)));
 
         setOffsetBounds(Bounds.create(-140, -40, 140, 80));
     }
@@ -99,7 +99,7 @@ abstract class Mem extends InstanceFactory {
     @Override
     public void paintInstance(InstancePainter painter) {
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds();
+        Bounds bounds = painter.getBounds();
 
         // draw boundary
         painter.drawBounds();
@@ -107,43 +107,35 @@ abstract class Mem extends InstanceFactory {
         // draw contents
         if (painter.getShowState()) {
             MemState state = getState(painter);
-            state.paint(painter.getGraphics(), bds.getX(), bds.getY());
+            state.paint(painter.getGraphics(), bounds.getX(), bounds.getY());
         } else {
-            BitWidth addr = painter.getAttributeValue(ADDR_ATTR);
-            int addrBits = addr.getWidth();
-            int bytes = 1 << addrBits;
+            BitWidth address = painter.getAttributeValue(ADDR_ATTR);
+            int addressBits = address.getWidth();
+            int bytes = 1 << addressBits;
             String label;
             if (this instanceof Rom) {
-                if (addrBits >= 30) {
-                    label = StringUtil.format(Strings.get("romGigabyteLabel"), ""
-                            + (bytes >>> 30));
-                } else if (addrBits >= 20) {
-                    label = StringUtil.format(Strings.get("romMegabyteLabel"), ""
-                            + (bytes >> 20));
-                } else if (addrBits >= 10) {
-                    label = StringUtil.format(Strings.get("romKilobyteLabel"), ""
-                            + (bytes >> 10));
+                if (addressBits >= 30) {
+                    label = StringUtil.format(Strings.get("romGigabyteLabel"), "" + (bytes >>> 30));
+                } else if (addressBits >= 20) {
+                    label = StringUtil.format(Strings.get("romMegabyteLabel"), "" + (bytes >> 20));
+                } else if (addressBits >= 10) {
+                    label = StringUtil.format(Strings.get("romKilobyteLabel"), "" + (bytes >> 10));
                 } else {
-                    label = StringUtil.format(Strings.get("romByteLabel"), ""
-                            + bytes);
+                    label = StringUtil.format(Strings.get("romByteLabel"), "" + bytes);
                 }
             } else {
-                if (addrBits >= 30) {
-                    label = StringUtil.format(Strings.get("ramGigabyteLabel"), ""
-                            + (bytes >>> 30));
-                } else if (addrBits >= 20) {
-                    label = StringUtil.format(Strings.get("ramMegabyteLabel"), ""
-                            + (bytes >> 20));
-                } else if (addrBits >= 10) {
-                    label = StringUtil.format(Strings.get("ramKilobyteLabel"), ""
-                            + (bytes >> 10));
+                if (addressBits >= 30) {
+                    label = StringUtil.format(Strings.get("ramGigabyteLabel"), "" + (bytes >>> 30));
+                } else if (addressBits >= 20) {
+                    label = StringUtil.format(Strings.get("ramMegabyteLabel"), "" + (bytes >> 20));
+                } else if (addressBits >= 10) {
+                    label = StringUtil.format(Strings.get("ramKilobyteLabel"), "" + (bytes >> 10));
                 } else {
-                    label = StringUtil.format(Strings.get("ramByteLabel"), ""
-                            + bytes);
+                    label = StringUtil.format(Strings.get("ramByteLabel"), "" + bytes);
                 }
             }
-            GraphicsUtil.drawCenteredText(g, label, bds.getX() + bds.getWidth()
-                    / 2, bds.getY() + bds.getHeight() / 2);
+            GraphicsUtil.drawCenteredText(g, label, bounds.getX() + bounds.getWidth() / 2,
+                bounds.getY() + bounds.getHeight() / 2);
         }
 
         // draw input and output ports
@@ -162,7 +154,7 @@ abstract class Mem extends InstanceFactory {
     }
 
     public void loadImage(InstanceState instanceState, File imageFile)
-            throws IOException {
+        throws IOException {
         MemState s = this.getState(instanceState);
         HexFile.open(s.getContents(), imageFile);
         this.setCurrentImage(instanceState.getInstance(), imageFile);
@@ -187,8 +179,7 @@ abstract class Mem extends InstanceFactory {
         public void metaInfoChanged(HexModel source) {
         }
 
-        public void bytesChanged(HexModel source, long start,
-                long numBytes, int[] values) {
+        public void bytesChanged(HexModel source, long start, long numBytes, int[] values) {
             instance.fireInvalidated();
         }
     }

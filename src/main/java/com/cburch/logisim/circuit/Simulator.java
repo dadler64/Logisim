@@ -8,7 +8,7 @@ import com.cburch.logisim.prefs.AppPreferences;
 import java.util.ArrayList;
 
 public class Simulator {
-    // begin DEBUGGING
+// begin DEBUGGING
 //	private static PrintWriter debugLog;
 //
 //	static {
@@ -26,15 +26,15 @@ public class Simulator {
 //	public static void flushLog() {
 //		debugLog.flush();
 //	}
-    //end DEBUGGING*/
+//end DEBUGGING
 
+    private final PropagationManager manager;
+    private final SimulatorTicker ticker;
+    private final ArrayList<SimulatorListener> listeners = new ArrayList<>();
     private boolean isRunning = true;
     private boolean isTicking = false;
-    private final PropagationManager manager;
     private boolean isExceptionEncountered = false;
     private double tickFrequency;
-    private SimulatorTicker ticker;
-    private ArrayList<SimulatorListener> listeners = new ArrayList<>();
 
     public Simulator() {
         manager = new PropagationManager();
@@ -182,11 +182,11 @@ public class Simulator {
 
     class PropagationManager extends Thread {
 
+        private final PropagationPoints stepPoints = new PropagationPoints();
         // These variables apply only if PRINT_TICK_RATE is set
         int tickRateTicks = 0;
         long tickRateStart = System.currentTimeMillis();
         private Propagator propagator = null;
-        private PropagationPoints stepPoints = new PropagationPoints();
         private volatile int ticksRequested = 0;
         private volatile int stepsRequested = 0;
         private volatile boolean isResetRequested = false;
@@ -232,8 +232,8 @@ public class Simulator {
             while (!complete) {
                 synchronized (this) {
                     while (!complete && !propagateRequested
-                            && !isResetRequested && ticksRequested == 0
-                            && stepsRequested == 0) {
+                        && !isResetRequested && ticksRequested == 0
+                        && stepsRequested == 0) {
                         try {
                             wait();
                         } catch (InterruptedException e) {

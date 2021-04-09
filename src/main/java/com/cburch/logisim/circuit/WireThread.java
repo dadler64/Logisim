@@ -8,8 +8,7 @@ import com.cburch.logisim.util.SmallSet;
 class WireThread {
 
     private WireThread parent;
-    private SmallSet<CircuitWires.ThreadBundle> bundles
-            = new SmallSet<>();
+    private final SmallSet<CircuitWires.ThreadBundle> bundles = new SmallSet<>();
 
     WireThread() {
         parent = this;

@@ -24,9 +24,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 public class InstanceTextField implements AttributeListener, TextFieldListener,
-        TextEditable {
+    TextEditable {
 
-    private InstanceComponent component;
+    private final InstanceComponent component;
     private TextField field;
     private Attribute<String> labelAttribute;
     private Attribute<Font> fontAttribute;
@@ -43,7 +43,7 @@ public class InstanceTextField implements AttributeListener, TextFieldListener,
     }
 
     void update(Attribute<String> labelAttribute, Attribute<Font> fontAttribute,
-            int x, int y, int hAlign, int vAlign) {
+        int x, int y, int hAlign, int vAlign) {
         boolean wasReg = shouldRegister();
         this.labelAttribute = labelAttribute;
         this.fontAttribute = fontAttribute;

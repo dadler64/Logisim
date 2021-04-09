@@ -50,8 +50,8 @@ class MemContentsSub {
             return true;
         }
 
-        int[] get(int start, int len) {
-            int[] ret = new int[len];
+        int[] get(int start, int length) {
+            int[] ret = new int[length];
             for (int i = 0; i < ret.length; i++) {
                 ret[i] = get(start + i);
             }
@@ -78,10 +78,10 @@ class MemContentsSub {
 
         @Override
         public ByteContents clone() {
-            ByteContents ret = (ByteContents) super.clone();
-            ret.data = new byte[this.data.length];
-            System.arraycopy(this.data, 0, ret.data, 0, this.data.length);
-            return ret;
+            ByteContents contents = (ByteContents) super.clone();
+            contents.data = new byte[this.data.length];
+            System.arraycopy(this.data, 0, contents.data, 0, this.data.length);
+            return contents;
         }
 
         //
@@ -93,16 +93,16 @@ class MemContentsSub {
         }
 
         @Override
-        int get(int addr) {
-            return addr >= 0 && addr < data.length ? data[addr] : 0;
+        int get(int address) {
+            return address >= 0 && address < data.length ? data[address] : 0;
         }
 
         @Override
-        void set(int addr, int value) {
-            if (addr >= 0 && addr < data.length) {
-                byte oldValue = data[addr];
+        void set(int address, int value) {
+            if (address >= 0 && address < data.length) {
+                byte oldValue = data[address];
                 if (value != oldValue) {
-                    data[addr] = (byte) value;
+                    data[address] = (byte) value;
                 }
             }
         }
@@ -131,10 +131,10 @@ class MemContentsSub {
 
         @Override
         public ShortContents clone() {
-            ShortContents ret = (ShortContents) super.clone();
-            ret.data = new short[this.data.length];
-            System.arraycopy(this.data, 0, ret.data, 0, this.data.length);
-            return ret;
+            ShortContents contents = (ShortContents) super.clone();
+            contents.data = new short[this.data.length];
+            System.arraycopy(this.data, 0, contents.data, 0, this.data.length);
+            return contents;
         }
 
         //
@@ -146,16 +146,16 @@ class MemContentsSub {
         }
 
         @Override
-        int get(int addr) {
-            return addr >= 0 && addr < data.length ? data[addr] : 0;
+        int get(int address) {
+            return address >= 0 && address < data.length ? data[address] : 0;
         }
 
         @Override
-        void set(int addr, int value) {
-            if (addr >= 0 && addr < data.length) {
-                short oldValue = data[addr];
+        void set(int address, int value) {
+            if (address >= 0 && address < data.length) {
+                short oldValue = data[address];
                 if (value != oldValue) {
-                    data[addr] = (short) value;
+                    data[address] = (short) value;
                 }
             }
         }
@@ -184,10 +184,10 @@ class MemContentsSub {
 
         @Override
         public IntContents clone() {
-            IntContents ret = (IntContents) super.clone();
-            ret.data = new int[this.data.length];
-            System.arraycopy(this.data, 0, ret.data, 0, this.data.length);
-            return ret;
+            IntContents contents = (IntContents) super.clone();
+            contents.data = new int[this.data.length];
+            System.arraycopy(this.data, 0, contents.data, 0, this.data.length);
+            return contents;
         }
 
         //
@@ -199,16 +199,16 @@ class MemContentsSub {
         }
 
         @Override
-        int get(int addr) {
-            return addr >= 0 && addr < data.length ? data[addr] : 0;
+        int get(int address) {
+            return address >= 0 && address < data.length ? data[address] : 0;
         }
 
         @Override
-        void set(int addr, int value) {
-            if (addr >= 0 && addr < data.length) {
-                int oldValue = data[addr];
+        void set(int address, int value) {
+            if (address >= 0 && address < data.length) {
+                int oldValue = data[address];
                 if (value != oldValue) {
-                    data[addr] = value;
+                    data[address] = value;
                 }
             }
         }

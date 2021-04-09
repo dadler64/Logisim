@@ -36,46 +36,52 @@ public class Tty extends InstanceFactory {
     private static final Font DEFAULT_FONT = new Font("monospaced", Font.PLAIN, 12);
 
     private static final Attribute<Integer> ATTR_COLUMNS
-            = Attributes.forIntegerRange("cols",
-            Strings.getter("ttyColsAttr"), 1, 120);
+        = Attributes.forIntegerRange("cols", Strings.getter("ttyColsAttr"), 1, 120);
     private static final Attribute<Integer> ATTR_ROWS
-            = Attributes.forIntegerRange("rows",
-            Strings.getter("ttyRowsAttr"), 1, 48);
+        = Attributes.forIntegerRange("rows", Strings.getter("ttyRowsAttr"), 1, 48);
 
     public Tty() {
         super("TTY", Strings.getter("ttyComponent"));
-        setAttributes(new Attribute[]{
-                ATTR_ROWS, ATTR_COLUMNS, StdAttr.EDGE_TRIGGER,
-                Io.ATTR_COLOR, Io.ATTR_BACKGROUND
-        }, new Object[]{
-                8, 32, StdAttr.TRIG_RISING,
-                Color.BLACK, DEFAULT_BACKGROUND
-        });
+        setAttributes(
+            new Attribute[]{
+                ATTR_ROWS,
+                ATTR_COLUMNS,
+                StdAttr.EDGE_TRIGGER,
+                Io.ATTR_COLOR,
+                Io.ATTR_BACKGROUND
+            }, new Object[]{
+                8,
+                32,
+                StdAttr.TRIG_RISING,
+                Color.BLACK,
+                DEFAULT_BACKGROUND
+            }
+        );
         setIconName("tty.gif");
 
-        Port[] ps = new Port[4];
-        ps[CLR] = new Port(20, 10, Port.INPUT, 1);
-        ps[CK] = new Port(0, 0, Port.INPUT, 1);
-        ps[WE] = new Port(10, 10, Port.INPUT, 1);
-        ps[IN] = new Port(0, -10, Port.INPUT, 7);
-        ps[CLR].setToolTip(Strings.getter("ttyClearTip"));
-        ps[CK].setToolTip(Strings.getter("ttyClockTip"));
-        ps[WE].setToolTip(Strings.getter("ttyEnableTip"));
-        ps[IN].setToolTip(Strings.getter("ttyInputTip"));
-        setPorts(ps);
+        Port[] ports = new Port[4];
+        ports[CLR] = new Port(20, 10, Port.INPUT, 1);
+        ports[CK] = new Port(0, 0, Port.INPUT, 1);
+        ports[WE] = new Port(10, 10, Port.INPUT, 1);
+        ports[IN] = new Port(0, -10, Port.INPUT, 7);
+        ports[CLR].setToolTip(Strings.getter("ttyClearTip"));
+        ports[CK].setToolTip(Strings.getter("ttyClockTip"));
+        ports[WE].setToolTip(Strings.getter("ttyEnableTip"));
+        ports[IN].setToolTip(Strings.getter("ttyInputTip"));
+        setPorts(ports);
     }
 
-    private static int getRowCount(Object val) {
-        if (val instanceof Integer) {
-            return (Integer) val;
+    private static int getRowCount(Object value) {
+        if (value instanceof Integer) {
+            return (Integer) value;
         } else {
             return 4;
         }
     }
 
-    private static int getColumnCount(Object val) {
-        if (val instanceof Integer) {
-            return (Integer) val;
+    private static int getColumnCount(Object value) {
+        if (value instanceof Integer) {
+            return (Integer) value;
         } else {
             return 16;
         }
@@ -139,26 +145,23 @@ public class Tty extends InstanceFactory {
     public void paintGhost(InstancePainter painter) {
         Graphics g = painter.getGraphics();
         GraphicsUtil.switchToWidth(g, 2);
-        Bounds bds = painter.getBounds();
-        g.drawRoundRect(bds.getX(), bds.getY(), bds.getWidth(), bds.getHeight(),
-                10, 10);
+        Bounds bounds = painter.getBounds();
+        g.drawRoundRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), 10, 10);
     }
 
     @Override
     public void paintInstance(InstancePainter painter) {
         boolean showState = painter.getShowState();
         Graphics g = painter.getGraphics();
-        Bounds bds = painter.getBounds();
+        Bounds bounds = painter.getBounds();
         painter.drawClock(CK, Direction.EAST);
         if (painter.shouldDrawColor()) {
             g.setColor(painter.getAttributeValue(Io.ATTR_BACKGROUND));
-            g.fillRoundRect(bds.getX(), bds.getY(), bds.getWidth(), bds.getHeight(),
-                    10, 10);
+            g.fillRoundRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), 10, 10);
         }
         GraphicsUtil.switchToWidth(g, 2);
         g.setColor(Color.BLACK);
-        g.drawRoundRect(bds.getX(), bds.getY(), bds.getWidth(), bds.getHeight(),
-                2 * BORDER, 2 * BORDER);
+        g.drawRoundRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), 2 * BORDER, 2 * BORDER);
         GraphicsUtil.switchToWidth(g, 1);
         painter.drawPort(CLR);
         painter.drawPort(WE);
@@ -183,8 +186,8 @@ public class Tty extends InstanceFactory {
             g.setFont(DEFAULT_FONT);
             g.setColor(painter.getAttributeValue(Io.ATTR_COLOR));
             FontMetrics fm = g.getFontMetrics();
-            int x = bds.getX() + BORDER;
-            int y = bds.getY() + BORDER + (ROW_HEIGHT + fm.getAscent()) / 2;
+            int x = bounds.getX() + BORDER;
+            int y = bounds.getY() + BORDER + (ROW_HEIGHT + fm.getAscent()) / 2;
             for (int i = 0; i < rows; i++) {
                 g.drawString(rowData[i], x, y);
                 if (i == curRow) {
@@ -197,12 +200,12 @@ public class Tty extends InstanceFactory {
             String str = Strings.get("ttyDesc", "" + rows, "" + cols);
             FontMetrics fm = g.getFontMetrics();
             int strWidth = fm.stringWidth(str);
-            if (strWidth + BORDER > bds.getWidth()) {
+            if (strWidth + BORDER > bounds.getWidth()) {
                 str = Strings.get("ttyDescShort");
                 strWidth = fm.stringWidth(str);
             }
-            int x = bds.getX() + (bds.getWidth() - strWidth) / 2;
-            int y = bds.getY() + (bds.getHeight() + fm.getAscent()) / 2;
+            int x = bounds.getX() + (bounds.getWidth() - strWidth) / 2;
+            int y = bounds.getY() + (bounds.getHeight() + fm.getAscent()) / 2;
             g.drawString(str, x, y);
         }
     }

@@ -13,42 +13,41 @@ import java.util.Collection;
 
 public class MoveResult {
 
-    private ReplacementMap replacements;
-    private Collection<ConnectionData> unsatisfiedConnections;
-    private Collection<Location> unconnectedLocations;
-    private int totalDistance;
+    private final ReplacementMap replacements;
+    private final Collection<ConnectionData> unsatisfiedConnections;
+    private final Collection<Location> unconnectedLocations;
+    private final int totalDistance;
 
-    public MoveResult(MoveRequest request, ReplacementMap replacements,
-            Collection<ConnectionData> unsatisfiedConnections,
-            int totalDistance) {
+    public MoveResult(MoveRequest request, ReplacementMap replacements, Collection<ConnectionData> unsatisfiedConnections,
+        int totalDistance) {
         this.replacements = replacements;
         this.unsatisfiedConnections = unsatisfiedConnections;
         this.totalDistance = totalDistance;
 
         ArrayList<Location> unconnected = new ArrayList<>();
-        for (ConnectionData conn : unsatisfiedConnections) {
-            unconnected.add(conn.getLocation());
+        for (ConnectionData connection : unsatisfiedConnections) {
+            unconnected.add(connection.getLocation());
         }
         unconnectedLocations = unconnected;
     }
 
     void addUnsatisfiedConnections(Collection<ConnectionData> toAdd) {
         unsatisfiedConnections.addAll(toAdd);
-        for (ConnectionData conn : toAdd) {
-            unconnectedLocations.add(conn.getLocation());
+        for (ConnectionData connection : toAdd) {
+            unconnectedLocations.add(connection.getLocation());
         }
     }
 
     public Collection<Wire> getWiresToAdd() {
         @SuppressWarnings("unchecked")
-        Collection<Wire> ret = (Collection<Wire>) replacements.getAdditions();
-        return ret;
+        Collection<Wire> wires = (Collection<Wire>) replacements.getAdditions();
+        return wires;
     }
 
     public Collection<Wire> getWiresToRemove() {
         @SuppressWarnings("unchecked")
-        Collection<Wire> ret = (Collection<Wire>) replacements.getAdditions();
-        return ret;
+        Collection<Wire> wires = (Collection<Wire>) replacements.getAdditions();
+        return wires;
     }
 
     public ReplacementMap getReplacementMap() {
@@ -59,7 +58,7 @@ public class MoveResult {
         return unconnectedLocations;
     }
 
-    Collection<ConnectionData> getUnsatisifiedConnections() {
+    Collection<ConnectionData> getUnsatisfiedConnections() {
         return unsatisfiedConnections;
     }
 
@@ -69,19 +68,19 @@ public class MoveResult {
 
     public void print(PrintStream out) {
         boolean printed = false;
-        for (Component w : replacements.getAdditions()) {
+        for (Component component : replacements.getAdditions()) {
             printed = true;
-            out.println("add " + w);
+            out.println("add " + component);
         }
-        for (Component w : replacements.getRemovals()) {
+        for (Component component : replacements.getRemovals()) {
             printed = true;
-            out.println("del " + w);
+            out.println("del " + component);
         }
-        for (Component w : replacements.getReplacedComponents()) {
+        for (Component component : replacements.getReplacedComponents()) {
             printed = true;
-            out.print("repl " + w + " by");
-            for (Component w2 : replacements.getComponentsReplacing(w)) {
-                out.print(" " + w2);
+            out.print("repl " + component + " by");
+            for (Component replacement : replacements.getComponentsReplacing(component)) {
+                out.print(" " + replacement);
             }
             out.println();
         }

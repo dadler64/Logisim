@@ -19,19 +19,19 @@ import java.util.LinkedList;
 
 class TextFieldCaret implements Caret, TextFieldListener {
 
-    private LinkedList<CaretListener> listeners = new LinkedList<>();
-    private TextField field;
-    private Graphics g;
+    private final LinkedList<CaretListener> listeners = new LinkedList<>();
+    private final TextField field;
+    private final Graphics g;
     private String oldText;
     private String curText;
-    private int pos;
+    private int position;
 
-    public TextFieldCaret(TextField field, Graphics g, int pos) {
+    public TextFieldCaret(TextField field, Graphics g, int position) {
         this.field = field;
         this.g = g;
         this.oldText = field.getText();
         this.curText = field.getText();
-        this.pos = pos;
+        this.position = position;
 
         field.addTextFieldListener(this);
     }
@@ -55,7 +55,7 @@ class TextFieldCaret implements Caret, TextFieldListener {
 
     public void commitText(String text) {
         curText = text;
-        pos = curText.length();
+        position = curText.length();
         field.setText(text);
     }
 
@@ -65,13 +65,11 @@ class TextFieldCaret implements Caret, TextFieldListener {
         }
 
         // draw boundary
-        Bounds bds = getBounds(g);
+        Bounds bounds = getBounds(g);
         g.setColor(Color.white);
-        g.fillRect(bds.getX(), bds.getY(),
-                bds.getWidth(), bds.getHeight());
+        g.fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
         g.setColor(Color.black);
-        g.drawRect(bds.getX(), bds.getY(),
-                bds.getWidth(), bds.getHeight());
+        g.drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 
         // draw text
         int x = field.getX();
@@ -106,8 +104,8 @@ class TextFieldCaret implements Caret, TextFieldListener {
         g.drawString(curText, x, y);
 
         // draw cursor
-        if (pos > 0) {
-            x += fm.stringWidth(curText.substring(0, pos));
+        if (position > 0) {
+            x += fm.stringWidth(curText.substring(0, position));
         }
         g.drawLine(x, y, x, y - ascent);
     }
@@ -149,26 +147,24 @@ class TextFieldCaret implements Caret, TextFieldListener {
             default:
                 break;
         }
-        return Bounds.create(x, y - ascent, width, height)
-                .add(field.getBounds(g))
-                .expand(3);
+        return Bounds.create(x, y - ascent, width, height).add(field.getBounds(g)).expand(3);
     }
 
     public void cancelEditing() {
-        CaretEvent e = new CaretEvent(this, oldText, oldText);
+        CaretEvent event = new CaretEvent(this, oldText, oldText);
         curText = oldText;
-        pos = curText.length();
-        for (CaretListener l : new ArrayList<>(listeners)) {
-            l.editingCanceled(e);
+        position = curText.length();
+        for (CaretListener listener : new ArrayList<>(listeners)) {
+            listener.editingCanceled(event);
         }
         field.removeTextFieldListener(this);
     }
 
     public void stopEditing() {
-        CaretEvent e = new CaretEvent(this, oldText, curText);
+        CaretEvent event = new CaretEvent(this, oldText, curText);
         field.setText(curText);
-        for (CaretListener l : new ArrayList<>(listeners)) {
-            l.editingStopped(e);
+        for (CaretListener listener : new ArrayList<>(listeners)) {
+            listener.editingStopped(event);
         }
         field.removeTextFieldListener(this);
     }
@@ -188,29 +184,28 @@ class TextFieldCaret implements Caret, TextFieldListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        int ign = InputEvent.ALT_MASK | InputEvent.CTRL_MASK
-                | InputEvent.META_MASK;
-        if ((e.getModifiers() & ign) != 0) {
+        int ign = InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK;
+        if ((e.getModifiersEx() & ign) != 0) {
             return;
         }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_KP_LEFT:
-                if (pos > 0) {
-                    --pos;
+                if (position > 0) {
+                    --position;
                 }
                 break;
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_KP_RIGHT:
-                if (pos < curText.length()) {
-                    ++pos;
+                if (position < curText.length()) {
+                    ++position;
                 }
                 break;
             case KeyEvent.VK_HOME:
-                pos = 0;
+                position = 0;
                 break;
             case KeyEvent.VK_END:
-                pos = curText.length();
+                position = curText.length();
                 break;
             case KeyEvent.VK_ESCAPE:
             case KeyEvent.VK_CANCEL:
@@ -218,22 +213,22 @@ class TextFieldCaret implements Caret, TextFieldListener {
                 break;
             case KeyEvent.VK_CLEAR:
                 curText = "";
-                pos = 0;
+                position = 0;
                 break;
             case KeyEvent.VK_ENTER:
                 stopEditing();
                 break;
             case KeyEvent.VK_BACK_SPACE:
-                if (pos > 0) {
-                    curText = curText.substring(0, pos - 1)
-                            + curText.substring(pos);
-                    --pos;
+                if (position > 0) {
+                    curText = curText.substring(0, position - 1)
+                        + curText.substring(position);
+                    --position;
                 }
                 break;
             case KeyEvent.VK_DELETE:
-                if (pos < curText.length()) {
-                    curText = curText.substring(0, pos)
-                            + curText.substring(pos + 1);
+                if (position < curText.length()) {
+                    curText = curText.substring(0, position)
+                        + curText.substring(position + 1);
                 }
                 break;
             case KeyEvent.VK_INSERT:
@@ -251,9 +246,8 @@ class TextFieldCaret implements Caret, TextFieldListener {
     }
 
     public void keyTyped(KeyEvent e) {
-        int ign = InputEvent.ALT_MASK | InputEvent.CTRL_MASK
-                | InputEvent.META_MASK;
-        if ((e.getModifiers() & ign) != 0) {
+        int ign = InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK;
+        if ((e.getModifiersEx() & ign) != 0) {
             return;
         }
 
@@ -261,14 +255,14 @@ class TextFieldCaret implements Caret, TextFieldListener {
         if (c == '\n') {
             stopEditing();
         } else if (c != KeyEvent.CHAR_UNDEFINED
-                && !Character.isISOControl(c)) {
-            if (pos < curText.length()) {
-                curText = curText.substring(0, pos) + c
-                        + curText.substring(pos);
+            && !Character.isISOControl(c)) {
+            if (position < curText.length()) {
+                curText = curText.substring(0, position) + c
+                    + curText.substring(position);
             } else {
                 curText += c;
             }
-            ++pos;
+            ++position;
         }
     }
 
@@ -280,17 +274,17 @@ class TextFieldCaret implements Caret, TextFieldListener {
         for (int i = 0; i < curText.length(); i++) {
             int cur = fm.stringWidth(curText.substring(0, i + 1));
             if (x <= (last + cur) / 2) {
-                pos = i;
+                position = i;
                 return;
             }
             last = cur;
         }
-        pos = curText.length();
+        position = curText.length();
     }
 
     public void textChanged(TextFieldEvent e) {
         curText = field.getText();
         oldText = curText;
-        pos = curText.length();
+        position = curText.length();
     }
 }

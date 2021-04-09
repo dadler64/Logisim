@@ -4,7 +4,6 @@
 package com.cburch.logisim.analyze.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,9 +14,9 @@ import java.util.Map;
 public class Implicant implements Comparable<Implicant> {
 
     static Implicant MINIMAL_IMPLICANT = new Implicant(0, -1);
-    static List<Implicant> MINIMAL_LIST = Arrays.asList(MINIMAL_IMPLICANT);
-    private int unknowns;
-    private int values;
+    static List<Implicant> MINIMAL_LIST = Collections.singletonList(MINIMAL_IMPLICANT);
+    private final int unknowns;
+    private final int values;
 
     private Implicant(int unknowns, int values) {
         this.unknowns = unknowns;
@@ -45,7 +44,7 @@ public class Implicant implements Comparable<Implicant> {
     }
 
     static List<Implicant> computeMinimal(int format, AnalyzerModel model,
-            String variable) {
+        String variable) {
         TruthTable table = model.getTruthTable();
         int column = model.getOutputs().indexOf(variable);
         if (column < 0) {
@@ -53,7 +52,7 @@ public class Implicant implements Comparable<Implicant> {
         }
 
         Entry desired = format == AnalyzerModel.FORMAT_SUM_OF_PRODUCTS
-                ? Entry.ONE : Entry.ZERO;
+            ? Entry.ONE : Entry.ZERO;
         Entry undesired = desired == Entry.ONE ? Entry.ZERO : Entry.ONE;
 
         // determine the first-cut implicants, as well as the rows
@@ -97,7 +96,7 @@ public class Implicant implements Comparable<Implicant> {
                             toRemove.add(imp);
                             toRemove.add(opp);
                             Implicant i = new Implicant(opp.unknowns | j,
-                                    opp.values);
+                                opp.values);
                             Entry e;
                             if (oppEntry == Entry.DONT_CARE && detEntry == Entry.DONT_CARE) {
                                 e = Entry.DONT_CARE;
@@ -289,7 +288,7 @@ public class Implicant implements Comparable<Implicant> {
     }
 
     private static class TermIterator
-            implements Iterable<Implicant>, Iterator<Implicant> {
+        implements Iterable<Implicant>, Iterator<Implicant> {
 
         Implicant source;
         int currentMask = 0;

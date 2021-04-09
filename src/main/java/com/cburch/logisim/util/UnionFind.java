@@ -10,14 +10,14 @@ import java.util.Iterator;
 
 public class UnionFind<E extends UnionFindElement<E>> implements Iterable<E> {
 
-    private HashMap<E, Integer> sizes;
+    private final HashMap<E, Integer> sizes;
 
-    public UnionFind(Collection<E> values) {
+    public UnionFind(Collection<E> elements) {
         this.sizes = new HashMap<>();
         Integer one = 1;
-        for (E elt : values) {
-            elt.setUnionFindParent(elt);
-            sizes.put(elt, one);
+        for (E element : elements) {
+            element.setUnionFindParent(element);
+            sizes.put(element, one);
         }
     }
 

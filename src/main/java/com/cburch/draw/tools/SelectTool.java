@@ -128,11 +128,11 @@ public class SelectTool extends AbstractTool {
                 int dx = han.getX() - mouseX;
                 int dy = han.getY() - mouseY;
                 if (dx >= -halfSize && dx <= halfSize
-                        && dy >= -halfSize && dy <= halfSize) {
+                    && dy >= -halfSize && dy <= halfSize) {
                     if (shape.canMoveHandle(han)) {
                         currentAction = MOVE_HANDLE;
                         currentGesture = new HandleGesture(han, 0, 0,
-                                event.getModifiersEx());
+                            event.getModifiersEx());
                         repaintArea(canvas);
                         return;
                     } else if (clicked == null) {

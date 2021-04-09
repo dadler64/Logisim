@@ -26,8 +26,8 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
 
     private Library library;
     private boolean isDirty;
-    private MyListener myListener;
-    private EventSourceWeakSupport<LibraryListener> listeners;
+    private final MyListener myListener;
+    private final EventSourceWeakSupport<LibraryListener> listeners;
 
     LoadedLibrary(Library library) {
         isDirty = false;
@@ -44,7 +44,7 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
     }
 
     private static void replaceAll(Map<ComponentFactory, ComponentFactory> componentMap,
-            Map<Tool, Tool> toolMap) {
+        Map<Tool, Tool> toolMap) {
         for (Project project : Projects.getOpenProjects()) {
             Tool oldTool = project.getTool();
             Circuit oldCircuit = project.getCurrentCircuit();
@@ -63,9 +63,7 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
         }
     }
 
-    private static void replaceAll(LogisimFile file,
-            Map<ComponentFactory, ComponentFactory> compMap,
-            Map<Tool, Tool> toolMap) {
+    private static void replaceAll(LogisimFile file, Map<ComponentFactory, ComponentFactory> compMap, Map<Tool, Tool> toolMap) {
         file.getOptions().getToolbarData().replaceAll(toolMap);
         file.getOptions().getMouseMappings().replaceAll(toolMap);
         for (Circuit circuit : file.getCircuits()) {
@@ -73,8 +71,7 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
         }
     }
 
-    private static void replaceAll(Circuit circuit,
-            Map<ComponentFactory, ComponentFactory> compMap) {
+    private static void replaceAll(Circuit circuit, Map<ComponentFactory, ComponentFactory> compMap) {
         ArrayList<Component> toReplace = null;
         for (Component comp : circuit.getNonWires()) {
             if (compMap.containsKey(comp.getFactory())) {
@@ -194,14 +191,14 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
         }
 
         HashSet<Library> changes = new HashSet<>(old.getLibraries());
-        changes.removeAll(library.getLibraries());
+        library.getLibraries().forEach(changes::remove);
         for (Library lib : changes) {
             fireLibraryEvent(LibraryEvent.REMOVE_LIBRARY, lib);
         }
 
         changes.clear();
         changes.addAll(library.getLibraries());
-        changes.removeAll(old.getLibraries());
+        old.getLibraries().forEach(changes::remove);
         for (Library lib : changes) {
             fireLibraryEvent(LibraryEvent.ADD_LIBRARY, lib);
         }
@@ -215,7 +212,7 @@ public class LoadedLibrary extends Library implements LibraryEventSource {
             toolMap.put(oldTool, newTool);
             if (oldTool instanceof AddTool) {
                 ComponentFactory oldFactory = ((AddTool) oldTool).getFactory();
-                if (newTool != null && newTool instanceof AddTool) {
+                if (newTool instanceof AddTool) {
                     ComponentFactory newFactory = ((AddTool) newTool).getFactory();
                     componentMap.put(oldFactory, newFactory);
                 } else {

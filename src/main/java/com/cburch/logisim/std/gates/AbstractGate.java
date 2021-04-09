@@ -38,8 +38,8 @@ import javax.swing.Icon;
 
 abstract class AbstractGate extends InstanceFactory {
 
-    private String[] iconNames = new String[3];
-    private Icon[] icons = new Icon[3];
+    private final String[] iconNames = new String[3];
+    private final Icon[] icons = new Icon[3];
     private int bonusWidth = 0;
     private boolean negateOutput = false;
     private boolean isXor = false;
@@ -55,9 +55,8 @@ abstract class AbstractGate extends InstanceFactory {
         this.isXor = isXor;
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(JoinedConfigurator.create(
-                new IntegerConfigurator(GateAttributes.ATTR_INPUTS, 2,
-                        GateAttributes.MAX_INPUTS, 0),
-                new BitWidthConfigurator(StdAttr.WIDTH)));
+            new IntegerConfigurator(GateAttributes.ATTR_INPUTS, 2, GateAttributes.MAX_INPUTS, 0),
+            new BitWidthConfigurator(StdAttr.WIDTH)));
     }
 
     static Value pullOutput(Value value, Object outType) {
@@ -131,18 +130,18 @@ abstract class AbstractGate extends InstanceFactory {
                 return true;
             } else {
                 Direction facing = attrs.facing;
-                Bounds bds = getOffsetBounds(attributeSet);
-                int delt;
+                Bounds bounds = getOffsetBounds(attributeSet);
+                int delta;
                 if (facing == Direction.NORTH) {
-                    delt = location.getY() - (bds.getY() + bds.getHeight());
+                    delta = location.getY() - (bounds.getY() + bounds.getHeight());
                 } else if (facing == Direction.SOUTH) {
-                    delt = location.getY() - bds.getY();
+                    delta = location.getY() - bounds.getY();
                 } else if (facing == Direction.WEST) {
-                    delt = location.getX() - (bds.getX() + bds.getHeight());
+                    delta = location.getX() - (bounds.getX() + bounds.getHeight());
                 } else {
-                    delt = location.getX() - bds.getX();
+                    delta = location.getX() - bounds.getX();
                 }
-                if (Math.abs(delt) > 5) {
+                if (Math.abs(delta) > 5) {
                     return true;
                 } else {
                     int inputs = attrs.inputs;
@@ -183,10 +182,10 @@ abstract class AbstractGate extends InstanceFactory {
         int negated = attrs.negated;
 
         Object shape = painter.getGateShape();
-        Location loc = painter.getLocation();
-        Bounds bds = painter.getOffsetBounds();
-        int width = bds.getWidth();
-        int height = bds.getHeight();
+        Location location = painter.getLocation();
+        Bounds bounds = painter.getOffsetBounds();
+        int width = bounds.getWidth();
+        int height = bounds.getHeight();
         if (facing == Direction.NORTH || facing == Direction.SOUTH) {
             int t = width;
             width = height;
@@ -206,14 +205,14 @@ abstract class AbstractGate extends InstanceFactory {
                 if (negatedBit == 1) {
                     Location in = getInputOffset(attrs, i);
                     Location cen = in.translate(facing, 5);
-                    painter.drawDongle(loc.getX() + cen.getX(),
-                            loc.getY() + cen.getY());
+                    painter.drawDongle(location.getX() + cen.getX(),
+                        location.getY() + cen.getY());
                 }
             }
         }
 
         g.setColor(baseColor);
-        g.translate(loc.getX(), loc.getY());
+        g.translate(location.getX(), location.getY());
         double rotate = 0.0;
         if (facing != Direction.EAST && g instanceof Graphics2D) {
             rotate = -facing.toRadians();
@@ -239,7 +238,7 @@ abstract class AbstractGate extends InstanceFactory {
         if (rotate != 0.0) {
             ((Graphics2D) g).rotate(-rotate);
         }
-        g.translate(-loc.getX(), -loc.getY());
+        g.translate(-location.getX(), -location.getY());
 
         painter.drawLabel();
     }
@@ -255,21 +254,21 @@ abstract class AbstractGate extends InstanceFactory {
     }
 
     private Icon getIcon(int type) {
-        Icon ret = icons[type];
-        if (ret != null) {
-            return ret;
+        Icon icon = icons[type];
+        if (icon != null) {
+            return icon;
         } else {
             String iconName = iconNames[type];
             if (iconName == null) {
                 return null;
             } else {
-                ret = Icons.getIcon(iconName);
-                if (ret == null) {
+                icon = Icons.getIcon(iconName);
+                if (icon == null) {
                     iconNames[type] = null;
                 } else {
-                    icons[type] = ret;
+                    icons[type] = icon;
                 }
-                return ret;
+                return icon;
             }
         }
     }
@@ -351,28 +350,23 @@ abstract class AbstractGate extends InstanceFactory {
     //
     protected abstract Value getIdentity();
 
-    protected abstract void paintShape(InstancePainter painter,
-            int width, int height);
+    protected abstract void paintShape(InstancePainter painter, int width, int height);
 
-    protected void paintRectangular(InstancePainter painter,
-            int width, int height) {
+    protected void paintRectangular(InstancePainter painter, int width, int height) {
         int don = negateOutput ? 10 : 0;
         AttributeSet attrs = painter.getAttributeSet();
         painter.drawRectangle(-width, -height / 2, width - don, height,
-                getRectangularLabel(attrs));
+            getRectangularLabel(attrs));
         if (negateOutput) {
             painter.drawDongle(-5, 0);
         }
     }
 
-    protected abstract void paintDinShape(InstancePainter painter,
-            int width, int height, int inputs);
+    protected abstract void paintDinShape(InstancePainter painter, int width, int height, int inputs);
 
-    protected abstract Value computeOutput(Value[] inputs, int numInputs,
-            InstanceState state);
+    protected abstract Value computeOutput(Value[] inputs, int numInputs, InstanceState state);
 
-    protected abstract Expression computeExpression(Expression[] inputs,
-            int numInputs);
+    protected abstract Expression computeExpression(Expression[] inputs, int numInputs);
 
     protected boolean shouldRepairWire(Instance instance, WireRepairData data) {
         return false;
@@ -394,8 +388,7 @@ abstract class AbstractGate extends InstanceFactory {
             instance.recomputeBounds();
             computePorts(instance);
             computeLabel(instance);
-        } else if (attribute == GateAttributes.ATTR_INPUTS
-                || attribute instanceof NegateAttribute) {
+        } else if (attribute == GateAttributes.ATTR_INPUTS || attribute instanceof NegateAttribute) {
             instance.recomputeBounds();
             computePorts(instance);
         } else if (attribute == GateAttributes.ATTRIBUTE_XOR) {
@@ -429,8 +422,7 @@ abstract class AbstractGate extends InstanceFactory {
             cx = loc.getX() - axis;
             cy = loc.getY() + perp;
         }
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, cx, cy,
-                TextField.H_CENTER, TextField.V_CENTER);
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, cx, cy, TextField.H_CENTER, TextField.V_CENTER);
     }
 
     void computePorts(Instance instance) {
@@ -452,8 +444,7 @@ abstract class AbstractGate extends InstanceFactory {
         int inputCount = attrs.inputs;
         int negated = attrs.negated;
         AttributeSet opts = state.getProject().getOptions().getAttributeSet();
-        boolean errorIfUndefined = opts.getValue(Options.ATTR_GATE_UNDEFINED)
-                .equals(Options.GATE_UNDEFINED_ERROR);
+        boolean errorIfUndefined = opts.getValue(Options.ATTR_GATE_UNDEFINED).equals(Options.GATE_UNDEFINED_ERROR);
 
         Value[] inputs = new Value[inputCount];
         int numInputs = 0;
@@ -502,13 +493,13 @@ abstract class AbstractGate extends InstanceFactory {
                     Expression[] inputs = new Expression[inputCount];
                     int numInputs = 0;
                     for (int i = 1; i <= inputCount; i++) {
-                        Expression e = expressionMap.get(instance.getPortLocation(i));
-                        if (e != null) {
+                        Expression expression = expressionMap.get(instance.getPortLocation(i));
+                        if (expression != null) {
                             int negatedBit = (negated >> (i - 1)) & 1;
                             if (negatedBit == 1) {
-                                e = Expressions.not(e);
+                                expression = Expressions.not(expression);
                             }
-                            inputs[numInputs] = e;
+                            inputs[numInputs] = expression;
                             ++numInputs;
                         }
                     }

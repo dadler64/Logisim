@@ -13,9 +13,9 @@ public class ReorderRequest {
     public static final Comparator<ReorderRequest> DESCENDING_FROM = new Compare(true, true);
     public static final Comparator<ReorderRequest> ASCENDING_TO = new Compare(true, true);
     public static final Comparator<ReorderRequest> DESCENDING_TO = new Compare(true, true);
-    private CanvasObject object;
-    private int fromIndex;
-    private int toIndex;
+    private final CanvasObject object;
+    private final int fromIndex;
+    private final int toIndex;
 
     public ReorderRequest(CanvasObject object, int fromIndex, int toIndex) {
         this.object = object;
@@ -37,8 +37,8 @@ public class ReorderRequest {
 
     private static class Compare implements Comparator<ReorderRequest> {
 
-        private boolean onFrom;
-        private boolean asc;
+        private final boolean onFrom;
+        private final boolean asc;
 
         private Compare(boolean onFrom, boolean asc) {
             this.onFrom = onFrom;

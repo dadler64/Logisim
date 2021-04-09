@@ -25,8 +25,7 @@ public class BitWidth implements Comparable<BitWidth> {
             if (width == 0) {
                 return UNKNOWN;
             } else {
-                throw new IllegalArgumentException("width " + width
-                        + " must be positive");
+                throw new IllegalArgumentException("width " + width + " must be positive");
             }
         } else if (width - 1 < prefab.length) {
             return prefab[width - 1];
@@ -94,7 +93,7 @@ public class BitWidth implements Comparable<BitWidth> {
 
     static class Attribute extends com.cburch.logisim.data.Attribute<BitWidth> {
 
-        private BitWidth[] choices;
+        private final BitWidth[] choices;
 
         public Attribute(String name, StringGetter disp) {
             super(name, disp);
@@ -117,7 +116,7 @@ public class BitWidth implements Comparable<BitWidth> {
 
         @Override
         public java.awt.Component getCellEditor(BitWidth value) {
-            JComboBox combo = new JComboBox(choices);
+            JComboBox<BitWidth> combo = new JComboBox<>(choices);
             if (value != null) {
                 int wid = value.getWidth();
                 if (wid <= 0 || wid > prefab.length) {

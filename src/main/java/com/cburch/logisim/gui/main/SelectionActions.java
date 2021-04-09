@@ -132,13 +132,13 @@ public class SelectionActions {
                     dropped.add(compFactory.getDisplayName());
                 } else {
                     String msg = Strings.get("pasteCloneQuery",
-                            compFactory.getName());
+                        compFactory.getName());
                     Object[] opts = {Strings.get("pasteCloneReplace"),
-                            Strings.get("pasteCloneIgnore"),
-                            Strings.get("pasteCloneCancel")};
+                        Strings.get("pasteCloneIgnore"),
+                        Strings.get("pasteCloneCancel")};
                     int select = JOptionPane.showOptionDialog(proj.getFrame(),
-                            msg, Strings.get("pasteCloneTitle"), 0,
-                            JOptionPane.QUESTION_MESSAGE, null, opts, opts[0]);
+                        msg, Strings.get("pasteCloneTitle"), 0,
+                        JOptionPane.QUESTION_MESSAGE, null, opts, opts[0]);
                     if (select == 0) {
                         copyFactory = candidate;
                     } else if (select == 1) {
@@ -191,15 +191,15 @@ public class SelectionActions {
             area.setCaretPosition(0);
             JScrollPane areaPane = new JScrollPane(area);
             JOptionPane.showMessageDialog(proj.getFrame(), areaPane,
-                    Strings.get("pasteDropTitle"),
-                    JOptionPane.WARNING_MESSAGE);
+                Strings.get("pasteDropTitle"),
+                JOptionPane.WARNING_MESSAGE);
         }
 
         return replMap;
     }
 
     private static ComponentFactory findComponentFactory(ComponentFactory factory,
-            ArrayList<Library> libs, boolean acceptNameMatch) {
+        ArrayList<Library> libs, boolean acceptNameMatch) {
         String name = factory.getName();
         for (Library lib : libs) {
             for (Tool tool : lib.getTools()) {
@@ -212,7 +212,7 @@ public class SelectionActions {
                         } else if (fact == factory) {
                             return fact;
                         } else if (fact.getClass() == factory.getClass()
-                                && !(fact instanceof SubcircuitFactory)) {
+                            && !(fact instanceof SubcircuitFactory)) {
                             return fact;
                         }
                     }
@@ -224,10 +224,10 @@ public class SelectionActions {
 
     private static class Drop extends Action {
 
-        private Selection sel;
-        private Component[] drops;
-        private int numDrops;
-        private SelectionSave before;
+        private final Selection sel;
+        private final Component[] drops;
+        private final int numDrops;
+        private final SelectionSave before;
         private CircuitTransaction xnReverse;
 
         Drop(Selection sel, Collection<Component> toDrop, int numDrops) {
@@ -241,7 +241,7 @@ public class SelectionActions {
         @Override
         public String getName() {
             return numDrops == 1 ? Strings.get("dropComponentAction")
-                    : Strings.get("dropComponentsAction");
+                : Strings.get("dropComponentsAction");
         }
 
         @Override
@@ -281,9 +281,9 @@ public class SelectionActions {
 
     private static class Anchor extends Action {
 
-        private Selection sel;
-        private int numAnchor;
-        private SelectionSave before;
+        private final Selection sel;
+        private final int numAnchor;
+        private final SelectionSave before;
         private CircuitTransaction xnReverse;
 
         Anchor(Selection sel, int numAnchor) {
@@ -295,7 +295,7 @@ public class SelectionActions {
         @Override
         public String getName() {
             return numAnchor == 1 ? Strings.get("dropComponentAction")
-                    : Strings.get("dropComponentsAction");
+                : Strings.get("dropComponentsAction");
         }
 
         @Override
@@ -333,7 +333,7 @@ public class SelectionActions {
 
     private static class Delete extends Action {
 
-        private Selection sel;
+        private final Selection sel;
         private CircuitTransaction xnReverse;
 
         Delete(Selection sel) {
@@ -362,7 +362,7 @@ public class SelectionActions {
 
     private static class Duplicate extends Action {
 
-        private Selection sel;
+        private final Selection sel;
         private CircuitTransaction xnReverse;
         private SelectionSave after;
 
@@ -394,8 +394,8 @@ public class SelectionActions {
 
     private static class Cut extends Action {
 
-        private Action first;
-        private Action second;
+        private final Action first;
+        private final Action second;
 
         Cut(Selection sel) {
             first = new Copy(sel);
@@ -422,7 +422,7 @@ public class SelectionActions {
 
     private static class Copy extends Action {
 
-        private Selection sel;
+        private final Selection sel;
         private Clipboard oldClip;
 
         Copy(Selection sel) {
@@ -453,10 +453,10 @@ public class SelectionActions {
 
     private static class Paste extends Action {
 
-        private Selection sel;
+        private final Selection sel;
         private CircuitTransaction xnReverse;
         private SelectionSave after;
-        private HashMap<Component, Component> componentReplacements;
+        private final HashMap<Component, Component> componentReplacements;
 
         Paste(Selection sel, HashMap<Component, Component> replacements) {
             this.sel = sel;
@@ -512,11 +512,11 @@ public class SelectionActions {
 
     private static class Translate extends Action {
 
-        private Selection sel;
-        private int dx;
-        private int dy;
-        private ReplacementMap replacements;
-        private SelectionSave before;
+        private final Selection sel;
+        private final int dx;
+        private final int dy;
+        private final ReplacementMap replacements;
+        private final SelectionSave before;
         private CircuitTransaction xnReverse;
 
         Translate(Selection sel, int dx, int dy, ReplacementMap replacements) {

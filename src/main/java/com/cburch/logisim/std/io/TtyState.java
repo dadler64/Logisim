@@ -10,10 +10,10 @@ import java.util.Arrays;
 
 class TtyState implements InstanceData, Cloneable {
 
+    private final StringBuffer lastRow;
     private Value lastClock;
     private String[] rowData;
     private int colCount;
-    private StringBuffer lastRow;
     private int row;
     private boolean sendStdout;
 
@@ -117,8 +117,7 @@ class TtyState implements InstanceData, Cloneable {
         int oldRows = rowData.length + 1;
         if (rows != oldRows) {
             String[] newData = new String[rows - 1];
-            if (rows > oldRows            // rows have been added,
-                    || row < rows - 1) { // or rows removed but filled rows fit
+            if (rows > oldRows || row < rows - 1) { // rows added, or rows removed but filled rows fit
                 System.arraycopy(rowData, 0, newData, 0, row);
                 Arrays.fill(newData, row, rows - 1, "");
             } else { // rows removed, and some filled rows must go

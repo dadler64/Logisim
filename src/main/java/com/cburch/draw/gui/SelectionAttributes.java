@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class SelectionAttributes extends AbstractAttributeSet {
 
-    private Selection selection;
+    private final Selection selection;
     private Listener listener;
     private Map<AttributeSet, CanvasObject> selected;
     private Attribute<?>[] selectedAttributes;
@@ -64,8 +64,7 @@ public class SelectionAttributes extends AbstractAttributeSet {
 
     public Iterable<Map.Entry<AttributeSet, CanvasObject>> entries() {
         Set<Map.Entry<AttributeSet, CanvasObject>> raw = selected.entrySet();
-        ArrayList<Map.Entry<AttributeSet, CanvasObject>> ret = new ArrayList<>(raw);
-        return ret;
+        return new ArrayList<>(raw);
     }
 
     //

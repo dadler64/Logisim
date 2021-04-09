@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.std.memory;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.data.BitWidth;
 import com.cburch.logisim.data.Bounds;
 import com.cburch.logisim.data.Value;
@@ -17,37 +18,37 @@ import java.awt.event.MouseEvent;
 
 public class ShiftRegisterPoker extends InstancePoker {
 
-    private int loc;
+    private int location;
 
     @Override
     public boolean init(InstanceState state, MouseEvent e) {
-        loc = computeStage(state, e);
-        return loc >= 0;
+        location = computeStage(state, e);
+        return location >= 0;
     }
 
     private int computeStage(InstanceState state, MouseEvent e) {
-        Integer lenObj = state.getAttributeValue(ShiftRegister.ATTR_LENGTH);
-        BitWidth widObj = state.getAttributeValue(StdAttr.WIDTH);
-        Boolean loadObj = state.getAttributeValue(ShiftRegister.ATTR_LOAD);
-        Bounds bds = state.getInstance().getBounds();
+        Integer lengthObject = state.getAttributeValue(ShiftRegister.ATTR_LENGTH);
+        BitWidth widthObject = state.getAttributeValue(StdAttr.WIDTH);
+        Boolean loadObject = state.getAttributeValue(ShiftRegister.ATTR_LOAD);
+        Bounds bounds = state.getInstance().getBounds();
 
-        int y = bds.getY();
+        int y = bounds.getY();
         String label = state.getAttributeValue(StdAttr.LABEL);
         if (label == null || label.equals("")) {
-            y += bds.getHeight() / 2;
+            y += bounds.getHeight() / 2;
         } else {
-            y += 3 * bds.getHeight() / 4;
+            y += 3 * bounds.getHeight() / 4;
         }
         y = e.getY() - y;
         if (y <= -6 || y >= 8) {
             return -1;
         }
 
-        int x = e.getX() - (bds.getX() + 15);
-        if (!loadObj || widObj.getWidth() > 4) {
+        int x = e.getX() - (bounds.getX() + 15);
+        if (!loadObject || widthObject.getWidth() > 4) {
             return -1;
         }
-        if (x < 0 || x >= lenObj * 10) {
+        if (x < 0 || x >= lengthObject * 10) {
             return -1;
         }
         return x / 10;
@@ -55,18 +56,18 @@ public class ShiftRegisterPoker extends InstancePoker {
 
     @Override
     public void paint(InstancePainter painter) {
-        int loc = this.loc;
-        if (loc < 0) {
+        int location = this.location;
+        if (location < 0) {
             return;
         }
-        Bounds bds = painter.getInstance().getBounds();
-        int x = bds.getX() + 15 + loc * 10;
-        int y = bds.getY();
+        Bounds bounds = painter.getInstance().getBounds();
+        int x = bounds.getX() + 15 + location * 10;
+        int y = bounds.getY();
         String label = painter.getAttributeValue(StdAttr.LABEL);
         if (label == null || label.equals("")) {
-            y += bds.getHeight() / 2;
+            y += bounds.getHeight() / 2;
         } else {
-            y += 3 * bds.getHeight() / 4;
+            y += 3 * bounds.getHeight() / 4;
         }
         Graphics g = painter.getGraphics();
         g.setColor(Color.RED);
@@ -75,28 +76,28 @@ public class ShiftRegisterPoker extends InstancePoker {
 
     @Override
     public void mousePressed(InstanceState state, MouseEvent e) {
-        loc = computeStage(state, e);
+        location = computeStage(state, e);
     }
 
     @Override
     public void mouseReleased(InstanceState state, MouseEvent e) {
-        int oldLoc = loc;
-        if (oldLoc < 0) {
+        int oldLocation = location;
+        if (oldLocation < 0) {
             return;
         }
-        BitWidth widObj = state.getAttributeValue(StdAttr.WIDTH);
-        if (widObj.equals(BitWidth.ONE)) {
-            int newLoc = computeStage(state, e);
-            if (oldLoc == newLoc) {
+        BitWidth widthObject = state.getAttributeValue(StdAttr.WIDTH);
+        if (widthObject.equals(BitWidth.ONE)) {
+            int newLocation = computeStage(state, e);
+            if (oldLocation == newLocation) {
                 ShiftRegisterData data = (ShiftRegisterData) state.getData();
-                int i = data.getLength() - 1 - loc;
-                Value v = data.get(i);
-                if (v == Value.FALSE) {
-                    v = Value.TRUE;
+                int i = data.getLength() - 1 - location;
+                Value value = data.get(i);
+                if (value == Value.FALSE) {
+                    value = Value.TRUE;
                 } else {
-                    v = Value.FALSE;
+                    value = Value.FALSE;
                 }
-                data.set(i, v);
+                data.set(i, value);
                 state.fireInvalidated();
             }
         }
@@ -104,38 +105,38 @@ public class ShiftRegisterPoker extends InstancePoker {
 
     @Override
     public void keyTyped(InstanceState state, KeyEvent e) {
-        int loc = this.loc;
-        if (loc < 0) {
+        int location = this.location;
+        if (location < 0) {
             return;
         }
         char c = e.getKeyChar();
         if (c == ' ') {
-            Integer lenObj = state.getAttributeValue(ShiftRegister.ATTR_LENGTH);
-            if (loc < lenObj - 1) {
-                this.loc = loc + 1;
+            Integer lengthObject = state.getAttributeValue(ShiftRegister.ATTR_LENGTH);
+            if (location < lengthObject - 1) {
+                this.location = location + 1;
                 state.fireInvalidated();
             }
         } else if (c == '\u0008') {
-            if (loc > 0) {
-                this.loc = loc - 1;
+            if (location > 0) {
+                this.location = location - 1;
                 state.fireInvalidated();
             }
         } else {
             try {
-                int val = Integer.parseInt("" + e.getKeyChar(), 16);
-                BitWidth widObj = state.getAttributeValue(StdAttr.WIDTH);
-                if ((val & ~widObj.getMask()) != 0) {
+                int value = Integer.parseInt("" + e.getKeyChar(), 16);
+                BitWidth widthObject = state.getAttributeValue(StdAttr.WIDTH);
+                if ((value & ~widthObject.getMask()) != 0) {
                     return;
                 }
-                Value valObj = Value.createKnown(widObj, val);
+                Value valueObject = Value.createKnown(widthObject, value);
                 ShiftRegisterData data = (ShiftRegisterData) state.getData();
-                int i = data.getLength() - 1 - loc;
-                if (!data.get(i).equals(valObj)) {
-                    data.set(i, valObj);
+                int index = data.getLength() - 1 - location;
+                if (!data.get(index).equals(valueObject)) {
+                    data.set(index, valueObject);
                     state.fireInvalidated();
                 }
             } catch (NumberFormatException ex) {
-                return;
+                Logger.debugln(ex.getMessage());
             }
         }
     }

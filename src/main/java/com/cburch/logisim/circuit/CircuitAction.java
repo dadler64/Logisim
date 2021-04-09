@@ -9,8 +9,8 @@ import com.cburch.logisim.util.StringGetter;
 
 public class CircuitAction extends Action {
 
-    private StringGetter name;
-    private CircuitTransaction forward;
+    private final StringGetter name;
+    private final CircuitTransaction forward;
     private CircuitTransaction reverse;
 
     CircuitAction(StringGetter name, CircuitMutation forward) {

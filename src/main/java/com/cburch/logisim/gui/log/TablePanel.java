@@ -22,17 +22,17 @@ class TablePanel extends LogPanel {
     private static final Font BODY_FONT = new Font("Serif", Font.PLAIN, 14);
     private static final int COLUMN_SEP = 8;
     private static final int HEADER_SEP = 4;
-    private MyListener myListener = new MyListener();
+    private final MyListener myListener = new MyListener();
     private int cellWidth = 25; // reasonable start values
     private int cellHeight = 15;
     private int rowCount = 0;
     private int tableWidth;
     private int tableHeight;
-    private VerticalScrollBar vsb;
+    private final VerticalScrollBar scrollBar;
 
     public TablePanel(LogFrame frame) {
         super(frame);
-        vsb = new VerticalScrollBar();
+        scrollBar = new VerticalScrollBar();
         modelChanged(null, getModel());
     }
 
@@ -131,7 +131,7 @@ class TablePanel extends LogPanel {
                 String label = val.toDisplayString(radix);
                 int width = bodyMetric.stringWidth(label);
                 g.drawString(label, x + (cellWidth - width) / 2,
-                        y + bodyMetric.getAscent());
+                    y + bodyMetric.getAscent());
                 y += cellHeight;
             }
             x += cellWidth + COLUMN_SEP;
@@ -139,7 +139,7 @@ class TablePanel extends LogPanel {
     }
 
     private int paintHeader(String header, int x, int y,
-            Graphics g, FontMetrics fm) {
+        Graphics g, FontMetrics fm) {
         int width = fm.stringWidth(header);
         g.drawString(header, x + (cellWidth - width) / 2, y);
         return x + cellWidth + COLUMN_SEP;
@@ -176,7 +176,7 @@ class TablePanel extends LogPanel {
     }
 
     JScrollBar getVerticalScrollBar() {
-        return vsb;
+        return scrollBar;
     }
 
     private class MyListener implements ModelListener {
@@ -189,10 +189,10 @@ class TablePanel extends LogPanel {
             int oldCount = rowCount;
             computeRowCount();
             if (oldCount == rowCount) {
-                int value = vsb.getValue();
-                if (value > vsb.getMinimum()
-                        && value < vsb.getMaximum() - vsb.getVisibleAmount()) {
-                    vsb.setValue(vsb.getValue() - vsb.getUnitIncrement(-1));
+                int value = scrollBar.getValue();
+                if (value > scrollBar.getMinimum()
+                    && value < scrollBar.getMaximum() - scrollBar.getVisibleAmount()) {
+                    scrollBar.setValue(scrollBar.getValue() - scrollBar.getUnitIncrement(-1));
                 } else {
                     repaint();
                 }
@@ -220,7 +220,7 @@ class TablePanel extends LogPanel {
     }
 
     private class VerticalScrollBar extends JScrollBar
-            implements ChangeListener {
+        implements ChangeListener {
 
         private int oldMaximum = -1;
         private int oldExtent = -1;
@@ -236,7 +236,7 @@ class TablePanel extends LogPanel {
                 return curY > 0 ? cellHeight : cellHeight + HEADER_SEP;
             } else {
                 return curY > cellHeight + HEADER_SEP ? cellHeight
-                        : cellHeight + HEADER_SEP;
+                    : cellHeight + HEADER_SEP;
             }
         }
 
@@ -250,12 +250,12 @@ class TablePanel extends LogPanel {
             }
             if (direction > 0) {
                 return curY > 0
-                        ? numCells * cellHeight
-                        : numCells * cellHeight + HEADER_SEP;
+                    ? numCells * cellHeight
+                    : numCells * cellHeight + HEADER_SEP;
             } else {
                 return curY > cellHeight + HEADER_SEP
-                        ? numCells * cellHeight
-                        : numCells * cellHeight + HEADER_SEP;
+                    ? numCells * cellHeight
+                    : numCells * cellHeight + HEADER_SEP;
             }
         }
 

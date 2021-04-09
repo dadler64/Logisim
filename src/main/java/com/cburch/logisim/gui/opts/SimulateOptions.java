@@ -19,23 +19,23 @@ import javax.swing.JPanel;
 
 class SimulateOptions extends OptionsPanel {
 
-    private MyListener myListener = new MyListener();
-    private JLabel simLimitLabel = new JLabel();
-    private JComboBox simLimit = new JComboBox(new Integer[]{
-            200,
-            500,
-            1000,
-            2000,
-            5000,
-            10000,
-            20000,
-            50000,
+    private final MyListener myListener = new MyListener();
+    private final JLabel simLimitLabel = new JLabel();
+    private final JComboBox<Integer> simLimit = new JComboBox<>(new Integer[]{
+        200,
+        500,
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000,
     });
-    private JCheckBox simRandomness = new JCheckBox();
-    private JLabel gateUndefinedLabel = new JLabel();
-    private JComboBox gateUndefined = new JComboBox(new Object[]{
-            new ComboOption(Options.GATE_UNDEFINED_IGNORE),
-            new ComboOption(Options.GATE_UNDEFINED_ERROR)
+    private final JCheckBox simRandomness = new JCheckBox();
+    private final JLabel gateUndefinedLabel = new JLabel();
+    private final JComboBox<Object> gateUndefined = new JComboBox<>(new Object[]{
+        new ComboOption(Options.GATE_UNDEFINED_IGNORE),
+        new ComboOption(Options.GATE_UNDEFINED_ERROR)
     });
 
     public SimulateOptions(OptionsFrame window) {
@@ -91,20 +91,20 @@ class SimulateOptions extends OptionsPanel {
                 if (opt != null) {
                     AttributeSet attrs = getOptions().getAttributeSet();
                     getProject().doAction(OptionsActions.setAttribute(attrs,
-                            Options.SIMULATOR_LIMIT_ATTRIBUTE, opt));
+                        Options.SIMULATOR_LIMIT_ATTRIBUTE, opt));
                 }
             } else if (source == simRandomness) {
                 AttributeSet attrs = getOptions().getAttributeSet();
                 Object val = simRandomness.isSelected() ? Options.SIMULATOR_RANDOM_DEFAULT
-                        : Integer.valueOf(0);
+                    : Integer.valueOf(0);
                 getProject().doAction(OptionsActions.setAttribute(attrs,
-                        Options.SIMULATOR_RANDOM_ATTRIBUTE, val));
+                    Options.SIMULATOR_RANDOM_ATTRIBUTE, val));
             } else if (source == gateUndefined) {
                 ComboOption opt = (ComboOption) gateUndefined.getSelectedItem();
                 if (opt != null) {
                     AttributeSet attrs = getOptions().getAttributeSet();
                     getProject().doAction(OptionsActions.setAttribute(attrs,
-                            Options.ATTR_GATE_UNDEFINED, opt.getValue()));
+                        Options.ATTR_GATE_UNDEFINED, opt.getValue()));
                 }
             }
         }
@@ -124,9 +124,9 @@ class SimulateOptions extends OptionsPanel {
 
         private void loadSimLimit(Integer val) {
             int value = val;
-            ComboBoxModel model = simLimit.getModel();
+            ComboBoxModel<Integer> model = simLimit.getModel();
             for (int i = 0; i < model.getSize(); i++) {
-                Integer opt = (Integer) model.getElementAt(i);
+                Integer opt = model.getElementAt(i);
                 if (opt == value) {
                     simLimit.setSelectedItem(opt);
                 }

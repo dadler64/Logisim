@@ -31,16 +31,15 @@ public class ProjectLibraryActions {
         builtins.removeAll(file.getLibraries());
         if (builtins.isEmpty()) {
             JOptionPane.showMessageDialog(proj.getFrame(),
-                    Strings.get("loadBuiltinNoneError"),
-                    Strings.get("loadBuiltinErrorTitle"),
-                    JOptionPane.INFORMATION_MESSAGE);
+                Strings.get("loadBuiltinNoneError"),
+                Strings.get("loadBuiltinErrorTitle"),
+                JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         LibraryJList list = new LibraryJList(builtins);
         JScrollPane listPane = new JScrollPane(list);
-        int action = JOptionPane.showConfirmDialog(proj.getFrame(), listPane,
-                Strings.get("loadBuiltinDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
+        int action = JOptionPane.showConfirmDialog(proj.getFrame(), listPane, Strings.get("loadBuiltinDialogTitle"),
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (action == JOptionPane.OK_OPTION) {
             Library[] libs = list.getSelectedLibraries();
             if (libs != null) {
@@ -84,11 +83,14 @@ public class ProjectLibraryActions {
                 className = manifest.getMainAttributes().getValue("Library-Class");
             } catch (IOException e) {
                 // if opening the JAR file failed, do nothing
+                System.err.println("ERROR: Failed to load library -> " + jarFile.getName());
             } finally {
                 if (jarFile != null) {
                     try {
                         jarFile.close();
                     } catch (IOException e) {
+                        System.err.println("ERROR: ProjectLibraryAssociations.class");
+                        e.printStackTrace();
                     }
                 }
             }
@@ -96,9 +98,9 @@ public class ProjectLibraryActions {
             // if the class name was not found, go back to the good old dialog
             if (className == null) {
                 className = JOptionPane.showInputDialog(proj.getFrame(),
-                        Strings.get("jarClassNamePrompt"),
-                        Strings.get("jarClassNameTitle"),
-                        JOptionPane.QUESTION_MESSAGE);
+                    Strings.get("jarClassNamePrompt"),
+                    Strings.get("jarClassNameTitle"),
+                    JOptionPane.QUESTION_MESSAGE);
                 // if user canceled selection, abort
                 if (className == null) {
                     return;
@@ -123,16 +125,16 @@ public class ProjectLibraryActions {
         }
         if (canUnload.isEmpty()) {
             JOptionPane.showMessageDialog(proj.getFrame(),
-                    Strings.get("unloadNoneError"),
-                    Strings.get("unloadErrorTitle"),
-                    JOptionPane.INFORMATION_MESSAGE);
+                Strings.get("unloadNoneError"),
+                Strings.get("unloadErrorTitle"),
+                JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         LibraryJList list = new LibraryJList(canUnload);
         JScrollPane listPane = new JScrollPane(list);
         int action = JOptionPane.showConfirmDialog(proj.getFrame(), listPane,
-                Strings.get("unloadLibrariesDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
+            Strings.get("unloadLibrariesDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
         if (action == JOptionPane.OK_OPTION) {
             Library[] libs = list.getSelectedLibraries();
             if (libs != null) {
@@ -145,7 +147,7 @@ public class ProjectLibraryActions {
         String message = proj.getLogisimFile().getUnloadLibraryMessage(lib);
         if (message != null) {
             JOptionPane.showMessageDialog(proj.getFrame(), message,
-                    Strings.get("unloadErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                Strings.get("unloadErrorTitle"), JOptionPane.ERROR_MESSAGE);
         } else {
             proj.doAction(LogisimFileActions.unloadLibrary(lib));
         }
@@ -165,18 +167,18 @@ public class ProjectLibraryActions {
         }
     }
 
-    private static class LibraryJList extends JList {
+    private static class LibraryJList extends JList<BuiltinOption> {
 
         LibraryJList(List<Library> libraries) {
             ArrayList<BuiltinOption> options = new ArrayList<>();
             for (Library lib : libraries) {
                 options.add(new BuiltinOption(lib));
             }
-            setListData(options.toArray());
+            setListData((BuiltinOption[]) options.toArray());
         }
 
         Library[] getSelectedLibraries() {
-            Object[] selected = getSelectedValues();
+            Object[] selected = getSelectedValuesList().toArray();
             if (selected != null && selected.length > 0) {
                 Library[] libs = new Library[selected.length];
                 for (int i = 0; i < selected.length; i++) {

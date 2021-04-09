@@ -25,7 +25,7 @@ import com.cburch.logisim.util.StringUtil;
 import javax.swing.JPopupMenu;
 
 public class Splitter extends ManagedComponent
-        implements WireRepair, ToolTipMaker, MenuExtender, AttributeListener {
+    implements WireRepair, ToolTipMaker, MenuExtender, AttributeListener {
 
     // basic data
     byte[] bit_thread; // how each bit maps to thread within end
@@ -46,7 +46,7 @@ public class Splitter extends ManagedComponent
         if (start == end) {
             buf.append(start);
         } else {
-            buf.append(start + "-" + end);
+            buf.append(start).append("-").append(end);
         }
     }
 
@@ -70,10 +70,10 @@ public class Splitter extends ManagedComponent
             Direction facing = getAttributeSet().getValue(StdAttr.FACING);
             if (facing == Direction.EAST || facing == Direction.WEST) {
                 return Math.abs(loc.getX() - myLoc.getX()) > 5
-                        || loc.manhattanDistanceTo(myLoc) <= 5;
+                    || loc.manhattanDistanceTo(myLoc) <= 5;
             } else {
                 return Math.abs(loc.getY() - myLoc.getY()) > 5
-                        || loc.manhattanDistanceTo(myLoc) <= 5;
+                    || loc.manhattanDistanceTo(myLoc) <= 5;
             }
         } else {
             return false;
@@ -82,7 +82,7 @@ public class Splitter extends ManagedComponent
 
     private synchronized void configureComponent() {
         SplitterAttributes attrs = (SplitterAttributes) getAttributeSet();
-        SplitterParameters parms = attrs.getParameters();
+        SplitterParameters parameters = attrs.getParameters();
         int fanout = attrs.fanout;
         byte[] bit_end = attrs.bit_end;
 
@@ -102,16 +102,16 @@ public class Splitter extends ManagedComponent
 
         // compute end positions
         Location origin = getLocation();
-        int x = origin.getX() + parms.getEnd0X();
-        int y = origin.getY() + parms.getEnd0Y();
-        int dx = parms.getEndToEndDeltaX();
-        int dy = parms.getEndToEndDeltaY();
+        int x = origin.getX() + parameters.getEnd0X();
+        int y = origin.getY() + parameters.getEnd0Y();
+        int dx = parameters.getEndToEndDeltaX();
+        int dy = parameters.getEndToEndDeltaY();
 
         EndData[] ends = new EndData[fanout + 1];
         ends[0] = new EndData(origin, BitWidth.create(bit_end.length), EndData.INPUT_OUTPUT);
         for (int i = 0; i < fanout; i++) {
             ends[i + 1] = new EndData(Location.create(x, y),
-                    BitWidth.create(end_width[i + 1]), EndData.INPUT_OUTPUT);
+                BitWidth.create(end_width[i + 1]), EndData.INPUT_OUTPUT);
             x += dx;
             y += dy;
         }

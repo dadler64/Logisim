@@ -106,13 +106,13 @@ class DefaultAppearance {
         ret.add(notch);
         ret.add(rect);
         placePins(ret, edge.get(Direction.WEST),
-                rx, ry + offsWest, 0, 10);
+            rx, ry + offsWest, 0, 10);
         placePins(ret, edge.get(Direction.EAST),
-                rx + width, ry + offsEast, 0, 10);
+            rx + width, ry + offsEast, 0, 10);
         placePins(ret, edge.get(Direction.NORTH),
-                rx + offsNorth, ry, 10, 0);
+            rx + offsNorth, ry, 10, 0);
         placePins(ret, edge.get(Direction.SOUTH),
-                rx + offsSouth, ry + height, 10, 0);
+            rx + offsSouth, ry + height, 10, 0);
         ret.add(new AppearanceAnchor(Location.create(rx + ax, ry + ay)));
         return ret;
     }
@@ -145,7 +145,7 @@ class DefaultAppearance {
     }
 
     private static void placePins(List<CanvasObject> dest, List<Instance> pins,
-            int x, int y, int dx, int dy) {
+        int x, int y, int dx, int dy) {
         for (Instance pin : pins) {
             dest.add(new AppearancePort(Location.create(x, y), pin));
             x += dx;
@@ -155,7 +155,7 @@ class DefaultAppearance {
 
     private static class CompareLocations implements Comparator<Instance> {
 
-        private boolean byX;
+        private final boolean byX;
 
         CompareLocations(boolean byX) {
             this.byX = byX;

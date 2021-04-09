@@ -26,8 +26,8 @@ import javax.swing.PopupFactory;
 
 class LayoutPopupManager implements SelectionListener, MouseListener, MouseMotionListener {
 
-    private CanvasPane canvasPane;
-    private AppearanceCanvas canvas;
+    private final CanvasPane canvasPane;
+    private final AppearanceCanvas canvas;
     private Popup curPopup;
     private long curPopupTime;
     private Location dragStart;

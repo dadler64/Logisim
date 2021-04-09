@@ -12,8 +12,8 @@ public class Entry {
     public static final Entry DONT_CARE = new Entry("x");
     public static final Entry BUS_ERROR = new Entry(Strings.getter("busError"));
     public static final Entry OSCILLATE_ERROR = new Entry(Strings.getter("oscillateError"));
-    private String description;
-    private StringGetter errorMessage;
+    private final String description;
+    private final StringGetter errorMessage;
 
     private Entry(String description) {
         this.description = description;

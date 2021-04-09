@@ -33,18 +33,15 @@ import java.util.Map;
 public class Constant extends InstanceFactory {
 
     public static final Attribute<Integer> ATTRIBUTE_VALUE
-            = Attributes.forHexInteger("value", Strings.getter("constantValueAttr"));
-    private static final Color BACKGROUND_COLOR = new Color(230, 230, 230);
-    private static final List<Attribute<?>> ATTRIBUTES
-            = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, ATTRIBUTE_VALUE);
+        = Attributes.forHexInteger("value", Strings.getter("constantValueAttr"));
     public static final InstanceFactory FACTORY = new Constant();
+    private static final Color BACKGROUND_COLOR = new Color(230, 230, 230);
+    private static final List<Attribute<?>> ATTRIBUTES = Arrays.asList(StdAttr.FACING, StdAttr.WIDTH, ATTRIBUTE_VALUE);
 
     public Constant() {
         super("Constant", Strings.getter("constantComponent"));
         setFacingAttribute(StdAttr.FACING);
-        setKeyConfigurator(JoinedConfigurator.create(
-                new ConstantConfigurator(),
-                new BitWidthConfigurator(StdAttr.WIDTH)));
+        setKeyConfigurator(JoinedConfigurator.create(new ConstantConfigurator(), new BitWidthConfigurator(StdAttr.WIDTH)));
     }
 
     @Override
@@ -96,120 +93,120 @@ public class Constant extends InstanceFactory {
         BitWidth width = attributes.getValue(StdAttr.WIDTH);
         int chars = (width.getWidth() + 3) / 4;
 
-        Bounds ret = null;
+        Bounds bounds = null;
         if (facing == Direction.EAST) {
             switch (chars) {
                 case 1:
-                    ret = Bounds.create(-16, -8, 16, 16);
+                    bounds = Bounds.create(-16, -8, 16, 16);
                     break;
                 case 2:
-                    ret = Bounds.create(-16, -8, 16, 16);
+                    bounds = Bounds.create(-16, -8, 16, 16);
                     break;
                 case 3:
-                    ret = Bounds.create(-26, -8, 26, 16);
+                    bounds = Bounds.create(-26, -8, 26, 16);
                     break;
                 case 4:
-                    ret = Bounds.create(-36, -8, 36, 16);
+                    bounds = Bounds.create(-36, -8, 36, 16);
                     break;
                 case 5:
-                    ret = Bounds.create(-46, -8, 46, 16);
+                    bounds = Bounds.create(-46, -8, 46, 16);
                     break;
                 case 6:
-                    ret = Bounds.create(-56, -8, 56, 16);
+                    bounds = Bounds.create(-56, -8, 56, 16);
                     break;
                 case 7:
-                    ret = Bounds.create(-66, -8, 66, 16);
+                    bounds = Bounds.create(-66, -8, 66, 16);
                     break;
                 case 8:
-                    ret = Bounds.create(-76, -8, 76, 16);
+                    bounds = Bounds.create(-76, -8, 76, 16);
                     break;
             }
         } else if (facing == Direction.WEST) {
             switch (chars) {
                 case 1:
-                    ret = Bounds.create(0, -8, 16, 16);
+                    bounds = Bounds.create(0, -8, 16, 16);
                     break;
                 case 2:
-                    ret = Bounds.create(0, -8, 16, 16);
+                    bounds = Bounds.create(0, -8, 16, 16);
                     break;
                 case 3:
-                    ret = Bounds.create(0, -8, 26, 16);
+                    bounds = Bounds.create(0, -8, 26, 16);
                     break;
                 case 4:
-                    ret = Bounds.create(0, -8, 36, 16);
+                    bounds = Bounds.create(0, -8, 36, 16);
                     break;
                 case 5:
-                    ret = Bounds.create(0, -8, 46, 16);
+                    bounds = Bounds.create(0, -8, 46, 16);
                     break;
                 case 6:
-                    ret = Bounds.create(0, -8, 56, 16);
+                    bounds = Bounds.create(0, -8, 56, 16);
                     break;
                 case 7:
-                    ret = Bounds.create(0, -8, 66, 16);
+                    bounds = Bounds.create(0, -8, 66, 16);
                     break;
                 case 8:
-                    ret = Bounds.create(0, -8, 76, 16);
+                    bounds = Bounds.create(0, -8, 76, 16);
                     break;
             }
         } else if (facing == Direction.SOUTH) {
             switch (chars) {
                 case 1:
-                    ret = Bounds.create(-8, -16, 16, 16);
+                    bounds = Bounds.create(-8, -16, 16, 16);
                     break;
                 case 2:
-                    ret = Bounds.create(-8, -16, 16, 16);
+                    bounds = Bounds.create(-8, -16, 16, 16);
                     break;
                 case 3:
-                    ret = Bounds.create(-13, -16, 26, 16);
+                    bounds = Bounds.create(-13, -16, 26, 16);
                     break;
                 case 4:
-                    ret = Bounds.create(-18, -16, 36, 16);
+                    bounds = Bounds.create(-18, -16, 36, 16);
                     break;
                 case 5:
-                    ret = Bounds.create(-23, -16, 46, 16);
+                    bounds = Bounds.create(-23, -16, 46, 16);
                     break;
                 case 6:
-                    ret = Bounds.create(-28, -16, 56, 16);
+                    bounds = Bounds.create(-28, -16, 56, 16);
                     break;
                 case 7:
-                    ret = Bounds.create(-33, -16, 66, 16);
+                    bounds = Bounds.create(-33, -16, 66, 16);
                     break;
                 case 8:
-                    ret = Bounds.create(-38, -16, 76, 16);
+                    bounds = Bounds.create(-38, -16, 76, 16);
                     break;
             }
         } else if (facing == Direction.NORTH) {
             switch (chars) {
                 case 1:
-                    ret = Bounds.create(-8, 0, 16, 16);
+                    bounds = Bounds.create(-8, 0, 16, 16);
                     break;
                 case 2:
-                    ret = Bounds.create(-8, 0, 16, 16);
+                    bounds = Bounds.create(-8, 0, 16, 16);
                     break;
                 case 3:
-                    ret = Bounds.create(-13, 0, 26, 16);
+                    bounds = Bounds.create(-13, 0, 26, 16);
                     break;
                 case 4:
-                    ret = Bounds.create(-18, 0, 36, 16);
+                    bounds = Bounds.create(-18, 0, 36, 16);
                     break;
                 case 5:
-                    ret = Bounds.create(-23, 0, 46, 16);
+                    bounds = Bounds.create(-23, 0, 46, 16);
                     break;
                 case 6:
-                    ret = Bounds.create(-28, 0, 56, 16);
+                    bounds = Bounds.create(-28, 0, 56, 16);
                     break;
                 case 7:
-                    ret = Bounds.create(-33, 0, 66, 16);
+                    bounds = Bounds.create(-33, 0, 66, 16);
                     break;
                 case 8:
-                    ret = Bounds.create(-38, 0, 76, 16);
+                    bounds = Bounds.create(-38, 0, 76, 16);
                     break;
             }
         }
-        if (ret == null) {
+        if (bounds == null) {
             throw new IllegalArgumentException("unrecognized arguments " + facing + " " + width);
         }
-        return ret;
+        return bounds;
     }
 
     //
@@ -256,7 +253,7 @@ public class Constant extends InstanceFactory {
         GraphicsUtil.switchToWidth(graphics, 2);
         graphics.fillOval(-2, -2, 5, 5);
         GraphicsUtil.drawCenteredText(graphics, valueStr, bounds.getX() + bounds.getWidth() / 2,
-                bounds.getY() + bounds.getHeight() / 2);
+            bounds.getY() + bounds.getHeight() / 2);
     }
 
     @Override
@@ -279,13 +276,13 @@ public class Constant extends InstanceFactory {
                 graphics.setColor(value.getColor());
             }
             GraphicsUtil.drawCenteredText(graphics, value.toString(),
-                    x + bounds.getX() + bounds.getWidth() / 2,
-                    y + bounds.getY() + bounds.getHeight() / 2 - 2);
+                x + bounds.getX() + bounds.getWidth() / 2,
+                y + bounds.getY() + bounds.getHeight() / 2 - 2);
         } else {
             graphics.setColor(Color.BLACK);
             GraphicsUtil.drawCenteredText(graphics, value.toHexString(),
-                    x + bounds.getX() + bounds.getWidth() / 2,
-                    y + bounds.getY() + bounds.getHeight() / 2 - 2);
+                x + bounds.getX() + bounds.getWidth() / 2,
+                y + bounds.getY() + bounds.getHeight() / 2 - 2);
         }
         painter.drawPorts();
     }
@@ -331,7 +328,7 @@ public class Constant extends InstanceFactory {
             } else if (attribute == StdAttr.WIDTH) {
                 width = (BitWidth) value;
                 this.value = this.value.extendWidth(width.getWidth(),
-                        this.value.get(this.value.getWidth() - 1));
+                    this.value.get(this.value.getWidth() - 1));
             } else if (attribute == ATTRIBUTE_VALUE) {
                 int val = (Integer) value;
                 this.value = Value.createKnown(width, val);
@@ -344,7 +341,7 @@ public class Constant extends InstanceFactory {
 
     private static class ConstantExpression implements ExpressionComputer {
 
-        private Instance instance;
+        private final Instance instance;
 
         private ConstantExpression(Instance instance) {
             this.instance = instance;
@@ -355,7 +352,7 @@ public class Constant extends InstanceFactory {
             int intValue = attrs.getValue(ATTRIBUTE_VALUE);
 
             expressionMap.put(instance.getLocation(),
-                    Expressions.constant(intValue));
+                Expressions.constant(intValue));
         }
     }
 

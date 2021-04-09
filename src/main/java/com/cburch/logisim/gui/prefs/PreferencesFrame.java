@@ -22,21 +22,21 @@ import javax.swing.JTabbedPane;
 public class PreferencesFrame extends LFrame {
 
     private static WindowMenuManager MENU_MANAGER = null;
-    private MyListener myListener = new MyListener();
-    private OptionsPanel[] panels;
-    private JTabbedPane tabbedPane;
-    private JButton close = new JButton();
+    private final MyListener myListener = new MyListener();
+    private final OptionsPanel[] panels;
+    private final JTabbedPane tabbedPane;
+    private final JButton close = new JButton();
 
     private PreferencesFrame() {
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         setJMenuBar(new LogisimMenuBar(this, null));
 
         panels = new OptionsPanel[]{
-                new TemplateOptions(this),
-                new IntlOptions(this),
-                new WindowOptions(this),
-                new LayoutOptions(this),
-                new ExperimentalOptions(this),
+            new TemplateOptions(this),
+            new IntlOptions(this),
+            new WindowOptions(this),
+            new LayoutOptions(this),
+            new ExperimentalOptions(this),
         };
         tabbedPane = new JTabbedPane();
         int intlIndex = -1;
@@ -76,7 +76,7 @@ public class PreferencesFrame extends LFrame {
     }
 
     private static class WindowMenuManager extends WindowMenuItemManager
-            implements LocaleListener {
+        implements LocaleListener {
 
         private PreferencesFrame window = null;
 
@@ -102,13 +102,13 @@ public class PreferencesFrame extends LFrame {
     }
 
     private class MyListener
-            implements ActionListener, LocaleListener {
+        implements ActionListener, LocaleListener {
 
         public void actionPerformed(ActionEvent event) {
             Object src = event.getSource();
             if (src == close) {
                 WindowEvent e = new WindowEvent(PreferencesFrame.this,
-                        WindowEvent.WINDOW_CLOSING);
+                    WindowEvent.WINDOW_CLOSING);
                 PreferencesFrame.this.processWindowEvent(e);
             }
         }

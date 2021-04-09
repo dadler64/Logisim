@@ -31,8 +31,8 @@ class SimpleGrayCounter extends InstanceFactory {
         super("Gray Counter (Simple)");
         setOffsetBounds(Bounds.create(-30, -15, 30, 30));
         setPorts(new Port[]{
-                new Port(-30, 0, Port.INPUT, 1),
-                new Port(0, 0, Port.OUTPUT, BIT_WIDTH.getWidth()),
+            new Port(-30, 0, Port.INPUT, 1),
+            new Port(0, 0, Port.OUTPUT, BIT_WIDTH.getWidth()),
         });
     }
 
@@ -70,9 +70,9 @@ class SimpleGrayCounter extends InstanceFactory {
             CounterData state = CounterData.get(painter, BIT_WIDTH);
             Bounds bounds = painter.getBounds();
             GraphicsUtil.drawCenteredText(painter.getGraphics(),
-                    StringUtil.toHexString(BIT_WIDTH.getWidth(), state.getValue().toIntValue()),
-                    bounds.getX() + bounds.getWidth() / 2,
-                    bounds.getY() + bounds.getHeight() / 2);
+                StringUtil.toHexString(BIT_WIDTH.getWidth(), state.getValue().toIntValue()),
+                bounds.getX() + bounds.getWidth() / 2,
+                bounds.getY() + bounds.getHeight() / 2);
         }
     }
 }

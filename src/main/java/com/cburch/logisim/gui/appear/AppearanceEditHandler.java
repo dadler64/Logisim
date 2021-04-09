@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class AppearanceEditHandler extends EditHandler
-        implements SelectionListener, PropertyChangeListener, CanvasModelListener {
+public class AppearanceEditHandler extends EditHandler implements SelectionListener, PropertyChangeListener,
+    CanvasModelListener {
 
-    private AppearanceCanvas canvas;
+    private final AppearanceCanvas canvas;
 
     AppearanceEditHandler(AppearanceCanvas canvas) {
         this.canvas = canvas;
@@ -65,7 +65,7 @@ public class AppearanceEditHandler extends EditHandler
         boolean canLower;
         if (!selEmpty && canChange) {
             Map<CanvasObject, Integer> zs = ZOrder.getZIndex(sel.getSelected(),
-                    canvas.getModel());
+                canvas.getModel());
             int zmin = Integer.MAX_VALUE;
             int zmax = Integer.MIN_VALUE;
             int count = 0;
@@ -173,8 +173,8 @@ public class AppearanceEditHandler extends EditHandler
         }
 
         canvas.getProject().doAction(new SelectionAction(canvas,
-                Strings.getter("pasteClipboardAction"), null, add, add,
-                anchorLocation, clip.getAnchorFacing()));
+            Strings.getter("pasteClipboardAction"), null, add, add,
+            anchorLocation, clip.getAnchorFacing()));
     }
 
     @Override
@@ -200,8 +200,8 @@ public class AppearanceEditHandler extends EditHandler
 
         if (!remove.isEmpty()) {
             canvas.getProject().doAction(new SelectionAction(canvas,
-                    Strings.getter("deleteSelectionAction"), remove, null, select,
-                    anchorLocation, anchorFacing));
+                Strings.getter("deleteSelectionAction"), remove, null, select,
+                anchorLocation, anchorFacing));
         }
     }
 
@@ -224,8 +224,8 @@ public class AppearanceEditHandler extends EditHandler
 
         if (!clones.isEmpty()) {
             canvas.getProject().doAction(new SelectionAction(canvas,
-                    Strings.getter("duplicateSelectionAction"), null, clones, select,
-                    null, null));
+                Strings.getter("duplicateSelectionAction"), null, clones, select,
+                null, null));
         }
     }
 
@@ -239,7 +239,7 @@ public class AppearanceEditHandler extends EditHandler
     @Override
     public void raise() {
         ModelReorderAction act = ModelReorderAction.createRaise(canvas.getModel(),
-                canvas.getSelection().getSelected());
+            canvas.getSelection().getSelected());
         if (act != null) {
             canvas.doAction(act);
         }
@@ -248,7 +248,7 @@ public class AppearanceEditHandler extends EditHandler
     @Override
     public void lower() {
         ModelReorderAction act = ModelReorderAction.createLower(canvas.getModel(),
-                canvas.getSelection().getSelected());
+            canvas.getSelection().getSelected());
         if (act != null) {
             canvas.doAction(act);
         }
@@ -257,7 +257,7 @@ public class AppearanceEditHandler extends EditHandler
     @Override
     public void raiseTop() {
         ModelReorderAction act = ModelReorderAction.createRaiseTop(canvas.getModel(),
-                canvas.getSelection().getSelected());
+            canvas.getSelection().getSelected());
         if (act != null) {
             canvas.doAction(act);
         }
@@ -266,7 +266,7 @@ public class AppearanceEditHandler extends EditHandler
     @Override
     public void lowerBottom() {
         ModelReorderAction act = ModelReorderAction.createLowerBottom(canvas.getModel(),
-                canvas.getSelection().getSelected());
+            canvas.getSelection().getSelected());
         if (act != null) {
             canvas.doAction(act);
         }

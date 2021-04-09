@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class Template {
 
-    private String contents;
+    private final String contents;
 
     private Template(String contents) {
         this.contents = contents;
@@ -21,11 +21,11 @@ public class Template {
     public static Template createEmpty() {
         String circName = Strings.get("newCircuitName");
         String builder = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<project version=\"1.0\">"
-                + " <circuit name=\""
-                + circName
-                + "\" />"
-                + "</project>";
+            + "<project version=\"1.0\">"
+            + " <circuit name=\""
+            + circName
+            + "\" />"
+            + "</project>";
         return new Template(builder);
     }
 

@@ -13,8 +13,8 @@ import java.awt.Rectangle;
  */
 public class Bounds {
 
-    private static final Cache cache = new Cache();
     public static final Bounds EMPTY_BOUNDS = new Bounds(0, 0, 0, 0);
+    private static final Cache cache = new Cache();
     private final int x;
     private final int y;
     private final int width;
@@ -122,7 +122,7 @@ public class Bounds {
 
     public boolean contains(int pointX, int pointY, int allowedError) {
         return pointX >= x - allowedError && pointX < x + width + allowedError
-                && pointY >= y - allowedError && pointY < y + height + allowedError;
+            && pointY >= y - allowedError && pointY < y + height + allowedError;
     }
 
     public boolean contains(int x1, int y1, int width, int height) {
@@ -276,7 +276,7 @@ public class Bounds {
         int y2 = bounds.y;
         int x3 = x2 + bounds.width;
         int y3 = y2 + bounds.height;
-    if (x2 > x0) {
+        if (x2 > x0) {
             x0 = x2;
         }
         if (y2 > y0) {

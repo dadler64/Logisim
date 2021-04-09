@@ -13,25 +13,24 @@ import java.util.HashSet;
 class Clipboard {
 
     public static final String contentsProperty = "contents";
-
+    private static final PropertyChangeWeakSupport propertySupport = new PropertyChangeWeakSupport(Clipboard.class);
     private static Clipboard current = null;
-    private static PropertyChangeWeakSupport propertySupport = new PropertyChangeWeakSupport(Clipboard.class);
     //
     // instance variables and methods
     //
-    private HashSet<Component> components;
+    private final HashSet<Component> components;
     private AttributeSet oldAttrs;
     private AttributeSet newAttrs;
 
-    private Clipboard(Selection sel, AttributeSet viewAttrs) {
+    private Clipboard(Selection selection, AttributeSet viewAttrs) {
         components = new HashSet<>();
         oldAttrs = null;
         newAttrs = null;
-        for (Component base : sel.getComponents()) {
+        for (Component base : selection.getComponents()) {
             AttributeSet baseAttrs = base.getAttributeSet();
             AttributeSet copyAttrs = (AttributeSet) baseAttrs.clone();
             Component copy = base.getFactory().createComponent(base.getLocation(),
-                    copyAttrs);
+                copyAttrs);
             components.add(copy);
             if (baseAttrs == viewAttrs) {
                 oldAttrs = baseAttrs;

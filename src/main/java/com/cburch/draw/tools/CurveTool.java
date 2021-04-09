@@ -29,7 +29,7 @@ public class CurveTool extends AbstractTool {
     private static final int ENDPOINT_DRAG = 1;
     private static final int CONTROL_DRAG = 2;
 
-    private DrawingAttributeSet attributes;
+    private final DrawingAttributeSet attributes;
     private int state;
     private Location end0;
     private Location end1;
@@ -175,7 +175,7 @@ public class CurveTool extends AbstractTool {
                         double deltaX = x1 - x0;
                         double deltaY = y1 - y0;
                         double[] p = LineUtil
-                                .nearestPointInfinite(cx, cy, midPointX, midPointY, midPointX - deltaY, midPointY + deltaX);
+                            .nearestPointInfinite(cx, cy, midPointX, midPointY, midPointX - deltaY, midPointY + deltaX);
                         cx = (int) Math.round(p[0]);
                         cy = (int) Math.round(p[1]);
                     }

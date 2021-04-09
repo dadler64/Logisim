@@ -15,7 +15,7 @@ class ComponentIcon implements Icon {
     public static final int TRIANGLE_CLOSED = 1;
     public static final int TRIANGLE_OPEN = 2;
 
-    private Component comp;
+    private final Component comp;
     private int triangleState = TRIANGLE_NONE;
 
     ComponentIcon(Component comp) {
@@ -35,7 +35,7 @@ class ComponentIcon implements Icon {
     }
 
     public void paintIcon(java.awt.Component c, Graphics g,
-            int x, int y) {
+        int x, int y) {
         // draw tool icon
         Graphics gIcon = g.create();
         ComponentDrawContext context = new ComponentDrawContext(c, null, null, g, gIcon);

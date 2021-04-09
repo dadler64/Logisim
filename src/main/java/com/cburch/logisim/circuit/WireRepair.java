@@ -17,7 +17,7 @@ import java.util.TreeSet;
 
 class WireRepair extends CircuitTransaction {
 
-    private Circuit circuit;
+    private final Circuit circuit;
 
     public WireRepair(Circuit circuit) {
         this.circuit = circuit;
@@ -132,7 +132,7 @@ class WireRepair extends CircuitTransaction {
     }
 
     private void doMergeSet(ArrayList<Wire> mergeSet, ReplacementMap replacements,
-            Set<Location> splitLocs) {
+        Set<Location> splitLocs) {
         TreeSet<Location> ends = new TreeSet<>();
         for (Wire w : mergeSet) {
             ends.add(w.getEnd0());

@@ -17,29 +17,28 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
-class SimulationExplorer extends JPanel
-        implements ProjectListener, MouseListener {
+class SimulationExplorer extends JPanel implements ProjectListener, MouseListener {
 
-    private Project project;
+    private final Project project;
+    private final JTree tree;
     private SimulationTreeModel model;
-    private JTree tree;
 
-    SimulationExplorer(Project proj, MenuListener menu) {
+    SimulationExplorer(Project project, MenuListener menu) {
         super(new BorderLayout());
-        this.project = proj;
+        this.project = project;
 
-        SimulationToolbarModel toolbarModel = new SimulationToolbarModel(proj, menu);
+        SimulationToolbarModel toolbarModel = new SimulationToolbarModel(project, menu);
         Toolbar toolbar = new Toolbar(toolbarModel);
         add(toolbar, BorderLayout.NORTH);
 
-        model = new SimulationTreeModel(proj.getSimulator().getCircuitState());
-        model.setCurrentView(project.getCircuitState());
+        model = new SimulationTreeModel(project.getSimulator().getCircuitState());
+        model.setCurrentView(this.project.getCircuitState());
         tree = new JTree(model);
         tree.setCellRenderer(new SimulationTreeRenderer());
         tree.addMouseListener(this);
         tree.setToggleClickCount(3);
         add(new JScrollPane(tree), BorderLayout.CENTER);
-        proj.addProjectListener(this);
+        project.addProjectListener(this);
     }
 
     //
@@ -48,8 +47,8 @@ class SimulationExplorer extends JPanel
     public void projectChanged(ProjectEvent event) {
         int action = event.getAction();
         if (action == ProjectEvent.ACTION_SET_STATE) {
-            Simulator sim = project.getSimulator();
-            CircuitState root = sim.getCircuitState();
+            Simulator simulator = project.getSimulator();
+            CircuitState root = simulator.getCircuitState();
             if (model.getRootState() != root) {
                 model = new SimulationTreeModel(root);
                 tree.setModel(model);

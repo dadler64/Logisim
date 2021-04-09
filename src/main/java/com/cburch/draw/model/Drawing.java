@@ -20,9 +20,9 @@ import java.util.Set;
 
 public class Drawing implements CanvasModel {
 
-    private EventSourceWeakSupport<CanvasModelListener> listeners;
-    private ArrayList<CanvasObject> canvasObjects;
-    private DrawingOverlaps overlaps;
+    private final EventSourceWeakSupport<CanvasModelListener> listeners;
+    private final ArrayList<CanvasObject> canvasObjects;
+    private final DrawingOverlaps overlaps;
 
     public Drawing() {
         listeners = new EventSourceWeakSupport<>();
@@ -172,7 +172,7 @@ public class Drawing implements CanvasModel {
         CanvasModelEvent event = CanvasModelEvent.forMoveHandle(this, gesture);
         CanvasObject object = gesture.getHandle().getObject();
         if (canvasObjects.contains(object) && (gesture.getDeltaX() != 0 || gesture.getDeltaY() != 0) && isChangeAllowed(
-                event)) {
+            event)) {
             Handle moveHandle = object.moveHandle(gesture);
             gesture.setResultingHandle(moveHandle);
             overlaps.invalidateShape(object);

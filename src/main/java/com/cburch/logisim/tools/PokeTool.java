@@ -31,9 +31,8 @@ public class PokeTool extends Tool {
 
     private static final Icon toolIcon = Icons.getIcon("poke.gif");
     private static final Color caretColor = new Color(255, 255, 150);
-    private static Cursor cursor
-            = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-    private Listener listener;
+    private static final Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    private final Listener listener;
     private Circuit pokedCircuit;
     private Component pokedComponent;
     private Caret pokeCaret;
@@ -63,7 +62,7 @@ public class PokeTool extends Tool {
     }
 
     private void removeCaret(boolean normal) {
-        Circuit circ = pokedCircuit;
+        Circuit circuit = pokedCircuit;
         Caret caret = pokeCaret;
         if (caret != null) {
             if (normal) {
@@ -71,20 +70,20 @@ public class PokeTool extends Tool {
             } else {
                 caret.cancelEditing();
             }
-            circ.removeCircuitListener(listener);
+            circuit.removeCircuitListener(listener);
             pokedCircuit = null;
             pokedComponent = null;
             pokeCaret = null;
         }
     }
 
-    private void setPokedComponent(Circuit circ, Component comp, Caret caret) {
+    private void setPokedComponent(Circuit circuit, Component component, Caret caret) {
         removeCaret(true);
-        pokedCircuit = circ;
-        pokedComponent = comp;
+        pokedCircuit = circuit;
+        pokedComponent = component;
         pokeCaret = caret;
         if (caret != null) {
-            circ.addCircuitListener(listener);
+            circuit.addCircuitListener(listener);
         }
     }
 
@@ -110,45 +109,45 @@ public class PokeTool extends Tool {
     public void mousePressed(Canvas canvas, Graphics g, MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        Location loc = Location.create(x, y);
-        boolean dirty = false;
+        Location location = Location.create(x, y);
+        boolean isDirty = false;
         canvas.setHighlightedWires(WireSet.EMPTY);
-        if (pokeCaret != null && !pokeCaret.getBounds(g).contains(loc)) {
-            dirty = true;
+        if (pokeCaret != null && !pokeCaret.getBounds(g).contains(location)) {
+            isDirty = true;
             removeCaret(true);
         }
         if (pokeCaret == null) {
             ComponentUserEvent event = new ComponentUserEvent(canvas, x, y);
-            Circuit circ = canvas.getCircuit();
-            for (Component c : circ.getAllContaining(loc, g)) {
+            Circuit circuit = canvas.getCircuit();
+            for (Component component : circuit.getAllContaining(location, g)) {
                 if (pokeCaret != null) {
                     break;
                 }
 
-                if (c instanceof Wire) {
-                    Caret caret = new WireCaret(canvas, (Wire) c, x, y,
-                            canvas.getProject().getOptions().getAttributeSet());
-                    setPokedComponent(circ, c, caret);
-                    canvas.setHighlightedWires(circ.getWireSet((Wire) c));
+                if (component instanceof Wire) {
+                    Caret caret = new WireCaret(canvas, (Wire) component, x, y,
+                        canvas.getProject().getOptions().getAttributeSet());
+                    setPokedComponent(circuit, component, caret);
+                    canvas.setHighlightedWires(circuit.getWireSet((Wire) component));
                 } else {
-                    Pokable p = (Pokable) c.getFeature(Pokable.class);
-                    if (p != null) {
-                        Caret caret = p.getPokeCaret(event);
-                        setPokedComponent(circ, c, caret);
-                        AttributeSet attrs = c.getAttributeSet();
+                    Pokable pokable = (Pokable) component.getFeature(Pokable.class);
+                    if (pokable != null) {
+                        Caret caret = pokable.getPokeCaret(event);
+                        setPokedComponent(circuit, component, caret);
+                        AttributeSet attrs = component.getAttributeSet();
                         if (attrs != null && attrs.getAttributes().size() > 0) {
-                            Project proj = canvas.getProject();
-                            proj.getFrame().viewComponentAttributes(circ, c);
+                            Project project = canvas.getProject();
+                            project.getFrame().viewComponentAttributes(circuit, component);
                         }
                     }
                 }
             }
         }
         if (pokeCaret != null) {
-            dirty = true;
+            isDirty = true;
             pokeCaret.mousePressed(e);
         }
-        if (dirty) {
+        if (isDirty) {
             canvas.getProject().repaintCanvas();
         }
     }
@@ -217,53 +216,49 @@ public class PokeTool extends Tool {
 
     private static class WireCaret extends AbstractCaret {
 
-        AttributeSet opts;
+        AttributeSet options;
         Canvas canvas;
         Wire wire;
         int x;
         int y;
 
-        WireCaret(Canvas c, Wire w, int x, int y, AttributeSet opts) {
-            canvas = c;
-            wire = w;
+        WireCaret(Canvas canvas, Wire wire, int x, int y, AttributeSet options) {
+            this.canvas = canvas;
+            this.wire = wire;
             this.x = x;
             this.y = y;
-            this.opts = opts;
+            this.options = options;
         }
 
         @Override
         public void draw(Graphics g) {
-            Value v = canvas.getCircuitState().getValue(wire.getEnd0());
+            Value value = canvas.getCircuitState().getValue(wire.getEnd0());
             RadixOption radix1 = RadixOption.decode(AppPreferences.POKE_WIRE_RADIX1.get());
             RadixOption radix2 = RadixOption.decode(AppPreferences.POKE_WIRE_RADIX2.get());
             if (radix1 == null) {
                 radix1 = RadixOption.RADIX_2;
             }
-            String vStr = radix1.toString(v);
-            if (radix2 != null && v.getWidth() > 1) {
-                vStr += " / " + radix2.toString(v);
+            String valueString = radix1.toString(value);
+            if (radix2 != null && value.getWidth() > 1) {
+                valueString += " / " + radix2.toString(value);
             }
 
             FontMetrics fm = g.getFontMetrics();
             g.setColor(caretColor);
-            g.fillRect(x + 2, y + 2, fm.stringWidth(vStr) + 4,
-                    fm.getAscent() + fm.getDescent() + 4);
+            g.fillRect(x + 2, y + 2, fm.stringWidth(valueString) + 4, fm.getAscent() + fm.getDescent() + 4);
             g.setColor(Color.BLACK);
-            g.drawRect(x + 2, y + 2, fm.stringWidth(vStr) + 4,
-                    fm.getAscent() + fm.getDescent() + 4);
+            g.drawRect(x + 2, y + 2, fm.stringWidth(valueString) + 4, fm.getAscent() + fm.getDescent() + 4);
             g.fillOval(x - 2, y - 2, 5, 5);
-            g.drawString(vStr, x + 4, y + 4 + fm.getAscent());
+            g.drawString(valueString, x + 4, y + 4 + fm.getAscent());
         }
     }
 
     private class Listener implements CircuitListener {
 
         public void circuitChanged(CircuitEvent event) {
-            Circuit circ = pokedCircuit;
-            if (event.getCircuit() == circ && circ != null
-                    && (event.getAction() == CircuitEvent.ACTION_REMOVE
-                    || event.getAction() == CircuitEvent.ACTION_CLEAR)
-                    && !circ.contains(pokedComponent)) {
+            Circuit circuit = pokedCircuit;
+            if (event.getCircuit() == circuit && circuit != null && (event.getAction() == CircuitEvent.ACTION_REMOVE
+                || event.getAction() == CircuitEvent.ACTION_CLEAR) && !circuit.contains(pokedComponent)) {
                 removeCaret(false);
             }
         }

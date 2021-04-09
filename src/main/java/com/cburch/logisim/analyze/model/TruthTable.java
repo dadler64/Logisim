@@ -12,10 +12,10 @@ import java.util.Map;
 public class TruthTable {
 
     private static final Entry DEFAULT_ENTRY = Entry.DONT_CARE;
-    private MyListener myListener = new MyListener();
-    private List<TruthTableListener> listeners = new ArrayList<>();
-    private AnalyzerModel model;
-    private HashMap<String, Entry[]> outputColumns = new HashMap<>();
+    private final MyListener myListener = new MyListener();
+    private final List<TruthTableListener> listeners = new ArrayList<>();
+    private final AnalyzerModel model;
+    private final HashMap<String, Entry[]> outputColumns = new HashMap<>();
 
     public TruthTable(AnalyzerModel model) {
         this.model = model;
@@ -259,7 +259,7 @@ public class TruthTable {
             newIndex = inputs - 1 - newIndex;
             Entry[] ret = new Entry[old.length];
             int sameMask = (old.length - 1) ^ ((1 << (1 + Math.max(oldIndex, newIndex))) - 1)
-                    ^ ((1 << Math.min(oldIndex, newIndex)) - 1);        // bits that don't change
+                ^ ((1 << Math.min(oldIndex, newIndex)) - 1);        // bits that don't change
             int moveMask = 1 << oldIndex;                           // bit that moves
             int moveDist = Math.abs(newIndex - oldIndex);
             boolean moveLeft = newIndex > oldIndex;
@@ -268,10 +268,10 @@ public class TruthTable {
                 int j; // new index
                 if (moveLeft) {
                     j = (i & sameMask) | ((i & moveMask) << moveDist)
-                            | ((i & blockMask) >> 1);
+                        | ((i & blockMask) >> 1);
                 } else {
                     j = (i & sameMask) | ((i & moveMask) >> moveDist)
-                            | ((i & blockMask) << 1);
+                        | ((i & blockMask) << 1);
                 }
                 ret[j] = old[i];
             }

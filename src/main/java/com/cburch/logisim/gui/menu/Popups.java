@@ -41,12 +41,12 @@ public class Popups {
 
     private static class ProjectPopup extends JPopupMenu implements ActionListener {
 
-        private Project project;
-        private JMenuItem addItem = new JMenuItem(Strings.get("projectAddCircuitItem"));
-        private JMenu loadItem = new JMenu(Strings.get("projectLoadLibraryItem"));
-        private JMenuItem loadBuiltinItem = new JMenuItem(Strings.get("projectLoadBuiltinItem"));
-        private JMenuItem loadLogisimItem = new JMenuItem(Strings.get("projectLoadLogisimItem"));
-        private JMenuItem loadJarItem = new JMenuItem(Strings.get("projectLoadJarItem"));
+        private final Project project;
+        private final JMenuItem addItem = new JMenuItem(Strings.get("projectAddCircuitItem"));
+        private final JMenu loadItem = new JMenu(Strings.get("projectLoadLibraryItem"));
+        private final JMenuItem loadBuiltinItem = new JMenuItem(Strings.get("projectLoadBuiltinItem"));
+        private final JMenuItem loadLogisimItem = new JMenuItem(Strings.get("projectLoadLogisimItem"));
+        private final JMenuItem loadJarItem = new JMenuItem(Strings.get("projectLoadJarItem"));
 
         private ProjectPopup(Project project) {
             super(Strings.get("projMenu"));
@@ -80,10 +80,10 @@ public class Popups {
 
     private static class LibraryPopup extends JPopupMenu implements ActionListener {
 
-        private Project project;
-        private Library library;
-        private JMenuItem unloadItem = new JMenuItem(Strings.get("projectUnloadLibraryItem"));
-        private JMenuItem reloadItem = new JMenuItem(Strings.get("projectReloadLibraryItem"));
+        private final Project project;
+        private final Library library;
+        private final JMenuItem unloadItem = new JMenuItem(Strings.get("projectUnloadLibraryItem"));
+        private final JMenuItem reloadItem = new JMenuItem(Strings.get("projectReloadLibraryItem"));
 
         private LibraryPopup(Project project, Library library, boolean isTop) {
             super(Strings.get("libMenu"));
@@ -111,15 +111,15 @@ public class Popups {
 
     private static class CircuitPopup extends JPopupMenu implements ActionListener {
 
-        private Project project;
-        private Tool tool;
-        private Circuit circuit;
-        private JMenuItem analyzeItem = new JMenuItem(Strings.get("projectAnalyzeCircuitItem"));
-        private JMenuItem statsItem = new JMenuItem(Strings.get("projectGetCircuitStatisticsItem"));
-        private JMenuItem mainItem = new JMenuItem(Strings.get("projectSetAsMainItem"));
-        private JMenuItem removeItem = new JMenuItem(Strings.get("projectRemoveCircuitItem"));
-        private JMenuItem editLayoutItem = new JMenuItem(Strings.get("projectEditCircuitLayoutItem"));
-        private JMenuItem editAppearanceItem = new JMenuItem(Strings.get("projectEditCircuitAppearanceItem"));
+        private final Project project;
+        private final Tool tool;
+        private final Circuit circuit;
+        private final JMenuItem analyzeItem = new JMenuItem(Strings.get("projectAnalyzeCircuitItem"));
+        private final JMenuItem statsItem = new JMenuItem(Strings.get("projectGetCircuitStatisticsItem"));
+        private final JMenuItem mainItem = new JMenuItem(Strings.get("projectSetAsMainItem"));
+        private final JMenuItem removeItem = new JMenuItem(Strings.get("projectRemoveCircuitItem"));
+        private final JMenuItem editLayoutItem = new JMenuItem(Strings.get("projectEditCircuitLayoutItem"));
+        private final JMenuItem editAppearanceItem = new JMenuItem(Strings.get("projectEditCircuitAppearanceItem"));
 
         private CircuitPopup(Project project, Tool tool, Circuit circuit) {
             super(Strings.get("circuitMenu"));
@@ -152,7 +152,7 @@ public class Popups {
             }
             mainItem.setEnabled(canChange && file.getMainCircuit() != circuit);
             removeItem.setEnabled(canChange && file.getCircuitCount() > 1
-                    && project.getDependencies().canRemove(circuit));
+                && project.getDependencies().canRemove(circuit));
         }
 
         public void actionPerformed(ActionEvent event) {

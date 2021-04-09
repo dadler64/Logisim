@@ -36,32 +36,35 @@ class NotGate extends InstanceFactory {
     public static final AttributeOption SIZE_NARROW = new AttributeOption(20, Strings.getter("gateSizeNarrowOpt"));
     public static final AttributeOption SIZE_WIDE = new AttributeOption(30, Strings.getter("gateSizeWideOpt"));
     public static final Attribute<AttributeOption> ATTR_SIZE = Attributes
-            .forOption("size", Strings.getter("gateSizeAttr"), new AttributeOption[]{SIZE_NARROW, SIZE_WIDE});
-
+        .forOption("size", Strings.getter("gateSizeAttr"), new AttributeOption[]{SIZE_NARROW, SIZE_WIDE});
+    public static final InstanceFactory FACTORY = new NotGate();
     private static final String RECT_LABEL = "1";
     private static final Icon toolIcon = Icons.getIcon("notGate.gif");
     private static final Icon toolIconRect = Icons.getIcon("notGateRect.gif");
     private static final Icon toolIconDin = Icons.getIcon("dinNotGate.gif");
 
-    public static final InstanceFactory FACTORY = new NotGate();
-
     private NotGate() {
         super("NOT Gate", Strings.getter("notGateComponent"));
         setAttributes(new Attribute[]{
-                StdAttr.FACING, StdAttr.WIDTH, ATTR_SIZE,
-                GateAttributes.ATTRIBUTE_OUTPUT,
-                StdAttr.LABEL, StdAttr.LABEL_FONT,
+            StdAttr.FACING,
+            StdAttr.WIDTH,
+            ATTR_SIZE,
+            GateAttributes.ATTRIBUTE_OUTPUT,
+            StdAttr.LABEL,
+            StdAttr.LABEL_FONT,
         }, new Object[]{
-                Direction.EAST, BitWidth.ONE, SIZE_WIDE,
-                GateAttributes.OUTPUT_01,
-                "", StdAttr.DEFAULT_LABEL_FONT,
+            Direction.EAST,
+            BitWidth.ONE,
+            SIZE_WIDE,
+            GateAttributes.OUTPUT_01,
+            "",
+            StdAttr.DEFAULT_LABEL_FONT,
         });
         setFacingAttribute(StdAttr.FACING);
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
     }
 
-    static void configureLabel(Instance instance, boolean isRectangular,
-            Location control) {
+    static void configureLabel(Instance instance, boolean isRectangular, Location control) {
         Object facing = instance.getAttributeValue(StdAttr.FACING);
         Bounds bounds = instance.getBounds();
         int x;
@@ -82,15 +85,14 @@ class NotGate extends InstanceFactory {
                 horizntalAlignment = TextField.H_CENTER;
             }
         }
-        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, x, y,
-                horizntalAlignment, TextField.V_BASELINE);
+        instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT, x, y, horizntalAlignment, TextField.V_BASELINE);
     }
 
     @Override
     public Bounds getOffsetBounds(AttributeSet attributes) {
         Object value = attributes.getValue(ATTR_SIZE);
+        Direction facing = attributes.getValue(StdAttr.FACING);
         if (value == SIZE_NARROW) {
-            Direction facing = attributes.getValue(StdAttr.FACING);
             if (facing == Direction.SOUTH) {
                 return Bounds.create(-9, -20, 18, 20);
             }
@@ -102,7 +104,6 @@ class NotGate extends InstanceFactory {
             }
             return Bounds.create(-20, -9, 20, 18);
         } else {
-            Direction facing = attributes.getValue(StdAttr.FACING);
             if (facing == Direction.SOUTH) {
                 return Bounds.create(-9, -30, 18, 30);
             }

@@ -18,9 +18,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class LayoutEditHandler extends EditHandler
-        implements ProjectListener, LibraryListener, PropertyChangeListener {
+    implements ProjectListener, LibraryListener, PropertyChangeListener {
 
-    private Frame frame;
+    private final Frame frame;
 
     LayoutEditHandler(Frame frame) {
         this.frame = frame;
@@ -47,8 +47,7 @@ public class LayoutEditHandler extends EditHandler
 
         setEnabled(LogisimMenuBar.CUT, !selEmpty && selectAvailable && canChange);
         setEnabled(LogisimMenuBar.COPY, !selEmpty && selectAvailable);
-        setEnabled(LogisimMenuBar.PASTE, selectAvailable && canChange
-                && !Clipboard.isEmpty());
+        setEnabled(LogisimMenuBar.PASTE, selectAvailable && canChange && !Clipboard.isEmpty());
         setEnabled(LogisimMenuBar.DELETE, !selEmpty && selectAvailable && canChange);
         setEnabled(LogisimMenuBar.DUPLICATE, !selEmpty && selectAvailable && canChange);
         setEnabled(LogisimMenuBar.SELECT_ALL, selectAvailable);

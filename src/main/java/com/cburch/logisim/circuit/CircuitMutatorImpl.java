@@ -14,9 +14,9 @@ import java.util.HashSet;
 
 class CircuitMutatorImpl implements CircuitMutator {
 
-    private ArrayList<CircuitChange> log;
-    private HashMap<Circuit, ReplacementMap> replacements;
-    private HashSet<Circuit> modified;
+    private final ArrayList<CircuitChange> log;
+    private final HashMap<Circuit, ReplacementMap> replacements;
+    private final HashSet<Circuit> modified;
 
     public CircuitMutatorImpl() {
         log = new ArrayList<>();
@@ -87,7 +87,7 @@ class CircuitMutatorImpl implements CircuitMutator {
     }
 
     public void set(Circuit circuit, Component comp, Attribute<?> attr,
-            Object newValue) {
+        Object newValue) {
         if (circuit.contains(comp)) {
             modified.add(circuit);
             @SuppressWarnings("unchecked")
@@ -100,7 +100,7 @@ class CircuitMutatorImpl implements CircuitMutator {
     }
 
     public void setForCircuit(Circuit circuit, Attribute<?> attr,
-            Object newValue) {
+        Object newValue) {
         @SuppressWarnings("unchecked")
         Attribute<Object> a = (Attribute<Object>) attr;
         AttributeSet attrs = circuit.getStaticAttributes();

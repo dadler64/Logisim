@@ -17,11 +17,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class SimulationTreeRenderer extends DefaultTreeCellRenderer {
 
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
-            boolean selected, boolean expanded, boolean leaf, int row,
-            boolean hasFocus) {
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf,
+        int row, boolean hasFocus) {
         Component ret = super.getTreeCellRendererComponent(tree, value,
-                selected, expanded, leaf, row, hasFocus);
+            selected, expanded, leaf, row, hasFocus);
         SimulationTreeModel model = (SimulationTreeModel) tree.getModel();
         if (ret instanceof JLabel) {
             JLabel label = (JLabel) ret;
@@ -38,8 +37,8 @@ public class SimulationTreeRenderer extends DefaultTreeCellRenderer {
 
     private static class RendererIcon implements Icon {
 
-        private ComponentFactory factory;
-        private boolean isCurrentView;
+        private final ComponentFactory factory;
+        private final boolean isCurrentView;
 
         RendererIcon(ComponentFactory factory, boolean isCurrentView) {
             this.factory = factory;
@@ -56,7 +55,7 @@ public class SimulationTreeRenderer extends DefaultTreeCellRenderer {
 
         public void paintIcon(Component c, Graphics g, int x, int y) {
             ComponentDrawContext context = new ComponentDrawContext(c,
-                    null, null, g, g);
+                null, null, g, g);
             factory.paintIcon(context, x, y, factory.createAttributeSet());
 
             // draw magnifying glass if appropriate

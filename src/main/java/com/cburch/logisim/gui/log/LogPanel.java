@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 abstract class LogPanel extends JPanel {
 
-    private LogFrame logFrame;
+    private final LogFrame logFrame;
 
     public LogPanel(LogFrame frame) {
         super();

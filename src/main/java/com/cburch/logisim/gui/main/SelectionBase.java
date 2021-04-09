@@ -31,13 +31,13 @@ class SelectionBase {
     final HashSet<Component> lifted = new HashSet<>(); // of selected Components removed
     final HashSet<Component> suppressHandles = new HashSet<>(); // of Components
     final Set<Component> unionSet = CollectionUtil.createUnmodifiableSetUnion(selected, lifted);
-    Project proj;
-    private ArrayList<Selection.Listener> listeners = new ArrayList<>();
+    private final ArrayList<Selection.Listener> listeners = new ArrayList<>();
+    Project project;
     private Bounds bounds = Bounds.EMPTY_BOUNDS;
     private boolean shouldSnap = false;
 
-    public SelectionBase(Project proj) {
-        this.proj = proj;
+    public SelectionBase(Project project) {
+        this.project = project;
     }
 
     private static boolean shouldSnapComponent(Component comp) {
@@ -238,8 +238,8 @@ class SelectionBase {
     }
 
     private boolean hasConflictTranslated(Collection<Component> components,
-            int dx, int dy, boolean selfConflicts) {
-        Circuit circuit = proj.getCurrentCircuit();
+        int dx, int dy, boolean selfConflicts) {
+        Circuit circuit = project.getCurrentCircuit();
         if (circuit == null) {
             return false;
         }
@@ -309,14 +309,14 @@ class SelectionBase {
             }
 
             if (bds.getX() + dx >= 0 && bds.getY() + dy >= 0
-                    && !hasConflictTranslated(components, dx, dy, true)) {
+                && !hasConflictTranslated(components, dx, dy, true)) {
                 return copyComponents(components, dx, dy);
             }
         }
     }
 
     private HashMap<Component, Component> copyComponents(Collection<Component> components,
-            int dx, int dy) {
+        int dx, int dy) {
         HashMap<Component, Component> ret = new HashMap<>();
         for (Component comp : components) {
             Location oldLoc = comp.getLocation();
@@ -343,14 +343,14 @@ class SelectionBase {
         boolean hasPrinted = false;
         for (Component comp : selected) {
             System.err.println((hasPrinted ? "         " : " select: ") //OK
-                    + comp + "  [" + comp.hashCode() + "]");
+                + comp + "  [" + comp.hashCode() + "]");
             hasPrinted = true;
         }
 
         hasPrinted = false;
         for (Component comp : lifted) {
             System.err.println((hasPrinted ? "         " : " lifted: ") //OK
-                    + comp + "  [" + comp.hashCode() + "]");
+                + comp + "  [" + comp.hashCode() + "]");
             hasPrinted = true;
         }
     }

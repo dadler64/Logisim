@@ -36,20 +36,19 @@ import java.util.Set;
 public class EditTool extends Tool {
 
     private static final int CACHE_MAX_SIZE = 32;
-    private static final Location NULL_LOCATION
-            = Location.create(Integer.MIN_VALUE, Integer.MIN_VALUE);
-    private Listener listener;
-    private SelectTool select;
-    private WiringTool wiring;
+    private static final Location NULL_LOCATION = Location.create(Integer.MIN_VALUE, Integer.MIN_VALUE);
+    private final Listener listener;
+    private final SelectTool select;
+    private final WiringTool wiring;
     private Tool current;
-    private LinkedHashMap<Location, Boolean> cache;
+    private final LinkedHashMap<Location, Boolean> cache;
     private Canvas lastCanvas;
     private int lastRawX;
     private int lastRawY;
     private int lastX; // last coordinates where wiring was computed
     private int lastY;
-    private int lastMods; // last modifiers for mouse event
-    private Location wireLoc; // coordinates where to draw wiring indicator, if
+    private int lastModifiers; // last modifiers for mouse event
+    private Location wireLocation; // coordinates where to draw wiring indicator, if
     private int pressX; // last coordinate where mouse was pressed
     private int pressY; // (used to determine when a short wire has been clicked)
 
@@ -60,7 +59,7 @@ public class EditTool extends Tool {
         this.current = select;
         this.cache = new LinkedHashMap<>();
         this.lastX = -1;
-        this.wireLoc = NULL_LOCATION;
+        this.wireLocation = NULL_LOCATION;
         this.pressX = -1;
     }
 
@@ -121,10 +120,10 @@ public class EditTool extends Tool {
 
     @Override
     public void draw(Canvas canvas, ComponentDrawContext context) {
-        Location loc = wireLoc;
-        if (loc != NULL_LOCATION && current != wiring) {
-            int x = loc.getX();
-            int y = loc.getY();
+        Location wireLocation = this.wireLocation;
+        if (wireLocation != NULL_LOCATION && current != wiring) {
+            int x = wireLocation.getX();
+            int y = wireLocation.getY();
             Graphics g = context.getGraphics();
             g.setColor(Value.TRUE_COLOR);
             GraphicsUtil.switchToWidth(g, 2);
@@ -156,27 +155,27 @@ public class EditTool extends Tool {
 
     @Override
     public void mousePressed(Canvas canvas, Graphics g, MouseEvent e) {
-        boolean wire = updateLocation(canvas, e);
-        Location oldWireLoc = wireLoc;
-        wireLoc = NULL_LOCATION;
+        boolean isWire = updateLocation(canvas, e);
+        Location wireLocation = this.wireLocation;
+        this.wireLocation = NULL_LOCATION;
         lastX = Integer.MIN_VALUE;
-        if (wire) {
+        if (isWire) {
             current = wiring;
-            Selection sel = canvas.getSelection();
-            Circuit circ = canvas.getCircuit();
-            Collection<Component> selected = sel.getAnchoredComponents();
+            Selection selection = canvas.getSelection();
+            Circuit circuit = canvas.getCircuit();
+            Collection<Component> selected = selection.getAnchoredComponents();
             ArrayList<Component> suppress = null;
-            for (Wire w : circ.getWires()) {
-                if (selected.contains(w)) {
-                    if (w.contains(oldWireLoc)) {
+            for (Wire wire : circuit.getWires()) {
+                if (selected.contains(wire)) {
+                    if (wire.contains(wireLocation)) {
                         if (suppress == null) {
                             suppress = new ArrayList<>();
                         }
-                        suppress.add(w);
+                        suppress.add(wire);
                     }
                 }
             }
-            sel.setSuppressHandles(suppress);
+            selection.setSuppressHandles(suppress);
         } else {
             current = select;
         }
@@ -193,10 +192,10 @@ public class EditTool extends Tool {
 
     @Override
     public void mouseReleased(Canvas canvas, Graphics g, MouseEvent e) {
-        boolean click = isClick(e) && current == wiring;
+        boolean isClick = isClick(e) && current == wiring;
         canvas.getSelection().setSuppressHandles(null);
         current.mouseReleased(canvas, g, e);
-        if (click) {
+        if (isClick) {
             wiring.resetClick();
             select.mousePressed(canvas, g, e);
             select.mouseReleased(canvas, g, e);
@@ -254,71 +253,71 @@ public class EditTool extends Tool {
         }
     }
 
-    private boolean updateLocation(Canvas canvas, int mx, int my, int mods) {
-        int snapx = Canvas.snapXToGrid(mx);
-        int snapy = Canvas.snapYToGrid(my);
-        int dx = mx - snapx;
-        int dy = my - snapy;
+    private boolean updateLocation(Canvas canvas, int mx, int my, int modifiers) {
+        int snapX = Canvas.snapXToGrid(mx);
+        int snapY = Canvas.snapYToGrid(my);
+        int dx = mx - snapX;
+        int dy = my - snapY;
         boolean isEligible = dx * dx + dy * dy < 36;
-        if ((mods & MouseEvent.ALT_DOWN_MASK) != 0) {
+        if ((modifiers & MouseEvent.ALT_DOWN_MASK) != 0) {
             isEligible = true;
         }
         if (!isEligible) {
-            snapx = -1;
-            snapy = -1;
+            snapX = -1;
+            snapY = -1;
         }
-        boolean modsSame = lastMods == mods;
+        boolean isModifierEqual = lastModifiers == modifiers;
         lastCanvas = canvas;
         lastRawX = mx;
         lastRawY = my;
-        lastMods = mods;
-        if (lastX == snapx && lastY == snapy && modsSame) { // already computed
-            return wireLoc != NULL_LOCATION;
+        lastModifiers = modifiers;
+        if (lastX == snapX && lastY == snapY && isModifierEqual) { // already computed
+            return wireLocation != NULL_LOCATION;
         } else {
-            Location snap = Location.create(snapx, snapy);
-            if (modsSame) {
-                Object o = cache.get(snap);
-                if (o != null) {
-                    lastX = snapx;
-                    lastY = snapy;
+            Location snap = Location.create(snapX, snapY);
+            if (isModifierEqual) {
+                Boolean isSnap = cache.get(snap);
+                if (isSnap != null) {
+                    lastX = snapX;
+                    lastY = snapY;
                     canvas.repaint();
-                    boolean ret = (Boolean) o;
-                    wireLoc = ret ? snap : NULL_LOCATION;
+                    boolean ret = isSnap;
+                    wireLocation = ret ? snap : NULL_LOCATION;
                     return ret;
                 }
             } else {
                 cache.clear();
             }
 
-            boolean ret = isEligible && isWiringPoint(canvas, snap, mods);
-            wireLoc = ret ? snap : NULL_LOCATION;
-            cache.put(snap, ret);
+            boolean isValid = isEligible && isWiringPoint(canvas, snap, modifiers);
+            wireLocation = isValid ? snap : NULL_LOCATION;
+            cache.put(snap, isValid);
             int toRemove = cache.size() - CACHE_MAX_SIZE;
-            Iterator<Location> it = cache.keySet().iterator();
-            while (it.hasNext() && toRemove > 0) {
-                it.next();
-                it.remove();
+            Iterator<Location> iterator = cache.keySet().iterator();
+            while (iterator.hasNext() && toRemove > 0) {
+                iterator.next();
+                iterator.remove();
                 toRemove--;
             }
 
-            lastX = snapx;
-            lastY = snapy;
+            lastX = snapX;
+            lastY = snapY;
             canvas.repaint();
-            return ret;
+            return isValid;
         }
     }
 
-    private boolean isWiringPoint(Canvas canvas, Location loc, int modsEx) {
+    private boolean isWiringPoint(Canvas canvas, Location location, int modsEx) {
         boolean wiring = (modsEx & MouseEvent.ALT_DOWN_MASK) == 0;
         boolean select = !wiring;
 
         if (canvas != null && canvas.getSelection() != null) {
-            Collection<Component> sel = canvas.getSelection().getComponents();
-            if (sel != null) {
-                for (Component c : sel) {
-                    if (c instanceof Wire) {
-                        Wire w = (Wire) c;
-                        if (w.contains(loc) && !w.endsAt(loc)) {
+            Collection<Component> components = canvas.getSelection().getComponents();
+            if (components != null) {
+                for (Component component : components) {
+                    if (component instanceof Wire) {
+                        Wire wire = (Wire) component;
+                        if (wire.contains(location) && !wire.endsAt(location)) {
                             return select;
                         }
                     }
@@ -326,14 +325,14 @@ public class EditTool extends Tool {
             }
         }
 
-        Circuit circ = canvas.getCircuit();
-        Collection<? extends Component> at = circ.getComponents(loc);
-        if (at != null && at.size() > 0) {
+        Circuit circuit = canvas.getCircuit();
+        Collection<? extends Component> components = circuit.getComponents(location);
+        if (components != null && components.size() > 0) {
             return wiring;
         }
 
-        for (Wire w : circ.getWires()) {
-            if (w.contains(loc)) {
+        for (Wire wire : circuit.getWires()) {
+            if (wire.contains(location)) {
                 return wiring;
             }
         }
@@ -351,16 +350,16 @@ public class EditTool extends Tool {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
                 if (!canvas.getSelection().isEmpty()) {
-                    Action act = SelectionActions.clear(canvas.getSelection());
-                    canvas.getProject().doAction(act);
+                    Action action = SelectionActions.clear(canvas.getSelection());
+                    canvas.getProject().doAction(action);
                     e.consume();
                 } else {
                     wiring.keyPressed(canvas, e);
                 }
                 break;
             case KeyEvent.VK_INSERT:
-                Action act = SelectionActions.duplicate(canvas.getSelection());
-                canvas.getProject().doAction(act);
+                Action action = SelectionActions.duplicate(canvas.getSelection());
+                canvas.getProject().doAction(action);
                 e.consume();
                 break;
             case KeyEvent.VK_UP:
@@ -413,19 +412,19 @@ public class EditTool extends Tool {
     private void attemptReface(Canvas canvas, final Direction facing, KeyEvent e) {
         if (e.getModifiersEx() == 0) {
             final Circuit circuit = canvas.getCircuit();
-            final Selection sel = canvas.getSelection();
-            SetAttributeAction act = new SetAttributeAction(circuit,
-                    Strings.getter("selectionRefaceAction"));
-            for (Component comp : sel.getComponents()) {
-                if (!(comp instanceof Wire)) {
-                    Attribute<Direction> attr = getFacingAttribute(comp);
+            final Selection selection = canvas.getSelection();
+            SetAttributeAction action = new SetAttributeAction(circuit,
+                Strings.getter("selectionRefaceAction"));
+            for (Component component : selection.getComponents()) {
+                if (!(component instanceof Wire)) {
+                    Attribute<Direction> attr = getFacingAttribute(component);
                     if (attr != null) {
-                        act.set(comp, attr, facing);
+                        action.set(component, attr, facing);
                     }
                 }
             }
-            if (!act.isEmpty()) {
-                canvas.getProject().doAction(act);
+            if (!action.isEmpty()) {
+                canvas.getProject().doAction(action);
                 e.consume();
             }
         }
@@ -434,9 +433,9 @@ public class EditTool extends Tool {
     private Attribute<Direction> getFacingAttribute(Component comp) {
         AttributeSet attrs = comp.getAttributeSet();
         Object key = ComponentFactory.FACING_ATTRIBUTE_KEY;
-        Attribute<?> a = (Attribute<?>) comp.getFactory().getFeature(key, attrs);
+        Attribute<?> attr = (Attribute<?>) comp.getFactory().getFeature(key, attrs);
         @SuppressWarnings("unchecked")
-        Attribute<Direction> ret = (Attribute<Direction>) a;
+        Attribute<Direction> ret = (Attribute<Direction>) attr;
         return ret;
     }
 
@@ -451,14 +450,14 @@ public class EditTool extends Tool {
             if (event.getAction() != CircuitEvent.ACTION_INVALIDATE) {
                 lastX = -1;
                 cache.clear();
-                updateLocation(lastCanvas, lastRawX, lastRawY, lastMods);
+                updateLocation(lastCanvas, lastRawX, lastRawY, lastModifiers);
             }
         }
 
         public void selectionChanged(Event event) {
             lastX = -1;
             cache.clear();
-            updateLocation(lastCanvas, lastRawX, lastRawY, lastMods);
+            updateLocation(lastCanvas, lastRawX, lastRawY, lastModifiers);
         }
     }
 }

@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 public class MatchingSet<E extends CanvasObject> extends AbstractSet<E> {
 
-    private HashSet<Member<E>> set;
+    private final HashSet<Member<E>> set;
 
     public MatchingSet() {
         set = new HashSet<>();
@@ -76,7 +76,7 @@ public class MatchingSet<E extends CanvasObject> extends AbstractSet<E> {
 
     private static class MatchIterator<E extends CanvasObject> implements Iterator<E> {
 
-        private Iterator<Member<E>> iterator;
+        private final Iterator<Member<E>> iterator;
 
         private MatchIterator(Iterator<Member<E>> iterator) {
             this.iterator = iterator;

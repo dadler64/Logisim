@@ -21,7 +21,7 @@ public abstract class JDialogOk extends JDialog {
 
     protected JButton ok = new JButton(Strings.get("dlogOkButton"));
     protected JButton cancel = new JButton(Strings.get("dlogCancelButton"));
-    private JPanel contents = new JPanel(new BorderLayout());
+    private final JPanel contents = new JPanel(new BorderLayout());
 
     public JDialogOk(Dialog parent, String title, boolean model) {
         super(parent, title, true);
@@ -63,14 +63,14 @@ public abstract class JDialogOk extends JDialog {
     }
 
     private class MyListener extends WindowAdapter
-            implements ActionListener {
+        implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            if (src == ok) {
+            Object source = e.getSource();
+            if (source == ok) {
                 okClicked();
                 dispose();
-            } else if (src == cancel) {
+            } else if (source == cancel) {
                 cancelClicked();
                 dispose();
             }

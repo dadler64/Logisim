@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 class Clip implements ClipboardOwner {
 
     private static final DataFlavor binaryFlavor = new DataFlavor(int[].class, "Binary data");
-    private HexEditor editor;
+    private final HexEditor editor;
 
     Clip(HexEditor editor) {
         this.editor = editor;
@@ -61,18 +61,14 @@ class Clip implements ClipboardOwner {
         if (xfer.isDataFlavorSupported(binaryFlavor)) {
             try {
                 data = (int[]) xfer.getTransferData(binaryFlavor);
-            } catch (UnsupportedFlavorException e) {
-                return;
-            } catch (IOException e) {
+            } catch (UnsupportedFlavorException | IOException e) {
                 return;
             }
         } else if (xfer.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             String buf;
             try {
                 buf = (String) xfer.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException e) {
-                return;
-            } catch (IOException e) {
+            } catch (UnsupportedFlavorException | IOException e) {
                 return;
             }
 
@@ -80,17 +76,17 @@ class Clip implements ClipboardOwner {
                 data = HexFile.parse(new StringReader(buf));
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(editor.getRootPane(),
-                        e.getMessage(),
-                        // Strings.get("hexPasteSupportedError"),
-                        Strings.get("hexPasteErrorTitle"),
-                        JOptionPane.ERROR_MESSAGE);
+                    e.getMessage(),
+                    // Strings.get("hexPasteSupportedError"),
+                    Strings.get("hexPasteErrorTitle"),
+                    JOptionPane.ERROR_MESSAGE);
                 return;
             }
         } else {
             JOptionPane.showMessageDialog(editor.getRootPane(),
-                    Strings.get("hexPasteSupportedError"),
-                    Strings.get("hexPasteErrorTitle"),
-                    JOptionPane.ERROR_MESSAGE);
+                Strings.get("hexPasteSupportedError"),
+                Strings.get("hexPasteErrorTitle"),
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -103,9 +99,9 @@ class Clip implements ClipboardOwner {
                 model.set(p0, data);
             } else {
                 JOptionPane.showMessageDialog(editor.getRootPane(),
-                        Strings.get("hexPasteEndError"),
-                        Strings.get("hexPasteErrorTitle"),
-                        JOptionPane.ERROR_MESSAGE);
+                    Strings.get("hexPasteEndError"),
+                    Strings.get("hexPasteErrorTitle"),
+                    JOptionPane.ERROR_MESSAGE);
             }
         } else {
             if (p0 < 0 || p1 < 0) {
@@ -123,9 +119,9 @@ class Clip implements ClipboardOwner {
                 model.set(p0, data);
             } else {
                 JOptionPane.showMessageDialog(editor.getRootPane(),
-                        Strings.get("hexPasteSizeError"),
-                        Strings.get("hexPasteErrorTitle"),
-                        JOptionPane.ERROR_MESSAGE);
+                    Strings.get("hexPasteSizeError"),
+                    Strings.get("hexPasteErrorTitle"),
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -135,7 +131,7 @@ class Clip implements ClipboardOwner {
 
     private static class Data implements Transferable {
 
-        private int[] data;
+        private final int[] data;
 
         Data(int[] data) {
             this.data = data;
@@ -149,13 +145,13 @@ class Clip implements ClipboardOwner {
             return flavor == binaryFlavor || flavor == DataFlavor.stringFlavor;
         }
 
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
             if (flavor == binaryFlavor) {
                 return data;
             } else if (flavor == DataFlavor.stringFlavor) {
                 int bits = 1;
-                for (int i = 0; i < data.length; i++) {
-                    int k = data[i] >> bits;
+                for (int datum : data) {
+                    int k = datum >> bits;
                     while (k != 0 && bits < 32) {
                         bits++;
                         k >>= 1;
@@ -168,9 +164,9 @@ class Clip implements ClipboardOwner {
                     if (i > 0) {
                         buf.append(i % 8 == 0 ? '\n' : ' ');
                     }
-                    String s = Integer.toHexString(data[i]);
+                    StringBuilder s = new StringBuilder(Integer.toHexString(data[i]));
                     while (s.length() < chars) {
-                        s = "0" + s;
+                        s.insert(0, "0");
                     }
                     buf.append(s);
                 }

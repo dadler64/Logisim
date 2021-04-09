@@ -10,12 +10,12 @@ import javax.swing.JMenuItem;
 
 class MenuItemHelper implements ActionListener {
 
-    private JMenuItem source;
-    private LogisimMenuItem menuItem;
-    private Menu menu;
+    private final JMenuItem source;
+    private final LogisimMenuItem menuItem;
+    private final Menu menu;
+    private final ArrayList<ActionListener> listeners;
     private boolean enabled;
     private boolean inActionListener;
-    private ArrayList<ActionListener> listeners;
 
     public MenuItemHelper(JMenuItem source, Menu menu, LogisimMenuItem menuItem) {
         this.source = source;
@@ -59,8 +59,8 @@ class MenuItemHelper implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if (!listeners.isEmpty()) {
             ActionEvent e = new ActionEvent(menuItem, event.getID(),
-                    event.getActionCommand(), event.getWhen(),
-                    event.getModifiers());
+                event.getActionCommand(), event.getWhen(),
+                event.getModifiers());
             for (ActionListener l : listeners) {
                 l.actionPerformed(e);
             }

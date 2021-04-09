@@ -39,39 +39,38 @@ class AvoidanceMap {
     public void markAll(Collection<Component> elements, int dx, int dy) {
         // first we go through the components, saying that we should not
         // intersect with any point that lies within a component
-        for (Component el : elements) {
-            if (el instanceof Wire) {
-                markWire((Wire) el, dx, dy);
+        for (Component element : elements) {
+            if (element instanceof Wire) {
+                markWire((Wire) element, dx, dy);
             } else {
-                markComponent(el, dx, dy);
+                markComponent(element, dx, dy);
             }
         }
     }
 
-    public void markComponent(Component comp, int dx, int dy) {
+    public void markComponent(Component component, int dx, int dy) {
         HashMap<Location, String> avoid = this.avoid;
         boolean translated = dx != 0 || dy != 0;
-        Bounds bds = comp.getBounds();
-        int x0 = bds.getX() + dx;
-        int y0 = bds.getY() + dy;
-        int x1 = x0 + bds.getWidth();
-        int y1 = y0 + bds.getHeight();
+        Bounds bounds = component.getBounds();
+        int x0 = bounds.getX() + dx;
+        int y0 = bounds.getY() + dy;
+        int x1 = x0 + bounds.getWidth();
+        int y1 = y0 + bounds.getHeight();
         x0 += 9 - (x0 + 9) % 10;
         y0 += 9 - (y0 + 9) % 10;
         for (int x = x0; x <= x1; x += 10) {
             for (int y = y0; y <= y1; y += 10) {
-                Location loc = Location.create(x, y);
-                // loc is most likely in the component, so go ahead and
-                // put it into the map as if it is - and in the rare event
-                // that loc isn't in the component, we can remove it.
-                String prev = avoid.put(loc, Connector.ALLOW_NEITHER);
-                if (prev != Connector.ALLOW_NEITHER) {
-                    Location baseLoc = translated ? loc.translate(-dx, -dy) : loc;
-                    if (!comp.contains(baseLoc)) {
-                        if (prev == null) {
-                            avoid.remove(loc);
+                Location location = Location.create(x, y);
+                // location is most likely in the component, so go ahead and put it into the map as if it is - and in the
+                // rare event that location isn't in the component, we can remove it.
+                String previous = avoid.put(location, Connector.ALLOW_NEITHER);
+                if (!previous.equals(Connector.ALLOW_NEITHER)) {
+                    Location baseLoc = translated ? location.translate(-dx, -dy) : location;
+                    if (!component.contains(baseLoc)) {
+                        if (previous == null) {
+                            avoid.remove(location);
                         } else {
-                            avoid.put(loc, prev);
+                            avoid.put(location, previous);
                         }
                     }
                 }
@@ -79,33 +78,33 @@ class AvoidanceMap {
         }
     }
 
-    public void markWire(Wire w, int dx, int dy) {
+    public void markWire(Wire wire, int dx, int dy) {
         HashMap<Location, String> avoid = this.avoid;
         boolean translated = dx != 0 || dy != 0;
-        Location loc0 = w.getEnd0();
-        Location loc1 = w.getEnd1();
+        Location location0 = wire.getEnd0();
+        Location location1 = wire.getEnd1();
         if (translated) {
-            loc0 = loc0.translate(dx, dy);
-            loc1 = loc1.translate(dx, dy);
+            location0 = location0.translate(dx, dy);
+            location1 = location1.translate(dx, dy);
         }
-        avoid.put(loc0, Connector.ALLOW_NEITHER);
-        avoid.put(loc1, Connector.ALLOW_NEITHER);
-        int x0 = loc0.getX();
-        int y0 = loc0.getY();
-        int x1 = loc1.getX();
-        int y1 = loc1.getY();
+        avoid.put(location0, Connector.ALLOW_NEITHER);
+        avoid.put(location1, Connector.ALLOW_NEITHER);
+        int x0 = location0.getX();
+        int y0 = location0.getY();
+        int x1 = location1.getX();
+        int y1 = location1.getY();
         if (x0 == x1) { // vertical wire
-            for (Location loc : Wire.create(loc0, loc1)) {
-                Object prev = avoid.put(loc, Connector.ALLOW_HORIZONTAL);
-                if (prev == Connector.ALLOW_NEITHER || prev == Connector.ALLOW_VERTICAL) {
-                    avoid.put(loc, Connector.ALLOW_NEITHER);
+            for (Location location : Wire.create(location0, location1)) {
+                Object previous = avoid.put(location, Connector.ALLOW_HORIZONTAL);
+                if (previous == Connector.ALLOW_NEITHER || previous == Connector.ALLOW_VERTICAL) {
+                    avoid.put(location, Connector.ALLOW_NEITHER);
                 }
             }
         } else if (y0 == y1) { // horizontal wire
-            for (Location loc : Wire.create(loc0, loc1)) {
-                Object prev = avoid.put(loc, Connector.ALLOW_VERTICAL);
+            for (Location location : Wire.create(location0, location1)) {
+                Object prev = avoid.put(location, Connector.ALLOW_VERTICAL);
                 if (prev == Connector.ALLOW_NEITHER || prev == Connector.ALLOW_HORIZONTAL) {
-                    avoid.put(loc, Connector.ALLOW_NEITHER);
+                    avoid.put(location, Connector.ALLOW_NEITHER);
                 }
             }
         } else { // diagonal - shouldn't happen
@@ -113,35 +112,35 @@ class AvoidanceMap {
         }
     }
 
-    public void unmarkLocation(Location loc) {
-        avoid.remove(loc);
+    public void unmarkLocation(Location location) {
+        avoid.remove(location);
     }
 
-    public void unmarkWire(Wire w, Location deletedEnd, Set<Location> unmarkable) {
-        Location loc0 = w.getEnd0();
-        Location loc1 = w.getEnd1();
+    public void unmarkWire(Wire wire, Location deletedEnd, Set<Location> unmarkable) {
+        Location location0 = wire.getEnd0();
+        Location location1 = wire.getEnd1();
         if (unmarkable == null || unmarkable.contains(deletedEnd)) {
             avoid.remove(deletedEnd);
         }
-        int x0 = loc0.getX();
-        int y0 = loc0.getY();
-        int x1 = loc1.getX();
-        int y1 = loc1.getY();
+        int x0 = location0.getX();
+        int y0 = location0.getY();
+        int x1 = location1.getX();
+        int y1 = location1.getY();
         if (x0 == x1) { // vertical wire
-            for (Location loc : w) {
+            for (Location location : wire) {
                 if (unmarkable == null || unmarkable.contains(deletedEnd)) {
-                    Object prev = avoid.remove(loc);
-                    if (prev != Connector.ALLOW_HORIZONTAL && prev != null) {
-                        avoid.put(loc, Connector.ALLOW_VERTICAL);
+                    Object previous = avoid.remove(location);
+                    if (previous != Connector.ALLOW_HORIZONTAL && previous != null) {
+                        avoid.put(location, Connector.ALLOW_VERTICAL);
                     }
                 }
             }
         } else if (y0 == y1) { // horizontal wire
-            for (Location loc : w) {
+            for (Location location : wire) {
                 if (unmarkable == null || unmarkable.contains(deletedEnd)) {
-                    Object prev = avoid.remove(loc);
-                    if (prev != Connector.ALLOW_VERTICAL && prev != null) {
-                        avoid.put(loc, Connector.ALLOW_HORIZONTAL);
+                    Object previous = avoid.remove(location);
+                    if (previous != Connector.ALLOW_VERTICAL && previous != null) {
+                        avoid.put(location, Connector.ALLOW_HORIZONTAL);
                     }
                 }
             }
@@ -153,8 +152,8 @@ class AvoidanceMap {
     public void print(PrintStream stream) {
         ArrayList<Location> list = new ArrayList<>(avoid.keySet());
         Collections.sort(list);
-        for (int i = 0, n = list.size(); i < n; i++) {
-            stream.println(list.get(i) + ": " + avoid.get(list.get(i)));
+        for (Location location : list) {
+            stream.println(location + ": " + avoid.get(location));
         }
     }
 }

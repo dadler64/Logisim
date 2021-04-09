@@ -17,9 +17,9 @@ class ConstantConfigurator extends IntegerConfigurator {
     @Override
     public int getMaximumValue(AttributeSet attrs) {
         BitWidth width = attrs.getValue(StdAttr.WIDTH);
-        int ret = width.getMask();
-        if (ret >= 0) {
-            return ret;
+        int mask = width.getMask();
+        if (mask >= 0) {
+            return mask;
         } else {
             return Integer.MAX_VALUE;
         }

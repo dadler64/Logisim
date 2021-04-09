@@ -31,13 +31,19 @@ public class Button extends InstanceFactory {
     public Button() {
         super("Button", Strings.getter("buttonComponent"));
         setAttributes(new Attribute[]{
-                StdAttr.FACING, Io.ATTR_COLOR,
-                StdAttr.LABEL, Io.ATTR_LABEL_LOCATION,
-                StdAttr.LABEL_FONT, Io.ATTR_LABEL_COLOR
+            StdAttr.FACING,
+            Io.ATTR_COLOR,
+            StdAttr.LABEL,
+            Io.ATTR_LABEL_LOCATION,
+            StdAttr.LABEL_FONT,
+            Io.ATTR_LABEL_COLOR
         }, new Object[]{
-                Direction.EAST, Color.WHITE,
-                "", Io.LABEL_CENTER,
-                StdAttr.DEFAULT_LABEL_FONT, Color.BLACK
+            Direction.EAST,
+            Color.WHITE,
+            "",
+            Io.LABEL_CENTER,
+            StdAttr.DEFAULT_LABEL_FONT,
+            Color.BLACK
         });
         setFacingAttribute(StdAttr.FACING);
         setIconName("button.gif");
@@ -104,7 +110,7 @@ public class Button extends InstanceFactory {
         }
 
         instance.setTextField(StdAttr.LABEL, StdAttr.LABEL_FONT,
-                x, y, halign, valign);
+            x, y, halign, valign);
     }
 
     @Override
@@ -143,7 +149,7 @@ public class Button extends InstanceFactory {
             y += DEPTH;
             Object labelLoc = painter.getAttributeValue(Io.ATTR_LABEL_LOCATION);
             if (labelLoc == Io.LABEL_CENTER || labelLoc == Direction.NORTH
-                    || labelLoc == Direction.WEST) {
+                || labelLoc == Direction.WEST) {
                 depress = DEPTH;
             } else {
                 depress = 0;

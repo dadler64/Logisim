@@ -13,41 +13,41 @@ import com.cburch.logisim.tools.SetAttributeAction;
 
 class AttrTableComponentModel extends AttributeSetTableModel {
 
-    Project proj;
-    Circuit circ;
-    Component comp;
+    Project project;
+    Circuit circuit;
+    Component component;
 
-    AttrTableComponentModel(Project proj, Circuit circ, Component comp) {
-        super(comp.getAttributeSet());
-        this.proj = proj;
-        this.circ = circ;
-        this.comp = comp;
+    AttrTableComponentModel(Project project, Circuit circuit, Component component) {
+        super(component.getAttributeSet());
+        this.project = project;
+        this.circuit = circuit;
+        this.component = component;
     }
 
     public Circuit getCircuit() {
-        return circ;
+        return circuit;
     }
 
     public Component getComponent() {
-        return comp;
+        return component;
     }
 
     @Override
     public String getTitle() {
-        return comp.getFactory().getDisplayName();
+        return component.getFactory().getDisplayName();
     }
 
     @Override
     public void setValueRequested(Attribute<Object> attribute, Object value)
-            throws AttrTableSetException {
-        if (!proj.getLogisimFile().contains(circ)) {
+        throws AttrTableSetException {
+        if (!project.getLogisimFile().contains(circuit)) {
             String msg = Strings.get("cannotModifyCircuitError");
             throw new AttrTableSetException(msg);
         } else {
-            SetAttributeAction act = new SetAttributeAction(circ,
-                    Strings.getter("changeAttributeAction"));
-            act.set(comp, attribute, value);
-            proj.doAction(act);
+            SetAttributeAction act = new SetAttributeAction(circuit,
+                Strings.getter("changeAttributeAction"));
+            act.set(component, attribute, value);
+            project.doAction(act);
         }
     }
 }

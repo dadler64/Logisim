@@ -80,8 +80,8 @@ abstract class Rectangular extends FillableCanvasObject {
         int y1 = y0 + bounds.getHeight();
         if (gesture == null) {
             return new Handle[]{new Handle(this, x0, y0),
-                    new Handle(this, x1, y0), new Handle(this, x1, y1),
-                    new Handle(this, x0, y1)};
+                new Handle(this, x1, y0), new Handle(this, x1, y1),
+                new Handle(this, x0, y1)};
         } else {
             int handleX = gesture.getHandle().getX();
             int heightY = gesture.getHandle().getY();
@@ -154,8 +154,8 @@ abstract class Rectangular extends FillableCanvasObject {
 
             }
             return new Handle[]{new Handle(this, newX0, newY0),
-                    new Handle(this, newX1, newY0), new Handle(this, newX1, newY1),
-                    new Handle(this, newX0, newY1)};
+                new Handle(this, newX1, newY0), new Handle(this, newX1, newY1),
+                new Handle(this, newX0, newY1)};
         }
     }
 
@@ -247,13 +247,13 @@ abstract class Rectangular extends FillableCanvasObject {
             int tol2 = Math.max(2 * Line.ON_LINE_THRESH, stroke);
             int tol = tol2 / 2;
             return isInRectangle(qx, qy, x - tol, y - tol, width + tol2, height + tol2)
-                    && contains(x - tol, y - tol, width + tol2, height + tol2, location)
-                    && !contains(x + tol, y + tol, width - tol2, height - tol2, location);
+                && contains(x - tol, y - tol, width + tol2, height + tol2, location)
+                && !contains(x + tol, y + tol, width - tol2, height - tol2, location);
         } else if (type == DrawAttr.PAINT_STROKE_FILL) {
             int stroke = getStrokeWidth();
             int tol = stroke / 2;
             return isInRectangle(qx, qy, x - tol, y - tol, width + stroke, height + stroke)
-                    && contains(x - tol, y - tol, width + stroke, height + stroke, location);
+                && contains(x - tol, y - tol, width + stroke, height + stroke, location);
         } else {
             return false;
         }

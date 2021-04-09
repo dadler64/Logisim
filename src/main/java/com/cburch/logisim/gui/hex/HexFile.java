@@ -144,15 +144,16 @@ public class HexFile {
             try {
                 out.close();
             } catch (IOException e) {
-                throw new IOException(Strings.get("hexFileWriteError"));
+//                throw new IOException(Strings.get("hexFileWriteError"));
+                Strings.get("hexFileWriteError");
             }
         }
     }
 
     private static class HexReader {
 
-        private BufferedReader in;
-        private int[] data;
+        private final BufferedReader in;
+        private final int[] data;
         private StringTokenizer curLine;
         private long leftCount;
         private long leftValue;

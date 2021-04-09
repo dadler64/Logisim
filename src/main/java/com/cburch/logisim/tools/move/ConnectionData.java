@@ -10,32 +10,29 @@ import java.util.List;
 
 class ConnectionData {
 
-    private Location loc;
-
-    private Direction dir;
-
+    private final Location location;
+    private final Direction direction;
     /**
      * The list of wires leading up to this point - we may well want to
      * truncate this path somewhat.
      */
-    private List<Wire> wirePath;
+    private final List<Wire> wirePath;
+    private final Location wirePathStart;
 
-    private Location wirePathStart;
-
-    public ConnectionData(Location loc, Direction dir, List<Wire> wirePath,
-            Location wirePathStart) {
-        this.loc = loc;
-        this.dir = dir;
+    public ConnectionData(Location location, Direction direction, List<Wire> wirePath,
+        Location wirePathStart) {
+        this.location = location;
+        this.direction = direction;
         this.wirePath = wirePath;
         this.wirePathStart = wirePathStart;
     }
 
     public Location getLocation() {
-        return loc;
+        return location;
     }
 
     public Direction getDirection() {
-        return dir;
+        return direction;
     }
 
     public List<Wire> getWirePath() {
@@ -49,8 +46,8 @@ class ConnectionData {
     @Override
     public boolean equals(Object other) {
         if (other instanceof ConnectionData) {
-            ConnectionData o = (ConnectionData) other;
-            return this.loc.equals(o.loc) && this.dir.equals(o.dir);
+            ConnectionData data = (ConnectionData) other;
+            return this.location.equals(data.location) && this.direction.equals(data.direction);
         } else {
             return false;
         }
@@ -58,6 +55,6 @@ class ConnectionData {
 
     @Override
     public int hashCode() {
-        return loc.hashCode() * 31 + (dir == null ? 0 : dir.hashCode());
+        return location.hashCode() * 31 + (direction == null ? 0 : direction.hashCode());
     }
 }

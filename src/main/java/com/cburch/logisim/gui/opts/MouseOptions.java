@@ -43,14 +43,14 @@ import javax.swing.table.AbstractTableModel;
 
 class MouseOptions extends OptionsPanel {
 
-    private MyListener listener = new MyListener();
+    private final MyListener listener = new MyListener();
+    private final MappingsModel model;
+    private final ProjectExplorer explorer;
+    private final JPanel addArea = new AddArea();
+    private final JTable mappings = new JTable();
+    private final AttrTable attrTable;
+    private final JButton remove = new JButton();
     private Tool curTool = null;
-    private MappingsModel model;
-    private ProjectExplorer explorer;
-    private JPanel addArea = new AddArea();
-    private JTable mappings = new JTable();
-    private AttrTable attrTable;
-    private JButton remove = new JButton();
 
     public MouseOptions(OptionsFrame window) {
         super(window, new GridLayout(1, 3));
@@ -87,8 +87,8 @@ class MouseOptions extends OptionsPanel {
         gbc.gridheight = 4;
         gbc.fill = GridBagConstraints.BOTH;
         JScrollPane explorerPane = new JScrollPane(explorer,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         gridbag.setConstraints(explorerPane, gbc);
         add(explorerPane);
         gbc.weightx = 0.0;
@@ -156,8 +156,8 @@ class MouseOptions extends OptionsPanel {
             setPreferredSize(new Dimension(75, 60));
             setMinimumSize(new Dimension(75, 60));
             setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10),
-                    BorderFactory.createEtchedBorder()));
+                BorderFactory.createEmptyBorder(10, 10, 10, 10),
+                BorderFactory.createEtchedBorder()));
         }
 
         @Override
@@ -175,7 +175,7 @@ class MouseOptions extends OptionsPanel {
                 g.setColor(Color.BLACK);
                 label1 = Strings.get("mouseMapText");
                 label2 = StringUtil.format(Strings.get("mouseMapText2"),
-                        curTool.getDisplayName());
+                    curTool.getDisplayName());
             }
             FontMetrics fm = g.getFontMetrics();
             int x1 = (sz.width - fm.stringWidth(label1)) / 2;
@@ -193,8 +193,8 @@ class MouseOptions extends OptionsPanel {
     }
 
     private class MyListener
-            implements ActionListener, MouseListener, ListSelectionListener,
-            MouseMappings.MouseMappingsListener, ProjectExplorerListener {
+        implements ActionListener, MouseListener, ListSelectionListener,
+        MouseMappings.MouseMappingsListener, ProjectExplorerListener {
 
         //
         // ActionListener method
@@ -204,7 +204,7 @@ class MouseOptions extends OptionsPanel {
             if (src == remove) {
                 int row = mappings.getSelectedRow();
                 getProject().doAction(OptionsActions.removeMapping(getOptions().getMouseMappings(),
-                        model.getKey(row)));
+                    model.getKey(row)));
                 row = Math.min(row, model.getRowCount() - 1);
                 if (row >= 0) {
                     setSelectedRow(row);

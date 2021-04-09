@@ -29,9 +29,9 @@ import java.util.List;
 
 class LayoutToolbarModel extends AbstractToolbarModel {
 
-    private Frame frame;
-    private Project proj;
-    private MyListener myListener;
+    private final Frame frame;
+    private final Project proj;
+    private final MyListener myListener;
     private List<ToolbarItem> items;
     private Tool haloedTool;
 
@@ -116,7 +116,7 @@ class LayoutToolbarModel extends AbstractToolbarModel {
 
     private class ToolItem implements ToolbarItem {
 
-        private Tool tool;
+        private final Tool tool;
 
         ToolItem(Tool tool) {
             this.tool = tool;
@@ -136,8 +136,7 @@ class LayoutToolbarModel extends AbstractToolbarModel {
             // draw tool icon
             graphics.setColor(Color.BLACK);
             Graphics g_copy = graphics.create();
-            ComponentDrawContext c = new ComponentDrawContext(destination,
-                    null, null, graphics, g_copy);
+            ComponentDrawContext c = new ComponentDrawContext(destination, null, null, graphics, g_copy);
             tool.paintIcon(c, 2, 2);
             g_copy.dispose();
         }
@@ -157,9 +156,8 @@ class LayoutToolbarModel extends AbstractToolbarModel {
                 if (index == 10) {
                     index = 0;
                 }
-                int mask = frame.getToolkit().getMenuShortcutKeyMask();
-                ret += " (" + InputEventUtil.toKeyDisplayString(mask)
-                        + "-" + index + ")";
+                int mask = frame.getToolkit().getMenuShortcutKeyMaskEx();
+                ret += " (" + InputEventUtil.toKeyDisplayString(mask) + "-" + index + ")";
             }
             return ret;
         }
@@ -170,7 +168,7 @@ class LayoutToolbarModel extends AbstractToolbarModel {
     }
 
     private class MyListener implements ProjectListener, AttributeListener,
-            ToolbarData.ToolbarListener, PropertyChangeListener {
+        ToolbarData.ToolbarListener, PropertyChangeListener {
 
         //
         // ProjectListener methods

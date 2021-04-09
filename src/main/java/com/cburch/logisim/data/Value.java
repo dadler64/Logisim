@@ -48,8 +48,7 @@ public class Value {
             return values[0];
         }
         if (values.length > MAX_WIDTH) {
-            throw new RuntimeException(
-                    "Cannot have more than " + MAX_WIDTH + " bits in a value");
+            throw new RuntimeException("Cannot have more than " + MAX_WIDTH + " bits in a value");
         }
 
         int width = values.length;
@@ -60,14 +59,15 @@ public class Value {
             int mask = 1 << i;
             if (values[i] == TRUE) {
                 value |= mask;
-            } else if (values[i] == FALSE)   /* do nothing */ {
+            } else if (values[i] == FALSE) {
+                /* do nothing */
             } else if (values[i] == UNKNOWN) {
                 unknown |= mask;
             } else if (values[i] == ERROR) {
                 error |= mask;
             } else {
                 throw new RuntimeException("unrecognized value "
-                        + values[i]);
+                    + values[i]);
             }
         }
         return Value.create(width, error, unknown, value);
@@ -109,7 +109,7 @@ public class Value {
             if (cached != null) {
                 Value val = (Value) cached;
                 if (val.value == value && val.width == width && val.error == error
-                        && val.unknown == unknown) {
+                    && val.unknown == unknown) {
                     return val;
                 }
             }
@@ -174,9 +174,9 @@ public class Value {
         } else {
             int mask = ~(1 << which);
             return Value.create(this.width,
-                    (this.error & mask) | (val.error << which),
-                    (this.unknown & mask) | (val.unknown << which),
-                    (this.value & mask) | (val.value << which));
+                (this.error & mask) | (val.error << which),
+                (this.unknown & mask) | (val.unknown << which),
+                (this.value & mask) | (val.value << which));
         }
     }
 
@@ -219,9 +219,9 @@ public class Value {
         }
         Value other = (Value) other_obj;
         boolean ret = this.width == other.width
-                && this.error == other.error
-                && this.unknown == other.unknown
-                && this.value == other.value;
+            && this.error == other.error
+            && this.unknown == other.unknown
+            && this.value == other.value;
         return ret;
     }
 
@@ -432,11 +432,11 @@ public class Value {
             return ERROR;
         } else {
             int disagree = (this.value ^ other.value)
-                    & ~(this.unknown | other.unknown);
+                & ~(this.unknown | other.unknown);
             return Value.create(Math.max(this.width, other.width),
-                    this.error | other.error | disagree,
-                    this.unknown & other.unknown,
-                    (this.value & ~this.unknown) | (other.value & ~other.unknown));
+                this.error | other.error | disagree,
+                this.unknown & other.unknown,
+                (this.value & ~this.unknown) | (other.value & ~other.unknown));
         }
     }
 
@@ -457,9 +457,9 @@ public class Value {
             int false1 = ~other.value & ~other.error & ~other.unknown;
             int falses = false0 | false1;
             return Value.create(Math.max(this.width, other.width),
-                    (this.error | other.error | this.unknown | other.unknown) & ~falses,
-                    0,
-                    this.value & other.value);
+                (this.error | other.error | this.unknown | other.unknown) & ~falses,
+                0,
+                this.value & other.value);
         }
     }
 
@@ -480,9 +480,9 @@ public class Value {
             int true1 = other.value & ~other.error & ~other.unknown;
             int trues = true0 | true1;
             return Value.create(Math.max(this.width, other.width),
-                    (this.error | other.error | this.unknown | other.unknown) & ~trues,
-                    0,
-                    this.value | other.value);
+                (this.error | other.error | this.unknown | other.unknown) & ~trues,
+                0,
+                this.value | other.value);
         }
     }
 
@@ -506,9 +506,9 @@ public class Value {
             return TRUE;
         } else {
             return Value.create(Math.max(this.width, other.width),
-                    this.error | other.error | this.unknown | other.unknown,
-                    0,
-                    this.value ^ other.value);
+                this.error | other.error | this.unknown | other.unknown,
+                0,
+                this.value ^ other.value);
         }
     }
 
@@ -523,9 +523,9 @@ public class Value {
             return ERROR;
         } else {
             return Value.create(this.width,
-                    this.error | this.unknown,
-                    0,
-                    ~this.value);
+                this.error | this.unknown,
+                0,
+                ~this.value);
         }
     }
 

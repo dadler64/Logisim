@@ -28,102 +28,93 @@ public class GraphicsUtil {
         }
     }
 
-    static public void drawCenteredArc(Graphics g, int x, int y,
-            int r, int start, int dist) {
+    static public void drawCenteredArc(Graphics g, int x, int y, int r, int start, int dist) {
         g.drawArc(x - r, y - r, 2 * r, 2 * r, start, dist);
     }
 
-    static public Rectangle getTextBounds(Graphics g, Font font,
-            String text, int x, int y, int halign, int valign) {
+    static public Rectangle getTextBounds(Graphics g, Font font, String text, int x, int y, int hAlign, int vAlign) {
         if (g == null) {
             return new Rectangle(x, y, 0, 0);
         }
-        Font oldfont = g.getFont();
+        Font oldFont = g.getFont();
         if (font != null) {
             g.setFont(font);
         }
-        Rectangle ret = getTextBounds(g, text, x, y, halign, valign);
+        Rectangle textBounds = getTextBounds(g, text, x, y, hAlign, vAlign);
         if (font != null) {
-            g.setFont(oldfont);
+            g.setFont(oldFont);
         }
-        return ret;
+        return textBounds;
     }
 
-    static public Rectangle getTextBounds(Graphics g, String text,
-            int x, int y, int halign, int valign) {
+    static public Rectangle getTextBounds(Graphics g, String text, int x, int y, int hAlign, int vAlign) {
         if (g == null) {
             return new Rectangle(x, y, 0, 0);
         }
-        FontMetrics mets = g.getFontMetrics();
-        int width = mets.stringWidth(text);
-        int ascent = mets.getAscent();
-        int descent = mets.getDescent();
+        FontMetrics fm = g.getFontMetrics();
+        int width = fm.stringWidth(text);
+        int ascent = fm.getAscent();
+        int descent = fm.getDescent();
         int height = ascent + descent;
 
-        Rectangle ret = new Rectangle(x, y, width, height);
-        switch (halign) {
+        Rectangle rectangle = new Rectangle(x, y, width, height);
+        switch (hAlign) {
             case H_CENTER:
-                ret.translate(-(width / 2), 0);
+                rectangle.translate(-(width / 2), 0);
                 break;
             case H_RIGHT:
-                ret.translate(-width, 0);
+                rectangle.translate(-width, 0);
                 break;
             default:
         }
-        switch (valign) {
+        switch (vAlign) {
             case V_TOP:
                 break;
             case V_CENTER:
-                ret.translate(0, -(ascent / 2));
+                rectangle.translate(0, -(ascent / 2));
                 break;
             case V_CENTER_OVERALL:
-                ret.translate(0, -(height / 2));
+                rectangle.translate(0, -(height / 2));
                 break;
             case V_BASELINE:
-                ret.translate(0, -ascent);
+                rectangle.translate(0, -ascent);
                 break;
             case V_BOTTOM:
-                ret.translate(0, -height);
+                rectangle.translate(0, -height);
                 break;
             default:
         }
-        return ret;
+        return rectangle;
     }
 
-    static public void drawText(Graphics g, Font font,
-            String text, int x, int y, int halign, int valign) {
-        Font oldfont = g.getFont();
+    static public void drawText(Graphics g, Font font, String text, int x, int y, int hAlign, int vAlign) {
+        Font oldFont = g.getFont();
         if (font != null) {
             g.setFont(font);
         }
-        drawText(g, text, x, y, halign, valign);
+        drawText(g, text, x, y, hAlign, vAlign);
         if (font != null) {
-            g.setFont(oldfont);
+            g.setFont(oldFont);
         }
     }
 
-    static public void drawText(Graphics g, String text,
-            int x, int y, int halign, int valign) {
+    static public void drawText(Graphics g, String text, int x, int y, int hAlign, int vAlign) {
         if (text.length() == 0) {
             return;
         }
-        Rectangle bd = getTextBounds(g, text, x, y, halign, valign);
-        g.drawString(text, bd.x, bd.y + g.getFontMetrics().getAscent());
+        Rectangle textBounds = getTextBounds(g, text, x, y, hAlign, vAlign);
+        g.drawString(text, textBounds.x, textBounds.y + g.getFontMetrics().getAscent());
     }
 
-    static public void drawCenteredText(Graphics g, String text,
-            int x, int y) {
+    static public void drawCenteredText(Graphics g, String text, int x, int y) {
         drawText(g, text, x, y, H_CENTER, V_CENTER);
     }
 
-    static public void drawArrow(Graphics g, int x0, int y0, int x1, int y1,
-            int headLength, int headAngle) {
-        double offs = headAngle * Math.PI / 180.0;
+    static public void drawArrow(Graphics g, int x0, int y0, int x1, int y1, int headLength, int headAngle) {
+        double offset = headAngle * Math.PI / 180.0;
         double angle = Math.atan2(y0 - y1, x0 - x1);
-        int[] xs = {x1 + (int) (headLength * Math.cos(angle + offs)), x1,
-                x1 + (int) (headLength * Math.cos(angle - offs))};
-        int[] ys = {y1 + (int) (headLength * Math.sin(angle + offs)), y1,
-                y1 + (int) (headLength * Math.sin(angle - offs))};
+        int[] xs = {x1 + (int) (headLength * Math.cos(angle + offset)), x1, x1 + (int) (headLength * Math.cos(angle - offset))};
+        int[] ys = {y1 + (int) (headLength * Math.sin(angle + offset)), y1, y1 + (int) (headLength * Math.sin(angle - offset))};
         g.drawLine(x0, y0, x1, y1);
         g.drawPolyline(xs, ys, 3);
     }

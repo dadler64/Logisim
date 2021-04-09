@@ -18,41 +18,41 @@ public class Io extends Library {
     static final AttributeOption LABEL_CENTER = new AttributeOption("center", "center", Strings.getter("ioLabelCenter"));
 
     static final Attribute<Color> ATTR_COLOR = Attributes.forColor("color",
-            Strings.getter("ioColorAttr"));
+        Strings.getter("ioColorAttr"));
     static final Attribute<Color> ATTR_ON_COLOR
-            = Attributes.forColor("color", Strings.getter("ioOnColor"));
+        = Attributes.forColor("color", Strings.getter("ioOnColor"));
     static final Attribute<Color> ATTR_OFF_COLOR
-            = Attributes.forColor("offcolor", Strings.getter("ioOffColor"));
+        = Attributes.forColor("offcolor", Strings.getter("ioOffColor"));
     static final Attribute<Color> ATTR_BACKGROUND
-            = Attributes.forColor("bg", Strings.getter("ioBackgroundColor"));
+        = Attributes.forColor("bg", Strings.getter("ioBackgroundColor"));
     static final Attribute<Object> ATTR_LABEL_LOCATION = Attributes.forOption("labelloc",
-            Strings.getter("ioLabelLocAttr"),
-            new Object[]{LABEL_CENTER, Direction.NORTH, Direction.SOUTH,
-                    Direction.EAST, Direction.WEST});
+        Strings.getter("ioLabelLocAttr"),
+        new Object[]{LABEL_CENTER, Direction.NORTH, Direction.SOUTH,
+            Direction.EAST, Direction.WEST});
     static final Attribute<Color> ATTR_LABEL_COLOR = Attributes.forColor("labelcolor",
-            Strings.getter("ioLabelColorAttr"));
+        Strings.getter("ioLabelColorAttr"));
     static final Attribute<Boolean> ATTR_ACTIVE = Attributes.forBoolean("active",
-            Strings.getter("ioActiveAttr"));
+        Strings.getter("ioActiveAttr"));
 
     static final Color DEFAULT_BACKGROUND = new Color(255, 255, 255, 0);
 
-    private static FactoryDescription[] DESCRIPTIONS = {
-            new FactoryDescription("Button", Strings.getter("buttonComponent"),
-                    "button.gif", "Button"),
-            new FactoryDescription("Joystick", Strings.getter("joystickComponent"),
-                    "joystick.gif", "Joystick"),
-            new FactoryDescription("Keyboard", Strings.getter("keyboardComponent"),
-                    "keyboard.gif", "Keyboard"),
-            new FactoryDescription("LED", Strings.getter("ledComponent"),
-                    "led.gif", "Led"),
-            new FactoryDescription("7-Segment Display", Strings.getter("sevenSegmentComponent"),
-                    "7seg.gif", "SevenSegment"),
-            new FactoryDescription("Hex Digit Display", Strings.getter("hexDigitComponent"),
-                    "hexdig.gif", "HexDigit"),
-            new FactoryDescription("DotMatrix", Strings.getter("dotMatrixComponent"),
-                    "dotmat.gif", "DotMatrix"),
-            new FactoryDescription("TTY", Strings.getter("ttyComponent"),
-                    "tty.gif", "Tty"),
+    private static final FactoryDescription[] DESCRIPTIONS = {
+        new FactoryDescription("Button", Strings.getter("buttonComponent"),
+            "button.gif", "Button"),
+        new FactoryDescription("Joystick", Strings.getter("joystickComponent"),
+            "joystick.gif", "Joystick"),
+        new FactoryDescription("Keyboard", Strings.getter("keyboardComponent"),
+            "keyboard.gif", "Keyboard"),
+        new FactoryDescription("LED", Strings.getter("ledComponent"),
+            "led.gif", "Led"),
+        new FactoryDescription("7-Segment Display", Strings.getter("sevenSegmentComponent"),
+            "7seg.gif", "SevenSegment"),
+        new FactoryDescription("Hex Digit Display", Strings.getter("hexDigitComponent"),
+            "hexdig.gif", "HexDigit"),
+        new FactoryDescription("DotMatrix", Strings.getter("dotMatrixComponent"),
+            "dotmat.gif", "DotMatrix"),
+        new FactoryDescription("TTY", Strings.getter("ttyComponent"),
+            "tty.gif", "Tty"),
     };
 
     private List<Tool> tools = null;

@@ -29,10 +29,10 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
     private static final Font HEAD_FONT = new Font("Serif", Font.BOLD, 14);
     private static final Font BODY_FONT = new Font("Serif", Font.PLAIN, 14);
     private static final Color[] IMP_COLORS = new Color[]{
-            new Color(255, 0, 0, 128),
-            new Color(0, 150, 0, 128),
-            new Color(0, 0, 255, 128),
-            new Color(255, 0, 255, 128),
+        new Color(255, 0, 0, 128),
+        new Color(0, 150, 0, 128),
+        new Color(0, 0, 255, 128),
+        new Color(255, 0, 255, 128),
     };
 
     private static final int MAX_VARS = 4;
@@ -43,10 +43,10 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
     private static final int CELL_VERTICAL_SEPARATION = 10;
     private static final int IMPLICANT_INSET = 4;
     private static final int IMP_RADIUS = 5;
+    private final AnalyzerModel model;
     private Entry provisionalValue = null;
     private int cellHeight = 1;
     private int cellWidth = 1;
-    private AnalyzerModel model;
     private int headHeight;
     private int provisionalX;
     private int provisionalY;
@@ -226,15 +226,11 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
         int deltaY = (cellHeight + fontMetrics.getAscent()) / 2;
         for (int i = 0; i < columns; i++) {
             String label = label(i, columns);
-            graphics.drawString(label,
-                    x + (i + 1) * cellWidth + (cellWidth - fontMetrics.stringWidth(label)) / 2,
-                    y + deltaY);
+            graphics.drawString(label, x + (i + 1) * cellWidth + (cellWidth - fontMetrics.stringWidth(label)) / 2, y + deltaY);
         }
         for (int i = 0; i < rows; i++) {
             String label = label(i, rows);
-            graphics.drawString(label,
-                    x + (cellWidth - fontMetrics.stringWidth(label)) / 2,
-                    y + (i + 1) * cellHeight + deltaY);
+            graphics.drawString(label, x + (cellWidth - fontMetrics.stringWidth(label)) / 2, y + (i + 1) * cellHeight + deltaY);
         }
 
         int outputColumn = table.getOutputIndex(output);
@@ -245,8 +241,7 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
             for (int j = 0; j < columns; j++) {
                 int row = getTableRow(i, j, rows, columns);
                 Entry entry = table.getOutputEntry(row, outputColumn);
-                if (provisionalValue != null && row == provisionalY
-                        && outputColumn == provisionalX) {
+                if (provisionalValue != null && row == provisionalY && outputColumn == provisionalX) {
                     entry = provisionalValue;
                 }
                 if (entry.isError()) {
@@ -281,26 +276,23 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
             for (int j = 0; j < columns; j++) {
                 int row = getTableRow(i, j, rows, columns);
                 if (provisionalValue != null && row == provisionalY
-                        && outputColumn == provisionalX) {
+                    && outputColumn == provisionalX) {
                     String text = provisionalValue.getDescription();
                     graphics.setColor(Color.GREEN);
-                    graphics.drawString(text,
-                            x + j * cellWidth + (cellWidth - fontMetrics.stringWidth(text)) / 2,
-                            y + i * cellHeight + deltaY);
+                    graphics.drawString(text, x + j * cellWidth + (cellWidth - fontMetrics.stringWidth(text)) / 2,
+                        y + i * cellHeight + deltaY);
                     graphics.setColor(Color.BLACK);
                 } else {
                     Entry entry = table.getOutputEntry(row, outputColumn);
                     String text = entry.getDescription();
-                    graphics.drawString(text,
-                            x + j * cellWidth + (cellWidth - fontMetrics.stringWidth(text)) / 2,
-                            y + i * cellHeight + deltaY);
+                    graphics.drawString(text, x + j * cellWidth + (cellWidth - fontMetrics.stringWidth(text)) / 2,
+                        y + i * cellHeight + deltaY);
                 }
             }
         }
     }
 
-    private void paintImplicant(Graphics graphics, Implicant implicant, int x, int y,
-            int rows, int columns) {
+    private void paintImplicant(Graphics graphics, Implicant implicant, int x, int y, int rows, int columns) {
         int rowMax = -1;
         int rowMin = rows;
         int columnMax = -1;
@@ -334,11 +326,8 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
         int covered = numColumns * numRows;
         int diameter = 2 * IMP_RADIUS;
         if (covered == count) {
-            graphics.fillRoundRect(x + columnMin * cellWidth + IMPLICANT_INSET,
-                    y + rowMin * cellHeight + IMPLICANT_INSET,
-                    numColumns * cellWidth - 2 * IMPLICANT_INSET,
-                    numRows * cellHeight - 2 * IMPLICANT_INSET,
-                    diameter, diameter);
+            graphics.fillRoundRect(x + columnMin * cellWidth + IMPLICANT_INSET, y + rowMin * cellHeight + IMPLICANT_INSET,
+                numColumns * cellWidth - 2 * IMPLICANT_INSET, numRows * cellHeight - 2 * IMPLICANT_INSET, diameter, diameter);
         } else if (covered == 16) {
             if (count == 4) {
                 int width = cellWidth - IMPLICANT_INSET;
@@ -484,12 +473,10 @@ class KarnaughMapPanel extends JPanel implements TruthTablePanel {
         return ret >= 0 ? ret : Math.max(-headHeight, compDimension - tableDimension);
     }
 
-    private class MyListener
-            implements OutputExpressionsListener, TruthTableListener {
+    private class MyListener implements OutputExpressionsListener, TruthTableListener {
 
         public void expressionChanged(OutputExpressionsEvent event) {
-            if (event.getType() == OutputExpressionsEvent.OUTPUT_MINIMAL
-                    && event.getVariable().equals(output)) {
+            if (event.getType() == OutputExpressionsEvent.OUTPUT_MINIMAL && event.getVariable().equals(output)) {
                 repaint();
             }
         }

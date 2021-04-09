@@ -16,8 +16,8 @@ import java.awt.event.MouseEvent;
 
 public class RegisterPoker extends InstancePoker {
 
-    private int initValue;
-    private int curValue;
+    private int initialValue;
+    private int currentValue;
 
     @Override
     public boolean init(InstanceState state, MouseEvent e) {
@@ -26,33 +26,33 @@ public class RegisterPoker extends InstancePoker {
             data = new RegisterData();
             state.setData(data);
         }
-        initValue = data.value;
-        curValue = initValue;
+        initialValue = data.value;
+        currentValue = initialValue;
         return true;
     }
 
     @Override
     public void paint(InstancePainter painter) {
-        Bounds bds = painter.getBounds();
+        Bounds bounds = painter.getBounds();
         BitWidth dataWidth = painter.getAttributeValue(StdAttr.WIDTH);
         int width = dataWidth == null ? 8 : dataWidth.getWidth();
-        int len = (width + 3) / 4;
+        int length = (width + 3) / 4;
 
         Graphics g = painter.getGraphics();
         g.setColor(Color.RED);
-        if (len > 4) {
-            g.drawRect(bds.getX(), bds.getY() + 3, bds.getWidth(), 25);
+        if (length > 4) {
+            g.drawRect(bounds.getX(), bounds.getY() + 3, bounds.getWidth(), 25);
         } else {
-            int wid = 7 * len + 2;
-            g.drawRect(bds.getX() + (bds.getWidth() - wid) / 2, bds.getY() + 4, wid, 15);
+            int wid = 7 * length + 2;
+            g.drawRect(bounds.getX() + (bounds.getWidth() - wid) / 2, bounds.getY() + 4, wid, 15);
         }
         g.setColor(Color.BLACK);
     }
 
     @Override
     public void keyTyped(InstanceState state, KeyEvent e) {
-        int val = Character.digit(e.getKeyChar(), 16);
-        if (val < 0) {
+        int value = Character.digit(e.getKeyChar(), 16);
+        if (value < 0) {
             return;
         }
 
@@ -60,9 +60,9 @@ public class RegisterPoker extends InstancePoker {
         if (dataWidth == null) {
             dataWidth = BitWidth.create(8);
         }
-        curValue = (curValue * 16 + val) & dataWidth.getMask();
+        currentValue = (currentValue * 16 + value) & dataWidth.getMask();
         RegisterData data = (RegisterData) state.getData();
-        data.value = curValue;
+        data.value = currentValue;
 
         state.fireInvalidated();
     }

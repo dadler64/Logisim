@@ -13,9 +13,9 @@ import java.util.List;
 
 public class AbstractCaret implements Caret {
 
-    private ArrayList<CaretListener> listeners = new ArrayList<>();
-    private List<CaretListener> listenersView;
-    private Bounds bds = Bounds.EMPTY_BOUNDS;
+    private final ArrayList<CaretListener> listeners = new ArrayList<>();
+    private final List<CaretListener> listenersView;
+    private Bounds bounds = Bounds.EMPTY_BOUNDS;
 
     public AbstractCaret() {
         listenersView = Collections.unmodifiableList(listeners);
@@ -36,7 +36,7 @@ public class AbstractCaret implements Caret {
 
     // configuration methods
     public void setBounds(Bounds value) {
-        bds = value;
+        bounds = value;
     }
 
     // query/Graphics methods
@@ -45,7 +45,7 @@ public class AbstractCaret implements Caret {
     }
 
     public Bounds getBounds(Graphics g) {
-        return bds;
+        return bounds;
     }
 
     public void draw(Graphics g) {

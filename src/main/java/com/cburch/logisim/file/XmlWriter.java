@@ -36,10 +36,10 @@ import org.w3c.dom.Element;
 
 class XmlWriter {
 
-    private LogisimFile file;
-    private Document document;
-    private LibraryLoader libraryLoader;
-    private HashMap<Library, String> libraries = new HashMap<>();
+    private final LogisimFile file;
+    private final Document document;
+    private final LibraryLoader libraryLoader;
+    private final HashMap<Library, String> libraries = new HashMap<>();
 
     private XmlWriter(LogisimFile file, Document document, LibraryLoader libraryLoader) {
         this.file = file;
@@ -48,8 +48,8 @@ class XmlWriter {
     }
 
     static void write(LogisimFile file, OutputStream outputStream, LibraryLoader libraryLoader)
-            throws ParserConfigurationException,
-            TransformerException {
+        throws ParserConfigurationException,
+        TransformerException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -80,7 +80,8 @@ class XmlWriter {
     private Element fromLogisimFile() {
         Element element = document.createElement("project");
         document.appendChild(element);
-        element.appendChild(document.createTextNode("\nThis file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).\n"));
+        element.appendChild(
+            document.createTextNode("\nThis file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).\n"));
         element.setAttribute("version", "1.0");
         element.setAttribute("source", Main.VERSION_NAME);
 
@@ -115,8 +116,7 @@ class XmlWriter {
         String name = "" + libraries.size();
         String desc = libraryLoader.getDescriptor(lib);
         if (desc == null) {
-            libraryLoader.showError("library location unknown: "
-                    + lib.getName());
+            libraryLoader.showError("library location unknown: " + lib.getName());
             return null;
         }
         libraries.put(lib, name);
@@ -175,7 +175,7 @@ class XmlWriter {
         String libraryName;
         if (library == null) {
             libraryLoader.showError(StringUtil.format("tool `%s' not found",
-                    tool.getDisplayName()));
+                tool.getDisplayName()));
             return null;
         } else if (library == file) {
             libraryName = null;
@@ -259,7 +259,7 @@ class XmlWriter {
     }
 
     private void addAttributeSetContent(Element element, AttributeSet attributes,
-            AttributeDefaultProvider source) {
+        AttributeDefaultProvider source) {
         if (attributes == null) {
             return;
         }

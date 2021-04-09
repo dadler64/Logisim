@@ -26,7 +26,7 @@ public class ZOrder {
     }
 
     public static Map<CanvasObject, Integer> getZIndex(
-            Collection<? extends CanvasObject> query, CanvasModel model) {
+        Collection<? extends CanvasObject> query, CanvasModel model) {
         // returns 0 for bottommost element, large number for topmost, ordered
         // from the bottom up.
         if (query == null) {
@@ -47,17 +47,17 @@ public class ZOrder {
     }
 
     public static <E extends CanvasObject> List<E> sortTopFirst(
-            Collection<E> objects, CanvasModel model) {
+        Collection<E> objects, CanvasModel model) {
         return sortXFirst(objects, model, model.getObjectsFromBottom());
     }
 
     public static <E extends CanvasObject> List<E> sortBottomFirst(
-            Collection<E> objects, CanvasModel model) {
+        Collection<E> objects, CanvasModel model) {
         return sortXFirst(objects, model, model.getObjectsFromTop());
     }
 
     private static <E extends CanvasObject> List<E> sortXFirst(
-            Collection<E> objects, CanvasModel model, Collection<CanvasObject> objs) {
+        Collection<E> objects, CanvasModel model, Collection<CanvasObject> objs) {
         Set<E> set = toSet(objects);
         ArrayList<E> ret = new ArrayList<>(objects.size());
         for (CanvasObject o : objs) {
@@ -80,19 +80,19 @@ public class ZOrder {
 
     // returns first object above query in the z-order that overlaps query
     public static CanvasObject getObjectAbove(CanvasObject query,
-            CanvasModel model, Collection<? extends CanvasObject> ignore) {
+        CanvasModel model, Collection<? extends CanvasObject> ignore) {
         return getPrevious(query, model.getObjectsFromTop(), model, ignore);
     }
 
     // returns first object below query in the z-order that overlaps query
     public static CanvasObject getObjectBelow(CanvasObject query,
-            CanvasModel model, Collection<? extends CanvasObject> ignore) {
+        CanvasModel model, Collection<? extends CanvasObject> ignore) {
         return getPrevious(query, model.getObjectsFromBottom(), model, ignore);
     }
 
     private static CanvasObject getPrevious(CanvasObject query,
-            List<CanvasObject> objs, CanvasModel model,
-            Collection<? extends CanvasObject> ignore) {
+        List<CanvasObject> objs, CanvasModel model,
+        Collection<? extends CanvasObject> ignore) {
         int index = getIndex(query, objs);
         if (index <= 0) {
             return null;

@@ -12,25 +12,25 @@ import com.cburch.logisim.data.Attributes;
 public class Options {
 
     public static final AttributeOption GATE_UNDEFINED_IGNORE
-            = new AttributeOption("ignore", Strings.getter("gateUndefinedIgnore"));
+        = new AttributeOption("ignore", Strings.getter("gateUndefinedIgnore"));
     public static final AttributeOption GATE_UNDEFINED_ERROR
-            = new AttributeOption("error", Strings.getter("gateUndefinedError"));
+        = new AttributeOption("error", Strings.getter("gateUndefinedError"));
     public static final Attribute<Integer> SIMULATOR_LIMIT_ATTRIBUTE
-            = Attributes.forInteger("simlimit", Strings.getter("simLimitOption"));
+        = Attributes.forInteger("simlimit", Strings.getter("simLimitOption"));
     public static final Attribute<Integer> SIMULATOR_RANDOM_ATTRIBUTE
-            = Attributes.forInteger("simrand", Strings.getter("simRandomOption"));
+        = Attributes.forInteger("simrand", Strings.getter("simRandomOption"));
     public static final Attribute<AttributeOption> ATTR_GATE_UNDEFINED
-            = Attributes.forOption("gateUndefined", Strings.getter("gateUndefinedOption"),
-            new AttributeOption[]{GATE_UNDEFINED_IGNORE, GATE_UNDEFINED_ERROR});
+        = Attributes.forOption("gateUndefined", Strings.getter("gateUndefinedOption"),
+        new AttributeOption[]{GATE_UNDEFINED_IGNORE, GATE_UNDEFINED_ERROR});
     public static final Integer SIMULATOR_RANDOM_DEFAULT = 32;
     private static final Attribute<?>[] ATTRIBUTES = {
-            ATTR_GATE_UNDEFINED, SIMULATOR_LIMIT_ATTRIBUTE, SIMULATOR_RANDOM_ATTRIBUTE
+        ATTR_GATE_UNDEFINED, SIMULATOR_LIMIT_ATTRIBUTE, SIMULATOR_RANDOM_ATTRIBUTE
     };
-    private static final Object[] DEFAULTS = { GATE_UNDEFINED_IGNORE, 1000, 0};
+    private static final Object[] DEFAULTS = {GATE_UNDEFINED_IGNORE, 1000, 0};
 
-    private AttributeSet attributeSet;
-    private MouseMappings mouseMappings;
-    private ToolbarData toolbarData;
+    private final AttributeSet attributeSet;
+    private final MouseMappings mouseMappings;
+    private final ToolbarData toolbarData;
 
     public Options() {
         attributeSet = AttributeSets.fixedSet(ATTRIBUTES, DEFAULTS);

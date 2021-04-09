@@ -47,24 +47,22 @@ class OddParityGate extends AbstractGate {
     }
 
     @Override
-    protected void paintDinShape(InstancePainter painter, int width, int height,
-            int inputs) {
+    protected void paintDinShape(InstancePainter painter, int width, int height, int inputs) {
         paintRectangular(painter, width, height);
     }
 
     @Override
-    protected Value computeOutput(Value[] inputs, int numInputs,
-            InstanceState state) {
+    protected Value computeOutput(Value[] inputs, int numInputs, InstanceState state) {
         return GateFunctions.computeOddParity(inputs, numInputs);
     }
 
     @Override
     protected Expression computeExpression(Expression[] inputs, int numInputs) {
-        Expression ret = inputs[0];
+        Expression expression = inputs[0];
         for (int i = 1; i < numInputs; i++) {
-            ret = Expressions.xor(ret, inputs[i]);
+            expression = Expressions.xor(expression, inputs[i]);
         }
-        return ret;
+        return expression;
     }
 
     @Override

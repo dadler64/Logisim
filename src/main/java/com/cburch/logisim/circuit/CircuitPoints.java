@@ -16,10 +16,8 @@ import java.util.Set;
 
 class CircuitPoints {
 
-    private HashMap<Location, LocationData> map
-            = new HashMap<>();
-    private HashMap<Location, WidthIncompatibilityData> incompatibilityData
-            = new HashMap<>();
+    private final HashMap<Location, LocationData> map = new HashMap<>();
+    private final HashMap<Location, WidthIncompatibilityData> incompatibilityData = new HashMap<>();
 
     public CircuitPoints() {
     }
@@ -90,9 +88,9 @@ class CircuitPoints {
         ArrayList<Component> list = locData.components;
         int retSize = 0;
         Component retValue = null;
-        for (Component o : list) {
-            if ((o instanceof Wire) == isWire) {
-                retValue = o;
+        for (Component component : list) {
+            if ((component instanceof Wire) == isWire) {
+                retValue = component;
                 retSize++;
             }
         }
@@ -123,17 +121,15 @@ class CircuitPoints {
     }
 
     boolean hasConflict(Component comp) {
-        if (comp instanceof Wire) {
-            return false;
-        } else {
+        if (!(comp instanceof Wire)) {
             for (EndData endData : comp.getEnds()) {
                 if (endData != null && endData.isExclusive()
-                        && getExclusive(endData.getLocation()) != null) {
+                    && getExclusive(endData.getLocation()) != null) {
                     return true;
                 }
             }
-            return false;
         }
+        return false;
     }
 
     //
@@ -141,9 +137,9 @@ class CircuitPoints {
     //
     void add(Component comp) {
         if (comp instanceof Wire) {
-            Wire w = (Wire) comp;
-            addSub(w.getEnd0(), w, null);
-            addSub(w.getEnd1(), w, null);
+            Wire wire = (Wire) comp;
+            addSub(wire.getEnd0(), wire, null);
+            addSub(wire.getEnd1(), wire, null);
         } else {
             for (EndData endData : comp.getEnds()) {
                 if (endData != null) {
@@ -161,9 +157,9 @@ class CircuitPoints {
 
     void remove(Component comp) {
         if (comp instanceof Wire) {
-            Wire w = (Wire) comp;
-            removeSub(w.getEnd0(), w);
-            removeSub(w.getEnd1(), w);
+            Wire wire = (Wire) comp;
+            removeSub(wire.getEnd0(), wire);
+            removeSub(wire.getEnd1(), wire);
         } else {
             for (EndData endData : comp.getEnds()) {
                 if (endData != null) {
@@ -180,14 +176,14 @@ class CircuitPoints {
     }
 
     private void addSub(Location loc, Component comp, EndData endData) {
-        LocationData locData = map.get(loc);
-        if (locData == null) {
-            locData = new LocationData();
-            map.put(loc, locData);
+        LocationData locationData = map.get(loc);
+        if (locationData == null) {
+            locationData = new LocationData();
+            map.put(loc, locationData);
         }
-        locData.components.add(comp);
-        locData.ends.add(endData);
-        computeIncompatibilityData(loc, locData);
+        locationData.components.add(comp);
+        locationData.ends.add(endData);
+        computeIncompatibilityData(loc, locationData);
     }
 
     private void removeSub(Location loc, Component comp) {

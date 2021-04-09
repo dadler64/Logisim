@@ -145,8 +145,8 @@ public class Text extends AbstractCanvasObject {
         int width = bounds.getWidth();
         int height = bounds.getHeight();
         return UnmodifiableList.create(new Handle[]{
-                new Handle(this, x, y), new Handle(this, x + width, y),
-                new Handle(this, x + width, y + height), new Handle(this, x, y + height)});
+            new Handle(this, x, y), new Handle(this, x + width, y),
+            new Handle(this, x + width, y + height), new Handle(this, x, y + height)});
     }
 
     @Override

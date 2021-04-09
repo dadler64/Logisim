@@ -38,7 +38,7 @@ public class AppPreferences {
     public static final String SHAPE_RECTANGULAR = "rectangular";
     public static final String SHAPE_DIN40700 = "din40700";
     public static final PrefMonitor<String> GATE_SHAPE = create(new PrefMonitorStringOpts("gateShape",
-            new String[]{SHAPE_SHAPED, SHAPE_RECTANGULAR, SHAPE_DIN40700}, SHAPE_SHAPED));
+        new String[]{SHAPE_SHAPED, SHAPE_RECTANGULAR, SHAPE_DIN40700}, SHAPE_SHAPED));
     public static final PrefMonitor<String> LOCALE = create(new LocalePreference());
     public static final PrefMonitor<Boolean> ACCENTS_REPLACE = create(new PrefMonitorBoolean("accentsReplace", false));
     // Window preferences
@@ -46,63 +46,66 @@ public class AppPreferences {
     public static final String TOOLBAR_DOWN_MIDDLE = "downMiddle";
     public static final PrefMonitor<Boolean> SHOW_TICK_RATE = create(new PrefMonitorBoolean("showTickRate", false));
     public static final PrefMonitor<String> TOOLBAR_PLACEMENT = create(
-            new PrefMonitorStringOpts("toolbarPlacement", new String[]{
-                    Direction.NORTH.toString(), Direction.SOUTH.toString(),
-                    Direction.EAST.toString(), Direction.WEST.toString(),
-                    TOOLBAR_DOWN_MIDDLE, TOOLBAR_HIDDEN},
-                    Direction.NORTH.toString()));
+        new PrefMonitorStringOpts("toolbarPlacement", new String[]{
+            Direction.NORTH.toString(), Direction.SOUTH.toString(),
+            Direction.EAST.toString(), Direction.WEST.toString(),
+            TOOLBAR_DOWN_MIDDLE, TOOLBAR_HIDDEN},
+            Direction.NORTH.toString()));
     // Layout preferences
     public static final String ADD_AFTER_UNCHANGED = "unchanged";
     public static final String ADD_AFTER_EDIT = "edit";
     public static final PrefMonitor<Boolean> PRINTER_VIEW
-            = create(new PrefMonitorBoolean("printerView", false));
+        = create(new PrefMonitorBoolean("printerView", false));
     public static final PrefMonitor<Boolean> ATTRIBUTE_HALO
-            = create(new PrefMonitorBoolean("attributeHalo", true));
+        = create(new PrefMonitorBoolean("attributeHalo", true));
     public static final PrefMonitor<Boolean> COMPONENT_TIPS
-            = create(new PrefMonitorBoolean("componentTips", true));
+        = create(new PrefMonitorBoolean("componentTips", true));
     public static final PrefMonitor<Boolean> MOVE_KEEP_CONNECT
-            = create(new PrefMonitorBoolean("keepConnected", true));
+        = create(new PrefMonitorBoolean("keepConnected", true));
     public static final PrefMonitor<Boolean> ADD_SHOW_GHOSTS
-            = create(new PrefMonitorBoolean("showGhosts", true));
+        = create(new PrefMonitorBoolean("showGhosts", true));
     public static final PrefMonitor<String> ADD_AFTER
-            = create(new PrefMonitorStringOpts("afterAdd",
-            new String[]{ADD_AFTER_EDIT, ADD_AFTER_UNCHANGED}, ADD_AFTER_EDIT));
+        = create(new PrefMonitorStringOpts("afterAdd",
+        new String[]{ADD_AFTER_EDIT, ADD_AFTER_UNCHANGED}, ADD_AFTER_EDIT));
     // Experimental preferences
     public static final String ACCELERATION_DEFAULT = "default";
     public static final String ACCELERATION_NONE = "none";
     public static final String ACCELERATION_OPENGL = "opengl";
     public static final String ACCELERATION_D3D = "d3d";
-    public static final PrefMonitor<String> GRAPHICS_ACCELERATION = create(new PrefMonitorStringOpts("graphicsAcceleration",
-            new String[]{ACCELERATION_DEFAULT, ACCELERATION_NONE, ACCELERATION_OPENGL, ACCELERATION_D3D}, ACCELERATION_DEFAULT));
+    public static final PrefMonitor<String> GRAPHICS_ACCELERATION
+        = create(new PrefMonitorStringOpts("graphicsAcceleration",
+        new String[]{ACCELERATION_DEFAULT, ACCELERATION_NONE, ACCELERATION_OPENGL, ACCELERATION_D3D}, ACCELERATION_DEFAULT)
+    );
     // hidden window preferences - not part of the preferences dialog, changes
     // to preference does not affect current windows, and the values are not
     // saved until the application is closed
     public static final String RECENT_PROJECTS = "recentProjects";
     public static final PrefMonitor<Double> TICK_FREQUENCY
-            = create(new PrefMonitorDouble("tickFrequency", 1.0));
+        = create(new PrefMonitorDouble("tickFrequency", 1.0));
     public static final PrefMonitor<Boolean> LAYOUT_SHOW_GRID
-            = create(new PrefMonitorBoolean("layoutGrid", true));
+        = create(new PrefMonitorBoolean("layoutGrid", true));
     public static final PrefMonitor<Double> LAYOUT_ZOOM
-            = create(new PrefMonitorDouble("layoutZoom", 1.0));
+        = create(new PrefMonitorDouble("layoutZoom", 1.0));
     public static final PrefMonitor<Boolean> APPEARANCE_SHOW_GRID
-            = create(new PrefMonitorBoolean("appearanceGrid", true));
+        = create(new PrefMonitorBoolean("appearanceGrid", true));
     public static final PrefMonitor<Double> APPEARANCE_ZOOM
-            = create(new PrefMonitorDouble("appearanceZoom", 1.0));
+        = create(new PrefMonitorDouble("appearanceZoom", 1.0));
     public static final PrefMonitor<Integer> WINDOW_STATE
-            = create(new PrefMonitorInt("windowState", JFrame.NORMAL));
+        = create(new PrefMonitorInt("windowState", JFrame.NORMAL));
     public static final PrefMonitor<Integer> WINDOW_WIDTH
-            = create(new PrefMonitorInt("windowWidth", 640));
+        = create(new PrefMonitorInt("windowWidth", 640));
     public static final PrefMonitor<Integer> WINDOW_HEIGHT
-            = create(new PrefMonitorInt("windowHeight", 480));
+        = create(new PrefMonitorInt("windowHeight", 480));
     public static final PrefMonitor<String> WINDOW_LOCATION
-            = create(new PrefMonitorString("windowLocation", "0,0"));
+        = create(new PrefMonitorString("windowLocation", "0,0"));
     public static final PrefMonitor<Double> WINDOW_MAIN_SPLIT
-            = create(new PrefMonitorDouble("windowMainSplit", 0.25));
+        = create(new PrefMonitorDouble("windowMainSplit", 0.25));
     public static final PrefMonitor<Double> WINDOW_LEFT_SPLIT
-            = create(new PrefMonitorDouble("windowLeftSplit", 0.5));
+        = create(new PrefMonitorDouble("windowLeftSplit", 0.5));
     public static final PrefMonitor<String> DIALOG_DIRECTORY
-            = create(new PrefMonitorString("dialogDirectory", ""));
+        = create(new PrefMonitorString("dialogDirectory", ""));
     private static final String TEMPLATE = "template";
+    private static final PropertyChangeWeakSupport propertySupport = new PropertyChangeWeakSupport(AppPreferences.class);
     private static final RecentProjects recentProjects = new RecentProjects();
     public static PrefMonitor<String> POKE_WIRE_RADIX1;
     public static PrefMonitor<String> POKE_WIRE_RADIX2;
@@ -110,7 +113,6 @@ public class AppPreferences {
     // internal variables, and other classes
     private static Preferences preferences = null;
     private static MyListener myListener = null;
-    private static PropertyChangeWeakSupport propertySupport = new PropertyChangeWeakSupport(AppPreferences.class);
     private static int templateType = TEMPLATE_PLAIN;
     private static File templateFile = null;
     private static Template plainTemplate = null;
@@ -124,10 +126,9 @@ public class AppPreferences {
         for (int i = 0; i < radixOptions.length; i++) {
             radixStrings[i] = radixOptions[i].getSaveString();
         }
-        POKE_WIRE_RADIX1 = create(new PrefMonitorStringOpts("pokeRadix1",
-                radixStrings, RadixOption.RADIX_2.getSaveString()));
-        POKE_WIRE_RADIX2 = create(new PrefMonitorStringOpts("pokeRadix2",
-                radixStrings, RadixOption.RADIX_10_SIGNED.getSaveString()));
+        POKE_WIRE_RADIX1 = create(new PrefMonitorStringOpts("pokeRadix1", radixStrings, RadixOption.RADIX_2.getSaveString()));
+        POKE_WIRE_RADIX2 = create(
+            new PrefMonitorStringOpts("pokeRadix2", radixStrings, RadixOption.RADIX_10_SIGNED.getSaveString()));
     }
 
     private static <E> PrefMonitor<E> create(PrefMonitor<E> monitor) {
@@ -354,7 +355,7 @@ public class AppPreferences {
     // methods for accessing preferences
     //
     private static class MyListener implements PreferenceChangeListener,
-            LocaleListener {
+        LocaleListener {
 
         public void preferenceChange(PreferenceChangeEvent event) {
             Preferences prefs = event.getNode();

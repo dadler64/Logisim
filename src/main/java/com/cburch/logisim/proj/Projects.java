@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.proj;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.file.Loader;
 import com.cburch.logisim.gui.main.Frame;
 import com.cburch.logisim.util.MacCompatibility;
@@ -23,19 +24,17 @@ public class Projects {
 
     public static final String projectListProperty = "projectList";
 
-    private static final WeakHashMap<Window, Point> frameLocations
-            = new WeakHashMap<>();
+    private static final WeakHashMap<Window, Point> frameLocations = new WeakHashMap<>();
     private static final MyListener myListener = new MyListener();
-    private static final PropertyChangeWeakSupport propertySupport
-            = new PropertyChangeWeakSupport(Projects.class);
-    private static ArrayList<Project> openProjects = new ArrayList<>();
+    private static final PropertyChangeWeakSupport propertySupport = new PropertyChangeWeakSupport(Projects.class);
+    private static final ArrayList<Project> openProjects = new ArrayList<>();
     private static Frame mostRecentFrame = null;
 
     private Projects() {
     }
 
     private static void projectRemoved(Project proj, Frame frame,
-            MyListener listener) {
+        MyListener listener) {
         frame.removeWindowListener(listener);
         openProjects.remove(proj);
         proj.getSimulator().shutDown();
@@ -43,28 +42,28 @@ public class Projects {
     }
 
     public static Frame getTopFrame() {
-        Frame ret = mostRecentFrame;
-        if (ret == null) {
+        Frame topFrame = mostRecentFrame;
+        if (topFrame == null) {
             Frame backup = null;
             for (Project proj : openProjects) {
                 Frame frame = proj.getFrame();
-                if (ret == null) {
-                    ret = frame;
+                if (topFrame == null) {
+                    topFrame = frame;
                 }
-                if (ret.isVisible() && (ret.getExtendedState() & Frame.ICONIFIED) != 0) {
-                    backup = ret;
+                if (topFrame.isVisible() && (topFrame.getExtendedState() & Frame.ICONIFIED) != 0) {
+                    backup = topFrame;
                 }
             }
-            if (ret == null) {
-                ret = backup;
+            if (topFrame == null) {
+                topFrame = backup;
             }
         }
-        return ret;
+        return topFrame;
     }
 
-    static void windowCreated(Project proj, Frame oldFrame, Frame frame) {
+    static void windowCreated(Project project, Frame oldFrame, Frame frame) {
         if (oldFrame != null) {
-            projectRemoved(proj, oldFrame, myListener);
+            projectRemoved(project, oldFrame, myListener);
         }
 
         if (frame == null) {
@@ -73,14 +72,14 @@ public class Projects {
 
         // locate the window
         Point lowest = null;
-        for (Project p : openProjects) {
-            Frame f = p.getFrame();
-            if (f == null) {
+        for (Project openProject : openProjects) {
+            Frame projectFrame = openProject.getFrame();
+            if (projectFrame == null) {
                 continue;
             }
-            Point loc = p.getFrame().getLocation();
-            if (lowest == null || loc.y > lowest.y) {
-                lowest = loc;
+            Point location = openProject.getFrame().getLocation();
+            if (lowest == null || location.y > lowest.y) {
+                lowest = location;
             }
         }
         if (lowest != null) {
@@ -96,8 +95,8 @@ public class Projects {
             frame.setLocation(x, y);
         }
 
-        if (frame.isVisible() && !openProjects.contains(proj)) {
-            openProjects.add(proj);
+        if (frame.isVisible() && !openProjects.contains(project)) {
+            openProjects.add(project);
             propertySupport.firePropertyChange(projectListProperty, null, null);
         }
         frame.addWindowListener(myListener);
@@ -169,6 +168,7 @@ public class Projects {
                 try {
                     frameLocations.put(frame, frame.getLocationOnScreen());
                 } catch (Throwable t) {
+                    Logger.debugln(t.getMessage());
                 }
             }
         }
@@ -176,10 +176,10 @@ public class Projects {
         @Override
         public void windowClosed(WindowEvent event) {
             Frame frame = (Frame) event.getSource();
-            Project proj = frame.getProject();
+            Project project = frame.getProject();
 
-            if (frame == proj.getFrame()) {
-                projectRemoved(proj, frame, this);
+            if (frame == project.getFrame()) {
+                projectRemoved(project, frame, this);
             }
             if (openProjects.isEmpty() && !MacCompatibility.isSwingUsingScreenMenuBar()) {
                 ProjectActions.doQuit();
@@ -189,10 +189,10 @@ public class Projects {
         @Override
         public void windowOpened(WindowEvent event) {
             Frame frame = (Frame) event.getSource();
-            Project proj = frame.getProject();
+            Project project = frame.getProject();
 
-            if (frame == proj.getFrame() && !openProjects.contains(proj)) {
-                openProjects.add(proj);
+            if (frame == project.getFrame() && !openProjects.contains(project)) {
+                openProjects.add(project);
                 propertySupport.firePropertyChange(projectListProperty, null, null);
             }
         }

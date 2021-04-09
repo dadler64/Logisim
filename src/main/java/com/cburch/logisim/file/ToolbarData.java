@@ -16,9 +16,9 @@ import java.util.Map;
 
 public class ToolbarData {
 
-    private EventSourceWeakSupport<ToolbarListener> listeners;
-    private EventSourceWeakSupport<AttributeListener> toolListeners;
-    private ArrayList<Tool> contents;
+    private final EventSourceWeakSupport<ToolbarListener> listeners;
+    private final EventSourceWeakSupport<AttributeListener> toolListeners;
+    private final ArrayList<Tool> contents;
 
     public ToolbarData() {
         listeners = new EventSourceWeakSupport<>();
@@ -62,26 +62,26 @@ public class ToolbarData {
     }
 
     private void addAttributeListeners(Tool tool) {
-        for (AttributeListener l : toolListeners) {
+        for (AttributeListener listener : toolListeners) {
             AttributeSet attrs = tool.getAttributeSet();
             if (attrs != null) {
-                attrs.addAttributeListener(l);
+                attrs.addAttributeListener(listener);
             }
         }
     }
 
     private void removeAttributeListeners(Tool tool) {
-        for (AttributeListener l : toolListeners) {
+        for (AttributeListener listener : toolListeners) {
             AttributeSet attrs = tool.getAttributeSet();
             if (attrs != null) {
-                attrs.removeAttributeListener(l);
+                attrs.removeAttributeListener(listener);
             }
         }
     }
 
     public void fireToolbarChanged() {
-        for (ToolbarListener l : listeners) {
-            l.toolbarChanged();
+        for (ToolbarListener listener : listeners) {
+            listener.toolbarChanged();
         }
     }
 
@@ -130,7 +130,7 @@ public class ToolbarData {
                 if (toolCopy != null) {
                     Tool dstTool = toolCopy.cloneTool();
                     AttributeSets.copy(srcTool.getAttributeSet(),
-                            dstTool.getAttributeSet());
+                        dstTool.getAttributeSet());
                     this.addTool(dstTool);
                     addAttributeListeners(toolCopy);
                 }
@@ -169,9 +169,9 @@ public class ToolbarData {
     }
 
     public Object remove(int pos) {
-        Object ret = contents.remove(pos);
-        if (ret instanceof Tool) {
-            removeAttributeListeners((Tool) ret);
+        Tool ret = contents.remove(pos);
+        if (ret != null) {
+            removeAttributeListeners(ret);
         }
         fireToolbarChanged();
         return ret;
@@ -192,18 +192,17 @@ public class ToolbarData {
     void replaceAll(Map<Tool, Tool> toolMap) {
         boolean changed = false;
         for (ListIterator<Tool> it = contents.listIterator(); it.hasNext(); ) {
-            Object old = it.next();
+            Tool old = it.next();
             if (toolMap.containsKey(old)) {
                 changed = true;
-                removeAttributeListeners((Tool) old);
+                removeAttributeListeners(old);
                 Tool newTool = toolMap.get(old);
                 if (newTool == null) {
                     it.remove();
                 } else {
                     Tool addedTool = newTool.cloneTool();
                     addAttributeListeners(addedTool);
-                    LoadedLibrary.copyAttributes(addedTool.getAttributeSet(),
-                            ((Tool) old).getAttributeSet());
+                    LoadedLibrary.copyAttributes(addedTool.getAttributeSet(), old.getAttributeSet());
                     it.set(addedTool);
                 }
             }

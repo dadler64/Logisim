@@ -11,12 +11,12 @@ import java.util.AbstractList;
 class GateAttributeList extends AbstractList<Attribute<?>> {
 
     private static final Attribute<?>[] BASE_ATTRIBUTES = {
-            StdAttr.FACING, StdAttr.WIDTH,
-            GateAttributes.ATTR_SIZE, GateAttributes.ATTR_INPUTS,
-            GateAttributes.ATTRIBUTE_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT,
+        StdAttr.FACING, StdAttr.WIDTH,
+        GateAttributes.ATTR_SIZE, GateAttributes.ATTR_INPUTS,
+        GateAttributes.ATTRIBUTE_OUTPUT, StdAttr.LABEL, StdAttr.LABEL_FONT,
     };
 
-    private GateAttributes attrs;
+    private final GateAttributes attrs;
 
     public GateAttributeList(GateAttributes attrs) {
         this.attrs = attrs;

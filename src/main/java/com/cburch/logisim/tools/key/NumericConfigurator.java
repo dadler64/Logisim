@@ -11,12 +11,12 @@ public abstract class NumericConfigurator<V> implements KeyConfigurator, Cloneab
 
     private static final int MAX_TIME_KEY_LASTS = 800;
 
-    private Attribute<V> attr;
-    private int minValue;
-    private int maxValue;
+    private final Attribute<V> attr;
+    private final int minValue;
+    private final int maxValue;
+    private final int radix;
+    private final int modsEx;
     private int curValue;
-    private int radix;
-    private int modsEx;
     private long whenTyped;
 
     public NumericConfigurator(Attribute<V> attr, int min, int max, int modifiersEx) {
@@ -24,7 +24,7 @@ public abstract class NumericConfigurator<V> implements KeyConfigurator, Cloneab
     }
 
     public NumericConfigurator(Attribute<V> attr, int min, int max,
-            int modifiersEx, int radix) {
+        int modifiersEx, int radix) {
         this.attr = attr;
         this.minValue = min;
         this.maxValue = max;

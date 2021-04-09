@@ -8,15 +8,15 @@ import java.util.prefs.Preferences;
 
 class PrefMonitorString extends AbstractPrefMonitor<String> {
 
-    private String dflt;
+    private final String defaultValue;
     private String value;
 
-    PrefMonitorString(String name, String dflt) {
+    PrefMonitorString(String name, String defaultValue) {
         super(name);
-        this.dflt = dflt;
-        Preferences prefs = AppPreferences.getPreferences();
-        this.value = prefs.get(name, dflt);
-        prefs.addPreferenceChangeListener(this);
+        this.defaultValue = defaultValue;
+        Preferences preferences = AppPreferences.getPreferences();
+        this.value = preferences.get(name, defaultValue);
+        preferences.addPreferenceChangeListener(this);
     }
 
     private static boolean isSame(String a, String b) {
@@ -36,12 +36,12 @@ class PrefMonitorString extends AbstractPrefMonitor<String> {
     }
 
     public void preferenceChange(PreferenceChangeEvent event) {
-        Preferences prefs = event.getNode();
+        Preferences preferences = event.getNode();
         String prop = event.getKey();
         String name = getIdentifier();
         if (prop.equals(name)) {
             String oldValue = value;
-            String newValue = prefs.get(name, dflt);
+            String newValue = preferences.get(name, defaultValue);
             if (!isSame(oldValue, newValue)) {
                 value = newValue;
                 AppPreferences.firePropertyChange(name, oldValue, newValue);

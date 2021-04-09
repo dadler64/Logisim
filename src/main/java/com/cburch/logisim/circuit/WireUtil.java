@@ -16,8 +16,8 @@ public class WireUtil {
 
     static CircuitPoints computeCircuitPoints(Collection<? extends Component> components) {
         CircuitPoints points = new CircuitPoints();
-        for (Component comp : components) {
-            points.add(comp);
+        for (Component component : components) {
+            points.add(component);
         }
         return points;
     }
@@ -28,12 +28,12 @@ public class WireUtil {
             return toMerge;
         }
 
-        HashSet<Component> ret = new HashSet<>(toMerge);
+        HashSet<Component> components = new HashSet<>(toMerge);
         CircuitPoints points = computeCircuitPoints(toMerge);
 
         HashSet<Wire> wires = new HashSet<>();
-        for (Location loc : points.getSplitLocations()) {
-            Collection<? extends Component> at = points.getComponents(loc);
+        for (Location location : points.getSplitLocations()) {
+            Collection<? extends Component> at = points.getComponents(location);
             if (at.size() == 2) {
                 Iterator<? extends Component> atIt = at.iterator();
                 Component o0 = atIt.next();
@@ -50,7 +50,7 @@ public class WireUtil {
         }
         points = null;
 
-        ret.removeAll(wires);
+        components.removeAll(wires);
         while (!wires.isEmpty()) {
             Iterator<Wire> it = wires.iterator();
             Wire w = it.next();
@@ -73,9 +73,9 @@ public class WireUtil {
                     }
                 }
             } while (found);
-            ret.add(Wire.create(e0, e1));
+            components.add(Wire.create(e0, e1));
         }
 
-        return ret;
+        return components;
     }
 }

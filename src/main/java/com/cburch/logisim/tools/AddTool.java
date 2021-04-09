@@ -40,19 +40,19 @@ import javax.swing.JOptionPane;
 
 public class AddTool extends Tool {
 
-    private static int INVALID_COORDINATE = Integer.MIN_VALUE;
+    private static final int INVALID_COORDINATE = Integer.MIN_VALUE;
 
-    private static int SHOW_NONE = 0;
-    private static int SHOW_GHOST = 1;
-    private static int SHOW_ADD = 2;
-    private static int SHOW_ADD_NO = 3;
+    private static final int SHOW_NONE = 0;
+    private static final int SHOW_GHOST = 1;
+    private static final int SHOW_ADD = 2;
+    private static final int SHOW_ADD_NO = 3;
 
-    private static Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    private static final Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    private final FactoryDescription description;
+    private final AttributeSet attributes;
     private Class<? extends Library> descriptionBase;
-    private FactoryDescription description;
     private boolean sourceLoadAttempted;
     private ComponentFactory factory;
-    private AttributeSet attributes;
     private Bounds bounds;
     private boolean shouldSnap;
     private int lastX = INVALID_COORDINATE;
@@ -101,8 +101,7 @@ public class AddTool extends Tool {
         }
         AddTool addTool = (AddTool) object;
         if (this.description != null) {
-            return this.descriptionBase == addTool.descriptionBase
-                    && this.description.equals(addTool.description);
+            return this.descriptionBase == addTool.descriptionBase && this.description.equals(addTool.description);
         } else {
             return this.factory.equals(addTool.factory);
         }
@@ -122,15 +121,7 @@ public class AddTool extends Tool {
         AddTool addTool = (AddTool) tool;
         try {
             if (this.sourceLoadAttempted && addTool.sourceLoadAttempted) {
-                // TODO Figure out why this causes errors on startup
-//                return this.factory.equals(addTool.factory);
-                // NOTE: This is my weak fix for the problem that keeps showing up
-                // when the NOT, AND, and OR Gates are still in default.templ
-                if (this.factory != null) {
-                    return this.factory.equals(addTool.factory);
-                } else {
-                    return false;
-                }
+                return this.factory.equals(addTool.factory);
             } else if (this.description == null) {
                 return addTool.description == null;
             } else {
@@ -148,9 +139,7 @@ public class AddTool extends Tool {
 
     public ComponentFactory getFactory() {
         ComponentFactory factory = this.factory;
-        if (factory != null || sourceLoadAttempted) {
-            return factory;
-        } else {
+        if (factory == null && !sourceLoadAttempted) {
             factory = description.getFactory(descriptionBase);
             if (factory != null) {
                 AttributeSet base = getBaseAttributes();
@@ -159,33 +148,32 @@ public class AddTool extends Tool {
             }
             this.factory = factory;
             sourceLoadAttempted = true;
-            return factory;
         }
+        return factory;
     }
 
     @Override
     public String getName() {
-        FactoryDescription desc = description;
-        return desc == null ? factory.getName() : desc.getName();
+        FactoryDescription description = this.description;
+        return description == null ? factory.getName() : description.getName();
     }
 
     @Override
     public String getDisplayName() {
-        FactoryDescription desc = description;
-        return desc == null ? factory.getDisplayName() : desc.getDisplayName();
+        FactoryDescription description = this.description;
+        return description == null ? factory.getDisplayName() : description.getDisplayName();
     }
 
     @Override
     public String getDescription() {
         String result;
-        FactoryDescription factoryDesc = this.description;
-        if (factoryDesc != null) {
-            result = factoryDesc.getToolTip();
+        FactoryDescription description = this.description;
+        if (description != null) {
+            result = description.getToolTip();
         } else {
             ComponentFactory source = getFactory();
             if (source != null) {
-                result = (String) source.getFeature(ComponentFactory.TOOL_TIP,
-                        getAttributeSet());
+                result = (String) source.getFeature(ComponentFactory.TOOL_TIP, getAttributeSet());
             } else {
                 result = null;
             }
@@ -209,7 +197,7 @@ public class AddTool extends Tool {
     @Override
     public boolean isAllDefaultValues(AttributeSet attributeSet, LogisimVersion version) {
         return this.attributes == attributeSet && attributeSet instanceof FactoryAttributes
-                && !((FactoryAttributes) attributeSet).isFactoryInstantiated();
+            && !((FactoryAttributes) attributeSet).isFactoryInstantiated();
     }
 
     @Override
@@ -245,8 +233,8 @@ public class AddTool extends Tool {
         return attributes;
     }
 
-    // TODO look into why this is here
-//    public void cancelOp() { }
+    public void cancelOp() {
+    }
 
     @Override
     public void select(Canvas canvas) {
@@ -480,6 +468,7 @@ public class AddTool extends Tool {
         AttributeSet base = getBaseAttributes();
         Object feature = source.getFeature(ComponentFactory.FACING_ATTRIBUTE_KEY, base);
 
+        @SuppressWarnings("unchecked")
         Attribute<Direction> attribute = (Attribute<Direction>) feature;
         if (attribute != null) {
             Action action = ToolAttributeAction.create(this, attribute, facing);
@@ -507,8 +496,7 @@ public class AddTool extends Tool {
 
     private void expose(java.awt.Component component, int x, int y) {
         Bounds bounds = getBounds();
-        component.repaint(x + bounds.getX(), y + bounds.getY(),
-                bounds.getWidth(), bounds.getHeight());
+        component.repaint(x + bounds.getX(), y + bounds.getY(), bounds.getWidth(), bounds.getHeight());
     }
 
     @Override
@@ -519,7 +507,7 @@ public class AddTool extends Tool {
     private void setState(Canvas canvas, int value) {
         if (value == SHOW_GHOST) {
             if (canvas.getProject().getLogisimFile().contains(canvas.getCircuit())
-                    && AppPreferences.ADD_SHOW_GHOSTS.getBoolean()) {
+                && AppPreferences.ADD_SHOW_GHOSTS.getBoolean()) {
                 state = SHOW_GHOST;
             } else {
                 state = SHOW_NONE;

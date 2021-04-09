@@ -25,14 +25,14 @@ import javax.swing.event.ListSelectionListener;
 
 class ToolbarOptions extends OptionsPanel {
 
-    private Listener listener = new Listener();
-    private ProjectExplorer explorer;
-    private JButton addTool;
-    private JButton addSeparator;
-    private JButton moveUp;
-    private JButton moveDown;
-    private JButton remove;
-    private ToolbarList list;
+    private final Listener listener = new Listener();
+    private final ProjectExplorer explorer;
+    private final JButton addTool;
+    private final JButton addSeparator;
+    private final JButton moveUp;
+    private final JButton moveDown;
+    private final JButton remove;
+    private final ToolbarList list;
 
     public ToolbarOptions(OptionsFrame window) {
         super(window);
@@ -67,11 +67,11 @@ class ToolbarOptions extends OptionsPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         setLayout(gridbag);
         JScrollPane explorerPane = new JScrollPane(explorer,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         JScrollPane listPane = new JScrollPane(list,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -109,7 +109,7 @@ class ToolbarOptions extends OptionsPanel {
     }
 
     private class Listener
-            implements ProjectExplorerListener, ActionListener, ListSelectionListener {
+        implements ProjectExplorerListener, ActionListener, ListSelectionListener {
 
         public void selectionChanged(ProjectExplorerEvent event) {
             computeEnabled();
@@ -176,7 +176,7 @@ class ToolbarOptions extends OptionsPanel {
             ToolbarData data = getOptions().getToolbarData();
             if (oldIndex >= 0 && newIndex >= 0 && newIndex < data.size()) {
                 getProject().doAction(ToolbarActions.moveTool(data,
-                        oldIndex, newIndex));
+                    oldIndex, newIndex));
                 list.setSelectedIndex(newIndex);
             }
         }

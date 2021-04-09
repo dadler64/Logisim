@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.std.memory;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.circuit.CircuitState;
 import com.cburch.logisim.data.Attribute;
 import com.cburch.logisim.data.AttributeSet;
@@ -32,7 +33,7 @@ public class Rom extends Mem {
 
     // The following is so that instance's MemListeners aren't freed by the
     // garbage collector until the instance itself is ready to be freed.
-    private WeakHashMap<Instance, MemListener> memListeners;
+    private final WeakHashMap<Instance, MemListener> memListeners;
 
     public Rom() {
         super("ROM", Strings.getter("romComponent"), 0);
@@ -42,9 +43,9 @@ public class Rom extends Mem {
 
     @Override
     void configurePorts(Instance instance) {
-        Port[] ps = new Port[MEM_INPUTS];
-        configureStandardPorts(instance, ps);
-        instance.setPorts(ps);
+        Port[] ports = new Port[MEM_INPUTS];
+        configureStandardPorts(instance, ports);
+        instance.setPorts(ports);
     }
 
     @Override
@@ -54,29 +55,29 @@ public class Rom extends Mem {
 
     @Override
     MemState getState(Instance instance, CircuitState state) {
-        MemState ret = (MemState) instance.getData(state);
-        if (ret == null) {
+        MemState memState = (MemState) instance.getData(state);
+        if (memState == null) {
             MemContents contents = getMemContents(instance);
-            ret = new MemState(contents);
-            instance.setData(state, ret);
+            memState = new MemState(contents);
+            instance.setData(state, memState);
         }
-        return ret;
+        return memState;
     }
 
     @Override
     MemState getState(InstanceState state) {
-        MemState ret = (MemState) state.getData();
-        if (ret == null) {
+        MemState memState = (MemState) state.getData();
+        if (memState == null) {
             MemContents contents = getMemContents(state.getInstance());
-            ret = new MemState(contents);
-            state.setData(ret);
+            memState = new MemState(contents);
+            state.setData(memState);
         }
-        return ret;
+        return memState;
     }
 
     @Override
-    HexFrame getHexFrame(Project proj, Instance instance, CircuitState state) {
-        return RomAttributes.getHexFrame(getMemContents(instance), proj);
+    HexFrame getHexFrame(Project project, Instance instance, CircuitState state) {
+        return RomAttributes.getHexFrame(getMemContents(instance), project);
     }
 
     // TODO - maybe delete this method?
@@ -89,7 +90,7 @@ public class Rom extends Mem {
         MemState myState = getState(state);
         BitWidth dataBits = state.getAttributeValue(DATA_ATTR);
 
-        Value addrValue = state.getPort(ADDR);
+        Value addressValue = state.getPort(ADDR);
         boolean chipSelect = state.getPort(CS) != Value.FALSE;
 
         if (!chipSelect) {
@@ -98,17 +99,17 @@ public class Rom extends Mem {
             return;
         }
 
-        int addr = addrValue.toIntValue();
-        if (!addrValue.isFullyDefined() || addr < 0) {
+        int address = addressValue.toIntValue();
+        if (!addressValue.isFullyDefined() || address < 0) {
             return;
         }
-        if (addr != myState.getCurrent()) {
-            myState.setCurrent(addr);
-            myState.scrollToShow(addr);
+        if (address != myState.getCurrent()) {
+            myState.setCurrent(address);
+            myState.scrollToShow(address);
         }
 
-        int val = myState.getContents().get(addr);
-        state.setPort(DATA, Value.createKnown(dataBits, val), DELAY);
+        int value = myState.getContents().get(address);
+        state.setPort(DATA, Value.createKnown(dataBits, value), DELAY);
     }
 
     @Override
@@ -129,12 +130,12 @@ public class Rom extends Mem {
         @Override
         public java.awt.Component getCellEditor(Window source, MemContents value) {
             if (source instanceof Frame) {
-                Project proj = ((Frame) source).getProject();
-                RomAttributes.register(value, proj);
+                Project project = ((Frame) source).getProject();
+                RomAttributes.register(value, project);
             }
-            ContentsCell ret = new ContentsCell(source, value);
-            ret.mouseClicked(null);
-            return ret;
+            ContentsCell cell = new ContentsCell(source, value);
+            cell.mouseClicked(null);
+            return cell;
         }
 
         @Override
@@ -144,15 +145,16 @@ public class Rom extends Mem {
 
         @Override
         public String toStandardString(MemContents state) {
-            int addr = state.getLogLength();
+            int address = state.getLogLength();
             int data = state.getWidth();
-            StringWriter ret = new StringWriter();
-            ret.write("addr/data: " + addr + " " + data + "\n");
+            StringWriter writer = new StringWriter();
+            writer.write("address/data: " + address + " " + data + "\n");
             try {
-                HexFile.save(ret, state);
+                HexFile.save(writer, state);
             } catch (IOException e) {
+                Logger.debugln(e.getMessage());
             }
-            return ret.toString();
+            return writer.toString();
         }
 
         @Override
@@ -160,29 +162,24 @@ public class Rom extends Mem {
             int lineBreak = value.indexOf('\n');
             String first = lineBreak < 0 ? value : value.substring(0, lineBreak);
             String rest = lineBreak < 0 ? "" : value.substring(lineBreak + 1);
-            StringTokenizer toks = new StringTokenizer(first);
+            StringTokenizer tokens = new StringTokenizer(first);
             try {
-                String header = toks.nextToken();
+                String header = tokens.nextToken();
                 if (!header.equals("addr/data:")) {
                     return null;
                 }
-                int addr = Integer.parseInt(toks.nextToken());
-                int data = Integer.parseInt(toks.nextToken());
-                MemContents ret = MemContents.create(addr, data);
+                int address = Integer.parseInt(tokens.nextToken());
+                int data = Integer.parseInt(tokens.nextToken());
+                MemContents ret = MemContents.create(address, data);
                 HexFile.open(ret, new StringReader(rest));
                 return ret;
-            } catch (IOException e) {
-                return null;
-            } catch (NumberFormatException e) {
-                return null;
-            } catch (NoSuchElementException e) {
+            } catch (IOException | NumberFormatException | NoSuchElementException e) {
                 return null;
             }
         }
     }
 
-    private static class ContentsCell extends JLabel
-            implements MouseListener {
+    private static class ContentsCell extends JLabel implements MouseListener {
 
         Window source;
         MemContents contents;

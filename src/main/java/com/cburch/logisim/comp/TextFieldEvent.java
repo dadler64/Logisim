@@ -5,14 +5,14 @@ package com.cburch.logisim.comp;
 
 public class TextFieldEvent {
 
-    private TextField field;
-    private String oldval;
-    private String newval;
+    private final TextField field;
+    private final String oldValue;
+    private final String newValue;
 
     public TextFieldEvent(TextField field, String old, String val) {
         this.field = field;
-        this.oldval = old;
-        this.newval = val;
+        this.oldValue = old;
+        this.newValue = val;
     }
 
     public TextField getTextField() {
@@ -20,10 +20,10 @@ public class TextFieldEvent {
     }
 
     public String getOldText() {
-        return oldval;
+        return oldValue;
     }
 
     public String getText() {
-        return newval;
+        return newValue;
     }
 }

@@ -24,19 +24,19 @@ import java.util.Arrays;
 public class Shifter extends InstanceFactory {
 
     static final AttributeOption SHIFT_LOGICAL_LEFT
-            = new AttributeOption("ll", Strings.getter("shiftLogicalLeft"));
+        = new AttributeOption("ll", Strings.getter("shiftLogicalLeft"));
     static final AttributeOption SHIFT_LOGICAL_RIGHT
-            = new AttributeOption("lr", Strings.getter("shiftLogicalRight"));
+        = new AttributeOption("lr", Strings.getter("shiftLogicalRight"));
     static final AttributeOption SHIFT_ARITHMETIC_RIGHT
-            = new AttributeOption("ar", Strings.getter("shiftArithmeticRight"));
+        = new AttributeOption("ar", Strings.getter("shiftArithmeticRight"));
     static final AttributeOption SHIFT_ROLL_LEFT
-            = new AttributeOption("rl", Strings.getter("shiftRollLeft"));
+        = new AttributeOption("rl", Strings.getter("shiftRollLeft"));
     static final AttributeOption SHIFT_ROLL_RIGHT
-            = new AttributeOption("rr", Strings.getter("shiftRollRight"));
+        = new AttributeOption("rr", Strings.getter("shiftRollRight"));
     static final Attribute<AttributeOption> ATTR_SHIFT
-            = Attributes.forOption("shift", Strings.getter("shifterShiftAttr"),
-            new AttributeOption[]{SHIFT_LOGICAL_LEFT, SHIFT_LOGICAL_RIGHT,
-                    SHIFT_ARITHMETIC_RIGHT, SHIFT_ROLL_LEFT, SHIFT_ROLL_RIGHT});
+        = Attributes.forOption("shift", Strings.getter("shifterShiftAttr"),
+        new AttributeOption[]{SHIFT_LOGICAL_LEFT, SHIFT_LOGICAL_RIGHT,
+            SHIFT_ARITHMETIC_RIGHT, SHIFT_ROLL_LEFT, SHIFT_ROLL_RIGHT});
 
     private static final int IN0 = 0;
     private static final int IN1 = 1;
@@ -45,9 +45,9 @@ public class Shifter extends InstanceFactory {
     public Shifter() {
         super("Shifter", Strings.getter("shifterComponent"));
         setAttributes(new Attribute[]{
-                StdAttr.WIDTH, ATTR_SHIFT
+            StdAttr.WIDTH, ATTR_SHIFT
         }, new Object[]{
-                BitWidth.create(8), SHIFT_LOGICAL_LEFT
+            BitWidth.create(8), SHIFT_LOGICAL_LEFT
         });
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));

@@ -5,16 +5,16 @@
 		<key>CFBundleDevelopmentRegion</key>			<string>English</string>
 		<key>CFBundleExecutable</key>							<string>universalJavaApplicationStub.sh</string>
 		<key>CFBundleName</key>										<string>${JAR}</string>
-		<key>CFBundleGetInfoString</key>					<string>${JAR} version ${VERSION}, 2019-2020 Dan Adler</string>
-		<key>CFBundleIconFile</key>								<string>logisim.icns</string>
-		<key>CFBundleIdentifier</key>							<string>com.cburch.logisim</string>
+		<key>CFBundleGetInfoString</key>					<string>${JAR} version ${VERSION}, ${COPYRIGHT} ${AUTHOR}</string>
+		<key>CFBundleIconFile</key>								<string>${JAR}App.icns</string>
+		<key>CFBundleIdentifier</key>							<string>${BUNDLE_ID}</string>
 		<key>CFBundleInfoDictionaryVersion</key>	<string>6.0</string>
 		<key>CFBundlePackageType</key>						<string>APPL</string>
-		<key>CFBundleLongVersionString</key>			<string>${VERSION}, 2019-2020 Dan Adler</string>
+		<key>CFBundleLongVersionString</key>			<string>${VERSION}, ${COPYRIGHT} ${AUTHOR}</string>
 		<key>CFBundleShortVersionString</key>			<string>${VERSION}</string>
 		<key>CSResourcesFileMapped</key>					<true/>
 		<key>LSRequiresCarbon</key>								<true/>
-		<key>NSHumanReadableCopyright</key>				<string>2019-2020 Dan Adler</string>
+		<key>NSHumanReadableCopyright</key>				<string>${COPYRIGHT} ${AUTHOR}</string>
 		<key>NSAppleEventsUsageDescription</key>	<string>There was an error while launching the application. Please click OK to
 		display a dialog with more information or cancel and view the syslog for details.</string>
 		<key>NSPrincipalClass</key>								<string>NSApplication</string>
@@ -147,7 +147,7 @@
 		</array>
 		<key>JavaX</key>
 		<dict>
-			<key>MainClass</key>					<string>com.cburch.logisim.Main</string>
+			<key>MainClass</key>					<string>${MAIN_CLASS}</string>
 			<key>JVMVersion</key>					<string>1.8+</string>
 			<key>ClassPath</key>					<string>\$JAVAROOT/${JAR}-${VERSION}.jar</string>
 			<key>WorkingDirectory</key>				<string>\$JAVAROOT</string>

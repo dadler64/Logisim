@@ -8,12 +8,12 @@ import java.util.Iterator;
 
 class WireIterator implements Iterator<Location> {
 
+    private final int deltaX;
+    private final int deltaY;
     private int curX;
     private int curY;
     private int destX;
     private int destY;
-    private int deltaX;
-    private int deltaY;
     private boolean destReturned;
 
     public WireIterator(Location e0, Location e1) {

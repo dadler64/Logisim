@@ -45,8 +45,7 @@ public class Location implements Comparable<Location> {
         if (value.charAt(0) == '(') {
             int len = value.length();
             if (value.charAt(len - 1) != ')') {
-                throw new NumberFormatException("invalid point '"
-                        + base + "'");
+                throw new NumberFormatException("invalid point '" + base + "'");
             }
             value = value.substring(1, len - 1);
         }
@@ -55,8 +54,7 @@ public class Location implements Comparable<Location> {
         if (comma < 0) {
             comma = value.indexOf(' ');
             if (comma < 0) {
-                throw new NumberFormatException("invalid point '"
-                        + base + "'");
+                throw new NumberFormatException("invalid point '" + base + "'");
             }
         }
         int x = Integer.parseInt(value.substring(0, comma).trim());

@@ -17,19 +17,19 @@ import java.util.List;
 
 public class Base extends Library {
 
-    private List<Tool> tools;
+    private final List<Tool> tools;
 
     public Base() {
         SelectTool select = new SelectTool();
         WiringTool wiring = new WiringTool();
 
         tools = Arrays.asList(new PokeTool(),
-                new EditTool(select, wiring),
-                select,
-                wiring,
-                new TextTool(),
-                new MenuTool(),
-                new AddTool(Text.FACTORY));
+            new EditTool(select, wiring),
+            select,
+            wiring,
+            new TextTool(),
+            new MenuTool(),
+            new AddTool(Text.FACTORY));
     }
 
     @Override

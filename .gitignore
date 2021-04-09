@@ -3,6 +3,7 @@
 /.idea
 /target
 /src/test
+/build
 
 # Build Files
 dependency-reduced-pom.xml

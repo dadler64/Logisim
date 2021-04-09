@@ -7,20 +7,20 @@ import com.cburch.logisim.util.StringGetter;
 
 public class AttributeOption implements AttributeOptionInterface {
 
-    private Object value;
-    private String name;
-    private StringGetter desc;
+    private final Object value;
+    private final String name;
+    private final StringGetter description;
 
-    public AttributeOption(Object value, StringGetter desc) {
+    public AttributeOption(Object value, StringGetter description) {
         this.value = value;
         this.name = value.toString();
-        this.desc = desc;
+        this.description = description;
     }
 
-    public AttributeOption(Object value, String name, StringGetter desc) {
+    public AttributeOption(Object value, String name, StringGetter description) {
         this.value = value;
         this.name = name;
-        this.desc = desc;
+        this.description = description;
     }
 
     public Object getValue() {
@@ -33,6 +33,6 @@ public class AttributeOption implements AttributeOptionInterface {
     }
 
     public String toDisplayString() {
-        return desc.get();
+        return description.get();
     }
 }

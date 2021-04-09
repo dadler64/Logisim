@@ -13,29 +13,29 @@ import org.w3c.dom.Element;
 
 public class AppearanceSvgReader {
 
-    public static AbstractCanvasObject createShape(Element elt, Map<Location, Instance> pins) {
-        String name = elt.getTagName();
+    public static AbstractCanvasObject createShape(Element element, Map<Location, Instance> pins) {
+        String name = element.getTagName();
         if (name.equals("circ-anchor") || name.equals("circ-origin")) {
-            Location loc = getLocation(elt);
-            AbstractCanvasObject ret = new AppearanceAnchor(loc);
-            if (elt.hasAttribute("facing")) {
-                Direction facing = Direction.parse(elt.getAttribute("facing"));
-                ret.setValue(AppearanceAnchor.FACING, facing);
+            Location location = getLocation(element);
+            AbstractCanvasObject canvasObject = new AppearanceAnchor(location);
+            if (element.hasAttribute("facing")) {
+                Direction facing = Direction.parse(element.getAttribute("facing"));
+                canvasObject.setValue(AppearanceAnchor.FACING, facing);
             }
-            return ret;
+            return canvasObject;
         } else if (name.equals("circ-port")) {
-            Location loc = getLocation(elt);
-            String[] pinStr = elt.getAttribute("pin").split(",");
-            Location pinLoc = Location.create(Integer.parseInt(pinStr[0].trim()),
-                    Integer.parseInt(pinStr[1].trim()));
-            Instance pin = pins.get(pinLoc);
+            Location location = getLocation(element);
+            String[] pinString = element.getAttribute("pin").split(",");
+            Location pinLocation = Location
+                .create(Integer.parseInt(pinString[0].trim()), Integer.parseInt(pinString[1].trim()));
+            Instance pin = pins.get(pinLocation);
             if (pin == null) {
                 return null;
             } else {
-                return new AppearancePort(loc, pin);
+                return new AppearancePort(location, pin);
             }
         } else {
-            return SvgReader.createShape(elt);
+            return SvgReader.createShape(element);
         }
     }
 

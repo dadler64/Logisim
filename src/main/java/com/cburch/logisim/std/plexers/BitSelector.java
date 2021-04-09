@@ -26,18 +26,25 @@ import java.awt.Graphics;
 public class BitSelector extends InstanceFactory {
 
     public static final Attribute<BitWidth> GROUP_ATTR
-            = Attributes.forBitWidth("group", Strings.getter("bitSelectorGroupAttr"));
+        = Attributes.forBitWidth("group", Strings.getter("bitSelectorGroupAttr"));
 
     public BitSelector() {
         super("BitSelector", Strings.getter("bitSelectorComponent"));
-        setAttributes(new Attribute[]{
-                StdAttr.FACING, StdAttr.WIDTH, GROUP_ATTR
-        }, new Object[]{
-                Direction.EAST, BitWidth.create(8), BitWidth.ONE
-        });
+        setAttributes(
+            new Attribute[]{
+                StdAttr.FACING,
+                StdAttr.WIDTH,
+                GROUP_ATTR
+            }, new Object[]{
+                Direction.EAST,
+                BitWidth.create(8),
+                BitWidth.ONE
+            }
+        );
         setKeyConfigurator(JoinedConfigurator.create(
-                new BitWidthConfigurator(GROUP_ATTR, 1, Value.MAX_WIDTH, 0),
-                new BitWidthConfigurator(StdAttr.WIDTH)));
+            new BitWidthConfigurator(GROUP_ATTR, 1, Value.MAX_WIDTH, 0),
+            new BitWidthConfigurator(StdAttr.WIDTH)
+        ));
 
         setIconName("bitSelector.gif");
         setFacingAttribute(StdAttr.FACING);
@@ -138,7 +145,7 @@ public class BitSelector extends InstanceFactory {
     @Override
     public void paintGhost(InstancePainter painter) {
         Plexers.drawTrapezoid(painter.getGraphics(), painter.getBounds(),
-                painter.getAttributeValue(StdAttr.FACING), 9);
+            painter.getAttributeValue(StdAttr.FACING), 9);
     }
 
     @Override
@@ -149,9 +156,7 @@ public class BitSelector extends InstanceFactory {
         Plexers.drawTrapezoid(g, painter.getBounds(), facing, 9);
         Bounds bds = painter.getBounds();
         g.setColor(Color.BLACK);
-        GraphicsUtil.drawCenteredText(g, "Sel",
-                bds.getX() + bds.getWidth() / 2,
-                bds.getY() + bds.getHeight() / 2);
+        GraphicsUtil.drawCenteredText(g, "Sel", bds.getX() + bds.getWidth() / 2, bds.getY() + bds.getHeight() / 2);
         painter.drawPorts();
     }
 }

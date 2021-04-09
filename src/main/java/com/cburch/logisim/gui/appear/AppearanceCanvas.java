@@ -34,17 +34,17 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 
 public class AppearanceCanvas extends Canvas
-        implements CanvasPaneContents, ActionDispatcher {
+    implements CanvasPaneContents, ActionDispatcher {
 
     private static final int BOUNDS_BUFFER = 70;
     // pixels shown in canvas beyond outermost boundaries
     private static final int THRESH_SIZE_UPDATE = 10;
     // don't bother to update the size if it hasn't changed more than this
-    private CanvasTool selectTool;
+    private final CanvasTool selectTool;
+    private final Listener listener;
+    private final GridPainter grid;
     private Project proj;
     private CircuitState circuitState;
-    private Listener listener;
-    private GridPainter grid;
     private CanvasPane canvasPane;
     private Bounds oldPreferredSize;
     private LayoutPopupManager popupManager;
@@ -176,7 +176,7 @@ public class AppearanceCanvas extends Canvas
             int max = getMaxIndex(getModel());
             if (cur > max) {
                 canvasAction = new ModelAddAction(getModel(),
-                        addAction.getObjects(), max + 1);
+                    addAction.getObjects(), max + 1);
             }
         }
 
@@ -297,8 +297,8 @@ public class AppearanceCanvas extends Canvas
         if (!immediate) {
             Bounds old = oldPreferredSize;
             if (old != null
-                    && Math.abs(old.getWidth() - dim.width) < THRESH_SIZE_UPDATE
-                    && Math.abs(old.getHeight() - dim.height) < THRESH_SIZE_UPDATE) {
+                && Math.abs(old.getWidth() - dim.width) < THRESH_SIZE_UPDATE
+                && Math.abs(old.getHeight() - dim.height) < THRESH_SIZE_UPDATE) {
                 return;
             }
         }
@@ -326,7 +326,7 @@ public class AppearanceCanvas extends Canvas
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+        int orientation, int direction) {
         return canvasPane.supportScrollableBlockIncrement(visibleRect, orientation, direction);
     }
 
@@ -339,12 +339,12 @@ public class AppearanceCanvas extends Canvas
     }
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+        int orientation, int direction) {
         return canvasPane.supportScrollableUnitIncrement(visibleRect, orientation, direction);
     }
 
     private class Listener
-            implements CanvasModelListener, PropertyChangeListener {
+        implements CanvasModelListener, PropertyChangeListener {
 
         public void modelChanged(CanvasModelEvent event) {
             computeSize(false);

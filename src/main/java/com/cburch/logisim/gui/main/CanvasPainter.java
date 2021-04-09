@@ -33,8 +33,8 @@ class CanvasPainter implements PropertyChangeListener {
 
     private static final Set<Component> NO_COMPONENTS = Collections.emptySet();
 
-    private Canvas canvas;
-    private GridPainter grid;
+    private final Canvas canvas;
+    private final GridPainter grid;
     private Component haloedComponent = null;
     private Circuit haloedCircuit = null;
     private WireSet highlightedWires = WireSet.EMPTY;
@@ -87,13 +87,13 @@ class CanvasPainter implements PropertyChangeListener {
         double a = Canvas.SQRT_2 * w;
         double b = Canvas.SQRT_2 * h;
         canvas.repaint((int) Math.round(bds.getX() + w / 2.0 - a / 2.0),
-                (int) Math.round(bds.getY() + h / 2.0 - b / 2.0),
-                (int) Math.round(a), (int) Math.round(b));
+            (int) Math.round(bds.getY() + h / 2.0 - b / 2.0),
+            (int) Math.round(a), (int) Math.round(b));
     }
 
     public void propertyChange(PropertyChangeEvent event) {
         if (AppPreferences.PRINTER_VIEW.isSource(event)
-                || AppPreferences.ATTRIBUTE_HALO.isSource(event)) {
+            || AppPreferences.ATTRIBUTE_HALO.isSource(event)) {
             canvas.repaint();
         }
     }
@@ -125,7 +125,7 @@ class CanvasPainter implements PropertyChangeListener {
 
         CircuitState circState = proj.getCircuitState();
         ComponentDrawContext ptContext = new ComponentDrawContext(canvas,
-                circ, circState, g, gScaled);
+            circ, circState, g, gScaled);
         ptContext.setHighlightedWires(highlightedWires);
         gScaled.setColor(Color.RED);
         circState.drawOscillatingPoints(ptContext);
@@ -151,7 +151,7 @@ class CanvasPainter implements PropertyChangeListener {
         // draw halo around component whose attributes we are viewing
         boolean showHalo = AppPreferences.ATTRIBUTE_HALO.getBoolean();
         if (showHalo && haloedComponent != null && haloedCircuit == circ
-                && !hidden.contains(haloedComponent)) {
+            && !hidden.contains(haloedComponent)) {
             GraphicsUtil.switchToWidth(g, 3);
             g.setColor(Canvas.HALO_COLOR);
             Bounds bds = haloedComponent.getBounds(g).expand(5);
@@ -160,8 +160,8 @@ class CanvasPainter implements PropertyChangeListener {
             double a = Canvas.SQRT_2 * w;
             double b = Canvas.SQRT_2 * h;
             g.drawOval((int) Math.round(bds.getX() + w / 2.0 - a / 2.0),
-                    (int) Math.round(bds.getY() + h / 2.0 - b / 2.0),
-                    (int) Math.round(a), (int) Math.round(b));
+                (int) Math.round(bds.getY() + h / 2.0 - b / 2.0),
+                (int) Math.round(a), (int) Math.round(b));
             GraphicsUtil.switchToWidth(g, 1);
             g.setColor(Color.BLACK);
         }
@@ -170,7 +170,7 @@ class CanvasPainter implements PropertyChangeListener {
         CircuitState circState = proj.getCircuitState();
         boolean printerView = AppPreferences.PRINTER_VIEW.getBoolean();
         ComponentDrawContext context = new ComponentDrawContext(canvas,
-                circ, circState, base, g, printerView);
+            circ, circState, base, g, printerView);
         context.setHighlightedWires(highlightedWires);
         circ.draw(context, hidden);
         sel.draw(context, hidden);

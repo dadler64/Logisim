@@ -22,7 +22,7 @@ public class CanvasModelEvent extends EventObject {
     public static final int ACTION_HANDLE_DELETED = 6;
     public static final int ACTION_ATTRIBUTES_CHANGED = 7;
     public static final int ACTION_TEXT_CHANGED = 8;
-    private int action;
+    private final int action;
     private Collection<? extends CanvasObject> affected;
     private int deltaX;
     private int deltaY;
@@ -35,7 +35,7 @@ public class CanvasModelEvent extends EventObject {
     private String newText;
 
     private CanvasModelEvent(CanvasModel source, int action,
-            Collection<? extends CanvasObject> affected) {
+        Collection<? extends CanvasObject> affected) {
         super(source);
 
         this.action = action;
@@ -52,7 +52,7 @@ public class CanvasModelEvent extends EventObject {
     }
 
     private CanvasModelEvent(CanvasModel source, int action, Collection<? extends CanvasObject> affected, int deltaX,
-            int deltaY) {
+        int deltaY) {
         this(source, action, affected);
 
         this.deltaX = deltaX;
@@ -71,8 +71,8 @@ public class CanvasModelEvent extends EventObject {
         this.gesture = gesture;
     }
 
-    private CanvasModelEvent(CanvasModel source, int action, Map<AttributeMapKey, Object> oldValues,
-            Map<AttributeMapKey, Object> newValues) {
+    private CanvasModelEvent(CanvasModel source, int action, Map<AttributeMapKey, Object> oldValues, Map<AttributeMapKey,
+        Object> newValues) {
         this(source, action, Collections.emptySet());
 
         HashSet<CanvasObject> affected = new HashSet<>(newValues.size());
@@ -89,7 +89,7 @@ public class CanvasModelEvent extends EventObject {
     }
 
     private CanvasModelEvent(CanvasModel source, int action, Collection<? extends CanvasObject> affected, String oldText,
-            String newText) {
+        String newText) {
         this(source, action, affected);
         this.oldText = oldText;
         this.newText = newText;
@@ -118,7 +118,7 @@ public class CanvasModelEvent extends EventObject {
     }
 
     public static CanvasModelEvent forTranslate(CanvasModel source, Collection<? extends CanvasObject> affected, int deltaX,
-            int deltaY) {
+        int deltaY) {
         return new CanvasModelEvent(source, ACTION_TRANSLATED, affected, deltaX, deltaY);
     }
 
@@ -139,9 +139,8 @@ public class CanvasModelEvent extends EventObject {
     }
 
     public static CanvasModelEvent forChangeAttributes(CanvasModel source, Map<AttributeMapKey, Object> oldValues,
-            Map<AttributeMapKey, Object> newValues) {
-        return new CanvasModelEvent(source, ACTION_ATTRIBUTES_CHANGED,
-                oldValues, newValues);
+        Map<AttributeMapKey, Object> newValues) {
+        return new CanvasModelEvent(source, ACTION_ATTRIBUTES_CHANGED, oldValues, newValues);
     }
 
     public static CanvasModelEvent forChangeText(CanvasModel source, CanvasObject obj, String oldText, String newText) {

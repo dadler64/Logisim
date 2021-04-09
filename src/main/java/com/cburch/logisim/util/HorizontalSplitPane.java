@@ -21,26 +21,25 @@ public class HorizontalSplitPane extends JPanel {
 
     static final int DRAG_TOLERANCE = 3;
     private static final Color DRAG_COLOR = new Color(0, 0, 0, 128);
-    private JComponent comp0;
-    private JComponent comp1;
-    private MyDragbar dragbar;
+    private final JComponent component0;
+    private final JComponent component1;
+    private final MyDragbar myDragbar;
     private double fraction;
 
-    public HorizontalSplitPane(JComponent comp0, JComponent comp1) {
-        this(comp0, comp1, 0.5);
+    public HorizontalSplitPane(JComponent component0, JComponent component1) {
+        this(component0, component1, 0.5);
     }
 
-    public HorizontalSplitPane(JComponent comp0, JComponent comp1,
-            double fraction) {
-        this.comp0 = comp0;
-        this.comp1 = comp1;
-        this.dragbar = new MyDragbar(); // above the other components
+    public HorizontalSplitPane(JComponent component0, JComponent component1, double fraction) {
+        this.component0 = component0;
+        this.component1 = component1;
+        this.myDragbar = new MyDragbar(); // above the other components
         this.fraction = fraction;
 
         setLayout(new MyLayout());
-        add(dragbar); // above the other components
-        add(comp0);
-        add(comp1);
+        add(myDragbar); // above the other components
+        add(component0);
+        add(component1);
     }
 
     public double getFraction() {
@@ -60,8 +59,7 @@ public class HorizontalSplitPane extends JPanel {
         }
     }
 
-    abstract static class Dragbar extends JComponent
-            implements MouseListener, MouseMotionListener {
+    abstract static class Dragbar extends JComponent implements MouseListener, MouseMotionListener {
 
         private boolean dragging = false;
         private int curValue;
@@ -126,44 +124,44 @@ public class HorizontalSplitPane extends JPanel {
 
     private class MyLayout implements LayoutManager {
 
-        public void addLayoutComponent(String name, Component comp) {
+        public void addLayoutComponent(String name, Component component) {
         }
 
-        public void removeLayoutComponent(Component comp) {
+        public void removeLayoutComponent(Component component) {
         }
 
         public Dimension preferredLayoutSize(Container parent) {
             if (fraction <= 0.0) {
-                return comp1.getPreferredSize();
+                return component1.getPreferredSize();
             }
             if (fraction >= 1.0) {
-                return comp0.getPreferredSize();
+                return component0.getPreferredSize();
             }
-            Insets in = parent.getInsets();
-            Dimension d0 = comp0.getPreferredSize();
-            Dimension d1 = comp1.getPreferredSize();
-            return new Dimension(in.left + Math.max(d0.width, d1.width) + in.right,
-                    in.top + d0.height + d1.height + in.bottom);
+            Insets insets = parent.getInsets();
+            Dimension d0 = component0.getPreferredSize();
+            Dimension d1 = component1.getPreferredSize();
+            return new Dimension(insets.left + Math.max(d0.width, d1.width) + insets.right,
+                insets.top + d0.height + d1.height + insets.bottom);
         }
 
         public Dimension minimumLayoutSize(Container parent) {
             if (fraction <= 0.0) {
-                return comp1.getMinimumSize();
+                return component1.getMinimumSize();
             }
             if (fraction >= 1.0) {
-                return comp0.getMinimumSize();
+                return component0.getMinimumSize();
             }
-            Insets in = parent.getInsets();
-            Dimension d0 = comp0.getMinimumSize();
-            Dimension d1 = comp1.getMinimumSize();
-            return new Dimension(in.left + Math.max(d0.width, d1.width) + in.right,
-                    in.top + d0.height + d1.height + in.bottom);
+            Insets insets = parent.getInsets();
+            Dimension d0 = component0.getMinimumSize();
+            Dimension d1 = component1.getMinimumSize();
+            return new Dimension(insets.left + Math.max(d0.width, d1.width) + insets.right,
+                insets.top + d0.height + d1.height + insets.bottom);
         }
 
         public void layoutContainer(Container parent) {
-            Insets in = parent.getInsets();
-            int maxWidth = parent.getWidth() - (in.left + in.right);
-            int maxHeight = parent.getHeight() - (in.top + in.bottom);
+            Insets insets = parent.getInsets();
+            int maxWidth = parent.getWidth() - (insets.left + insets.right);
+            int maxHeight = parent.getHeight() - (insets.top + insets.bottom);
             int split;
             if (fraction <= 0.0) {
                 split = 0;
@@ -171,16 +169,13 @@ public class HorizontalSplitPane extends JPanel {
                 split = maxWidth;
             } else {
                 split = (int) Math.round(maxHeight * fraction);
-                split = Math.min(split, maxHeight - comp1.getMinimumSize().height);
-                split = Math.max(split, comp0.getMinimumSize().height);
+                split = Math.min(split, maxHeight - component1.getMinimumSize().height);
+                split = Math.max(split, component0.getMinimumSize().height);
             }
 
-            comp0.setBounds(in.left, in.top,
-                    maxWidth, split);
-            comp1.setBounds(in.left, in.top + split,
-                    maxWidth, maxHeight - split);
-            dragbar.setBounds(in.left, in.top + split - DRAG_TOLERANCE,
-                    maxWidth, 2 * DRAG_TOLERANCE);
+            component0.setBounds(insets.left, insets.top, maxWidth, split);
+            component1.setBounds(insets.left, insets.top + split, maxWidth, maxHeight - split);
+            myDragbar.setBounds(insets.left, insets.top + split - DRAG_TOLERANCE, maxWidth, 2 * DRAG_TOLERANCE);
         }
     }
 
@@ -197,8 +192,8 @@ public class HorizontalSplitPane extends JPanel {
 
         @Override
         void setDragValue(int value) {
-            Insets in = HorizontalSplitPane.this.getInsets();
-            setFraction((double) value / (HorizontalSplitPane.this.getHeight() - in.bottom - in.top));
+            Insets insets = HorizontalSplitPane.this.getInsets();
+            setFraction((double) value / (HorizontalSplitPane.this.getHeight() - insets.bottom - insets.top));
             revalidate();
         }
     }

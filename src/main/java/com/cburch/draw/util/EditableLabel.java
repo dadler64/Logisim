@@ -17,7 +17,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import javax.swing.JTextField;
 
-public class EditableLabel implements Cloneable {
+public class
+EditableLabel implements Cloneable {
 
     public static final int LEFT = JTextField.LEFT;
     public static final int RIGHT = JTextField.RIGHT;
@@ -27,12 +28,11 @@ public class EditableLabel implements Cloneable {
     public static final int MIDDLE = 9;
     public static final int BASELINE = 10;
     public static final int BOTTOM = 11;
-
+    public Color color;
     private int x;
     private int y;
     private String text;
     private Font font;
-    public Color color;
     private int horizontalAlignment;
     private int verticalAlignment;
     private boolean areDimensionsKnown;
@@ -67,10 +67,10 @@ public class EditableLabel implements Cloneable {
         if (other instanceof EditableLabel) {
             EditableLabel that = (EditableLabel) other;
             return this.x == that.x && this.y == that.y
-                    && this.text.equals(that.text) && this.font.equals(that.font)
-                    && this.color.equals(that.color)
-                    && this.horizontalAlignment == that.horizontalAlignment
-                    && this.verticalAlignment == that.verticalAlignment;
+                && this.text.equals(that.text) && this.font.equals(that.font)
+                && this.color.equals(that.color)
+                && this.horizontalAlignment == that.horizontalAlignment
+                && this.verticalAlignment == that.verticalAlignment;
         } else {
             return false;
         }
@@ -147,7 +147,7 @@ public class EditableLabel implements Cloneable {
 
     public void setVerticalAlignment(int verticalAlignment) {
         if (verticalAlignment != TOP && verticalAlignment != MIDDLE && verticalAlignment != BASELINE
-                && verticalAlignment != BOTTOM) {
+            && verticalAlignment != BOTTOM) {
             throw new IllegalArgumentException("argument must be TOP, MIDDLE, BASELINE, or BOTTOM");
         }
         this.verticalAlignment = verticalAlignment;
@@ -169,7 +169,7 @@ public class EditableLabel implements Cloneable {
         int x0 = getLeftX();
         int y0 = getBaseY();
         if (qx >= x0 && qx < x0 + width
-                && qy >= y0 - ascent && qy < y0 + descent) {
+            && qy >= y0 - ascent && qy < y0 + descent) {
             int[] xs = charX;
             int[] ys = charY;
             if (xs == null || ys == null) {

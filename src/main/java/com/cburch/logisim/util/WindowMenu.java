@@ -19,20 +19,20 @@ import javax.swing.KeyStroke;
 
 public class WindowMenu extends JMenu {
 
-    private JFrame owner;
-    private MyListener myListener = new MyListener();
-    private JMenuItem minimize = new JMenuItem();
-    private JMenuItem zoom = new JMenuItem();
-    private JMenuItem close = new JMenuItem();
-    private JRadioButtonMenuItem nullItem = new JRadioButtonMenuItem();
-    private ArrayList<WindowMenuItem> persistentItems = new ArrayList<>();
-    private ArrayList<WindowMenuItem> transientItems = new ArrayList<>();
+    private final JFrame owner;
+    private final MyListener myListener = new MyListener();
+    private final JMenuItem minimize = new JMenuItem();
+    private final JMenuItem zoom = new JMenuItem();
+    private final JMenuItem close = new JMenuItem();
+    private final JRadioButtonMenuItem nullItem = new JRadioButtonMenuItem();
+    private final ArrayList<WindowMenuItem> persistentItems = new ArrayList<>();
+    private final ArrayList<WindowMenuItem> transientItems = new ArrayList<>();
 
     public WindowMenu(JFrame owner) {
         this.owner = owner;
         WindowMenuManager.addMenu(this);
 
-        int menuMask = getToolkit().getMenuShortcutKeyMask();
+        int menuMask = getToolkit().getMenuShortcutKeyMaskEx();
         minimize.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, menuMask));
         close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, menuMask));
 
@@ -82,8 +82,8 @@ public class WindowMenu extends JMenu {
     }
 
     private void computeContents() {
-        ButtonGroup bgroup = new ButtonGroup();
-        bgroup.add(nullItem);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(nullItem);
 
         removeAll();
         add(minimize);
@@ -93,7 +93,7 @@ public class WindowMenu extends JMenu {
         if (!persistentItems.isEmpty()) {
             addSeparator();
             for (JRadioButtonMenuItem item : persistentItems) {
-                bgroup.add(item);
+                buttonGroup.add(item);
                 add(item);
             }
         }
@@ -101,7 +101,7 @@ public class WindowMenu extends JMenu {
         if (!transientItems.isEmpty()) {
             addSeparator();
             for (JRadioButtonMenuItem item : transientItems) {
-                bgroup.add(item);
+                buttonGroup.add(item);
                 add(item);
             }
         }
@@ -180,19 +180,19 @@ public class WindowMenu extends JMenu {
             minimize.setText(Strings.get("windowMinimizeItem"));
             close.setText(Strings.get("windowCloseItem"));
             zoom.setText(MacCompatibility.isQuitAutomaticallyPresent() ?
-                    Strings.get("windowZoomItemMac") : Strings.get("windowZoomItem"));
+                Strings.get("windowZoomItemMac") : Strings.get("windowZoomItem"));
         }
 
         public void actionPerformed(ActionEvent e) {
-            Object src = e.getSource();
-            if (src == minimize) {
+            Object source = e.getSource();
+            if (source == minimize) {
                 doMinimize();
-            } else if (src == zoom) {
+            } else if (source == zoom) {
                 doZoom();
-            } else if (src == close) {
+            } else if (source == close) {
                 doClose();
-            } else if (src instanceof WindowMenuItem) {
-                WindowMenuItem choice = (WindowMenuItem) src;
+            } else if (source instanceof WindowMenuItem) {
+                WindowMenuItem choice = (WindowMenuItem) source;
                 if (choice.isSelected()) {
                     WindowMenuItem item = findOwnerItem();
                     if (item != null) {
@@ -204,14 +204,14 @@ public class WindowMenu extends JMenu {
         }
 
         private WindowMenuItem findOwnerItem() {
-            for (WindowMenuItem i : persistentItems) {
-                if (i.getJFrame() == owner) {
-                    return i;
+            for (WindowMenuItem item : persistentItems) {
+                if (item.getJFrame() == owner) {
+                    return item;
                 }
             }
-            for (WindowMenuItem i : transientItems) {
-                if (i.getJFrame() == owner) {
-                    return i;
+            for (WindowMenuItem item : transientItems) {
+                if (item.getJFrame() == owner) {
+                    return item;
                 }
             }
             return null;

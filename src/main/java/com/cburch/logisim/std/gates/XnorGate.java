@@ -47,8 +47,7 @@ class XnorGate extends AbstractGate {
     }
 
     @Override
-    protected void paintDinShape(InstancePainter painter, int width, int height,
-            int inputs) {
+    protected void paintDinShape(InstancePainter painter, int width, int height, int inputs) {
         PainterDin.paintXnor(painter, width, height, false);
     }
 

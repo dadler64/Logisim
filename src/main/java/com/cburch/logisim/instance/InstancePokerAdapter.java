@@ -3,6 +3,7 @@
 
 package com.cburch.logisim.instance;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.circuit.CircuitState;
 import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.comp.ComponentUserEvent;
@@ -26,7 +27,7 @@ class InstancePokerAdapter extends AbstractCaret implements Pokable {
     public InstancePokerAdapter(InstanceComponent comp, Class<? extends InstancePoker> pokerClass) {
         try {
             this.comp = comp;
-            poker = pokerClass.newInstance();
+            poker = pokerClass.getDeclaredConstructor().newInstance();
         } catch (Throwable t) {
             handleError(t, pokerClass);
             poker = null;
@@ -35,11 +36,10 @@ class InstancePokerAdapter extends AbstractCaret implements Pokable {
 
     private void handleError(Throwable t, Class<? extends InstancePoker> pokerClass) {
         String className = pokerClass.getName();
-        System.err.println("error while instantiating poker " + className //OK
-                + ": " + t.getClass().getName());
+        Logger.errorln("error while instantiating poker " + className + ": " + t.getClass().getName()); // OK
         String msg = t.getMessage();
         if (msg != null) {
-            System.err.println("  (" + msg + ")"); //OK
+            Logger.errorln("  (" + msg + ")"); // OK
         }
     }
 
@@ -48,17 +48,16 @@ class InstancePokerAdapter extends AbstractCaret implements Pokable {
             return null;
         } else {
             canvas = event.getCanvas();
-            CircuitState circState = event.getCircuitState();
-            InstanceStateImpl state = new InstanceStateImpl(circState, comp);
-            MouseEvent e = new MouseEvent(event.getCanvas(),
-                    MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0,
-                    event.getX(), event.getY(), 1, false);
-            boolean isAccepted = poker.init(state, e);
+            CircuitState circuitState = event.getCircuitState();
+            InstanceStateImpl state = new InstanceStateImpl(circuitState, comp);
+            MouseEvent mouseEvent = new MouseEvent(event.getCanvas(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(),
+                0, event.getX(), event.getY(), 1, false);
+            boolean isAccepted = poker.init(state, mouseEvent);
             if (isAccepted) {
                 this.state = state;
-                this.context = new ComponentDrawContext(event.getCanvas(),
-                        event.getCanvas().getCircuit(), circState, null, null);
-                mousePressed(e);
+                this.context = new ComponentDrawContext(event.getCanvas(), event.getCanvas().getCircuit(), circuitState,
+                    null, null);
+                mousePressed(mouseEvent);
                 return this;
             } else {
                 poker = null;
@@ -145,10 +144,10 @@ class InstancePokerAdapter extends AbstractCaret implements Pokable {
 
     private void checkCurrent() {
         if (state != null && canvas != null) {
-            CircuitState s0 = state.getCircuitState();
-            CircuitState s1 = canvas.getCircuitState();
-            if (s0 != s1) {
-                state = new InstanceStateImpl(s1, comp);
+            CircuitState state0 = state.getCircuitState();
+            CircuitState state1 = canvas.getCircuitState();
+            if (state0 != state1) {
+                state = new InstanceStateImpl(state1, comp);
             }
         }
     }

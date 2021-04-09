@@ -5,14 +5,14 @@ package com.cburch.logisim.tools;
 
 public class CaretEvent {
 
-    private Caret caret;
-    private String oldtext;
-    private String newtext;
+    private final Caret caret;
+    private final String oldText;
+    private final String newText;
 
-    public CaretEvent(Caret caret, String oldtext, String newtext) {
+    public CaretEvent(Caret caret, String oldText, String newText) {
         this.caret = caret;
-        this.oldtext = oldtext;
-        this.newtext = newtext;
+        this.oldText = oldText;
+        this.newText = newText;
     }
 
     public Caret getCaret() {
@@ -20,10 +20,10 @@ public class CaretEvent {
     }
 
     public String getOldText() {
-        return oldtext;
+        return oldText;
     }
 
     public String getText() {
-        return newtext;
+        return newText;
     }
 }

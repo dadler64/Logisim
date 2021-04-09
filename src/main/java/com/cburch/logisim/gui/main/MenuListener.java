@@ -29,13 +29,13 @@ import java.util.List;
 
 class MenuListener {
 
-    private Frame frame;
-    private LogisimMenuBar menubar;
-    private ArrayList<EnabledListener> listeners;
-    private FileListener fileListener = new FileListener();
-    private EditListener editListener = new EditListener();
-    private ProjectMenuListener projectListener = new ProjectMenuListener();
-    private SimulateMenuListener simulateListener = new SimulateMenuListener();
+    private final Frame frame;
+    private final LogisimMenuBar menubar;
+    private final ArrayList<EnabledListener> listeners;
+    private final FileListener fileListener = new FileListener();
+    private final EditListener editListener = new EditListener();
+    private final ProjectMenuListener projectListener = new ProjectMenuListener();
+    private final SimulateMenuListener simulateListener = new SimulateMenuListener();
 
     public MenuListener(Frame frame, LogisimMenuBar menubar) {
         this.frame = frame;
@@ -186,7 +186,7 @@ class MenuListener {
         }
 
         public void enableChanged(EditHandler handler, LogisimMenuItem action,
-                boolean value) {
+            boolean value) {
             if (handler == this.handler) {
                 menubar.setEnabled(action, value);
                 fireEnableChanged();
@@ -195,7 +195,7 @@ class MenuListener {
     }
 
     class ProjectMenuListener implements ProjectListener, LibraryListener,
-            ActionListener, PropertyChangeListener, CanvasModelListener {
+        ActionListener, PropertyChangeListener, CanvasModelListener {
 
         void register() {
             Project proj = frame.getProject();
@@ -309,7 +309,7 @@ class MenuListener {
                 canMoveDown = curIndex < tools.size() - 1;
                 canRemove = tools.size() > 1;
                 canRevert = viewAppearance
-                        && !cur.getAppearance().isDefaultAppearance();
+                    && !cur.getAppearance().isDefaultAppearance();
             }
 
             menubar.setEnabled(LogisimMenuBar.ADD_CIRCUIT, true);
@@ -335,7 +335,7 @@ class MenuListener {
             boolean isProjectCircuit = file.contains(cur);
             boolean viewAppearance = frame.getEditorView().equals(Frame.EDIT_APPEARANCE);
             boolean canRevert = isProjectCircuit && viewAppearance
-                    && !cur.getAppearance().isDefaultAppearance();
+                && !cur.getAppearance().isDefaultAppearance();
             boolean oldValue = menubar.isEnabled(LogisimMenuBar.REVERT_APPEARANCE);
             if (canRevert != oldValue) {
                 menubar.setEnabled(LogisimMenuBar.REVERT_APPEARANCE, canRevert);
@@ -360,7 +360,7 @@ class MenuListener {
         public void projectChanged(ProjectEvent event) {
             if (event.getAction() == ProjectEvent.ACTION_SET_STATE) {
                 menubar.setCircuitState(frame.getProject().getSimulator(),
-                        frame.getProject().getCircuitState());
+                    frame.getProject().getCircuitState());
             }
         }
 

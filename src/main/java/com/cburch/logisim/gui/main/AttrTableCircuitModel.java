@@ -12,30 +12,30 @@ import com.cburch.logisim.proj.Project;
 
 public class AttrTableCircuitModel extends AttributeSetTableModel {
 
-    private Project proj;
-    private Circuit circ;
+    private final Project project;
+    private final Circuit circuit;
 
-    public AttrTableCircuitModel(Project proj, Circuit circ) {
-        super(circ.getStaticAttributes());
-        this.proj = proj;
-        this.circ = circ;
+    public AttrTableCircuitModel(Project project, Circuit circuit) {
+        super(circuit.getStaticAttributes());
+        this.project = project;
+        this.circuit = circuit;
     }
 
     @Override
     public String getTitle() {
-        return Strings.get("circuitAttrTitle", circ.getName());
+        return Strings.get("circuitAttrTitle", circuit.getName());
     }
 
     @Override
     public void setValueRequested(Attribute<Object> attribute, Object value)
-            throws AttrTableSetException {
-        if (!proj.getLogisimFile().contains(circ)) {
+        throws AttrTableSetException {
+        if (!project.getLogisimFile().contains(circuit)) {
             String msg = Strings.get("cannotModifyCircuitError");
             throw new AttrTableSetException(msg);
         } else {
-            CircuitMutation xn = new CircuitMutation(circ);
+            CircuitMutation xn = new CircuitMutation(circuit);
             xn.setForCircuit(attribute, value);
-            proj.doAction(xn.toAction(Strings.getter("changeCircuitAttrAction")));
+            project.doAction(xn.toAction(Strings.getter("changeCircuitAttrAction")));
         }
     }
 }

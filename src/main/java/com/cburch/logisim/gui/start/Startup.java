@@ -7,6 +7,7 @@ import static com.adlerd.logger.Logger.errorln;
 import static com.adlerd.logger.Logger.infoln;
 import static com.adlerd.logger.Logger.outputln;
 
+import com.adlerd.logger.Logger;
 import com.cburch.logisim.Main;
 import com.cburch.logisim.file.LoadFailedException;
 import com.cburch.logisim.file.Loader;
@@ -33,15 +34,15 @@ public class Startup {
 
     private static Startup startupTemp = null;
     // based on command line
-    private ArrayList<File> filesToOpen = new ArrayList<>();
-    private boolean isTty;
+    private final ArrayList<File> filesToOpen = new ArrayList<>();
+    private final boolean isTty;
+    private final ArrayList<File> filesToPrint = new ArrayList<>();
+    private final HashMap<File, File> substitutions = new HashMap<>();
     private boolean templateEmpty = false;
     private boolean templatePlain = false;
     private boolean showSplash;
-    private ArrayList<File> filesToPrint = new ArrayList<>();
     private File loadFile;
     private boolean initialized = false;
-    private HashMap<File, File> substitutions = new HashMap<>();
     private int ttyFormat = 0;
     // from other sources
     private SplashScreen monitor = null;
@@ -141,7 +142,8 @@ public class Startup {
 
         switch (os) {
             case "Mac":
-                theme = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+//                theme = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+                theme = UIManager.getCrossPlatformLookAndFeelClassName();
                 break;
             case "Linux":
                 theme = UIManager.getCrossPlatformLookAndFeelClassName();
@@ -292,10 +294,10 @@ public class Startup {
                 startup.templateFile = new File(args[i]);
                 if (!startup.templateFile.exists()) {
                     errorln(StringUtil.format( //OK
-                            Strings.get("templateMissingError"), args[i]));
+                        Strings.get("templateMissingError"), args[i]));
                 } else if (!startup.templateFile.canRead()) {
                     errorln(StringUtil.format( //OK
-                            Strings.get("templateCannotReadError"), args[i]));
+                        Strings.get("templateCannotReadError"), args[i]));
                 }
             } else if (arg.equals("-nosplash")) {
                 startup.showSplash = false;
@@ -409,11 +411,10 @@ public class Startup {
         }
         Loader templateLoader = new Loader(monitor);
         int count = templateLoader.getBuiltin().getLibrary("Base").getTools().size()
-                + templateLoader.getBuiltin().getLibrary("Gates").getTools().size();
+            + templateLoader.getBuiltin().getLibrary("Gates").getTools().size();
         if (count < 0) {
             // this will never happen, but the optimizer doesn't know that...
-            errorln("FATAL ERROR - no components"); //OK
-            System.exit(-1);
+            Logger.errorln("FATAL ERROR - no components", true, -1); //OK
         }
 
         // load in template
@@ -469,7 +470,7 @@ public class Startup {
     }
 
     private void loadTemplate(Loader loader, File templateFile,
-            boolean templateEmpty) {
+        boolean templateEmpty) {
         if (showSplash) {
             monitor.setProgress(SplashScreen.TEMPLATE_OPEN);
         }

@@ -6,6 +6,7 @@
  */
 package com.cburch.logisim.util;
 
+import com.adlerd.logger.Logger;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.image.ColorModel;
@@ -61,7 +62,8 @@ import javax.swing.ProgressMonitor;
  */
 public class GifEncoder {
 
-    private short width_, height_;
+    private final short width_;
+    private final short height_;
     private int numColors_;
     private byte[] pixels_;
     private byte[] colors_;
@@ -89,11 +91,12 @@ public class GifEncoder {
         }
 
         try {
-            if (grabber.grabPixels() != true) {
-                throw new AWTException(Strings.get("grabberError") + ": "
-                        + grabber.status());
+            if (!grabber.grabPixels()) {
+//                throw new AWTException(Strings.get("grabberError") + ": " + grabber.status());
+                Logger.errorln(Strings.get("grabberError") + ": " + grabber.status(), true);
             }
         } catch (InterruptedException e) {
+            Logger.debugln(e.getMessage());
         }
 
         byte[][] r = new byte[width_][height_];
@@ -132,27 +135,23 @@ public class GifEncoder {
         ToIndexedColor(r, g, b);
     }
 
-    public static void toFile(Image img, String filename, ProgressMonitor monitor)
-            throws IOException, AWTException {
+    public static void toFile(Image img, String filename, ProgressMonitor monitor) throws IOException, AWTException {
         FileOutputStream out = new FileOutputStream(filename);
         new GifEncoder(img, monitor).write(out);
         out.close();
     }
 
-    public static void toFile(Image img, File file, ProgressMonitor monitor)
-            throws IOException, AWTException {
+    public static void toFile(Image img, File file, ProgressMonitor monitor) throws IOException, AWTException {
         FileOutputStream out = new FileOutputStream(file);
         new GifEncoder(img, monitor).write(out);
         out.close();
     }
 
-    public static void toFile(Image img, String filename)
-            throws IOException, AWTException {
+    public static void toFile(Image img, String filename) throws IOException, AWTException {
         toFile(img, filename, null);
     }
 
-    public static void toFile(Image img, File file)
-            throws IOException, AWTException {
+    public static void toFile(Image img, File file) throws IOException, AWTException {
         toFile(img, file, null);
     }
 
@@ -168,14 +167,13 @@ public class GifEncoder {
     public void write(OutputStream output) throws IOException {
         BitUtils.WriteString(output, "GIF87a");
 
-        ScreenDescriptor sd = new ScreenDescriptor(width_, height_,
-                numColors_);
-        sd.Write(output);
+        ScreenDescriptor screenDescriptor = new ScreenDescriptor(width_, height_, numColors_);
+        screenDescriptor.Write(output);
 
         output.write(colors_, 0, colors_.length);
 
-        ImageDescriptor id = new ImageDescriptor(width_, height_, ',');
-        id.Write(output);
+        ImageDescriptor imageDescriptor = new ImageDescriptor(width_, height_, ',');
+        imageDescriptor.Write(output);
 
         byte codesize = BitUtils.BitsNeeded(numColors_);
         if (codesize == 1) {
@@ -186,42 +184,42 @@ public class GifEncoder {
         LZWCompressor.LZWCompress(output, codesize, pixels_);
         output.write(0);
 
-        id = new ImageDescriptor((byte) 0, (byte) 0, ';');
-        id.Write(output);
+        imageDescriptor = new ImageDescriptor((byte) 0, (byte) 0, ';');
+        imageDescriptor.Write(output);
         output.flush();
     }
 
-    void ToIndexedColor(byte[][] r, byte[][] g,
-            byte[][] b) throws AWTException {
+    void ToIndexedColor(byte[][] r, byte[][] g, byte[][] b) throws AWTException {
         pixels_ = new byte[width_ * height_];
         colors_ = new byte[256 * 3];
-        int colornum = 0;
+        int colorNum = 0;
         for (int x = 0; x < width_; ++x) {
             for (int y = 0; y < height_; ++y) {
                 int search;
-                for (search = 0; search < colornum; ++search) {
+                for (search = 0; search < colorNum; ++search) {
                     if (colors_[search * 3] == r[x][y] &&
-                            colors_[search * 3 + 1] == g[x][y] &&
-                            colors_[search * 3 + 2] == b[x][y]) {
+                        colors_[search * 3 + 1] == g[x][y] &&
+                        colors_[search * 3 + 2] == b[x][y]) {
                         break;
                     }
                 }
 
                 if (search > 255) {
-                    throw new AWTException(Strings.get("manyColorError"));
+//                    throw new AWTException(Strings.get("manyColorError"));
+                    Logger.errorln(Strings.get("manyColorError"), true);
                 }
 
                 pixels_[y * width_ + x] = (byte) search;
 
-                if (search == colornum) {
+                if (search == colorNum) {
                     colors_[search * 3] = r[x][y];
                     colors_[search * 3 + 1] = g[x][y];
                     colors_[search * 3 + 2] = b[x][y];
-                    ++colornum;
+                    ++colorNum;
                 }
             }
         }
-        numColors_ = 1 << BitUtils.BitsNeeded(colornum);
+        numColors_ = 1 << BitUtils.BitsNeeded(colorNum);
         byte[] copy = new byte[numColors_ * 3];
         System.arraycopy(colors_, 0, copy, 0, numColors_ * 3);
         colors_ = copy;
@@ -265,14 +263,12 @@ public class GifEncoder {
                 }
 
                 if (numbits <= bitsLeft_) {
-                    buffer_[index_] |= (bits & ((1 << numbits) - 1)) <<
-                            (8 - bitsLeft_);
+                    buffer_[index_] |= (bits & ((1 << numbits) - 1)) << (8 - bitsLeft_);
                     bitsWritten += numbits;
                     bitsLeft_ -= numbits;
                     numbits = 0;
                 } else {
-                    buffer_[index_] |= (bits & ((1 << bitsLeft_) - 1)) <<
-                            (8 - bitsLeft_);
+                    buffer_[index_] |= (bits & ((1 << bitsLeft_) - 1)) << (8 - bitsLeft_);
                     bitsWritten += bitsLeft_;
                     bits >>= bitsLeft_;
                     numbits -= bitsLeft_;
@@ -288,71 +284,71 @@ public class GifEncoder {
         private final static int RES_CODES = 2;
         private final static short HASH_FREE = (short) 0xFFFF;
         private final static short NEXT_FIRST = (short) 0xFFFF;
-        private final static int MAXBITS = 12;
-        private final static int MAXSTR = (1 << MAXBITS);
-        private final static short HASHSIZE = 9973;
-        private final static short HASHSTEP = 2039;
+        private final static int MAX_BITS = 12;
+        private final static int MAX_STR = (1 << MAX_BITS);
+        private final static short HASH_SIZE = 9973;
+        private final static short HASH_STEP = 2039;
 
-        byte[] strChr_;
-        short[] strNxt_;
-        short[] strHsh_;
+        byte[] stringCharacter_;
+        short[] stringNext_;
+        short[] stringHash_;
         short numStrings_;
 
         LZWStringTable() {
-            strChr_ = new byte[MAXSTR];
-            strNxt_ = new short[MAXSTR];
-            strHsh_ = new short[HASHSIZE];
+            stringCharacter_ = new byte[MAX_STR];
+            stringNext_ = new short[MAX_STR];
+            stringHash_ = new short[HASH_SIZE];
         }
 
-        static int Hash(short index, byte lastbyte) {
-            return (((short) (lastbyte << 8) ^ index) & 0xFFFF) % HASHSIZE;
+        static int Hash(short index, byte lastByte) {
+            return (((short) (lastByte << 8) ^ index) & 0xFFFF) % HASH_SIZE;
         }
 
         int AddCharString(short index, byte b) {
-            int hshidx;
+            int hashIndex;
 
-            if (numStrings_ >= MAXSTR) {
+            if (numStrings_ >= MAX_STR) {
                 return 0xFFFF;
             }
 
-            hshidx = Hash(index, b);
-            while (strHsh_[hshidx] != HASH_FREE) {
-                hshidx = (hshidx + HASHSTEP) % HASHSIZE;
+            hashIndex = Hash(index, b);
+            while (stringHash_[hashIndex] != HASH_FREE) {
+                hashIndex = (hashIndex + HASH_STEP) % HASH_SIZE;
             }
 
-            strHsh_[hshidx] = numStrings_;
-            strChr_[numStrings_] = b;
-            strNxt_[numStrings_] = (index != HASH_FREE) ? index : NEXT_FIRST;
+            stringHash_[hashIndex] = numStrings_;
+            stringCharacter_[numStrings_] = b;
+            stringNext_[numStrings_] = (index != HASH_FREE) ? index : NEXT_FIRST;
 
             return numStrings_++;
         }
 
         short FindCharString(short index, byte b) {
-            int hshidx, nxtidx;
+            int hashIndex, nextIndex;
 
             if (index == HASH_FREE) {
                 return b;
             }
 
-            hshidx = Hash(index, b);
-            while ((nxtidx = strHsh_[hshidx]) != HASH_FREE) {
-                if (strNxt_[nxtidx] == index && strChr_[nxtidx] == b) {
-                    return (short) nxtidx;
+            hashIndex = Hash(index, b);
+            while ((nextIndex = stringHash_[hashIndex]) != HASH_FREE) {
+                if (stringNext_[nextIndex] == index && stringCharacter_[nextIndex] == b) {
+                    return (short) nextIndex;
                 }
-                hshidx = (hshidx + HASHSTEP) % HASHSIZE;
+                hashIndex = (hashIndex + HASH_STEP) % HASH_SIZE;
             }
 
             return (short) 0xFFFF;
         }
 
-        void ClearTable(int codesize) {
+        void ClearTable(int codeSize) {
             numStrings_ = 0;
 
-            for (int q = 0; q < HASHSIZE; q++) {
-                strHsh_[q] = HASH_FREE;
+            for (int q = 0; q < HASH_SIZE; q++) {
+                stringHash_[q] = HASH_FREE;
             }
 
-            int w = (1 << codesize) + RES_CODES;
+            int w = (1 << codeSize) + RES_CODES;
             for (int q = 0; q < w; q++) {
                 AddCharString((short) 0xFFFF, (byte) q);
             }
@@ -361,38 +357,37 @@ public class GifEncoder {
 
     private static class LZWCompressor {
 
-        static void LZWCompress(OutputStream output, int codesize,
-                byte[] toCompress) throws IOException {
+        static void LZWCompress(OutputStream output, int codeSize, byte[] toCompress) throws IOException {
             byte c;
             short index;
-            int clearcode, endofinfo, numbits, limit;
+            int clearCode, endOfInfo, numBits, limit;
             short prefix = (short) 0xFFFF;
 
             BitFile bitFile = new BitFile(output);
-            LZWStringTable strings = new LZWStringTable();
+            LZWStringTable stringTable = new LZWStringTable();
 
-            clearcode = 1 << codesize;
-            endofinfo = clearcode + 1;
+            clearCode = 1 << codeSize;
+            endOfInfo = clearCode + 1;
 
-            numbits = codesize + 1;
-            limit = (1 << numbits) - 1;
+            numBits = codeSize + 1;
+            limit = (1 << numBits) - 1;
 
-            strings.ClearTable(codesize);
-            bitFile.WriteBits(clearcode, numbits);
+            stringTable.ClearTable(codeSize);
+            bitFile.WriteBits(clearCode, numBits);
 
-            for (int loop = 0; loop < toCompress.length; ++loop) {
-                c = toCompress[loop];
-                if ((index = strings.FindCharString(prefix, c)) != -1) {
+            for (byte compress : toCompress) {
+                c = compress;
+                if ((index = stringTable.FindCharString(prefix, c)) != -1) {
                     prefix = index;
                 } else {
-                    bitFile.WriteBits(prefix, numbits);
-                    if (strings.AddCharString(prefix, c) > limit) {
-                        if (++numbits > 12) {
-                            bitFile.WriteBits(clearcode, numbits - 1);
-                            strings.ClearTable(codesize);
-                            numbits = codesize + 1;
+                    bitFile.WriteBits(prefix, numBits);
+                    if (stringTable.AddCharString(prefix, c) > limit) {
+                        if (++numBits > 12) {
+                            bitFile.WriteBits(clearCode, numBits - 1);
+                            stringTable.ClearTable(codeSize);
+                            numBits = codeSize + 1;
                         }
-                        limit = (1 << numbits) - 1;
+                        limit = (1 << numBits) - 1;
                     }
 
                     prefix = (short) ((short) c & 0xFF);
@@ -400,10 +395,10 @@ public class GifEncoder {
             }
 
             if (prefix != -1) {
-                bitFile.WriteBits(prefix, numbits);
+                bitFile.WriteBits(prefix, numBits);
             }
 
-            bitFile.WriteBits(endofinfo, numbits);
+            bitFile.WriteBits(endOfInfo, numBits);
             bitFile.Flush();
         }
     }
@@ -502,27 +497,25 @@ public class GifEncoder {
     private static class BitUtils {
 
         static byte BitsNeeded(int n) {
-            byte ret = 1;
+            byte b = 1;
 
             if (n-- == 0) {
                 return 0;
             }
 
             while ((n >>= 1) != 0) {
-                ++ret;
+                ++b;
             }
 
-            return ret;
+            return b;
         }
 
-        static void WriteWord(OutputStream output,
-                short w) throws IOException {
-            output.write(w & 0xFF);
-            output.write((w >> 8) & 0xFF);
+        static void WriteWord(OutputStream output, short word) throws IOException {
+            output.write(word & 0xFF);
+            output.write((word >> 8) & 0xFF);
         }
 
-        static void WriteString(OutputStream output,
-                String string) throws IOException {
+        static void WriteString(OutputStream output, String string) throws IOException {
             for (int loop = 0; loop < string.length(); ++loop) {
                 output.write((byte) (string.charAt(loop)));
             }
@@ -536,7 +529,7 @@ public class GifEncoder {
         int goal;
 
         MyGrabber(ProgressMonitor monitor, Image image, int x, int y, int width, int height,
-                int[] values, int start, int scan) {
+            int[] values, int start, int scan) {
             super(image, x, y, width, height, values, start, scan);
             this.monitor = monitor;
             progress = 0;
@@ -546,8 +539,7 @@ public class GifEncoder {
         }
 
         @Override
-        public void setPixels(int srcX, int srcY, int srcW, int srcH,
-                ColorModel model, int[] pixels, int srcOff, int srcScan) {
+        public void setPixels(int srcX, int srcY, int srcW, int srcH, ColorModel model, int[] pixels, int srcOff, int srcScan) {
             progress += srcW * srcH;
             monitor.setProgress(progress);
             if (monitor.isCanceled()) {

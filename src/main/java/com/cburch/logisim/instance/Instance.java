@@ -14,10 +14,10 @@ import java.util.List;
 
 public class Instance {
 
-    private InstanceComponent comp;
+    private final InstanceComponent component;
 
-    Instance(InstanceComponent comp) {
-        this.comp = comp;
+    Instance(InstanceComponent component) {
+        this.component = component;
     }
 
     public static Instance getInstanceFor(Component comp) {
@@ -29,71 +29,70 @@ public class Instance {
     }
 
     public static Component getComponentFor(Instance instance) {
-        return instance.comp;
+        return instance.component;
     }
 
     InstanceComponent getComponent() {
-        return comp;
+        return component;
     }
 
     public InstanceFactory getFactory() {
-        return (InstanceFactory) comp.getFactory();
+        return (InstanceFactory) component.getFactory();
     }
 
     public Location getLocation() {
-        return comp.getLocation();
+        return component.getLocation();
     }
 
     public Bounds getBounds() {
-        return comp.getBounds();
+        return component.getBounds();
     }
 
     public void setAttributeReadOnly(Attribute<?> attr, boolean value) {
-        comp.getAttributeSet().setReadOnly(attr, value);
+        component.getAttributeSet().setReadOnly(attr, value);
     }
 
     public <E> E getAttributeValue(Attribute<E> attr) {
-        return comp.getAttributeSet().getValue(attr);
+        return component.getAttributeSet().getValue(attr);
     }
 
     public void addAttributeListener() {
-        comp.addAttributeListener(this);
+        component.addAttributeListener(this);
     }
 
     public AttributeSet getAttributeSet() {
-        return comp.getAttributeSet();
+        return component.getAttributeSet();
     }
 
     public List<Port> getPorts() {
-        return comp.getPorts();
+        return component.getPorts();
     }
 
     public void setPorts(Port[] ports) {
-        comp.setPorts(ports);
+        component.setPorts(ports);
     }
 
     public Location getPortLocation(int index) {
-        return comp.getEnd(index).getLocation();
+        return component.getEnd(index).getLocation();
     }
 
     public void recomputeBounds() {
-        comp.recomputeBounds();
+        component.recomputeBounds();
     }
 
-    public void setTextField(Attribute<String> labelAttr, Attribute<Font> fontAttr,
-            int x, int y, int halign, int valign) {
-        comp.setTextField(labelAttr, fontAttr, x, y, halign, valign);
+    public void setTextField(Attribute<String> labelAttr, Attribute<Font> fontAttr, int x, int y, int halign, int valign) {
+        component.setTextField(labelAttr, fontAttr, x, y, halign, valign);
     }
 
     public InstanceData getData(CircuitState state) {
-        return (InstanceData) state.getData(comp);
+        return (InstanceData) state.getData(component);
     }
 
     public void setData(CircuitState state, InstanceData data) {
-        state.setData(comp, data);
+        state.setData(component, data);
     }
 
     public void fireInvalidated() {
-        comp.fireInvalidated();
+        component.fireInvalidated();
     }
 }

@@ -23,10 +23,9 @@ import java.awt.event.MouseEvent;
 
 public class TextTool extends Tool {
 
-    private static Cursor cursor
-            = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
-    private MyListener listener = new MyListener();
-    private AttributeSet attrs;
+    private static final Cursor cursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    private final MyListener listener = new MyListener();
+    private final AttributeSet attrs;
     private Caret caret = null;
     private boolean caretCreatingText = false;
     private Canvas caretCanvas = null;
@@ -89,10 +88,10 @@ public class TextTool extends Tool {
 
     @Override
     public void mousePressed(Canvas canvas, Graphics g, MouseEvent e) {
-        Project proj = canvas.getProject();
-        Circuit circ = canvas.getCircuit();
+        Project project = canvas.getProject();
+        Circuit circuit = canvas.getCircuit();
 
-        if (!proj.getLogisimFile().contains(circ)) {
+        if (!project.getLogisimFile().contains(circuit)) {
             if (caret != null) {
                 caret.cancelEditing();
             }
@@ -104,7 +103,7 @@ public class TextTool extends Tool {
         if (caret != null) {
             if (caret.getBounds(g).contains(e.getX(), e.getY())) { // Yes
                 caret.mousePressed(e);
-                proj.repaintCanvas();
+                project.repaintCanvas();
                 return;
             } else { // No. End the current caret.
                 caret.stopEditing();
@@ -115,17 +114,17 @@ public class TextTool extends Tool {
         // Otherwise search for a new caret.
         int x = e.getX();
         int y = e.getY();
-        Location loc = Location.create(x, y);
+        Location location = Location.create(x, y);
         ComponentUserEvent event = new ComponentUserEvent(canvas, x, y);
 
         // First search in selection.
-        for (Component comp : proj.getSelection().getComponentsContaining(loc, g)) {
-            TextEditable editable = (TextEditable) comp.getFeature(TextEditable.class);
+        for (Component component : project.getSelection().getComponentsContaining(location, g)) {
+            TextEditable editable = (TextEditable) component.getFeature(TextEditable.class);
             if (editable != null) {
                 caret = editable.getTextCaret(event);
                 if (caret != null) {
-                    proj.getFrame().viewComponentAttributes(circ, comp);
-                    caretComponent = comp;
+                    project.getFrame().viewComponentAttributes(circuit, component);
+                    caretComponent = component;
                     caretCreatingText = false;
                     break;
                 }
@@ -134,13 +133,13 @@ public class TextTool extends Tool {
 
         // Then search in circuit
         if (caret == null) {
-            for (Component comp : circ.getAllContaining(loc, g)) {
-                TextEditable editable = (TextEditable) comp.getFeature(TextEditable.class);
+            for (Component component : circuit.getAllContaining(location, g)) {
+                TextEditable editable = (TextEditable) component.getFeature(TextEditable.class);
                 if (editable != null) {
                     caret = editable.getTextCaret(event);
                     if (caret != null) {
-                        proj.getFrame().viewComponentAttributes(circ, comp);
-                        caretComponent = comp;
+                        project.getFrame().viewComponentAttributes(circuit, component);
+                        caretComponent = component;
                         caretCreatingText = false;
                         break;
                     }
@@ -150,16 +149,16 @@ public class TextTool extends Tool {
 
         // if nothing found, create a new label
         if (caret == null) {
-            if (loc.getX() < 0 || loc.getY() < 0) {
+            if (location.getX() < 0 || location.getY() < 0) {
                 return;
             }
             AttributeSet copy = (AttributeSet) attrs.clone();
-            caretComponent = Text.FACTORY.createComponent(loc, copy);
+            caretComponent = Text.FACTORY.createComponent(location, copy);
             caretCreatingText = true;
             TextEditable editable = (TextEditable) caretComponent.getFeature(TextEditable.class);
             if (editable != null) {
                 caret = editable.getTextCaret(event);
-                proj.getFrame().viewComponentAttributes(circ, caretComponent);
+                project.getFrame().viewComponentAttributes(circuit, caretComponent);
             }
         }
 
@@ -169,7 +168,7 @@ public class TextTool extends Tool {
             caret.addCaretListener(listener);
             caretCircuit.addCircuitListener(listener);
         }
-        proj.repaintCanvas();
+        project.repaintCanvas();
     }
 
     @Override
@@ -212,7 +211,7 @@ public class TextTool extends Tool {
     }
 
     private class MyListener
-            implements CaretListener, CircuitListener {
+        implements CaretListener, CircuitListener {
 
         public void editingCanceled(CaretEvent e) {
             if (e.getCaret() != caret) {
@@ -236,32 +235,30 @@ public class TextTool extends Tool {
             caret.removeCaretListener(this);
             caretCircuit.removeCircuitListener(this);
 
-            String val = caret.getText();
-            boolean isEmpty = (val == null || val.equals(""));
-            Action a;
-            Project proj = caretCanvas.getProject();
+            String text = caret.getText();
+            boolean isEmpty = (text == null || text.equals(""));
+            Action action;
+            Project project = caretCanvas.getProject();
             if (caretCreatingText) {
                 if (!isEmpty) {
-                    CircuitMutation xn = new CircuitMutation(caretCircuit);
-                    xn.add(caretComponent);
-                    a = xn.toAction(Strings.getter("addComponentAction",
-                            Text.FACTORY.getDisplayGetter()));
+                    CircuitMutation mutation = new CircuitMutation(caretCircuit);
+                    mutation.add(caretComponent);
+                    action = mutation.toAction(Strings.getter("addComponentAction", Text.FACTORY.getDisplayGetter()));
                 } else {
-                    a = null; // don't add the blank text field
+                    action = null; // don't add the blank text field
                 }
             } else {
                 if (isEmpty && caretComponent.getFactory() instanceof Text) {
-                    CircuitMutation xn = new CircuitMutation(caretCircuit);
-                    xn.add(caretComponent);
-                    a = xn.toAction(Strings.getter("removeComponentAction",
-                            Text.FACTORY.getDisplayGetter()));
+                    CircuitMutation mutation = new CircuitMutation(caretCircuit);
+                    mutation.add(caretComponent);
+                    action = mutation.toAction(Strings.getter("removeComponentAction", Text.FACTORY.getDisplayGetter()));
                 } else {
-                    Object obj = caretComponent.getFeature(TextEditable.class);
-                    if (obj == null) { // should never happen
-                        a = null;
+                    Object object = caretComponent.getFeature(TextEditable.class);
+                    if (object == null) { // should never happen
+                        action = null;
                     } else {
-                        TextEditable editable = (TextEditable) obj;
-                        a = editable.getCommitAction(caretCircuit, e.getOldText(), e.getText());
+                        TextEditable editable = (TextEditable) object;
+                        action = editable.getCommitAction(caretCircuit, e.getOldText(), e.getText());
                     }
                 }
             }
@@ -271,8 +268,8 @@ public class TextTool extends Tool {
             caretCreatingText = false;
             caret = null;
 
-            if (a != null) {
-                proj.doAction(a);
+            if (action != null) {
+                project.doAction(action);
             }
         }
 

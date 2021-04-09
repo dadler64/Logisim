@@ -28,14 +28,13 @@ public class TextField {
     private int vAlign;
     private Font font;
     private String text = "";
-    private LinkedList<TextFieldListener> listeners = new LinkedList<>();
+    private final LinkedList<TextFieldListener> listeners = new LinkedList<>();
 
     public TextField(int x, int y, int hAlign, int vAlign) {
         this(x, y, hAlign, vAlign, null);
     }
 
-    public TextField(int x, int y, int hAlign, int vAlign,
-            Font font) {
+    public TextField(int x, int y, int hAlign, int vAlign, Font font) {
         this.x = x;
         this.y = y;
         this.hAlign = hAlign;
@@ -55,8 +54,8 @@ public class TextField {
     }
 
     private void fireTextChanged(TextFieldEvent e) {
-        for (TextFieldListener l : new ArrayList<>(listeners)) {
-            l.textChanged(e);
+        for (TextFieldListener listener : new ArrayList<>(listeners)) {
+            listener.textChanged(e);
         }
     }
 
@@ -141,15 +140,15 @@ public class TextField {
     public Bounds getBounds(Graphics g) {
         int x = this.x;
         int y = this.y;
-        FontMetrics fm;
+        FontMetrics metrics;
         if (font == null) {
-            fm = g.getFontMetrics();
+            metrics = g.getFontMetrics();
         } else {
-            fm = g.getFontMetrics(font);
+            metrics = g.getFontMetrics(font);
         }
-        int width = fm.stringWidth(text);
-        int ascent = fm.getAscent();
-        int descent = fm.getDescent();
+        int width = metrics.stringWidth(text);
+        int ascent = metrics.getAscent();
+        int descent = metrics.getDescent();
         switch (hAlign) {
             case TextField.H_CENTER:
                 x -= width / 2;

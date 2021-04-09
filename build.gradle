@@ -4,28 +4,36 @@ buildscript {
     }
 
     dependencies {
-        classpath fileTree(dir: 'libs', include: '*.jar')
-        classpath 'com.yuvimasory:orange-extensions:1.3.0'   // OSX support
-        classpath 'com.netflix.nebula:gradle-ospackage-plugin:8.1.0' // https://plugins.gradle.org/plugin/nebula.ospackage
-        classpath 'edu.sc.seis.gradle:launch4j:2.4.6' // https://plugins.gradle.org/plugin/edu.sc.seis.launch4j
+        classpath 'com.yuvimasory:orange-extensions:1.3.0' // OSX support
     }
+}
+
+plugins {
+    id "nebula.ospackage" version "8.5.6"
+    id "edu.sc.seis.launch4j" version "2.4.9"
 }
 
 apply plugin: 'java'
 apply plugin: 'distribution'
-apply plugin: 'edu.sc.seis.launch4j'
-apply plugin: 'nebula.ospackage'
 
 // Common Configuration //
-rootProject.version='2.8.0'
-targetCompatibility='1.8'
+project.version = '2.8.0'
+
+project.ext.author = 'Dan Adler'
+project.ext.email = '<2274667+dadler64@users.noreply.github.com>'
+project.ext.copyright = '(C) 2021'
+project.ext.description = 'Logisim Circuit Simulator'
+project.ext.url = 'https://github.com/dadler64/Logisim'
+project.ext.bundleId = 'com.cburch.logisim'
+project.ext.mainClass = "${project.ext.bundleId}.Main"
+project.ext.resPath = '/src/main/resources'
 
 allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
 
     tasks.withType(JavaCompile) {
-        sourceCompatibility = targetCompatibility = '1.8'
+        sourceCompatibility = targetCompatibility = '1.10'
         options.compilerArgs << '-Xlint:deprecation'
         options.compilerArgs << '-Xlint:unchecked'
         options.encoding = 'UTF-8'
@@ -48,32 +56,22 @@ cleanIdea.doFirst {
     followSymLinks = true
 }
 
-subprojects.each { subproject ->
-    evaluationDependsOn(subproject.path)
-}
-
 // All in one JAR file //
 jar {
-    def deps = []
-    
-    subprojects.each { subproject ->
-        from subproject.sourceSets.main.output.classesDirs
-        from subproject.sourceSets.main.output.resourcesDir
-        deps += subproject.configurations.runtime - subproject.configurations.provided
-    }
-    subprojects.each { subproject ->
-        deps -= subproject.jar.archivePath
-    }
-    deps = deps.unique().collect {it.isDirectory() ? it : zipTree(it)}
-    from deps
-
     manifest {
-        attributes 'Main-Class': 'com.cburch.logisim.Main',
-                'SplashScreen-Image': 'src/main/resources/logisim/img/logisim-icon-128.png',
-                'Logisim-Version': project.version
+        attributes 'Main-Class': project.ext.mainClass, 'JD-FX-Version': project.version
     }
 
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
+
+    // This line of code recursively collects and copies all of a project's files
+    // and adds them to the JAR itself. One can extend this task, to skip certain
+    // files or particular types at will
+    from {
+        configurations.compileClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 }
 
 // Java executable wrapper for Windows //
@@ -81,77 +79,83 @@ launch4j {
     createExe.dependsOn 'jar'
 
     version = textVersion = project.version
-    fileDescription = productName = 'Logisim'
-    errTitle 'Logisim Windows Wrapper'
-    copyright 'Dan Adler (C) 2019,2020'
-    fileDescription = 'Continuation on the Logisim circuit simulator'
-    icon projectDir.path + '/src/main/resources/logisim/img/logisim-icon.ico'
+    fileDescription = productName = rootProject.name
+    errTitle = "${rootProject.name} Wrapper"
+    copyright = "${project.ext.author} ${project.ext.copyright}"
+    fileDescription = project.ext.description
+    icon = "${projectDir.path}/dist/windows/${project.name}.ico"
     bundledJrePath = '%JAVA_HOME%'
 }
-
-// Packages for Linux //
-//ospackage {
-//    buildDeb.dependsOn 'proguard'
-//    buildRpm.dependsOn 'proguard'
-//    buildDeb.dependsOn 'jar'
-//    buildRpm.dependsOn 'jar'
-//
-//    license = file('LICENSE')
-//    maintainer 'Dan Adler <dadler64@users.noreply.github.com>'
-//    os LINUX
-//    packageDescription 'Continuation on the Logisim circuit simulator'
-//    packageGroup 'java'
-//    packageName 'logisim'
-//    release '0'
-//    summary 'Software Simulator'
-//    url 'https://github.com/dadler64/logisim'
-//
-//    logger.debug('/opt/' + project.name)
-//    into '/opt/' + project.name
-//    from (jar) {
-//        fileMode 0755
-//    }
-//    from ('dist/linux/resources/') {
-//        fileMode 0755
-//    }
-//    from 'LICENSE', 'README.md'
-//
-//    postInstall 'cd /opt/' + project.name + '; ln -s ./' + file(jar).name + ' ./pennsim.jar; ' +
-//            'xdg-icon-resource install --size 128 --novendor ./PenSimIcon.png pennsim; xdg-desktop-menu install ./*.desktop'
-//    preUninstall 'cd /opt/' + project.name + '; rm -f ./jd-gui.jar; rm -fr ./ext; xdg-desktop-menu uninstall ./*.desktop'
-//}
 
 // Distributions for MacOS and Windows //
 distributions {
 
     osx.contents {
-        into('Logisim.app/Contents') {
-            into('Logisim.app/Contents/Resources') {
-                from('dist/macos/resources') {
-                    include 'logisim.icns'
+        // info.plist file
+        into("${rootProject.name}.app/Contents") {
+            if (file("./dist/macos/Info.plist").exists()) {
+                from('./dist/macos') {
+                    include 'Info.plist'
+                    expand VERSION: project.version,
+                        JAR: project.name,
+                        COPYRIGHT: project.ext.copyright,
+                        AUTHOR: project.ext.author,
+                        BUNDLE_ID: project.ext.bundleId,
+                        MAIN_CLASS: project.ext.mainClass
                 }
-            }
-            from('dist/macos/resources') {
-                include 'Info.plist'
-                expand VERSION: project.version,
-//                        JAR: file(proguard.outJarFiles[0]).name
-                        JAR: jar.baseName
+            } else {
+                println("WARNING: Unable to locate the \'Info.plist\' file!\nMacOS bundled app may not work!")
             }
         }
-        into('Logisim.app/Contents/MacOS') {
-            from('dist/macos/resources') {
-                include 'universalJavaApplicationStub.sh'
-                fileMode 0755
+        // universalJavaApplicationStub.sh
+        into("${rootProject.name}.app/Contents/MacOS") {
+            if (file("./dist/macos/universalJavaApplicationStub.sh").exists()) {
+                from('./dist/macos') {
+                    include 'universalJavaApplicationStub.sh'
+                    fileMode 0755
+                }
+            } else {
+                println("WARNING: Unable to locate the \'universalJavaApplicationStub.sh\' file!\nMacOS bundled app may not work!")
             }
         }
-        into('Logisim.app/Contents/Resources/Java') {
+        // App *.icns file
+        into("${rootProject.name}.app/Contents/Resources") {
+            String iconFileName = "${rootProject.name}App"
+            if (file("./dist/macos/${iconFileName}.icns").exists()) {
+                from('./dist/macos') {
+                    // Make sure this matches the name of the .icns file in the 'dist/macos/resources/' folder
+                    include "${iconFileName}.icns"
+                }
+            } else {
+                println("WARNING: Unable to locate icon for MacOS app at: <./dist/macos/resources/${rootProject.name}.icns>!")
+            }
+        }
+        // Document *.icns file
+        into("${rootProject.name}.app/Contents/Resources") {
+            String iconFileName = "${rootProject.name}Doc"
+            if (file("./dist/macos/${iconFileName}.icns").exists()) {
+                from('./dist/macos') {
+                    // Make sure this matches the name of the .icns file in the 'dist/macos/resources/' folder
+                    include "${iconFileName}.icns"
+                }
+            } else {
+                println("WARNING: Unable to locate icon for MacOS app at: <./dist/macos/resources/${rootProject.name}.icns>!")
+            }
+        }
+        // project *.jar file
+        into("${rootProject.name}.app/Contents/Resources/Java") {
             from jar
         }
         from 'LICENSE', 'README.md'
     }
 
     windows.contents {
-        from 'build/launch4j/Logisim.exe'
+        from "build/launch4j/${project.name}.exe"
+        from 'LICENSE', 'README.md'
+    }
+
+    crossplatform.contents {
+        from "build/libs/${project.name}-${project.version}.jar"
         from 'LICENSE', 'README.md'
     }
 
@@ -162,25 +166,13 @@ distributions {
     installOsxDist.dependsOn 'jar'
     osxDistTar.dependsOn 'jar'
     osxDistZip.dependsOn 'jar'
-}
 
-//build.finalizedBy buildDeb
-//build.finalizedBy buildRpm
-
-
-//====================
-// Local Dependencies
-//====================
-repositories {
-    flatDir {
-        dirs 'libs'
-    }
+    // Use this cross platform build until linux building resumes
+    installCrossplatformDist.dependsOn 'jar'
+    crossplatformDistTar.dependsOn 'jar'
+    crossplatformDistZip.dependsOn 'jar'
 }
 
 dependencies {
-    compile name: 'ColorPicker'
-    compile name: 'FontChooser'
-    compile name: 'JavaHelp'
-    compile name: 'Logger-1.0.0'
-    compile name: 'MRJAdapter'
+    implementation fileTree(dir: 'libs', include: ('*.jar'))
 }

@@ -23,10 +23,9 @@ import javax.swing.JFrame;
 
 public class WindowManagers {
 
+    private static final MyListener myListener = new MyListener();
+    private static final HashMap<Project, ProjectManager> projectMap = new LinkedHashMap<>();
     private static boolean initialized = false;
-    private static MyListener myListener = new MyListener();
-    private static HashMap<Project, ProjectManager> projectMap
-            = new LinkedHashMap<>();
 
     private WindowManagers() {
     }
@@ -68,9 +67,9 @@ public class WindowManagers {
     }
 
     private static class ProjectManager extends WindowMenuItemManager
-            implements ProjectListener, LibraryListener {
+        implements ProjectListener, LibraryListener {
 
-        private Project proj;
+        private final Project proj;
 
         ProjectManager(Project proj) {
             super(proj.getLogisimFile().getName(), false);

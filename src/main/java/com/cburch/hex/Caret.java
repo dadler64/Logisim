@@ -29,8 +29,8 @@ public class Caret {
 
     private static final Stroke CURSOR_STROKE = new BasicStroke(2.0f);
     private static final Color SELECT_COLOR = new Color(192, 192, 255);
-    private HexEditor hex;
-    private ArrayList<ChangeListener> listeners;
+    private final HexEditor hex;
+    private final ArrayList<ChangeListener> listeners;
     private long mark;
     private long cursor;
     private Object highlight;
@@ -138,7 +138,7 @@ public class Caret {
     }
 
     private class Listener implements MouseListener, MouseMotionListener,
-            KeyListener, FocusListener {
+        KeyListener, FocusListener {
 
         public void mouseClicked(MouseEvent event) {
         }

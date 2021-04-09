@@ -16,8 +16,8 @@ import java.util.Set;
 
 public class MouseMappings {
 
-    private ArrayList<MouseMappingsListener> listeners;
-    private HashMap<Integer, Tool> map;
+    private final ArrayList<MouseMappingsListener> listeners;
+    private final HashMap<Integer, Tool> map;
     private int cache_mods;
     private Tool cache_tool;
 
@@ -113,7 +113,7 @@ public class MouseMappings {
             if (dstTool != null) {
                 dstTool = dstTool.cloneTool();
                 AttributeSets.copy(srcTool.getAttributeSet(),
-                        dstTool.getAttributeSet());
+                    dstTool.getAttributeSet());
                 this.map.put(mods, dstTool);
             }
         }
@@ -178,7 +178,7 @@ public class MouseMappings {
                     } else {
                         Tool clone = newTool.cloneTool();
                         LoadedLibrary.copyAttributes(clone.getAttributeSet(),
-                                tool.getAttributeSet());
+                            tool.getAttributeSet());
                         map.put(key, clone);
                     }
                 }
@@ -191,7 +191,7 @@ public class MouseMappings {
                     } else {
                         Tool clone = newTool.cloneTool();
                         LoadedLibrary.copyAttributes(clone.getAttributeSet(),
-                                tool.getAttributeSet());
+                            tool.getAttributeSet());
                         map.put(key, clone);
                     }
                 }

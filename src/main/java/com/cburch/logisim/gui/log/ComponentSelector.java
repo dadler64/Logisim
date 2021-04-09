@@ -54,14 +54,13 @@ class ComponentSelector extends JTree {
     }
 
     public List<SelectionItem> getSelectedItems() {
-        TreePath[] sel = getSelectionPaths();
-        if (sel == null || sel.length == 0) {
+        TreePath[] paths = getSelectionPaths();
+        if (paths == null || paths.length == 0) {
             return Collections.emptyList();
         }
 
         ArrayList<SelectionItem> ret = new ArrayList<>();
-        for (int i = 0; i < sel.length; i++) {
-            TreePath path = sel[i];
+        for (TreePath path : paths) {
             Object last = path.getLastPathComponent();
             ComponentNode n = null;
             Object opt = null;
@@ -93,13 +92,13 @@ class ComponentSelector extends JTree {
     }
 
     public boolean hasSelectedItems() {
-        TreePath[] sel = getSelectionPaths();
-        if (sel == null || sel.length == 0) {
+        TreePath[] paths = getSelectionPaths();
+        if (paths == null || paths.length == 0) {
             return false;
         }
 
-        for (int i = 0; i < sel.length; i++) {
-            Object last = sel[i].getLastPathComponent();
+        for (TreePath treePath : paths) {
+            Object last = treePath.getLastPathComponent();
             if (last instanceof OptionNode) {
                 return true;
             } else if (last instanceof ComponentNode) {
@@ -123,15 +122,15 @@ class ComponentSelector extends JTree {
     }
 
     private class CircuitNode implements TreeNode, CircuitListener,
-            Comparator<Component> {
+        Comparator<Component> {
 
-        private CircuitNode parent;
-        private CircuitState circuitState;
-        private Component subcircComp;
+        private final CircuitNode parent;
+        private final CircuitState circuitState;
+        private final Component subcircComp;
         private ArrayList<TreeNode> children;
 
         public CircuitNode(CircuitNode parent, CircuitState circuitState,
-                Component subcircComp) {
+            Component subcircComp) {
             this.parent = parent;
             this.circuitState = circuitState;
             this.subcircComp = subcircComp;
@@ -214,24 +213,24 @@ class ComponentSelector extends JTree {
         private boolean computeChildren() {
             ArrayList<TreeNode> newChildren = new ArrayList<>();
             ArrayList<Component> subcircs = new ArrayList<>();
-            for (Component comp : circuitState.getCircuit().getNonWires()) {
-                if (comp.getFactory() instanceof SubcircuitFactory) {
-                    subcircs.add(comp);
+            for (Component component : circuitState.getCircuit().getNonWires()) {
+                if (component.getFactory() instanceof SubcircuitFactory) {
+                    subcircs.add(component);
                 } else {
-                    Object o = comp.getFeature(Loggable.class);
+                    Object o = component.getFeature(Loggable.class);
                     if (o != null) {
                         ComponentNode toAdd = null;
-                        for (TreeNode o2 : children) {
-                            if (o2 instanceof ComponentNode) {
-                                ComponentNode n = (ComponentNode) o2;
-                                if (n.comp == comp) {
-                                    toAdd = n;
+                        for (TreeNode child : children) {
+                            if (child instanceof ComponentNode) {
+                                ComponentNode node = (ComponentNode) child;
+                                if (node.comp == component) {
+                                    toAdd = node;
                                     break;
                                 }
                             }
                         }
                         if (toAdd == null) {
-                            toAdd = new ComponentNode(this, comp);
+                            toAdd = new ComponentNode(this, component);
                         }
                         newChildren.add(toAdd);
                     }
@@ -239,21 +238,21 @@ class ComponentSelector extends JTree {
             }
             newChildren.sort(new CompareByName());
             subcircs.sort(this);
-            for (Component comp : subcircs) {
-                SubcircuitFactory factory = (SubcircuitFactory) comp.getFactory();
-                CircuitState state = factory.getSubstate(circuitState, comp);
+            for (Component component : subcircs) {
+                SubcircuitFactory factory = (SubcircuitFactory) component.getFactory();
+                CircuitState state = factory.getSubstate(circuitState, component);
                 CircuitNode toAdd = null;
-                for (TreeNode o : children) {
-                    if (o instanceof CircuitNode) {
-                        CircuitNode n = (CircuitNode) o;
-                        if (n.circuitState == state) {
-                            toAdd = n;
+                for (TreeNode child : children) {
+                    if (child instanceof CircuitNode) {
+                        CircuitNode node = (CircuitNode) child;
+                        if (node.circuitState == state) {
+                            toAdd = node;
                             break;
                         }
                     }
                 }
                 if (toAdd == null) {
-                    toAdd = new CircuitNode(this, state, comp);
+                    toAdd = new CircuitNode(this, state, component);
                 }
                 newChildren.add(toAdd);
             }
@@ -281,8 +280,8 @@ class ComponentSelector extends JTree {
 
     private class ComponentNode implements TreeNode {
 
-        private CircuitNode parent;
-        private Component comp;
+        private final CircuitNode parent;
+        private final Component comp;
         private OptionNode[] opts;
 
         public ComponentNode(CircuitNode parent, Component comp) {
@@ -292,11 +291,11 @@ class ComponentSelector extends JTree {
 
             Loggable log = (Loggable) comp.getFeature(Loggable.class);
             if (log != null) {
-                Object[] opts = log.getLogOptions(parent.circuitState);
-                if (opts != null && opts.length > 0) {
-                    this.opts = new OptionNode[opts.length];
-                    for (int i = 0; i < opts.length; i++) {
-                        this.opts[i] = new OptionNode(this, opts[i]);
+                Object[] options = log.getLogOptions(parent.circuitState);
+                if (options != null && options.length > 0) {
+                    this.opts = new OptionNode[options.length];
+                    for (int i = 0; i < options.length; i++) {
+                        this.opts[i] = new OptionNode(this, options[i]);
                     }
                 }
             }
@@ -306,9 +305,9 @@ class ComponentSelector extends JTree {
         public String toString() {
             Loggable log = (Loggable) comp.getFeature(Loggable.class);
             if (log != null) {
-                String ret = log.getLogName(null);
-                if (ret != null && !ret.equals("")) {
-                    return ret;
+                String logName = log.getLogName(null);
+                if (logName != null && !logName.equals("")) {
+                    return logName;
                 }
             }
             return comp.getFactory().getDisplayName() + " " + comp.getLocation();
@@ -350,8 +349,8 @@ class ComponentSelector extends JTree {
 
     private class OptionNode implements TreeNode {
 
-        private ComponentNode parent;
-        private Object option;
+        private final ComponentNode parent;
+        private final Object option;
 
         public OptionNode(ComponentNode parent, Object option) {
             this.parent = parent;
@@ -396,16 +395,16 @@ class ComponentSelector extends JTree {
 
         @Override
         public java.awt.Component getTreeCellRendererComponent(JTree tree,
-                Object value, boolean selected, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
+            Object value, boolean selected, boolean expanded,
+            boolean leaf, int row, boolean hasFocus) {
             java.awt.Component ret = super.getTreeCellRendererComponent(tree,
-                    value, selected, expanded, leaf, row, hasFocus);
+                value, selected, expanded, leaf, row, hasFocus);
             if (ret instanceof JLabel && value instanceof ComponentNode) {
                 ComponentNode node = (ComponentNode) value;
                 ComponentIcon icon = new ComponentIcon(node.comp);
                 if (node.getChildCount() > 0) {
                     icon.setTriangleState(expanded
-                            ? ComponentIcon.TRIANGLE_OPEN : ComponentIcon.TRIANGLE_CLOSED);
+                        ? ComponentIcon.TRIANGLE_OPEN : ComponentIcon.TRIANGLE_CLOSED);
                 }
                 ((JLabel) ret).setIcon(icon);
             }

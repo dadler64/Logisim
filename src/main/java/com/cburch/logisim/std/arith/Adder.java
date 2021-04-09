@@ -32,9 +32,9 @@ public class Adder extends InstanceFactory {
     public Adder() {
         super("Adder", Strings.getter("adderComponent"));
         setAttributes(new Attribute[]{
-                StdAttr.WIDTH
+            StdAttr.WIDTH
         }, new Object[]{
-                BitWidth.create(8)
+            BitWidth.create(8)
         });
         setKeyConfigurator(new BitWidthConfigurator(StdAttr.WIDTH));
         setOffsetBounds(Bounds.create(-40, -20, 40, 40));
@@ -67,12 +67,11 @@ public class Adder extends InstanceFactory {
                 long cx = (long) cIn.toIntValue() & mask;
                 long sum = ax + bx + cx;
                 return new Value[]{Value.createKnown(bitWidth, (int) sum),
-                        ((sum >> width) & 1) == 0 ? Value.FALSE : Value.TRUE};
+                    ((sum >> width) & 1) == 0 ? Value.FALSE : Value.TRUE};
             } else {
                 int sum = a.toIntValue() + b.toIntValue() + cIn.toIntValue();
                 return new Value[]{
-                        Value.createKnown(bitWidth, sum),
-                        ((sum >> width) & 1) == 0 ? Value.FALSE : Value.TRUE
+                    Value.createKnown(bitWidth, sum), ((sum >> width) & 1) == 0 ? Value.FALSE : Value.TRUE
                 };
             }
         } else {
@@ -93,9 +92,7 @@ public class Adder extends InstanceFactory {
                         bits[i] = Value.UNKNOWN;
                         carry = Value.UNKNOWN;
                     } else {
-                        int sum = (ab == Value.TRUE ? 1 : 0)
-                                + (bb == Value.TRUE ? 1 : 0)
-                                + (carry == Value.TRUE ? 1 : 0);
+                        int sum = (ab == Value.TRUE ? 1 : 0) + (bb == Value.TRUE ? 1 : 0) + (carry == Value.TRUE ? 1 : 0);
                         bits[i] = (sum & 1) == 1 ? Value.TRUE : Value.FALSE;
                         carry = (sum >= 2) ? Value.TRUE : Value.FALSE;
                     }

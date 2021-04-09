@@ -45,7 +45,7 @@ public class About {
 
     private static class PanelThread extends Thread {
 
-        private MyPanel panel;
+        private final MyPanel panel;
         private boolean running = true;
 
         PanelThread(MyPanel panel) {
@@ -64,7 +64,7 @@ public class About {
                 panel.repaint();
                 try {
                     Thread.sleep(20);
-                } catch (InterruptedException ex) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
@@ -81,7 +81,7 @@ public class About {
 
         private Value upper = Value.FALSE;
         private Value lower = Value.TRUE;
-        private AboutCredits credits;
+        private final AboutCredits credits;
         private PanelThread thread = null;
 
         public MyPanel() {

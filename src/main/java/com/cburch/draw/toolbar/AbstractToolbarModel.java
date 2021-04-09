@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class AbstractToolbarModel implements ToolbarModel {
 
-    private List<ToolbarModelListener> listeners;
+    private final List<ToolbarModelListener> listeners;
 
     protected AbstractToolbarModel() {
         listeners = new ArrayList<>();
